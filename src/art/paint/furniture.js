@@ -95,9 +95,9 @@ export const FURNITURE = {
     },
   },
   bed: {
-    foot: [2, 3], tex: [32, 56], variants: ['blue', 'pink', 'green'],
+    foot: [2, 3], tex: [32, 56], variants: ['blue', 'pink', 'green', 'sage'],
     paint(p, v) {
-      const c = { blue: '#5a7aaa', pink: '#d8789a', green: '#6a9a5a' }[v];
+      const c = { blue: '#5a7aaa', pink: '#d8789a', green: '#6a9a5a', sage: '#5a7a6a' }[v];
       box(p, 0, 2, 32, 12, woodD); line(p, wood, 2, 4, 28, 2);            // headboard
       box(p, 1, 10, 30, 44, '#f4f0e6');                                   // sheet
       box(p, 3, 12, 12, 7, '#ffffff'); box(p, 17, 12, 12, 7, '#ffffff');  // pillows
@@ -112,11 +112,14 @@ export const FURNITURE = {
     },
   },
   robe: {
-    foot: [2, 1], tex: [32, 34], variants: ['white'],
+    foot: [2, 1], tex: [32, 36], variants: ['louvre'],
     paint(p) {
-      box(p, 0, 0, 32, 34, '#e8e4d8'); line(p, '#c9c3b5', 15, 2, 2, 30); p.r('#9a958a', 12, 14, 1, 5); p.r('#9a958a', 19, 14, 1, 5);
+      box(p, 0, 0, 32, 36, '#f4f4f0'); line(p, '#d8d8d2', 15, 2, 2, 32);
+      for (let y = 3; y < 33; y += 2) { p.r('#e2e2dc', 2, y, 12, 1); p.r('#e2e2dc', 18, y, 12, 1); }
+      p.r('#b8b8b0', 13, 16, 1, 4); p.r('#b8b8b0', 18, 16, 1, 4);
     },
   },
+
   bookshelf: {
     foot: [2, 1], tex: [32, 34], variants: ['oak'],
     paint(p) {
@@ -127,19 +130,24 @@ export const FURNITURE = {
     },
   },
   bath: {
-    foot: [3, 1], tex: [48, 22], variants: ['white'],
+    foot: [3, 1], tex: [48, 22], variants: ['beige'],
     paint(p) {
-      box(p, 0, 2, 48, 20, '#f4f4f0'); p.r('#c4dae2', 3, 5, 42, 12); p.r('#a8c8d4', 3, 5, 42, 2); p.r('#e8f4f8', 6, 9, 12, 2);
-      p.r('#b8bcc4', 42, 3, 3, 3); p.r('#f0f0e8', 8, 6, 4, 3);
+      box(p, 0, 2, 48, 20, '#e8dcc4'); p.r('#d8c8a8', 3, 5, 42, 12); p.r('#c8b898', 3, 5, 42, 2); p.r('#efe4cc', 6, 9, 14, 2);
+      p.r('#b8bcc4', 4, 3, 3, 3); p.r('#2a2a2a', 0, 0, 1, 2); p.r('#2a2a2a', 0, 0, 48, 1); // shower curtain rail
     },
   },
+
   vanity: {
     foot: [1, 1], tex: [16, 30], variants: ['white'],
     paint(p) {
-      box(p, 2, 1, 12, 12, '#c4dae2'); p.r('#e8f4f8', 3, 2, 4, 6); // mirror
-      box(p, 0, 16, 16, 14, '#e8e4d8'); box(p, 0, 13, 16, 4, '#f4f4f0'); p.r('#c4dae2', 4, 14, 8, 2); p.r('#b8bcc4', 7, 11, 2, 3);
+      box(p, 2, 0, 12, 10, '#c4dae2'); p.r('#e8f4f8', 3, 1, 4, 6);                    // mirror
+      box(p, 0, 16, 16, 14, '#f4f4f0'); p.r('#c8c8c0', 2, 21, 12, 1); p.r('#9a9a92', 5, 19, 6, 1); p.r('#9a9a92', 5, 25, 6, 1);
+      box(p, 0, 14, 16, 3, '#ffffff');
+      box(p, 3, 10, 10, 5, '#ffffff'); p.r('#e4ecee', 4, 11, 8, 2);                  // vessel basin
+      p.r('#b8bcc4', 7, 8, 2, 3); p.r('#3f8a3e', 13, 11, 2, 3);
     },
   },
+
   toilet: {
     foot: [1, 1], tex: [16, 22], variants: ['white'],
     paint(p) { box(p, 3, 0, 10, 8, '#f4f4f0'); box(p, 2, 8, 12, 9, '#f4f4f0'); p.r('#dfe6e8', 4, 10, 8, 5); box(p, 4, 17, 8, 5, '#e8e8e2'); },
@@ -211,12 +219,30 @@ export const FURNITURE = {
     },
   },
   iwindow: {
-    foot: [2, 1], tex: [32, 16], variants: ['day'], solid: false,
-    paint(p) {
-      box(p, 2, 1, 28, 12, '#f4f0e6'); p.r('#9fd0ea', 4, 3, 24, 8); p.r('#c4e4f4', 5, 4, 8, 3); p.r('#f4f0e6', 15, 3, 2, 8);
-      p.r('#d8789a', 1, 0, 4, 14); p.r('#d8789a', 27, 0, 4, 14); // curtains
+    foot: [2, 1], tex: [32, 16], variants: ['blind', 'curtain', 'frosted'], solid: false,
+    paint(p, v) {
+      box(p, 2, 0, 28, 14, '#f4f4f0');
+      p.r(v === 'frosted' ? '#c8d8e0' : '#8ec4e4', 4, 2, 24, 10);
+      if (v === 'frosted') { for (let i = 0; i < 8; i++) p.r('#dce8ee', 5 + i * 3, 3 + (i % 3), 2, 2); }
+      else { p.r('#b8dcf0', 5, 6, 8, 2); p.r('#5a8a4a', 4, 9, 24, 3); }              // treetops outside
+      p.r('#f4f4f0', 4, 7, 24, 1);
+      if (v === 'blind') { p.r('#4a4a50', 4, 2, 24, 3); p.r('#5a5a62', 4, 2, 24, 1); }
+      if (v === 'curtain') { p.r('#4a6a9a', 0, 0, 5, 16); p.r('#4a6a9a', 27, 0, 5, 16); p.r('#5a7aaa', 1, 0, 1, 16); p.r('#3a3a40', 0, 0, 32, 1); }
     },
   },
+  trough: {
+    foot: [1, 1], tex: [16, 26], variants: ['laundry'],
+    paint(p) {
+      box(p, 1, 10, 14, 16, '#f4f4f0'); p.r('#d8d8d2', 1, 15, 14, 1); p.r('#9a9a92', 3, 18, 1, 3);
+      box(p, 0, 7, 16, 4, '#d0d4d8'); p.r('#a8b0b8', 2, 8, 12, 2);
+      p.r('#b8bcc4', 5, 2, 1, 5); p.r('#b8bcc4', 10, 2, 1, 5); p.r('#b8bcc4', 5, 2, 3, 1); p.r('#b8bcc4', 10, 2, 3, 1);
+    },
+  },
+  shelf: {
+    foot: [1, 1], tex: [16, 16], variants: ['wall'], solid: false,
+    paint(p) { box(p, 1, 2, 14, 12, '#f4f4f0'); p.r('#d8d8d2', 2, 7, 12, 1); p.r('#e77fb8', 3, 4, 3, 3); p.r('#5a7aaa', 9, 9, 4, 3); },
+  },
+
   picture: {
     foot: [1, 1], tex: [16, 16], variants: ['dog', 'beach', 'family'], solid: false,
     paint(p, v) {

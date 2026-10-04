@@ -319,24 +319,116 @@ export const LAVERTON = {
     },
   },
   footbridge: {
-    foot: [3, 7], tex: [48, 124], variants: ['steel'], solid: false, deck: true,
+    foot: [3, 11], tex: [48, 180], variants: ['laverton'], solid: false, deck: true,
     paint(p) {
-      p.r('#9aa0a8', 4, 0, 40, 124); p.r('#c9ccd2', 6, 0, 36, 124);
-      for (let y = 4; y < 124; y += 8) p.r('#b8bcc4', 6, y, 36, 1);
-      p.r('#5a5d64', 2, 0, 4, 124); p.r('#5a5d64', 42, 0, 4, 124); p.r('#7a7d84', 2, 0, 1, 124); p.r('#7a7d84', 45, 0, 1, 124);
-      for (let y = 6; y < 124; y += 12) { p.r('#3a3d44', 2, y, 4, 2); p.r('#3a3d44', 42, y, 4, 2); }
+      const H = 180, top = H - 176;
+      // concrete stairs down to the plaza (the first three tiles)
+      p.r('#b8b4aa', 4, top, 40, 48);
+      for (let y = top; y < top + 48; y += 4) { p.r('#d4d0c6', 6, y, 36, 2); p.r('#a8a49a', 6, y + 3, 36, 1); }
+      p.r('#e8c030', 6, top + 46, 36, 2);
+      // the walkway over the tracks
+      p.r('#9aa0a8', 4, top + 48, 40, H - top - 48); p.r('#c9ccd2', 6, top + 48, 36, H - top - 48);
+      for (let y = top + 52; y < H; y += 8) p.r('#b8bcc4', 6, y, 36, 1);
+      // mesh balustrades
+      for (const x of [2, 42]) {
+        p.r('#5a5d64', x, top, 4, H - top);
+        for (let y = top + 1; y < H; y += 3) p.r('#7a7d84', x + 1, y, 2, 1);
+        p.r('#c4c8cc', x + 1, top, 1, H - top);
+      }
     },
   },
+  lavtower: {
+    foot: [2, 2], tex: [44, 116], variants: ['laverton'],
+    paint(p) {
+      p.shadow(22, 115, 40);
+      // glazed lift box on legs
+      p.r('#4a4d54', 0, 8, 28, 26); p.r('#3a3d44', 0, 32, 28, 3);
+      for (let i = 0; i < 3; i++) { p.r('#8ab0c8', 3 + i * 8, 12, 6, 10); p.r('#b8d4e4', 3 + i * 8, 12, 2, 4); }
+      p.r('#5a5d64', 0, 24, 28, 8); p.r('#6a6d74', 0, 6, 28, 3);
+      // tall concrete tower with LAVERTON down the front
+      p.r('#c8c4bc', 26, 0, 16, 116); p.r('#dcd8d0', 27, 0, 3, 116); p.r('#a8a49c', 40, 0, 2, 116);
+      p.r('#8ab4e0', 26, 92, 16, 24); for (let i = 0; i < 6; i++) p.r('#b8d4f0', 28 + i * 2, 94 + i * 3, 6, 1);
+      [...'LAVERTON'].forEach((ch, i) => p.text(ch, 32, 6 + i * 10, '#7a8a9a'));
+      // blue striped leg under the lift box
+      p.r('#3a6ab8', 8, 34, 10, 82); for (let y = 38; y < 112; y += 7) { p.r('#e8e4f0', 8, y, 10, 1); p.r('#e08ab0', 9, y + 3, 7, 1); p.r('#1e3e80', 10, y + 5, 6, 1); }
+    },
+  },
+  bluepillar: {
+    foot: [1, 1], tex: [16, 56], variants: ['stripes'],
+    paint(p) {
+      p.shadow(8, 55, 14);
+      p.r('#3a6ab8', 3, 0, 10, 56); p.r('#5a8ad0', 3, 0, 2, 56);
+      for (let y = 2; y < 52; y += 6) { for (let i = 0; i < 8; i++) p.px(['#e8e4f0', '#e08ab0', '#1e3e80'][(y / 6 | 0) % 3], 4 + i, y + (i >> 1)); }
+    },
+  },
+  islandbuilding: {
+    foot: [6, 2], tex: [100, 60], variants: ['laverton'],
+    paint(p) {
+      const sx = 2, W = 96;
+      p.r('rgba(30,50,20,.22)', sx + 2, 57, W, 3);
+      p.r('#e4dcc4', sx, 26, W, 32); for (let x = sx + 6; x < sx + W; x += 12) p.r('#cfc6ac', x, 26, 1, 32);
+      p.r('#c8643a', sx - 2, 6, W + 4, 20); for (let x = 0; x < W + 4; x += 4) p.r('#b4542e', sx - 2 + x, 6, 1, 20);
+      p.r('#e07a4e', sx - 2, 6, W + 4, 2); p.r('#9a4428', sx - 2, 24, W + 4, 2);
+      p.r('#2a6ac8', sx + 26, 26, 44, 9); p.text('LAVERTON', sx + 32, 28, '#ffffff');
+      p.r('#2a2e33', sx + 38, 37, 20, 21); p.r('#6a8aa8', sx + 39, 38, 8, 20); p.r('#6a8aa8', sx + 49, 38, 8, 20); // glass doors
+      p.r('#e8c030', sx + 40, 56, 16, 2);
+      [[sx + 6, 'poster'], [sx + 74, 'map']].forEach(([x, k]) => { p.r('#f4f4f0', x, 36, 14, 16); p.r(k === 'poster' ? '#c8443a' : '#2a6ac8', x + 2, 38, 10, 12); });
+    },
+  },
+  stanchion: {
+    foot: [1, 1], tex: [64, 84], variants: ['overhead'],
+    paint(p) {
+      p.shadow(32, 83, 8);
+      p.r('#8a8e96', 30, 8, 4, 76); p.r('#a8acb4', 30, 8, 1, 76);
+      p.r('#7a7e86', 2, 10, 60, 3); p.r('#9a9ea6', 2, 10, 60, 1); p.r('#5a5e66', 8, 13, 2, 6); p.r('#5a5e66', 54, 13, 2, 6);
+      p.r('#3a3d44', 0, 20, 64, 1);
+    },
+  },
+  ptsign: {
+    foot: [1, 1], tex: [34, 56], variants: ['laverton'],
+    paint(p) {
+      p.shadow(17, 55, 14);
+      p.r('#9aa0a8', 15, 40, 4, 16);
+      p.r('#2a6ac8', 1, 0, 32, 30); p.r('#4a8ae0', 1, 0, 32, 2);
+      p.text('PT', 24, 3, '#ffffff'); p.text('LAVERTON', 2, 10, '#ffffff'); p.text('STATION', 4, 17, '#ffffff');
+      p.r('#3a2a1e', 1, 30, 32, 6); p.r('#3a2a1e', 1, 36, 32, 4); p.r('#d8643a', 1, 40, 32, 5);
+      p.r('#f4f4f0', 3, 32, 14, 1); p.r('#f4f4f0', 3, 37, 10, 1); p.r('#f4f4f0', 3, 42, 10, 1);
+    },
+  },
+  bollard: {
+    foot: [1, 1], tex: [16, 16], variants: ['steel'],
+    paint(p) { p.shadow(8, 15, 6); p.r('#b8bcc4', 6, 3, 4, 12); p.r('#e8ecef', 6, 3, 1, 12); p.r('#e8c030', 6, 5, 4, 1); },
+  },
+  bikerack: {
+    foot: [2, 1], tex: [32, 20], variants: ['bike'],
+    paint(p) {
+      for (const x of [3, 13, 23]) { p.r('#9aa0a8', x, 6, 2, 13); p.r('#9aa0a8', x + 5, 6, 2, 13); p.r('#9aa0a8', x, 5, 7, 2); }
+      p.blob(12, 15, 4, '#2a2a2a'); p.blob(12, 15, 2, '#88aacc'); p.blob(24, 15, 4, '#2a2a2a'); p.blob(24, 15, 2, '#88aacc');
+      p.r('#c8443a', 12, 10, 12, 2); p.r('#c8443a', 16, 10, 2, 6); p.r('#2a2a2a', 20, 7, 4, 2);
+    },
+  },
+  buszone: {
+    foot: [1, 1], tex: [16, 36], variants: ['sign'],
+    paint(p) { p.r('#9aa0a8', 7, 10, 2, 26); p.r('#f4f4f0', 2, 0, 12, 14); p.r('#c8443a', 3, 1, 10, 12); p.text('BUS', 3, 2, '#ffffff'); p.r('#f4f4f0', 3, 8, 10, 4); },
+  },
+
   reunion: {
-    foot: [2, 1], tex: [36, 44], variants: ['green'],
+    foot: [2, 1], tex: [44, 58], variants: ['green'],
     paint(p) {
-      p.shadow(18, 43, 26, 0.3);
-      const leaf = (cx, cy, rx, ry, c) => { for (let j = -ry; j <= ry; j++) { const w = Math.round(rx * Math.sqrt(1 - (j / ry) ** 2)); p.r(c, cx - w, cy + j, w * 2, 1); } };
-      leaf(10, 30, 7, 10, '#1e9a5a'); leaf(26, 30, 7, 10, '#18884e'); leaf(18, 14, 8, 11, '#22b066');
-      leaf(9, 27, 3, 5, '#5ad08a'); leaf(17, 10, 3, 5, '#6ae09a'); leaf(25, 27, 2, 4, '#3ab872');
-      p.r('#0e6a3a', 16, 24, 5, 14);
+      p.shadow(22, 57, 28, 0.3);
+      // four glossy green balloons, like a giant balloon animal
+      const ball = (cx, cy, rx, ry) => {
+        for (let j = -ry; j <= ry; j++) { const w = Math.round(rx * Math.sqrt(1 - (j / ry) ** 2)); p.r('#1c8a48', cx - w, cy + j, w * 2, 1); }
+        for (let j = -ry + 2; j <= ry - 3; j++) { const w = Math.round((rx - 2) * Math.sqrt(1 - (j / ry) ** 2)); p.r('#26a85a', cx - w - 1, cy + j - 1, w * 2, 1); }
+        p.r('#7ae0a4', cx - Math.round(rx * 0.45), cy - Math.round(ry * 0.5), 3, 2); p.r('#c4f4d8', cx - Math.round(rx * 0.4), cy - Math.round(ry * 0.5), 1, 1);
+        p.r('#126a36', cx - rx + 2, cy + ry - 1, rx * 2 - 4, 1);
+      };
+      ball(22, 44, 8, 12);   // the one standing on the ground
+      ball(11, 22, 9, 7); ball(33, 14, 9, 7); ball(22, 24, 8, 7);
+      p.r('#0e5a2e', 21, 30, 3, 4);
     },
   },
+
   carparksign: {
     foot: [1, 1], tex: [16, 30], variants: ['p'],
     paint(p) { p.r('#3c4148', 7, 10, 2, 20); p.r('#2a5aa8', 2, 1, 12, 11); p.r('#f4f4f0', 6, 3, 2, 7); p.r('#f4f4f0', 6, 3, 5, 1); p.r('#f4f4f0', 6, 6, 5, 1); p.r('#f4f4f0', 10, 3, 1, 4); },

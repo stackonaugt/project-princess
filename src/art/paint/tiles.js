@@ -85,51 +85,52 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       return;
     }
     case 'W': {
+      // White painted walls with white skirting; tiled walls in the bathroom and laundry.
       const below = get(tx, ty + 1), below2 = get(tx, ty + 2);
       const face = below !== null && !WALLISH.includes(below);
       const upper = below === 'W' && below2 !== null && !WALLISH.includes(below2);
-      const bathy = (face ? below : below2) === 'T' || (face ? below : below2) === 'n';
-      const paper = bathy ? '#dfeef0' : '#eadcbc', paper2 = bathy ? '#c4dadf' : '#e0cfab';
+      const room = face ? below : below2;
+      const tiled = room === 'T' || room === 'n';
+      const paint = '#f2f0ea', shadeL = '#e2dfd6', grout = '#cfd3d4';
+      const cap = '#6a6460', capL = '#7e7872';
+      const tiles = (y0) => { for (let y = y0; y < T; y += 4) p.r(grout, sx, sy + y, T, 1); for (let x = (ty % 2) * 2; x < T; x += 4) p.r(grout, sx + x, sy + y0, 1, T - y0); };
       if (face) {
-        p.r(paper, sx, sy, T, T);
-        if (bathy) { for (let y = 3; y < T; y += 5) p.r(paper2, sx, sy + y, T, 1); for (let x = (ty % 2) * 4; x < T; x += 8) p.r(paper2, sx + x, sy, 1, T); }
-        else for (let x = 2; x < T; x += 4) p.r(paper2, sx + x, sy, 1, T - 3);
-        p.r('#8a5a3a', sx, sy + T - 3, T, 3); p.r('#a8723c', sx, sy + T - 3, T, 1);
-        if (!upper && get(tx, ty - 1) !== 'W') p.r('#5a4232', sx, sy, T, 2);
+        p.r(paint, sx, sy, T, T);
+        if (tiled) { p.r('#f8f8f6', sx, sy + 4, T, T - 4); tiles(4); }
+        else { p.r(shadeL, sx, sy, T, 1); p.r('#ebe8e0', sx, sy + 5, T, 1); }   // picture rail
+        p.r('#ffffff', sx, sy + T - 3, T, 3); p.r('#d8d4cc', sx, sy + T - 3, T, 1);
+        if (!upper && get(tx, ty - 1) !== 'W') p.r(cap, sx, sy, T, 2);
       } else if (upper) {
-        p.r('#5a4232', sx, sy, T, 5); p.r('#6e5440', sx, sy + 4, T, 1);
-        p.r(paper, sx, sy + 5, T, T - 5);
-        if (bathy) for (let y = 8; y < T; y += 5) p.r(paper2, sx, sy + y, T, 1);
-        else for (let x = 2; x < T; x += 4) p.r(paper2, sx + x, sy + 6, 1, T - 6);
+        p.r(cap, sx, sy, T, 5); p.r(capL, sx, sy + 4, T, 1);
+        p.r(paint, sx, sy + 5, T, T - 5);
+        if (tiled) { p.r('#f8f8f6', sx, sy + 9, T, T - 9); tiles(9); }
       } else {
-        p.r('#5a4232', sx, sy, T, T);
-        p.r('#6e5440', sx + 2, sy + 2, T - 4, T - 4);
-        if (FLOORS.includes(get(tx - 1, ty) || 'V')) p.r('#3a2a20', sx, sy, 2, T);
-        if (FLOORS.includes(get(tx + 1, ty) || 'V')) p.r('#3a2a20', sx + T - 2, sy, 2, T);
+        p.r(cap, sx, sy, T, T);
+        p.r(capL, sx + 2, sy + 2, T - 4, T - 4);
+        if (FLOORS.includes(get(tx - 1, ty) || 'V')) p.r('#4a4440', sx, sy, 2, T);
+        if (FLOORS.includes(get(tx + 1, ty) || 'V')) p.r('#4a4440', sx + T - 2, sy, 2, T);
       }
       return;
     }
     case 'V': p.r('#1a1410', sx, sy, T, T); return;
-    case 'o': case 'D': {
+    case 'o': case 'D': case 'n': {
+      // honey-coloured floorboards (the laundry has a lighter laminate)
+      const lam = c === 'n';
+      const a = lam ? '#d4a878' : '#c48a50', b = lam ? '#caa070' : '#b87e46', j = lam ? '#b08458' : '#9a6634';
       for (let row = 0; row < 4; row++) {
         const y = sy + row * 4, off = (row * 7 + tx * 3) % 16;
-        p.r(row % 2 ? '#b07a48' : '#a8703e', sx, y, T, 4);
-        p.r('#8a5a30', sx, y + 3, T, 1);
-        p.r('#8a5a30', sx + off % T, y, 1, 3);
-        if (hash(tx * 4 + row, ty) > 0.7) p.r('#bc8a58', sx + (off + 5) % 14, y + 1, 3, 1);
+        p.r(row % 2 ? a : b, sx, y, T, 4);
+        p.r(j, sx, y + 3, T, 1);
+        p.r(j, sx + off % T, y, 1, 3);
+        if (hash(tx * 4 + row, ty) > 0.7) p.r(lam ? '#e0b88a' : '#d09a60', sx + (off + 5) % 14, y + 1, 3, 1);
       }
-      if (c === 'D') { p.r('#7a5030', sx, sy, T, 2); p.r('#7a5030', sx, sy + T - 2, T, 2); p.r('#5a3a20', sx, sy, 1, T); p.r('#5a3a20', sx + T - 1, sy, 1, T); }
+      if (c === 'D') { p.r('#a0703c', sx, sy, T, 2); p.r('#a0703c', sx, sy + T - 2, T, 2); }
       return;
     }
     case 'T': {
-      p.r('#eef2f2', sx, sy, T, T);
-      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) if ((i + j + tx + ty) % 2) p.r('#d8e2e4', sx + i * 8, sy + j * 8, 8, 8);
-      p.r('#c4cfd2', sx, sy + 7, T, 1); p.r('#c4cfd2', sx + 7, sy, 1, T);
-      return;
-    }
-    case 'n': {
-      p.r('#d8d0b8', sx, sy, T, T);
-      for (let i = 0; i < 4; i++) p.r('#c8bea4', sx + Math.floor(hash(tx * 3 + i, ty) * 14), sy + Math.floor(hash(tx, ty * 3 + i) * 14), 2, 2);
+      // small terracotta floor tiles
+      p.r('#a8744e', sx, sy, T, T);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) p.r((i + j + tx + ty) % 3 ? '#b4805a' : '#9a6a46', sx + i * 4, sy + j * 4, 3, 3);
       return;
     }
     case 'K': {

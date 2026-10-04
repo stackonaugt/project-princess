@@ -44,24 +44,9 @@ export const VEHICLES = {
     for (let y = 18; y < 60; y += 10) p.r('#a8d4e8', 3, y, 2, 6), p.r('#a8d4e8', 15, y, 2, 6);
     p.r('#f5e66b', 4, 74, 3, 2); p.r('#f5e66b', 13, 74, 3, 2); p.r('#3c4148', 9, 36, 2, 6);
   }],
-  'veh-train-h': [180, 22, p => {
-    for (let c = 0; c < 3; c++) {
-      const x = c * 60;
-      p.r('#2a2e33', x + 1, 1, 58, 20); p.r('#e8e4d8', x + 2, 2, 56, 18); p.r('#2f5f8f', x + 2, 12, 56, 4);
-      for (let i = 0; i < 5; i++) p.r('#3a4a5a', x + 6 + i * 10, 5, 7, 5);
-      p.r('#8dc63f', x + 2, 16, 56, 1);
-    }
-    p.r('#f5e66b', 176, 13, 3, 3); p.r('#3a4a5a', 170, 4, 8, 6);
-  }],
-  'veh-train-v': [22, 180, p => {
-    for (let c = 0; c < 3; c++) {
-      const y = c * 60;
-      p.r('#2a2e33', 1, y + 1, 20, 58); p.r('#e8e4d8', 2, y + 2, 18, 56); p.r('#2f5f8f', 12, y + 2, 4, 56);
-      for (let i = 0; i < 5; i++) p.r('#3a4a5a', 4, y + 6 + i * 10, 5, 7);
-      p.r('#8dc63f', 16, y + 2, 1, 56);
-    }
-    p.r('#f5e66b', 13, 176, 3, 3);
-  }],
+  // Metro trains: stainless steel, blue livery, yellow ends
+  'veh-train-h': [184, 24, p => metroTrain(p, false)],
+  'veh-train-v': [24, 184, p => metroTrain(p, true)],
   'veh-car-h-red': [28, 16, p => carH(p, '#c8443a', '#9a3028')],
   'veh-car-h-blue': [28, 16, p => carH(p, '#3a6aa8', '#2a5080')],
   'veh-car-h-white': [28, 16, p => carH(p, '#f0f0ec', '#c9c9c4')],
@@ -70,6 +55,26 @@ export const VEHICLES = {
   'veh-car-v-silver': [16, 28, p => carV(p, '#b8bcc4', '#8e939b')],
   'veh-bike-v': [8, 14, p => { p.r('#1e1e1e', 3, 0, 2, 4); p.r('#1e1e1e', 3, 10, 2, 4); p.r('#c8443a', 3, 4, 2, 6); p.r('#f2c79a', 2, 5, 4, 3); p.r('#2a5a8a', 2, 4, 4, 2); }],
 };
+
+function metroTrain(p, vertical) {
+  // draw horizontally into a scratch canvas, then rotate for the vertical version
+  const draw = q => {
+    for (let c = 0; c < 3; c++) {
+      const x = 2 + c * 60;
+      q.r('#2a2e33', x, 2, 58, 20); q.r('#c4c8ce', x + 1, 3, 56, 18);
+      for (let i = x + 3; i < x + 56; i += 3) q.r('#b0b4ba', i, 3, 1, 18);
+      q.r('#2a6ac8', x + 1, 9, 56, 7); q.r('#5aa0e8', x + 8 + c * 6, 9, 14, 7); q.r('#1e4a9a', x + 30, 13, 20, 3);
+      for (let i = 0; i < 4; i++) q.r('#2a3440', x + 6 + i * 13, 4, 8, 4);
+      q.r('#8a8e96', x + 1, 20, 56, 1);
+    }
+    for (const x of [0, 176]) { q.r('#f0c020', x, 3, 8, 18); q.r('#2a6ac8', x + 2, 9, 4, 6); q.r('#2a3440', x + 1, 5, 6, 3); }
+    q.r('#f5f0a0', 182, 17, 2, 2); q.r('#f5f0a0', 0, 17, 2, 2);
+  };
+  if (!vertical) return draw(p);
+  const c = document.createElement('canvas'); c.width = 184; c.height = 24;
+  draw({ r(col, x, y, w, h) { const g = c.getContext('2d'); g.fillStyle = col; g.fillRect(x, y, w, h); } });
+  p.ctx.save(); p.ctx.translate(24, 0); p.ctx.rotate(Math.PI / 2); p.ctx.drawImage(c, 0, 0); p.ctx.restore();
+}
 
 function carH(p, a, b) {
   p.r('rgba(0,0,0,.25)', 1, 13, 27, 3);
