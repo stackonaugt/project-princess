@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Project Princess</title>
+<meta name="description" content="A cosy pet-collecting adventure across Laverton, Brunswick and Reservoir.">
+<meta name="theme-color" content="#1f3a29">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Princess">
+<meta property="og:title" content="Project Princess">
+<meta property="og:description" content="Find your friends' pets across Melbourne. Laverton, Brunswick, Reservoir.">
+<meta property="og:image" content="icons/icon-512.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="game" aria-label="Game world"></div>
+
+<header id="hud">
+  <div class="plaque hud-info">
+    <span id="hudRegion">Laverton</span>
+    <span class="hud-sep" aria-hidden="true">·</span>
+    <span class="hud-time"><span id="hudClock">Day 1 · 9:00am</span> <span id="hudWeather" aria-hidden="true"></span></span>
+  </div>
+  <nav class="hud-btns">
+    <button id="btnBag" class="wood-btn" aria-label="Bag">Bag <span id="bagCount" class="count"></span></button>
+    <button id="btnDex" class="wood-btn" aria-label="Petdex">Petdex <span id="dexCount" class="count">0/5</span></button>
+    <button id="btnMenu" class="wood-btn" aria-label="Menu">☰</button>
+  </nav>
+</header>
+
+<div id="banner" aria-live="polite"></div>
+<div id="toasts" aria-live="polite"></div>
+
+<section id="dialog" hidden role="dialog" aria-live="polite">
+  <div id="dPortrait" class="d-portrait" hidden><img alt=""></div>
+  <div class="d-body">
+    <div id="dName" class="d-name" hidden></div>
+    <p id="dText" class="d-text"></p>
+    <ol id="dChoices" class="d-choices"></ol>
+  </div>
+  <span class="more" aria-hidden="true">▼</span>
+</section>
+
+<div id="touch">
+  <div id="joyZone" aria-label="Movement: drag to walk">
+    <div id="joyBase"><div id="joyKnob"></div></div>
+  </div>
+  <div class="ab">
+    <button id="btnB" class="round-btn b" aria-label="B: back, hold to run">B</button>
+    <button id="btnA" class="round-btn a" aria-label="A: talk">A</button>
+  </div>
+</div>
+
+<div id="modal" hidden><div id="modalPanel" class="panel" role="dialog" aria-modal="true"></div></div>
+
+<div id="loading"><div class="plaque">Project Princess</div><p>Loading Melbourne…</p></div>
+<noscript><p style="color:#fff;padding:20px">Project Princess needs JavaScript turned on.</p></noscript>
+
+<script src="lib/phaser.min.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>
