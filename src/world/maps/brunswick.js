@@ -70,7 +70,7 @@ export function buildBrunswick() {
   b.sign(5, 18, ['Brunswick Station. Upfield line.', 'Tap your myki at the reader to catch a train.']);
   b.sign(1, 23, ['Dawson St.', 'West: Laverton. A long way, but you have good shoes.']);
   b.sign(21, 32, ['Sydney Rd.', 'North: Coburg and Reservoir. South: the city (not yet).']);
-  b.exit(0, 20, 1, 2, 'laverton', 'east', 'Laverton');
+  b.exit(0, 20, 1, 2, 'station', 'east', 'Laverton');
   b.exit(22, 0, 6, 1, 'reservoir', 'south', 'Reservoir');
   b.exit(22, 33, 6, 1, null, null, 'The city', ['The 19 tram to the city is replaced by buses this weekend.', 'And next weekend. The city will have to wait.']);
 

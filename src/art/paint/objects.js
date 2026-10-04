@@ -12,6 +12,8 @@
 
 import { hash } from '../../util.js';
 import { textWidth } from './painter.js';
+import { FURNITURE } from './furniture.js';
+import { LAVERTON } from './laverton.js';
 
 const T = 16;
 
@@ -20,7 +22,7 @@ function frame(def) {
   return { W: fw * T, H: fh * T, sx: Math.round((tw - fw * T) / 2), sy: th - fh * T, tw, th };
 }
 
-export const OBJECTS = {
+const BASE = {
   tree: {
     foot: [1, 1], tex: [32, 40], variants: ['gum', 'oak', 'fruit', 'lemon', 'pine', 'palm'],
     paint(p, v) {
@@ -130,7 +132,7 @@ export const OBJECTS = {
 
   // Fences join up with their neighbours. Variant = style:mask (mask bits L1 R2 U4 D8).
   fence: {
-    foot: [1, 1], tex: [16, 16], variants: 'mask', styles: ['picket', 'colorbond', 'park'],
+    foot: [1, 1], tex: [16, 16], variants: 'mask', styles: ['picket', 'colorbond', 'park', 'paling', 'metal'],
     paint(p, v) {
       const [style, m] = v.split(':'); const mask = +m;
       const L = mask & 1, R = mask & 2, U = mask & 4, D = mask & 8;
@@ -141,6 +143,27 @@ export const OBJECTS = {
           p.r(c, x0, 2, x1 - x0, 12); for (let x = x0; x < x1; x += 2) p.r(d, x, 2, 1, 12); p.r(hi, x0, 2, x1 - x0, 1); p.r(d, x0, 13, x1 - x0, 1);
         }
         if (U || D) { const y0 = U ? 0 : 2, y1 = D ? 16 : 14; p.r(d, 6, y0, 4, y1 - y0); p.r(c, 7, y0, 2, y1 - y0); }
+        return;
+      }
+      if (style === 'paling') {
+        const c = '#a8906e', d = '#8a7458', hi = '#c4ac88';
+        if (L || R || !(U || D)) {
+          const x0 = L ? 0 : 5, x1 = R ? 16 : 11;
+          for (let x = x0; x < x1; x++) p.r(x % 3 === 0 ? d : (x % 3 === 1 ? c : hi), x, 0, 1, 15);
+          p.r(d, x0, 4, x1 - x0, 1); p.r(d, x0, 11, x1 - x0, 1); p.r('rgba(30,50,20,.25)', x0, 15, x1 - x0, 1);
+        }
+        if (U || D) { const y0 = U ? 0 : 1, y1 = D ? 16 : 15; p.r(d, 6, y0, 4, y1 - y0); p.r(c, 7, y0, 2, y1 - y0); }
+        return;
+      }
+      if (style === 'metal') {
+        const c = '#e8dcb4', d = '#c4b890';
+        if (L || R || !(U || D)) {
+          const x0 = L ? 0 : 6, x1 = R ? 16 : 10;
+          p.r(c, x0, 6, x1 - x0, 1); p.r(c, x0, 14, x1 - x0, 1);
+          for (let x = x0 + 1; x < x1; x += 2) p.r(d, x, 7, 1, 7);
+        }
+        if (U || D) { const y0 = U ? 0 : 5, y1 = D ? 16 : 15; p.r(c, 7, y0, 2, y1 - y0); }
+        p.r(c, 7, 5, 2, 10);
         return;
       }
       if (style === 'park') {
@@ -224,10 +247,10 @@ export const OBJECTS = {
   },
 
   shop: {
-    foot: [4, 3], tex: [64, 56], variants: ['milk bar', 'records', 'bakery', 'pho', 'books'],
+    foot: [4, 3], tex: [64, 56], variants: ['milk bar', 'records', 'bakery', 'pho', 'books', 'curry', 'pizza', 'signs'],
     paint(p, v) {
       const { sx, sy, W, H } = frame(this);
-      const col = { 'milk bar': ['#e8dcc2', '#2f6aa3'], records: ['#3a3a48', '#e77fb8'], bakery: ['#f0d9a8', '#a0582a'], pho: ['#c8443a', '#f5d63a'], books: ['#e8dcc2', '#3f6a4a'] }[v];
+      const col = { 'milk bar': ['#e8dcc2', '#2f6aa3'], records: ['#3a3a48', '#e77fb8'], bakery: ['#f0d9a8', '#a0582a'], pho: ['#c8443a', '#f5d63a'], books: ['#e8dcc2', '#3f6a4a'], curry: ['#f4efe0', '#c8643a'], pizza: ['#f4efe0', '#3f8a3e'], signs: ['#e8ecef', '#2a5aa8'] }[v];
       p.r('rgba(30,50,20,.22)', sx + 2, sy + H - 2, W - 2, 4);
       p.r(col[0], sx, sy + 6, W, H - 6);
       p.r('#4a4e56', sx, sy - 2, W, 9); p.r('#5d616a', sx, sy - 2, W, 2);
@@ -492,5 +515,7 @@ export const OBJECTS = {
   },
 };
 
+export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON };
+
 // Which object kinds give off light at night.
-export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 } };
+export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 }, floorlamp: { x: 8, y: 5, r: 40 }, hphouse: { x: 86, y: 56, r: 30 } };

@@ -2,7 +2,7 @@
 // whenever you walk to another suburb or catch a train.
 
 import { TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
-import { REGIONS, REGION_ORDER, getMap } from '../data/regions.js';
+import { ZONES, SUBURBS, SUBURB_ORDER, getMap } from '../data/regions.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { ITEMS } from '../data/items.js';
@@ -35,8 +35,9 @@ export class WorldScene extends Phaser.Scene {
   }
 
   create() {
-    const region = REGIONS[this.regionId];
+    const region = ZONES[this.regionId];
     this.region = region;
+    this.suburb = SUBURBS[region.suburb];
     this.map = getMap(this.regionId);
     state.data.region = this.regionId;
     const firstVisit = !state.data.visited.includes(this.regionId);
@@ -56,12 +57,22 @@ export class WorldScene extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.layer);
 
-    this.pets = PETS.filter(p => p.region === this.regionId).map(p => {
-      const pet = new Pet(this, p);
-      this.physics.add.collider(pet, this.layer);
+    // Which pets are here: your team follows you everywhere; pets you've
+    // found relax at home; everyone else is out in their own patch.
+    this.trail = [];
+    this.pets = [];
+    let followers = 0;
+    for (const p of PETS) {
+      let mode = null;
+      if (state.inParty(p.id)) mode = 'follow';
+      else if (region.home) { if (state.isFound(p.id) && p.homeSpot?.zone === this.regionId) mode = 'home'; }
+      else if (p.zone === this.regionId) mode = 'wild';
+      if (!mode) continue;
+      const pet = new Pet(this, p, { mode, index: mode === 'follow' ? followers++ : 0, near: this.player });
+      if (mode !== 'follow') this.physics.add.collider(pet, this.layer);
       pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }); });
-      return pet;
-    });
+      this.pets.push(pet);
+    }
     this.npcs = this.map.npcs.filter(n => NPCS[n.id]).map(n => {
       const npc = new Npc(this, n.id, NPCS[n.id], n);
       npc.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'npc', ref: npc }); });
@@ -95,7 +106,7 @@ export class WorldScene extends Phaser.Scene {
     if (this.newDay) {
       const rain = state.rainWindow();
       ui.banner(`Day ${state.data.day}`, rain ? `Forecast: showers around ${timeLabel(rain[0])}` : 'Forecast: clear skies');
-    } else ui.banner(region.name, region.tagline);
+    } else ui.banner(region.name, region.name === this.suburb.name ? region.tagline : `${this.suburb.name}. ${region.tagline}`);
     this.save();
     this.intro(firstVisit);
   }
@@ -136,6 +147,7 @@ export class WorldScene extends Phaser.Scene {
   buildObjects() {
     this.interactables = [];
     this.lights = [];
+    this.roofs = [];
     for (const o of this.map.objects) {
       const def = OBJECTS[o.kind];
       const key = objectTexture(this, o);
@@ -143,6 +155,9 @@ export class WorldScene extends Phaser.Scene {
       const img = this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y - 0.1);
       if (custom.has(key)) img.setScale(def.tex[0] / img.width);
       o.sprite = img;
+      if (def.flat) img.setDepth(-900 + y / 1000);
+      if (def.deck) img.setDepth(-990);
+      if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
       if (o.kind === 'sign' && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
       else {
@@ -206,9 +221,10 @@ export class WorldScene extends Phaser.Scene {
     this.dusk = this.add.rectangle(0, 0, W, H, 0xff8a3a).setOrigin(0).setDepth(8999).setAlpha(0);
   }
   updateLighting() {
-    const m = state.data.minutes, dark = darkness(m), rain = state.isRaining() ? 0.18 : 0;
+    const m = state.data.minutes, indoor = this.region.indoor;
+    const dark = darkness(m) * (indoor ? 0.45 : 1), rain = state.isRaining() && !indoor ? 0.18 : 0;
     this.night.setAlpha(Math.min(0.62, dark * 0.55 + rain));
-    const duskAmt = m > 17.5 * 60 && m < 20.5 * 60 ? Math.sin((m - 17.5 * 60) / 180 * Math.PI) * 0.12 : 0;
+    const duskAmt = !indoor && m > 17.5 * 60 && m < 20.5 * 60 ? Math.sin((m - 17.5 * 60) / 180 * Math.PI) * 0.12 : 0;
     this.dusk.setAlpha(duskAmt);
     const glow = clamp((dark - 0.25) * 1.4, 0, 1);
     for (const g of this.lights) g.setAlpha(glow * (0.85 + Math.sin(this.time.now / 300 + g.x) * 0.05));
@@ -222,7 +238,7 @@ export class WorldScene extends Phaser.Scene {
     }).setDepth(9002);
   }
   updateRain() {
-    const raining = state.isRaining();
+    const raining = state.isRaining() && !this.region.indoor;
     const v = this.cameras.main.worldView;
     this.rainZone.setTo(v.x - 20, v.y - 20, v.width + 60, 1);
     if (raining && !this.rain.emitting) this.rain.start();
@@ -457,15 +473,15 @@ export class WorldScene extends Phaser.Scene {
 
   async travel() {
     sfx.myki();
-    const options = REGION_ORDER.filter(r => r !== this.regionId && state.data.visited.includes(r));
+    const options = SUBURB_ORDER.filter(s => s !== this.region.suburb && state.suburbVisited(s));
     if (!options.length) {
       return ui.say(['You tap your myki. Beep beep.', 'The screen only lists stations you have already visited. Walk to another suburb first, then you can catch the train back and forth.']);
     }
     const choice = await ui.say({
       text: 'You tap your myki. Beep beep. Where to?',
-      choices: [...options.map(r => ({ label: `${REGIONS[r].name} Station`, value: r })), { label: 'Stay here', value: null }],
+      choices: [...options.map(s => ({ label: `${SUBURBS[s].name} Station`, value: s })), { label: 'Stay here', value: null }],
     }, { cancelValue: null });
-    if (choice) this.goTo(choice, 'station', 25);
+    if (choice) this.goTo(SUBURBS[choice].station, 'station', 25);
   }
 
   goTo(region, entry, minutes = 20) {
@@ -479,22 +495,39 @@ export class WorldScene extends Phaser.Scene {
     this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region, entry }));
   }
 
+  // Leaving the house: pick up to three pets to bring along.
+  async chooseTeamThenGo(ex) {
+    if (this.choosingTeam) return;
+    this.choosingTeam = true;
+    this.player.setVelocity(0, 0); this.player.target = null;
+    const team = await ui.chooseTeam();
+    this.choosingTeam = false;
+    if (team === null) {   // changed their mind: step back inside
+      const [fx, fy] = this.player.facing();
+      this.player.setPosition(this.player.x - fx * 12, this.player.y - fy * 12);
+      return;
+    }
+    state.setParty(team);
+    this.goTo(ex.to, ex.entry, 3);
+  }
+
   async endDay() {
     if (this.endingDay) return;
     this.endingDay = true;
-    await ui.say(["It's 2am. You are exhausted.", 'You catch the last train home and fall asleep the moment your head hits the pillow.']);
+    await ui.say(["It's 2am. You are exhausted.", 'You head home and fall asleep the moment your head hits the pillow.']);
     state.data.day += 1; state.data.minutes = DAY_START; state.data.pos = null;
     state.save();
     this.leaving = true;
     this.cameras.main.fadeOut(600, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: this.regionId, entry: 'station', newDay: true }));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true }));
   }
 
   checkExits() {
     const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 1) / T);
     const ex = this.map.exits.find(e => tx >= e.x && tx < e.x + e.w && ty >= e.y && ty < e.y + e.h);
     if (!ex) { this.lockedExit = null; return; }
-    if (ex.to) return this.goTo(ex.to, ex.entry, 20);
+    if (ex.to && ex.team && state.foundIds().length) return this.chooseTeamThenGo(ex);
+    if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : 20);
     if (this.lockedExit === ex) return;
     this.lockedExit = ex;
     sfx.bump();
@@ -515,12 +548,12 @@ export class WorldScene extends Phaser.Scene {
 
   async intro(firstVisit) {
     if (!this.firstLoad) {
-      if (firstVisit) ui.toast(`New station unlocked: ${this.region.name}`);
+      if (firstVisit && this.region.name === this.suburb.name) ui.toast(`New station unlocked: ${this.suburb.name}`);
       return;
     }
     if (state.migrated) {
       state.migrated = false;
-      await ui.say(['Welcome back to Project Princess!', 'Your Petdex from the old version came with you. Melbourne has grown a fair bit since you were last here.']);
+      await ui.say(['Welcome back to Project Princess!', 'You have moved into a new place on Allen St, Laverton. Pets you have found will hang out here.', 'Before you head out the door, you can pick up to three of them to come along.']);
     }
     if (!state.data.seenIntro) {
       await ui.say([
@@ -529,8 +562,9 @@ export class WorldScene extends Phaser.Scene {
         controls.touchMode
           ? 'Drag on the left side of the screen to walk. Tap A to talk to pets, people and signs. Tap things to walk to them.'
           : 'Walk with the arrow keys or WASD. Hold Shift to run. Press Space to talk to pets, people and signs.',
-        'Chat to each pet once a day and bring them treats to become friends. Check the Petdex to see who is still missing.',
-        "You've just stepped off the train at Laverton. Rumour has it a very fluffy poodle runs this suburb.",
+        'Chat to each pet once a day and bring them treats to become friends. Pets you find come and live here with you.',
+        'This is your new place on Allen St, Laverton. It is mid-renovation. Mind the paint tins.',
+        'Rumour has it a very fluffy poodle runs the court right out the front. Head out the front door to say hello.',
       ]);
       state.data.seenIntro = true;
       this.save();
@@ -550,6 +584,17 @@ export class WorldScene extends Phaser.Scene {
     if (label !== this.lastLabel) { this.lastLabel = label; ui.updateHud(this.regionId); }
 
     this.player.update(controls.vector(), blocked);
+    // Breadcrumb trail for the pets following you
+    const last = this.trail[this.trail.length - 1];
+    if (!last || Math.hypot(last.x - this.player.x, last.y - this.player.y) > 3) {
+      this.trail.push({ x: this.player.x, y: this.player.y });
+      if (this.trail.length > 80) this.trail.shift();
+    }
+    // Roofs (carports, canopies) fade when you walk underneath
+    for (const r of this.roofs) {
+      const under = this.player.x > r.x0 && this.player.x < r.x1 && this.player.y > r.y0 && this.player.y < r.y1 + 6;
+      r.img.setAlpha(Phaser.Math.Linear(r.img.alpha, under ? 0.35 : 1, 0.2));
+    }
     if (this.pending) {
       const t = this.pending, x = t.ref ? t.ref.x : t.x, y = t.ref ? t.ref.y : t.y;
       if (Math.hypot(x - this.player.x, y - this.player.y) < 24) this.interact(t);

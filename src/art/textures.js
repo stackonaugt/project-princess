@@ -8,8 +8,9 @@
 import { ART_PATH } from '../config.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
-import { painter } from './paint/painter.js';
-import { PET_FRAMES, PERSON_FRAMES, BASE_PALETTE, PLAYER_PALETTE } from './sprites.js';
+import { painter, outline } from './paint/painter.js';
+import { PET_FRAMES, BASE_PALETTE, PLAYER_LOOK } from './sprites.js';
+import { drawPerson } from './paint/people.js';
 import { OBJECTS } from './paint/objects.js';
 import { ITEM_ART } from './paint/items.js';
 import { FX, FX_STRIPS, VEHICLES } from './paint/fx.js';
@@ -45,45 +46,40 @@ function canvasTexture(scene, key, w, h, draw) {
   draw(painter(tex.getContext()));
   tex.refresh();
 }
-function stripTexture(scene, key, fw, fh, n, draw) {
+function stripTexture(scene, key, fw, fh, n, draw, outlined = false) {
   if (scene.textures.exists(key)) return;
   const tex = scene.textures.createCanvas(key, fw * n, fh);
   const p = painter(tex.getContext());
   for (let i = 0; i < n; i++) { p.ctx.save(); p.ctx.translate(i * fw, 0); draw(p, i); p.ctx.restore(); }
+  if (outlined) for (let i = 0; i < n; i++) outline(p.ctx, i * fw, 0, fw, fh);
   tex.refresh();
   for (let i = 0; i < n; i++) tex.add(i, 0, i * fw, 0, fw, fh);
 }
-// Split a custom character sheet into square frames numbered 0..n-1.
+// Split a custom character sheet into frames numbered 0..n-1. Pets use
+// square frames; people are twice as tall as they are wide (16x32).
 function splitCustom(scene, key) {
   const tex = scene.textures.get(key), src = tex.getSourceImage();
-  const h = src.height, n = Math.max(1, Math.round(src.width / h));
+  const h = src.height, fw = key.startsWith('pet-') ? h : h / 2, n = Math.max(1, Math.round(src.width / fw));
   for (let i = 0; i < n; i++) tex.add(i, 0, i * Math.floor(src.width / n), 0, Math.floor(src.width / n), h);
 }
 export const frameCount = (scene, key) => Math.max(1, scene.textures.get(key).frameTotal - 1);
 
-// Draw a 12x12 string sprite into the bottom-centre of a 16x16 frame.
-const charDraw = (rows, pal) => p => p.sprite(rows, pal, 2, 4);
+const STEPS = [0, 1, 2]; // people: standing, left stride, right stride
 
 export function buildTextures(scene) {
   for (const key of custom) if (CHARACTER_PREFIXES.some(pfx => key.startsWith(pfx + '-'))) splitCustom(scene, key);
 
   // Player
-  for (const dir of ['down', 'up', 'left']) {
-    const frames = PERSON_FRAMES[dir], pal = { ...BASE_PALETTE, ...PLAYER_PALETTE };
-    stripTexture(scene, `player-${dir}`, 16, 16, frames.length, (p, i) => charDraw(frames[i], pal)(p));
-  }
+  for (const dir of ['down', 'up', 'left']) stripTexture(scene, `player-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, PLAYER_LOOK, dir, STEPS[i]), true);
   // Pets
   for (const pet of PETS) {
     const frames = PET_FRAMES[pet.sprite], pal = { ...BASE_PALETTE, ...pet.pal };
-    stripTexture(scene, `pet-${pet.id}`, 16, 16, frames.length, (p, i) => charDraw(frames[i], pal)(p));
+    stripTexture(scene, `pet-${pet.id}`, 16, 16, frames.length, (p, i) => p.sprite(frames[i], pal, 0, 0), true);
   }
   // People
   for (const [id, npc] of Object.entries(NPCS)) {
     if (custom.has(`npc-${id}`)) continue;
-    for (const dir of ['down', 'up', 'left']) {
-      const frames = PERSON_FRAMES[dir], pal = { ...BASE_PALETTE, ...npc.pal };
-      stripTexture(scene, `npc-${id}-${dir}`, 16, 16, frames.length, (p, i) => charDraw(frames[i], pal)(p));
-    }
+    for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, npc.look, dir, STEPS[i]), true);
   }
   // Items
   for (const [id, art] of Object.entries(ITEM_ART)) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));

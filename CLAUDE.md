@@ -1,6 +1,10 @@
 # Project Princess
 
-A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You wander three suburbs (Laverton, Brunswick, Reservoir) finding, befriending and cataloguing the real pets of the owner's friends. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.
+A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You live at Helen and Paddy's new house on Allen St, Laverton, and wander three suburbs (Laverton, Brunswick, Reservoir) finding, befriending and cataloguing the real pets of the owner's friends. Found pets move into your house; each time you leave you pick a team of up to three who follow you around. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.
+
+Laverton is modelled on real places from the owner's screenshots: the Allen St house (floor plan and backyard from the real estate listing, walls between kitchen, meals and lounge removed), the Allen St cul-de-sac, Woods St (the old house at 72, where Helen's parents Trish and Gordon now live), Lohse St Reserve and Laverton Station. Recreate real places recognisably but compressed; avoid real business names on shopfronts.
+
+**Art direction.** The owner plans to draw the final art. The built-in art is code-drawn reference art in a Stardew style: 16px tiles, people 16x32, pets 16x16 side-on, 1px dark outline, shaded with a light top edge and darker bottom/right. Keep new built-in art consistent with that so custom PNGs can drop straight in.
 
 The pets are real animals belonging to real people (their owners are named in `src/data/pets.js`). Keep their portrayal affectionate, funny and kind. The humour is gentle Melbourne in-jokes: trams, myki, level crossing removals, Bunnings-style sausage sizzles, nonnas with lemon trees, rent prices.
 
@@ -52,16 +56,16 @@ src/
     npcs.js           Townsfolk: lines, hints about unfound pets, daily gifts
     items.js          Treats
     types.js          Pet types with colours (and planned battle matchups)
-    regions.js        Region list, grass palettes, map builder lookup, getMap() cache
+    regions.js        SUBURBS and ZONES (each zone is one map), grass palettes, getMap() cache
     flavour.js        Text for inspecting objects (houses, bins, trams...)
   world/
     MapBuilder.js     DSL for building maps in code (fill, put, scatter, exits, lanes...)
-    maps/*.js         One file per suburb. Ground letters + objects + spawns + NPC spots
+    maps/*.js         One file per zone: home, yard, allen, woods, lohse, station (Laverton), brunswick, reservoir
     entities.js       Player, Pet (behaviour AI), Npc. Arcade physics sprites
     traffic.js        Cars, trams, bikes, trains (scenery that waits for you)
   art/
     sprites.js        Built-in character pixel art as strings
-    paint/*.js        Procedural painters: ground tiles, objects, items, effects, vehicles
+    paint/*.js        Procedural painters: tiles (ground + interior walls/floors), objects (+ furniture.js, laverton.js), people.js (16x32 people from a "look"), items, fx
     textures.js       Builds textures; swaps in custom PNGs from assets/sprites via the manifest
   scenes/
     BootScene.js      Loads the sprite manifest and custom PNGs, builds textures
@@ -71,7 +75,7 @@ src/
     controls.js       Keyboard + floating joystick + A/B buttons -> movement vector and bus events
     clock.js          Time labels, darkness curve, night checks
     sfx.js            Synthesised WebAudio blips (no audio files)
-  ui/                 HTML interface: ui.js (HUD, dialogue, banner, toasts, modals), petdex.js, bag.js, menu.js
+  ui/                 HTML interface: ui.js (HUD, dialogue, banner, toasts, modals), petdex.js, bag.js, menu.js, team.js
 assets/sprites/       Custom art drop zone (see its README). templates/ has every built-in sprite as PNG
 tools/                serve.mjs (dev server), build-manifest.mjs (used by the deploy workflow)
 archive/prototype.html  The original single-file canvas prototype, kept for reference
@@ -82,19 +86,24 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Coordinates.** Maps are in tiles (16 world pixels). Data files use tile coordinates; `toWorld(tx, ty)` in `entities.js` converts to the world position of a character's feet (`(tx + 0.5) * 16, (ty + 0.75) * 16`).
 - **Depth sorting.** Everything that stands on the ground has origin (0.5, 1) and `depth = y` (its feet or footprint bottom). Night overlay is depth 9000, light glows 9001, rain 9002, bubbles 9500+.
 - **Maps** are built in code by `MapBuilder`, deterministically (seeded), and cached by `getMap()`. Ground letters are documented at the top of `src/art/paint/tiles.js`. Collision comes from solid ground (`~` water, `r` rail) plus object footprints, and is fed to an invisible Phaser tilemap layer for Arcade physics.
-- **Objects** are defined in `src/art/paint/objects.js` (`foot` = blocking footprint in tiles, `tex` = texture size, anchored bottom-centre on the footprint). Fences auto-join with neighbours.
+- **Zones and suburbs.** `state.data.region` holds the current zone id. Zones belong to a suburb; the HUD shows "Zone, Suburb". Exits link zones by entry name. Walking between zones in the same suburb costs 3 game minutes; between suburbs 20; the train 25. The myki reader lists suburbs you've visited and drops you at that suburb's `station` zone. `home: true` zones (home, yard) are your place; `indoor: true` dims the night overlay and hides rain.
+- **Interiors** use ground letters `W` (wall; draws as wallpaper face when floor is below, a 2-tall top wall gets an upper face), `V` (void), `D` (doorway), and floors `o` `T` `K` `n`. Doors are exits on `D` tiles. Wall decorations use `put(..., { onWall: true })`.
+- **Objects** are defined in `src/art/paint/objects.js` plus `furniture.js` and `laverton.js` (`foot` = blocking footprint in tiles, `tex` = texture size, anchored bottom-centre on the footprint). Flags: `flat` (rugs, mats: drawn under everything, can overlap), `roof` (carports, canopies: drawn over characters and fade when you walk under), `deck` (the footbridge: drawn over trains but under people; put walkable `B` rail tiles underneath and give train lanes `under: true`). Fences auto-join with neighbours; styles picket, colorbond, park, paling, metal.
+- **Team.** `state.data.party` (max 3) holds pets following you. Exits with `{ team: true }` (front door, side gate) open the team picker when you have pets. Pets spawn per zone in one of three modes (`Pet` in entities.js): `follow` (on your team, trails behind you on `scene.trail`), `home` (found, not on the team, at `pet.homeSpot` in the home or yard zone), or `wild` (not on the team, in `pet.zone`). A pet on your team is never also in its wild zone.
 - **Textures and custom art.** Built-in textures are painted onto canvases at startup (`textures.js`). Keys: `player-<dir>`, `pet-<id>`, `npc-<id>-<dir>` (or `npc-<id>` for custom), `item-<id>`, `obj-<kind>-<variant>`, `tile-<name>`, `veh-<name>`, `portrait-<id>`. A PNG at `assets/sprites/<folder>/<name>.png` loads as `<prefix>-<name>` and wins over the built-in. Character PNGs are split into square frames. Always size sprites through `fitScale()` so custom art of any resolution fits its slot.
 - **UI is HTML, not canvas**, for crisp text on phones. Scenes talk to it through `ui` (`ui.say(lines, { name, portrait })` returns a promise resolving to the picked choice) and the `bus`.
 - **Saving.** `state.data` is the whole save. It is sanitised on load, so adding a field means adding a default in `fresh()` and copying it in `sanitise()`. Bump `VERSION` and add a migration if the shape changes incompatibly. The prototype's old save (`whisker-hollow-v2`) is migrated automatically.
-- **Time.** The day runs 6am to 2am (`DAY_START`/`DAY_END`), 10 game minutes per 7 real seconds, paused while any dialogue or menu is open. At 2am the day ends and you wake at the station. Rain is decided per day from the day number (`state.rainWindow`), so it is stable across reloads.
+- **Time.** The day runs 6am to 2am (`DAY_START`/`DAY_END`), 10 game minutes per 7 real seconds, paused while any dialogue or menu is open. At 2am the day ends and you wake up in bed at home. Rain is decided per day from the day number (`state.rainWindow`), so it is stable across reloads.
 - **Pets** have one chat per day (+friendship) and one treat per day (love/like/neutral/dislike). 25 points per heart, 10 hearts. Lines unlock by heart level. Behaviours live in `Pet.think()`: `patrol` (Princess), `stalk` (Salami), `phase` (Spooky teleports, solid at night), `zoomies` (Poppy charges and bonks), `aloof` (Stanley walks away until 3 hearts, approaches at 6). Pets can sleep on a schedule.
 
 ### Adding content
 
-- **A pet:** add an entry to `PETS` (pick a `sprite` from `PET_FRAMES` or add a new one in `sprites.js`), set `region` and a walkable `home`. Check reachability. Optional art: `assets/sprites/pets/<id>.png` and `portraits/<id>.png`.
+- **A pet:** add an entry to `PETS` (pick a `sprite` from `PET_FRAMES` or add a new one in `sprites.js`), set `region` (suburb), `zone`, a walkable `home` in that zone and a `homeSpot` at your place (add a pet bed there). Check reachability. Optional art: `assets/sprites/pets/<id>.png` and `portraits/<id>.png`.
 - **A townsperson:** add to `NPCS`, then place them in a map with `b.npc(id, x, y, { face, path })`.
 - **A treat:** add to `ITEMS` and `ITEM_ART`, then list it in forage spawns (`b.forage`) or an NPC `gift`, and in pets' loves/likes.
-- **A region:** write `src/world/maps/<id>.js` (copy an existing one), register it in `regions.js` and `REGION_ORDER`, add its name to the allowed list in `state.js` `sanitise()`, give it a `station` entry and myki reader, and connect it with `b.exit(...)` on both sides. The locked exits (Werribee, the city, Coburg North, Plenty Rd) are ready-made hooks for new regions.
+- **A zone:** write `src/world/maps/<id>.js` (copy a similar one), register it in `ZONES` in `regions.js`, and connect it with `b.exit(...)` and `b.entry(...)` on both sides. Run the reachability check.
+- **A suburb:** add it to `SUBURBS`/`SUBURB_ORDER` with a `station` zone containing a myki reader (`put('myki', x, y, { travel: true })`) and a `station` entry. The locked exits (the city, Coburg North, Plenty Rd) are ready-made hooks.
+- **Rebuilding Brunswick and Reservoir** the way Laverton was done (several zones from the owner's screenshots) is the next big job. Their current single maps still use the older, simpler art.
 
 ## Future plans
 
@@ -124,6 +133,11 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 ### 5. Farming
 - Groundwork: the Reservoir Community Garden already has tilled soil (`d` tiles), decorative crops and a gardener NPC (Wen) who talks about plots opening soon. The day clock, daily resets and the bag all exist.
 - Plan: let the player claim a plot, plant seeds (bought or gifted), water daily, harvest after N days. Crops become treats pets love (carrots for Spooky) and battle items later. Seasons would follow (Melbourne gets all four in a day, which is a joke worth keeping). Possibly a small home garden or balcony pots in Brunswick.
+
+### Next up (agreed with the owner)
+- Rebuild Brunswick and Reservoir as several zones each, from the owner's screenshots and pet photos.
+- Extra Laverton spots and shops, once the core zones feel right.
+- Real pet photos as Petdex portraits (`assets/sprites/portraits/`), and the owner's own sprite art replacing the built-in reference art.
 
 ### Smaller ideas
 - More pets and regions (the locked exits), quests from townsfolk, a photo mode, music, achievements (all pets found, 10 hearts with everyone).

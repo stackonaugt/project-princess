@@ -8,26 +8,27 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 
 | Folder | File name | Replaces | Size in the game |
 |---|---|---|---|
-| `pets/` | `<pet id>.png`, e.g. `princess.png` | A pet's walking sprite | One tile tall (16 game pixels) |
+| `pets/` | `<pet id>.png`, e.g. `princess.png` | A pet's walking sprite (side-on, facing right) | 16x16 per frame (one tile) |
 | `portraits/` | `<pet id>.png` (or `.jpg`, `.webp`) | The big picture in the Petdex and dialogue. **A real photo of the pet works great here.** | Any size, square is best |
-| `player/` | `down.png`, `up.png`, `left.png`, `right.png` | You! `right.png` is optional (otherwise `left.png` is mirrored) | One tile tall |
-| `npcs/` | `<person id>.png`, e.g. `gaz.png` | A townsperson (front-facing; mirrored for left and right) | One tile tall |
+| `player/` | `down.png`, `up.png`, `left.png`, `right.png` | You! `right.png` is optional (otherwise `left.png` is mirrored) | 16x32 per frame (one tile wide, two tall) |
+| `npcs/` | `<person id>.png`, e.g. `trish.png` | A townsperson (front-facing; mirrored for left and right) | 16x32 per frame |
 | `items/` | `<item id>.png`, e.g. `sardine.png` | A treat icon | 12 game pixels |
 | `objects/` | `<kind>.png` or `<kind>-<variant>.png` | Trees, houses, signs, etc. `tree.png` replaces every tree, `tree-gum.png` replaces only gum trees | Same width as the template |
 | `tiles/` | `<tile name>.png`, e.g. `grass.png` | A ground tile | One tile (16x16 or 32x32 recommended) |
 | `vehicles/` | `tram.png`, `train-h.png`, `car-h-red.png`, ... | Trams, trains, cars and bikes | Same size as the template |
 
 Pet ids: `princess`, `salami`, `spooky`, `poppy`, `stanley` (see `src/data/pets.js`).
-People ids: `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez` (see `src/data/npcs.js`).
+People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez` (see `src/data/npcs.js`).
 Item ids: `chicken`, `sardine`, `carrot`, `cheese`, `snag`, `croissant`, `lemon`, `tennis`, `ribbon`, `feather`.
-Tile names: `grass`, `flowers`, `tallgrass`, `path`, `road`, `tram`, `crossing`, `rail`, `footpath`, `concrete`, `platform`, `bluestone`, `water`, `bridge`, `sand`, `soil`, `gravel`, `mulch`.
+Tile names: `grass`, `flowers`, `tallgrass`, `path`, `road`, `tram`, `crossing`, `rail`, `footpath`, `concrete`, `platform`, `bluestone`, `water`, `bridge`, `sand`, `soil`, `gravel`, `mulch`, `lawn`, `parkgravel`, `zebra`, `carpark`, `driveway`, and indoors `wall`, `timber`, `bathtile`, `carpet`, `lino`, `doorway`.
 Object kinds and variants: look at the file names in `templates/objects/`.
 
 ## Rules of thumb
 
-- **Characters (pets, player, people) can be animated.** Put the frames side by side in one PNG, each frame a square. A 64x32 PNG is two 32x32 frames. Frame 1 is the standing pose; the rest play as the walk cycle. A single square image works too: it gets a little hop when walking.
+- **Characters can be animated.** Put the frames side by side in one PNG. Pet frames are square (a 64x32 PNG is two 32x32 frames). People frames are twice as tall as they are wide, Stardew style (a 48x32 PNG is three 16x32 frames; at double detail, 32x64 per frame). Frame 1 is the standing pose; the rest play as the walk cycle. A single frame works too: it gets a little hop when walking.
 - **Draw pets facing right** (or facing the camera). The game mirrors them when they walk left.
-- **Pick a resolution and stick to it.** The game shows one tile as 16 game pixels and zooms in to fit the screen. Art drawn at 16x16 per tile matches the built-in look; 32x32 per tile gives you twice the detail and still looks crisp. Both work.
+- **Pick a resolution and stick to it.** The game shows one tile as 16 game pixels and zooms in to fit the screen. Art drawn at 16 pixels per tile matches the built-in look (and Stardew Valley's); 32 pixels per tile gives you twice the detail and still looks crisp. Both work: the game scales your art to fit each slot.
+- **Houses and other big objects** keep the width of their template and anchor at the bottom, so a taller roof or chimney is fine.
 - **Transparent backgrounds** for everything except ground tiles and portraits.
 - Keep file names lowercase with no spaces.
 

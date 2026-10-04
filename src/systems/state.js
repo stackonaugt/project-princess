@@ -6,15 +6,18 @@ import { PETS, PET_BY_ID } from '../data/pets.js';
 import { ITEMS } from '../data/items.js';
 import { bus } from '../bus.js';
 import { rng } from '../util.js';
+import { ZONES } from '../data/regions.js';
 
-const VERSION = 3;
+const VERSION = 4;
+export const MAX_TEAM = 3;
 
 function fresh() {
   return {
     v: VERSION, created: Date.now(),
     day: 1, minutes: 9 * 60,     // the very first day starts at 9am
-    region: 'laverton', pos: null, dir: 'down',
-    visited: ['laverton'],
+    region: 'home', pos: null, dir: 'down',   // region = the zone you're in (see data/regions.js)
+    visited: ['home'],
+    party: [],         // pet ids on your team (max 3), they follow you around
     pets: {},          // id -> { found, day, date, points, talkedDay, giftedDay, reactions: {item: 'love'|...}, chats }
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
@@ -34,16 +37,19 @@ function sanitise(raw) {
   const d = fresh();
   if (!raw || typeof raw !== 'object') return d;
   for (const k of ['day', 'minutes']) if (Number.isFinite(raw[k])) d[k] = raw[k];
-  if (typeof raw.region === 'string' && ['laverton', 'brunswick', 'reservoir'].includes(raw.region)) d.region = raw.region;
-  if (raw.pos && Number.isFinite(raw.pos.x) && Number.isFinite(raw.pos.y)) d.pos = { x: raw.pos.x, y: raw.pos.y };
+  // Version 3 saves had one big 'laverton' map; it's now several zones.
+  const oldLaverton = (raw.v || 0) < 4;
+  if (typeof raw.region === 'string' && ZONES[raw.region]) d.region = raw.region;
+  if (!oldLaverton && raw.pos && Number.isFinite(raw.pos.x) && Number.isFinite(raw.pos.y)) d.pos = { x: raw.pos.x, y: raw.pos.y };
   if (typeof raw.dir === 'string') d.dir = raw.dir;
-  if (Array.isArray(raw.visited)) d.visited = [...new Set(['laverton', ...raw.visited.filter(r => typeof r === 'string')])];
+  if (Array.isArray(raw.visited)) d.visited = [...new Set(['home', ...raw.visited.map(r => r === 'laverton' ? 'station' : r).filter(r => ZONES[r])])];
   if (raw.pets && typeof raw.pets === 'object') for (const id of Object.keys(raw.pets)) if (PET_BY_ID[id]) Object.assign(petRecord(d, id), raw.pets[id]);
   if (raw.inventory) for (const [k, n] of Object.entries(raw.inventory)) if (ITEMS[k] && n > 0) d.inventory[k] = Math.min(99, n | 0);
   if (raw.forage && typeof raw.forage === 'object') d.forage = raw.forage;
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
+  if (Array.isArray(raw.party)) d.party = raw.party.filter(id => d.pets[id]?.found).slice(0, MAX_TEAM);
   d.seenIntro = !!raw.seenIntro;
   d.created = raw.created || d.created;
   return d;
@@ -126,7 +132,13 @@ export const state = {
   bagItems() { return Object.keys(ITEMS).filter(k => this.count(k) > 0); },
 
   // World
-  visit(region) { if (!this.data.visited.includes(region)) this.data.visited.push(region); },
+  visit(zone) { if (!this.data.visited.includes(zone)) this.data.visited.push(zone); },
+  suburbVisited(suburb) { return this.data.visited.some(z => ZONES[z]?.suburb === suburb); },
+
+  // Team
+  inParty(id) { return this.data.party.includes(id); },
+  setParty(ids) { this.data.party = ids.filter(id => this.isFound(id)).slice(0, MAX_TEAM); bus.emit('petdex:changed'); },
+  foundIds() { return PETS.filter(p => this.isFound(p.id)).map(p => p.id); },
   forageTaken(region, index) {
     const f = this.data.forage[region];
     return !!(f && f.day === this.data.day && f.taken.includes(index));
