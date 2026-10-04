@@ -31,3 +31,28 @@ export const ITEM_ART = {
     '..........g.', '.........ag.', '........aag.', '.......abg..', '......abb...', '.....abbg...',
     '....aabg....', '...aaag.....', '..aag.......', '.ag.........', 'g...........', '............'] },
 };
+
+// Gear icons (pet shop), same format. Texture keys: item-gear-<id>.
+export const GEAR_ART = {
+  lead: { pal: { a: '#c8443a', b: '#e8705f', k: '#7a2018', m: '#b8b8c0' }, rows: [
+    '....kkkk....', '...kaaaak...', '..ka....ak..', '..ka....ak..', '...kaaaak...', '....kabk....',
+    '.....ka.....', '.....ka.....', '.....kak....', '......kak...', '.......mm...', '.......mm...'] },
+  collar: { pal: { a: '#2a2a32', b: '#4a4a54', m: '#d8d8e0', k: '#101014', g: '#e8c040' }, rows: [
+    '............', '............', '...kkkkkk...', '.kkaaaaaakk.', 'kamabamabmak', 'kaaaaaaaaaak',
+    '.kkaaaaaakk.', '...kkggkk...', '.....gg.....', '....gkkg....', '.....gg.....', '............'] },
+  harness: { pal: { a: '#3a8ad0', b: '#6ab0f0', k: '#1a4a7a', m: '#d8d8e0' }, rows: [
+    '............', '..k......k..', '..ka....ak..', '..kak..kak..', '...kakkak...', '...kaaaak...',
+    '..kabbbbak..', '..kaaaaaak..', '..kaamaaak..', '..kaaaaaak..', '...kkkkkk...', '............'] },
+  bell: { pal: { a: '#e8c040', b: '#fff0a0', k: '#8a6a10', r: '#c8443a' }, rows: [
+    '............', '.....rr.....', '....r..r....', '.....kk.....', '....kaak....', '...kabaak...',
+    '...kabaak...', '..kaaaaaak..', '..kaaaaaak..', '.kkkkkkkkkk.', '.....kk.....', '............'] },
+  bandana: { pal: { a: '#c8443a', b: '#f4f4f0', k: '#7a2018' }, rows: [
+    '............', '............', 'kkkkkkkkkkkk', 'kaabaabaabak', '.kaaaaaaaak.', '..kabaabak..',
+    '...kaaaak...', '....kaak....', '.....kk.....', '............', '............', '............'] },
+  pouch: { pal: { a: '#8a6a3a', b: '#b8905a', k: '#4a3418', r: '#e8823a' }, rows: [
+    '............', '...k....k...', '...kk..kk...', '....kkkk....', '..kkaaaakk..', '.kabbbbbbak.',
+    '.kaaarraaak.', '.kaarrrraak.', '.kaaaaaaaak.', '.kaaaaaaaak.', '..kkkkkkkk..', '............'] },
+  bowtie: { pal: { a: '#6a3ab0', b: '#9a6ae0', k: '#3a1a6a', w: '#f4f4f0' }, rows: [
+    '............', '............', '............', 'kk........kk', 'kak..kk..kak', 'kabkkaakkbak',
+    'kawakaakawak', 'kak..kk..kak', 'kk........kk', '............', '............', '............'] },
+};

@@ -52,7 +52,8 @@ export function buildHope() {
   b.put('crate', 34, 20, { v: 'blue' });
 
   b.exit(5, 23, 1, 1, 'brunswick', 'north', 'Brunswick Station');
-  b.entry('south', 5, 21, 'up');
+  b.exit(39, 15, 1, 2, 'sydney', 'west', 'Sydney Rd');
+  b.entry('south', 5, 21, 'up').entry('east', 38, 15, 'left');
 
   b.npc('mem', 16, 9, { face: 'down' });
   b.npc('corni', 18, 9, { face: 'down' });

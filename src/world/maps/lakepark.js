@@ -36,8 +36,8 @@ export function buildLakePark() {
 
   b.exit(0, 13, 1, 2, 'track', 'east', 'Athletics Track');
   b.exit(18, 0, 3, 1, 'wetlands', 'south', 'Edgars Creek Wetlands');
-  b.exit(39, 29, 2, 1, null, null, 'Griffiths St', ['Griffiths St heads south into a maze of houses that all look the same.', 'Best turn back before you get properly lost.']);
-  b.entry('west', 1, 13, 'right').entry('north', 19, 2, 'down');
+  b.exit(39, 29, 2, 1, 'glasgow', 'west', 'Glasgow Ave');
+  b.entry('west', 1, 13, 'right').entry('north', 19, 2, 'down').entry('south', 39, 27, 'up');
 
   b.npc('dimitri', 30, 25, { face: 'up' });
 

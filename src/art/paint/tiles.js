@@ -178,6 +178,7 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       p.r('#53555c', sx + Math.floor(r2 * 13), sy + Math.floor(r * 11), 1, 1);
       const roadU = same(get, tx, ty - 1, ROADLIKE), roadD = same(get, tx, ty + 1, ROADLIKE);
       const roadL = same(get, tx - 1, ty, ROADLIKE), roadR = same(get, tx + 1, ty, ROADLIKE);
+      if (c === '#' || c === 'P') asphalt(p, c, tx, ty, sx, sy, r, r2, get, roadU, roadD, roadL, roadR);
       if (c === '+' && (get(tx - 1, ty) === '+' || get(tx + 1, ty) === '+') && !(get(tx, ty - 1) === '+' && get(tx, ty + 1) === '+')) {
         // tram tracks running east-west
         p.r('#3e4046', sx, sy + 3, T, 2); p.r('#3e4046', sx, sy + 11, T, 2);
@@ -223,11 +224,20 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
     case 'f': {
       p.r('#cbc3b3', sx, sy, T, T); p.r('#b3ab9b', sx, sy + 7, T, 1); p.r('#b3ab9b', sx + 7, sy, 1, 7); p.r('#b3ab9b', sx + 11, sy + 8, 1, 8);
       p.r('#b3ab9b', sx, sy + 15, T, 1);
+      p.r('#d6cfc0', sx + 1, sy + 1, 5, 1); p.r('#d6cfc0', sx + 8, sy + 9, 2, 1);   // worn shine on the slabs
       if (r > 0.85) p.r('#a39b8b', sx + 2, sy + 10, 2, 1);
+      speckle(p, tx, ty, sx, sy, ['#c0b8a8', '#d4ccbc'], 4);
+      crack(p, tx, ty, sx, sy, '#9e9686', 0.07);
+      if (r2 > 0.9) { p.r('#6a8a3a', sx + 7, sy + 6, 1, 2); p.r('#8aaa4a', sx + 6, sy + 6, 1, 1); p.r('#6a8a3a', sx + 9, sy + 7, 1, 1); } // weeds in the seam
+      if (hash(tx * 3, ty * 5 + 1) > 0.93) { p.r('#c8823a', sx + 3, sy + 12, 2, 1); p.r('#a8602a', sx + 12, sy + 3, 1, 2); }   // gum leaves
+      kerbs(p, sx, sy, get, tx, ty);
       return;
     }
     case 'c': {
       p.r('#bab7af', sx, sy, T, T); p.r('#a5a29a', sx, sy + 15, T, 1); p.r('#a5a29a', sx + 15, sy, 1, T);
+      speckle(p, tx, ty, sx, sy, ['#b0ada5', '#c4c1b9'], 5);
+      crack(p, tx, ty, sx, sy, '#8e8b83', 0.06);
+      if (hash(tx * 7, ty * 2) > 0.95) { p.r('rgba(40,40,40,0.18)', sx + 3, sy + 4, 7, 5); p.r('rgba(40,40,40,0.12)', sx + 2, sy + 5, 9, 3); }   // stain
       if (r > 0.6) p.r('#9a978f', sx + 3 + Math.floor(r2 * 8), sy + 5, 4, 1);
       if (r2 > 0.92) { p.r('#8a8780', sx + 4, sy + 9, 5, 3); p.r('#7a776f', sx + 5, sy + 10, 3, 1); }
       return;
@@ -296,6 +306,48 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
 }
 
 // A 16x16 tuft drawn over feet when standing in tall grass.
+// ---- ground detail helpers (deterministic, from hash())
+function speckle(p, tx, ty, sx, sy, cols, n) {
+  for (let i = 0; i < n; i++) {
+    const q = hash(tx * 13 + i, ty * 7 - i), q2 = hash(ty * 11 + i, tx * 5 + i);
+    p.r(cols[i % cols.length], sx + Math.floor(q * 15), sy + Math.floor(q2 * 15), 1, 1);
+  }
+}
+function crack(p, tx, ty, sx, sy, col, chance) {
+  if (hash(tx * 17 + 3, ty * 13 + 5) > chance) return;
+  let x = sx + 2 + Math.floor(hash(tx, ty * 3) * 6), y = sy + 3;
+  for (let i = 0; i < 9; i++) { p.r(col, x, y, 1, 1); x += hash(tx + i, ty) > 0.5 ? 1 : 0; y += 1; if (y > sy + 14 || x > sx + 14) break; }
+}
+// A raised kerb where a footpath meets a road: light lip, dark shadow onto the road side.
+function kerbs(p, sx, sy, get, tx, ty) {
+  const road = c => c && '#+P'.includes(c);
+  if (road(get(tx, ty + 1))) { p.r('#e2dccf', sx, sy + 13, T, 1); p.r('#9c9686', sx, sy + 14, T, 2); }
+  if (road(get(tx, ty - 1))) { p.r('#8e887a', sx, sy, T, 1); p.r('#e2dccf', sx, sy + 1, T, 1); }
+  if (road(get(tx + 1, ty))) { p.r('#e2dccf', sx + 13, sy, 1, T); p.r('#9c9686', sx + 14, sy, 2, T); }
+  if (road(get(tx - 1, ty))) { p.r('#8e887a', sx, sy, 1, T); p.r('#e2dccf', sx + 1, sy, 1, T); }
+}
+// Asphalt: grain, tyre wear, patches, oil, manholes and gutter drains.
+function asphalt(p, c, tx, ty, sx, sy, r, r2, get, U, D, L, R) {
+  speckle(p, tx, ty, sx, sy, ['#686a71', '#54565d', '#62646b'], 7);
+  const horiz = L && R && !(U && D && !L);
+  if (c === '#') {
+    // tyre wear: darker bands where wheels run
+    if (horiz && U && D) { p.r('rgba(35,35,42,0.16)', sx, sy + 3, T, 3); p.r('rgba(35,35,42,0.16)', sx, sy + 10, T, 3); }
+    else if (U && D && !L !== !R) { p.r('rgba(35,35,42,0.16)', sx + 3, sy, 3, T); p.r('rgba(35,35,42,0.16)', sx + 10, sy, 3, T); }
+    if (r > 0.86 && r < 0.9) { p.r('#53555c', sx + 2, sy + 3, 10, 7); p.r('#4c4e55', sx + 2, sy + 3, 10, 1); }   // patch
+    if (r2 > 0.965 && U && D && L && R) {   // manhole
+      p.blob(sx + 8, sy + 8, 4, '#4a4c52'); p.blob(sx + 8, sy + 8, 3, '#5a5c62');
+      for (let i = -2; i <= 2; i += 2) p.r('#44464c', sx + 6, sy + 8 + i, 5, 1);
+    }
+    // gutter drain where the road meets a footpath
+    const fp = ch => ch === 'f' || ch === 'c';
+    if (fp(get(tx, ty - 1)) && tx % 7 === 3) { p.r('#2a2c30', sx + 4, sy + 1, 8, 3); for (let i = 5; i < 12; i += 2) p.r('#6a6c72', sx + i, sy + 1, 1, 3); }
+    if (fp(get(tx, ty + 1)) && tx % 7 === 5) { p.r('#2a2c30', sx + 4, sy + 12, 8, 3); for (let i = 5; i < 12; i += 2) p.r('#6a6c72', sx + i, sy + 12, 1, 3); }
+  }
+  if (r > 0.93) { p.r('rgba(25,25,32,0.3)', sx + 4, sy + 5, 6, 4); p.r('rgba(25,25,32,0.2)', sx + 3, sy + 6, 8, 2); p.r('rgba(120,90,160,0.18)', sx + 5, sy + 6, 2, 1); }   // oil
+  if (r2 < 0.05) crack(p, tx, ty, sx, sy, '#45474d', 1);
+}
+
 export function paintTuft(p, g) {
   for (let i = 0; i < 7; i++) {
     const x = 1 + i * 2;

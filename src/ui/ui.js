@@ -14,6 +14,7 @@ import { openHero } from './hero.js';
 import { openPetdex } from './petdex.js';
 import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
+import { openShop } from './shop.js';
 import { battleUI } from './battle.js';
 
 const TYPE_SPEED = 38; // characters per second
@@ -50,6 +51,8 @@ export const ui = {
     $('modal').addEventListener('click', e => { if (e.target.id === 'modal') this.closeModal(); });
     bus.on('petdex:changed', () => this.updateDexCount());
     bus.on('bag:changed', () => this.updateBagCount());
+    bus.on('money:changed', () => this.updateMoney());
+    this.updateMoney();
     this.updateDexCount(); this.updateBagCount();
   },
 
@@ -62,6 +65,7 @@ export const ui = {
     $('hudWeather').textContent = state.isRaining() ? '☂' : (d.minutes >= 20 * 60 ? '☾' : '☀');
     $('hudWeather').title = state.isRaining() ? 'Raining' : 'Clear';
   },
+  updateMoney() { $('hudMoney').textContent = `$${state.data.money}`; },
   updateDexCount() { $('dexCount').textContent = `${state.foundCount()}/${PETS.length}`; },
   updateBagCount() {
     const n = Object.values(state.data.inventory).reduce((a, b) => a + b, 0);
@@ -178,6 +182,9 @@ export const ui = {
     });
   },
 
+  // The pet shop. Resolves when you close it.
+  shop() { return new Promise(resolve => { this._shopResolve = resolve; this.openModal('shop'); }); },
+
   // Resolves with a hero id (or null if cancelled, when allowed).
   chooseHero(canCancel = false) {
     return new Promise(resolve => {
@@ -188,7 +195,7 @@ export const ui = {
 
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || battleUI.active || this.modalOpen === 'team' || this.modalOpen === 'hero') return;
+    if (this.dialog || battleUI.active || ['team', 'hero', 'shop'].includes(this.modalOpen)) return;
     if (this.modalOpen === which) return this.closeModal();
     this.openModal(which);
   },
@@ -200,6 +207,7 @@ export const ui = {
     if (which === 'dex') openPetdex(panel, close);
     if (which === 'bag') openBag(panel, close);
     if (which === 'menu') openMenu(panel, close);
+    if (which === 'shop') openShop(panel, close);
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
     $('modal').hidden = false;
@@ -214,6 +222,7 @@ export const ui = {
     sfx.close();
     bus.emit('ui:modal', null);
     // Closing the team picker without choosing means "not leaving yet".
+    if (this._shopResolve) { const r = this._shopResolve; this._shopResolve = null; r(); }
     if (this._teamResolve) { const r = this._teamResolve; this._teamResolve = null; r(null); }
     if (this._heroResolve) { if (!this._heroCancel) { this.openModal('hero'); return; } const r = this._heroResolve; this._heroResolve = null; r(null); }
   },

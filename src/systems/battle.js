@@ -7,9 +7,12 @@
 import { PET_BY_ID } from '../data/pets.js';
 import { ENEMIES, ENCOUNTERS } from '../data/enemies.js';
 import { MOVES, PET_MOVES } from '../data/moves.js';
-import { effectiveness } from '../data/types.js';
+import { effectiveness, typeList } from '../data/types.js';
+import { form, petTex } from './forms.js';
+import { GEAR } from '../data/gear.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from './state.js';
+import { BALANCE } from '../config.js';
 
 // The level each pet is at when you first befriend them.
 export const START_LEVEL = { princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12 };
@@ -18,13 +21,23 @@ export const MAX_LEVEL = 30;
 const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy']);
 
 export const petLevel = id => state.pet(id).level || START_LEVEL[id] || 5;
-export const xpToNext = lv => 12 + lv * 8;
-export function xpReward(foe, trainer) { return Math.round((8 + foe.level * 5) * (trainer ? 1.5 : 1)); }
+export const xpToNext = lv => Math.round(BALANCE.xpBase + lv * lv * BALANCE.xpCurve);
+export function xpReward(foe, trainer) { return Math.round((8 + foe.level * 5) * (trainer ? 1.5 : 1) * BALANCE.xp); }
+// Prize money: a little from wild things, more from trainers.
+export const wildMoney = foe => Math.round((2 + Math.floor(foe.level * 0.8 + Math.random() * 4)) * BALANCE.money);
 
 export function statsAt(base, lv) {
   const s = k => Math.floor(2 * base[k] * lv / 100) + 5;
-  return { hp: Math.floor(2 * base.hp * lv / 100) + lv + 12, attack: s('attack'), defence: s('defence'), special: s('special'), speed: s('speed') };
+  return { hp: Math.floor((2 * base.hp * lv / 100 + lv + 12) * BALANCE.hp), attack: s('attack'), defence: s('defence'), special: s('special'), speed: s('speed') };
 }
+
+// Stats at a level, with the pet's gear bonus on top.
+export function fighterStats(f) {
+  const s = statsAt(f.base, f.level), b = GEAR[f.gear]?.bonus || {};
+  for (const k of ['attack', 'defence', 'speed', 'special']) if (b[k]) s[k] = Math.round(s[k] * b[k]);
+  return s;
+}
+export const gearBonus = f => GEAR[f.gear]?.bonus || {};
 
 function fighter(o) {
   const stats = statsAt(o.base, o.level);
@@ -36,8 +49,10 @@ function fighter(o) {
 
 // One of your pets, with its saved health.
 export function petFighter(id) {
-  const d = PET_BY_ID[id], rec = state.pet(id), level = petLevel(id);
-  const f = fighter({ side: 'mine', petId: id, name: d.name, type: d.type, level, base: d.stats, moves: PET_MOVES[id], tex: `pet-${id}`, faces: 'right' });
+  const d = form(id), rec = state.pet(id), level = petLevel(id);
+  const f = fighter({ side: 'mine', petId: id, name: d.name, type: d.type, level, base: d.stats, moves: d.moves, tex: petTex(id), faces: 'right' });
+  f.gear = rec.gear || null;
+  f.stats = fighterStats(f);
   if (rec.hp != null) f.hp = Math.max(0, Math.min(f.maxHp, rec.hp));
   f.hearts = state.hearts(id);
   return f;
@@ -57,8 +72,8 @@ export function foeFighter(id, level) {
 export const readyTeam = () => state.data.party.filter(id => state.isFound(id) && state.pet(id).hp !== 0);
 
 // A random wild encounter for this suburb, or null.
-export function rollEncounter(suburb, night) {
-  const table = (ENCOUNTERS[suburb] || []).filter(e => !(e.day && night));
+export function rollEncounter(suburb, night, zone) {
+  const table = (ENCOUNTERS[suburb] || []).filter(e => !(e.day && night) && (!e.zones || e.zones.includes(zone)));
   const weight = e => (night && e.night) || e.weight;
   let r = Math.random() * table.reduce((a, e) => a + weight(e), 0);
   for (const e of table) {
@@ -75,10 +90,10 @@ export function damage(user, target, move) {
   const A = (special ? user.stats.special : user.stats.attack) * stageMult(user.stages.atk);
   const D = (special ? (target.stats.special + target.stats.defence) / 2 : target.stats.defence) * stageMult(target.stages.def);
   const eff = effectiveness(move.type, target.type);
-  const stab = move.type === user.type ? 1.5 : 1;
-  const critChance = 1 / 16 + (user.side === 'mine' ? user.hearts * 0.012 : 0);
+  const stab = typeList(user.type).includes(move.type) ? 1.5 : 1;
+  const critChance = 1 / 16 + (user.side === 'mine' ? user.hearts * 0.012 + (gearBonus(user).crit || 0) : 0);
   const crit = Math.random() < critChance;
-  const mult = stab * eff * (crit ? 1.5 : 1) * (user.charged ? 2 : 1) * (0.85 + Math.random() * 0.15);
+  const mult = BALANCE.damage * stab * eff * (crit ? 1.5 : 1) * (user.charged ? 2 : 1) * (0.85 + Math.random() * 0.15);
   const dmg = Math.max(1, Math.floor(((2 * user.level / 5 + 2) * move.power * A / D / 50 + 2) * mult));
   return { dmg, eff, crit };
 }
@@ -131,7 +146,7 @@ export function gainXp(f, xp) {
   if (gained.length) {
     const before = f.maxHp;
     f.level = rec.level;
-    f.stats = statsAt(f.base, f.level);
+    f.stats = fighterStats(f);
     f.maxHp = f.stats.hp;
     f.hp = Math.min(f.maxHp, f.hp + (f.maxHp - before));
   }

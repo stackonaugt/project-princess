@@ -67,14 +67,15 @@ export function buildSydney() {
   b.put('streettree', 6, 18); b.put('streettree', 20, 18); b.put('streettree', 39, 18);
   b.put('bikehoop', 26, 13); b.put('bikehoop', 27, 13);
 
-  b.exit(0, 12, 1, 8, 'brunswick', 'east', 'Brunswick Station');
-  b.exit(43, 12, 1, 8, 'reservoir', 'west', 'Reservoir');
+  b.exit(0, 12, 1, 8, 'hope', 'east', 'Hope St');
+  b.exit(43, 12, 1, 8, null, null, 'Coburg', ['Sydney Rd crawls north to Coburg behind a tram.', 'Quicker to cut down Donald St and head east.']);
   b.exit(27, 25, 2, 1, 'donald', 'north', 'Donald St');
   b.entry('west', 1, 13, 'right').entry('east', 42, 13, 'left').entry('donald', 27, 23, 'up');
 
   b.npc('jules', 16, 13, { face: 'down' });
   b.npc('busker', 20, 12, { face: 'down' });
   b.npc('slinks', 13, 13, { face: 'left' });
+  b.npc('hipster', 27, 13, { face: 'down' });
 
   b.lane({ axis: 'x', pos: 15.5, dir: 1, from: -6, to: 50, every: [25, 45], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 16.5, dir: -1, from: -6, to: 50, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });

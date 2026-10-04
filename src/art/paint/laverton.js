@@ -468,4 +468,27 @@ export const LAVERTON = {
       [[8, 12], [20, 16], [32, 11], [40, 22], [12, 24]].forEach(([x, y]) => { p.r('#57a84a', x, y, 2, 3); p.r('#86ca5e', x - 1, y - 1, 4, 1); });
     },
   },
+
+  // THE LEASH YOU CAN DO: Laverton's pet shop, on the station plaza.
+  petshop: {
+    foot: [6, 3], tex: [96, 72], variants: ['laverton'],
+    paint(p) {
+      p.shadow(48, 71, 92);
+      bricks(p, 2, 14, 92, 56, '#b86a4a', 7);
+      p.r('#e8e0d0', 0, 8, 96, 8); p.r('#ffffff', 0, 8, 96, 1); p.r('#b8b0a0', 0, 15, 96, 1);   // parapet
+      p.r('#2f6aa3', 6, 18, 84, 11); p.r('#4a8ac8', 6, 18, 84, 1); p.r('#1e4a7a', 6, 28, 84, 1);
+      p.text('THE LEASH YOU CAN DO', 9, 21, '#fff4c0');
+      for (let i = 0; i < 12; i++) p.r(i % 2 ? '#f4f4f0' : '#c8443a', 4 + i * 7.5, 30, 7.5, 5);  // striped awning
+      p.r('#8a2a20', 4, 35, 90, 1);
+      // windows with goods
+      for (const x of [8, 62]) {
+        p.r('#f4f0e6', x, 39, 26, 22); p.r('#9ad0e8', x + 2, 41, 22, 18); p.r('#c8e8f4', x + 2, 41, 22, 3);
+        p.r('#c8823a', x + 4, 52, 5, 6); p.r('#e8c040', x + 11, 54, 4, 4); p.r('#e77fb8', x + 17, 51, 5, 7);
+        p.r('#ffffff', x + 19, 43, 1, 4);
+      }
+      p.r('#3a2a1e', 40, 38, 16, 30); p.r('#9ad0e8', 42, 40, 12, 14); p.r('#f4f4f0', 42, 56, 12, 2); p.r('#e8c040', 52, 58, 1, 2);
+      p.r('#e8e0d0', 38, 68, 20, 3);
+      p.r('#f4f4f0', 64, 63, 20, 5); p.text('OPEN', 66, 63, '#c8443a');
+    },
+  },
 };

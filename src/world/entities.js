@@ -3,6 +3,7 @@ import { TILE as T, WALK_SPEED, RUN_SPEED, PET_SPEED } from '../config.js';
 import { custom, fitScale, frameCount, playerTexture } from '../art/textures.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from '../systems/state.js';
+import { petTex } from '../systems/forms.js';
 import { inWindow, isNight } from '../systems/clock.js';
 import { sfx } from '../systems/sfx.js';
 
@@ -109,7 +110,7 @@ export class Pet extends Actor {
     const spot = mode === 'home' ? [data.homeSpot.x, data.homeSpot.y] : data.home;
     let home = toWorld(spot[0], spot[1]);
     if (mode === 'follow' && near) home = { x: near.x - 10 - index * 8, y: near.y + 4 + index * 4 };
-    super(scene, home.x, home.y, `pet-${data.id}`);
+    super(scene, home.x, home.y, petTex(data.id));
     this.data_ = data; this.id = data.id;
     this.mode = mode; this.index = index;
     this.range = mode === 'home' ? 1.5 : data.range;
@@ -123,6 +124,7 @@ export class Pet extends Actor {
   get asleep() { return this.mode !== 'follow' && inWindow(state.data.minutes, this.data_.sleeps); }
 
   pause(sec) { this.state_ = 'idle'; this.timer = sec; this.target = null; this.setVelocity(0, 0); }
+  refreshForm() { this.anims.stop(); this.setTexture(petTex(this.id), 0); this.applyScale(); }
   facePoint(x) { this.setFlipX(x < this.x); }
 
   randomPointNearHome(range) {
@@ -185,7 +187,7 @@ export class Pet extends Actor {
       this.setVelocity(dx / d * sp, dy / d * sp);
       if (Math.abs(dx) > 0.5) this.setFlipX(dx < 0);
     } else this.setVelocity(0, 0);
-    const anim = `pet-${this.id}-walk`;
+    const anim = `${this.texture.key}-walk`;
     if (moving && this.scene.anims.exists(anim)) { this.anims.play(anim, true); this.anims.timeScale = d > 30 ? 1.6 : 1; }
     else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); }
     if (!this.scene.anims.exists(anim)) this.setBob(moving, 8);
@@ -220,7 +222,7 @@ export class Pet extends Actor {
       }
     }
     const moving = this.state_ === 'walk';
-    const anim = `pet-${this.id}-walk`;
+    const anim = `${this.texture.key}-walk`;
     if (moving && this.scene.anims.exists(anim)) { this.anims.play(anim, true); this.anims.timeScale = this.speedMul; }
     else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); }
     if (!this.scene.anims.exists(anim)) this.setBob(moving, 6 * this.speedMul);

@@ -28,7 +28,7 @@ export function buildTrack() {
   b.ellipse(39, 4, 4, 3.5, '"', '.L').ellipse(8, 3, 3, 2.5, '"', '.').ellipse(39, 25, 4, 3, '"', '.');
   [[6, 17], [36, 8], [10, 21], [40, 19], [28, 26], [16, 3]].forEach(([x, y]) => b.put('tall', x, y, { v: 'biggum' }));
 
-  b.exit(1, 29, 2, 1, 'reservoir', 'north', 'Reservoir Station');
+  b.exit(1, 29, 2, 1, 'loddon', 'south', 'Loddon Ave');
   b.exit(20, 0, 3, 1, 'lake', 'south', 'Edwardes Lake');
   b.exit(43, 12, 1, 3, 'lakepark', 'west', 'Lake Park');
   b.entry('south', 2, 27, 'up').entry('north', 21, 2, 'down').entry('east', 41, 13, 'left');

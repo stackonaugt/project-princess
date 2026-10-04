@@ -42,6 +42,11 @@ export function buildHome() {
   b.put('couch', 14, 14, { v: 'back' });
   b.put('armchair', 19, 12);
   b.put('floorlamp', 12, 10);
+  b.put('sidetable', 17, 14);
+  b.put('stool', 12, 7); b.put('stool', 14, 7);
+  b.put('plant', 1, 10, { v: 'fiddle' });
+  b.put('picture', 5, 8, { v: 'beach', onWall: true }); b.put('picture', 10, 8, { v: 'dog', onWall: true });
+  b.put('picture', 4, 1, { v: 'family', onWall: true });
   b.put('plant', 22, 9, { v: 'fern' });
   b.put('bookshelf', 20, 9);
   b.put('picture', 20, 8, { v: 'dog', onWall: true });
@@ -53,19 +58,24 @@ export function buildHome() {
   // Bedrooms
   b.put('bed', 3, 12, { v: 'sage' });
   b.put('robe', 1, 17);
+  b.put('sidetable', 1, 14);
   b.put('plant', 1, 12, { v: 'fern' });
   b.put('iwindow', 3, 11, { v: 'curtain', onWall: true });
   b.put('single', 1, 3);
   b.put('bookshelf', 3, 2);
   b.put('armchair', 4, 6);
   b.put('iwindow', 2, 1, { v: 'blind', onWall: true });
-  // bed 2 is the renovation dumping ground
+  // bed 2: the twins' room, half finished. Cots in, paint tins not out yet.
+  b.put('cot', 6, 12, { v: 'white' }); b.put('cot', 7, 12, { v: 'oak' });
+  b.put('toybox', 9, 12);
   b.put('dropsheet', 7, 14);
-  b.put('ladder', 10, 12); b.put('boxes', 6, 12, { v: 'stack' }); b.put('boxes', 7, 12, { v: 'open' });
+  b.put('ladder', 10, 12);
   b.put('paint', 9, 17); b.put('toolbox', 6, 17); b.put('boxes', 10, 17, { v: 'stack' });
+  b.put('picture', 7, 11, { v: 'beach', onWall: true });
 
   // Bathroom and laundry
   b.put('bath', 7, 2); b.put('vanity', 9, 6);
+  b.put('washbasket', 22, 7);
   b.put('washer', 20, 2); b.put('trough', 21, 5); b.put('toilet', 22, 2);
   b.put('iwindow', 7, 1, { v: 'frosted', onWall: true }); b.put('shelf', 20, 1, { onWall: true });
 

@@ -3,7 +3,9 @@ import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { ITEMS } from '../data/items.js';
 import { PETS } from '../data/pets.js';
-import { itemIcon } from './images.js';
+import { itemIcon, petIcon } from './images.js';
+import { GEAR, GEAR_ORDER } from '../data/gear.js';
+import { form } from '../systems/forms.js';
 import { sfx } from '../systems/sfx.js';
 
 export function openBag(panel, close) {
@@ -25,7 +27,26 @@ export function openBag(panel, close) {
           onclick: () => { selected = id; sfx.select(); render(); },
         }, h('img', { class: 'pix', src: itemIcon(id, 48), alt: '' }), h('b', {}, state.count(id))))),
         detail,
-        h('p', { class: 'small center' }, 'To give a treat, talk to a pet you have already met.')));
+        h('p', { class: 'small center' }, 'To give a treat, talk to a pet you have already met.'),
+        gearNote(render)));
   };
   render();
+}
+
+// Gear you own, and who is wearing what.
+function gearNote(render) {
+  const owned = GEAR_ORDER.filter(id => state.gearCount(id));
+  const pets = state.foundIds();
+  const wearing = pets.filter(id => state.pet(id).gear);
+  if (!owned.length && !wearing.length) return h('div', { class: 'note' }, h('h4', {}, 'Gear'), h('p', { class: 'small' }, 'No gear yet. The pet shop at Laverton Station sells leads, collars and more.'));
+  return h('div', { class: 'note' }, h('h4', {}, 'Gear'),
+    ...owned.map(g => h('div', {},
+      h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: itemIcon(`gear-${g}`, 32), alt: '', width: 24, height: 24 }), h('b', {}, `${GEAR[g].name} ×${state.gearCount(g)}`), h('span', { class: 'small' }, GEAR[g].desc)),
+      pets.length ? h('div', { class: 'gear-row' }, h('span', { class: 'small' }, 'Put it on:'),
+        ...pets.map(id => h('button', { class: 'wood-btn small gear-pet', onclick: () => { state.equip(id, g); sfx.select(); state.save(); render(); } },
+          h('img', { src: petIcon(id, 24), alt: '' }), form(id).name))) : null)),
+    ...wearing.map(id => h('div', { class: 'gear-row' },
+      h('img', { class: 'pix', src: petIcon(id, 24), alt: '', width: 24, height: 24 }),
+      h('span', {}, `${form(id).name} is wearing the ${GEAR[state.pet(id).gear].name.toLowerCase()}.`),
+      h('button', { class: 'link-btn', onclick: () => { state.equip(id, null); sfx.select(); state.save(); render(); } }, 'Take off'))));
 }

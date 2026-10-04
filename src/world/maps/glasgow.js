@@ -44,8 +44,9 @@ export function buildGlasgow() {
   b.put('house', 45, 18, { v: 'red' });
   b.put('powerpole', 14, 12); b.put('powerpole', 34, 15); b.put('pylon', 15, 3);
 
-  b.exit(0, 13, 1, 2, 'loddon', 'south', 'Loddon Ave');
-  b.entry('west', 1, 14, 'right');
+  b.exit(0, 13, 1, 2, 'lakepark', 'south', 'Lake Park');
+  b.exit(47, 13, 1, 2, 'reservoir', 'west', 'Reservoir Station');
+  b.entry('west', 1, 14, 'right').entry('east', 46, 13, 'left');
 
   b.npc('pina', 9, 15, { face: 'up' });
   b.npc('tim', 23, 7, { face: 'down' });

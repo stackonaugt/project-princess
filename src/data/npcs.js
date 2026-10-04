@@ -198,4 +198,37 @@ export const NPCS = {
     ],
     hints: { princess: 'The poodle on Allen St barks at my truck every single week. She is a worthy rival. My bins respect her.' },
   },
+  hipster: {
+    name: 'Hipster', role: 'Was into Brunswick before it was cool', look: { hair: '#2a1a12', hairStyle: 'cap', cap: '#1e1e22', skin: '#f0c8a0', shirt: '#1e1e22', pants: '#1e1e22', shoes: '#1e1e22', beard: true, glasses: '#3a2a1a' },
+    lines: [
+      ['This street was better in 2011. Before the second oat milk place opened.'],
+      ['I ferment my own hot sauce. And kombucha. And opinions.'],
+      ['My record collection is organised autobiographically. Do not touch it.'],
+    ],
+  },
+  golfer: {
+    name: 'Golfer Next Door', role: 'Our neighbour. Golf, every day, rain or shine', look: { hair: '#d8d4cc', hairStyle: 'cap', cap: '#f4f4f0', skin: '#e0a07a', shirt: '#9ac8e8', collar: true, pants: '#c8b890', pantsPattern: 'plaid', pantsAccent: ['#8a7a5a', '#c84a3a'], shoes: '#f4f4f0' },
+    lines: [
+      ['Mornin\'! Off to the course. Again. The missus says I live there now.'],
+      ['Your Frenchie got into my yard again. She ate a golf ball. She seems fine. Proud, even.'],
+      ['People ask how I eat pies with no teeth. Patience, mate. And gravy.'],
+    ],
+    hints: { poppy: 'The little black Frenchie next door? Poppy. Charges at my buggy every morning. Sinead\'s usually out the front.' },
+  },
+  stranger: {
+    name: 'Stranger', role: 'Under the skyrail', look: { hair: '#4a3a2a', hairStyle: 'short', skin: '#e0b898', shirt: '#6a6e74', pants: '#2a2e3a', shoes: '#3a3a3a', stubble: true },
+    lines: [
+      ['Hey. You were there when I... yeah. Thanks for calling the ambos.'],
+      ['I\'m seeing someone at the health service now. One day at a time.'],
+      ['Day by day, mate. Day by day. Thanks for not walking past.'],
+    ],
+  },
+  dee: {
+    name: 'Dee', role: 'Runs The Leash You Can Do', shop: true, look: { hair: '#c8582a', hairStyle: 'curly', skin: '#d8a070', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', glasses: '#3a2a20' },
+    lines: [
+      ['Welcome to The Leash You Can Do! Treats, gear, and a goldfish called Kevin who is not for sale.'],
+      ['Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.'],
+      ['Pet prices are up again. It is the rents, love. Even the goldfish is on a lease.'],
+    ],
+  },
 };

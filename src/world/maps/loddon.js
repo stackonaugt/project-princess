@@ -41,11 +41,11 @@ export function buildLoddon() {
   b.put('powerpole', 12, 20); b.put('powerpole', 26, 23); b.put('lamp', 32, 19);
   b.sign(3, 24, ['Glasgow Ave this way.', 'Tim and Nick live down here. So does a very judgemental schnauzer.']);
 
-  b.exit(0, 21, 1, 2, 'reservoir', 'east', 'Reservoir Station');
-  b.exit(4, 29, 2, 1, 'glasgow', 'west', 'Glasgow Ave');
-  b.exit(34, 0, 7, 1, null, null, 'Plenty Rd', ['Plenty Rd north: six lanes of trucks and a bus that never comes.', 'Maybe another day.']);
+  b.exit(0, 21, 1, 2, 'preston', 'east', 'Preston');
+  b.exit(4, 29, 2, 1, 'track', 'south', 'Edwardes Lake Park');
+  b.exit(34, 0, 7, 1, 'reservoir', 'east', 'Reservoir Station');
   b.exit(34, 29, 7, 1, null, null, 'Plenty Rd', ['Plenty Rd south heads towards Preston. Not today.']);
-  b.entry('west', 1, 22, 'right').entry('south', 4, 27, 'up').entry('home', 18, 17, 'up');
+  b.entry('west', 1, 22, 'right').entry('south', 4, 27, 'up').entry('north', 34, 2, 'down').entry('home', 18, 17, 'up');
 
   b.lane({ axis: 'y', pos: 34.5, dir: 1, from: -3, to: 33, every: [4, 9], speed: 70, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
   b.lane({ axis: 'y', pos: 35.5, dir: 1, from: -3, to: 33, every: [5, 10], speed: 66, kinds: ['veh-car-v-silver'] });
@@ -53,6 +53,7 @@ export function buildLoddon() {
   b.lane({ axis: 'x', pos: 21.5, dir: -1, from: -3, to: 34, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-ute-h'] });
 
   b.npc('sinead', 19, 13, { face: 'down' });
+  b.npc('golfer', 25, 12, { face: 'left' });
 
   b.forage(3, 6, ['tennis', 'snag']);
   b.forage(16, 9, ['chicken', 'tennis']);

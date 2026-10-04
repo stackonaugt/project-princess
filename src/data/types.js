@@ -19,14 +19,19 @@ export const TYPES = {
   leather: { name: 'Leather', colour: '#8a4a2a', blurb: 'Tough, worn in, smells faintly of shoes.',    strong: ['rock', 'steel'],                   resist: ['fire', 'ghost'] },
 };
 
-// Damage multiplier when an attack of type `atk` hits a pet of type `def`.
+// A pet can have one type or two (e.g. Floppy is ['plastic', 'rock']).
+export const typeList = t => (Array.isArray(t) ? t : [t]);
+export const typeName = t => typeList(t).map(x => TYPES[x].name).join('/');
+
+// Damage multiplier when an attack of type `atk` hits a pet of type(s) `def`.
+// Dual types multiply: 2 x 2 = 4, 2 x 0.5 = 1.
 export function effectiveness(atk, def) {
   const t = TYPES[atk];
   if (!t || !def) return 1;
-  if (t.strong.includes(def)) return 2;
-  if (t.resist.includes(def)) return 0.5;
-  return 1;
+  return typeList(def).reduce((m, d) => m * (t.strong.includes(d) ? 2 : t.resist.includes(d) ? 0.5 : 1), 1);
 }
 
-// Types that hit `def` for double damage (for the Petdex).
-export const weaknessesOf = def => Object.keys(TYPES).filter(a => TYPES[a].strong.includes(def));
+// Types that hit `def` for double damage or more (for the Petdex).
+export const weaknessesOf = def => Object.keys(TYPES).filter(a => effectiveness(a, def) > 1);
+// Types `atk` hits for double damage.
+export const strengthsOf = atk => typeList(atk).flatMap(a => TYPES[a].strong).filter((t, i, l) => l.indexOf(t) === i);

@@ -11,6 +11,8 @@
 //              destroyItem: wreck the foe's held snack so they can't use it
 //              drain: heal for this fraction of the damage done
 //              usesHeld: needs the user's held snack (fails if it was chewed up)
+//              foeHeal: heals the TARGET by this fraction (Nonna feeding you)
+//              recoil: the user loses this fraction of its own max HP (recoilText explains)
 //   anim     the battle animation ('lunge', 'bite', 'claw', 'beam', 'shout', 'heal', 'fade', 'hop', 'dig', 'gust', 'stink', 'flame')
 //   text     the line shown when it's used ({u} = user, {t} = target)
 
@@ -40,6 +42,17 @@ export const MOVES = {
   scratch:    { name: 'Scratch', type: 'street', power: 45, anim: 'claw', text: '{u} scratches!' },
   bluestring: { name: 'Play With Blue String', type: 'street', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} plays with a piece of blue string. Nothing else matters.' },
   hide:       { name: 'Hide', type: 'street', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} hides in a box that is far too small. It works.' },
+
+  // Flamcess (Princess evolved, fire)
+  flamegrowl: { name: 'Flame Growl', type: 'fire', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'flame', text: '{u} growls, and her pom-poms flare up. Terrifying. Gorgeous.' },
+  hotbite:    { name: 'Hot Bite', type: 'street', power: 65, anim: 'bite', text: '{u} bites. Her teeth are very, very warm.' },
+  blazeclaws: { name: 'Blazing Claws', type: 'fire', power: 75, anim: 'claw', text: '{u} goes in claws first, and the claws are on fire.' },
+  scorchbed:  { name: 'Scorched Bed', type: 'fire', power: 0, effect: { heal: 0.5 }, anim: 'heal', text: '{u} humps the nearest bed. It bursts into flames. She feels incredible.' },
+  pompom:     { name: 'Pom-pom Inferno', type: 'fire', power: 90, effect: { recoil: 0.1 }, anim: 'flame', text: '{u} spins like a firework. Pom-poms everywhere. Fire everywhere.', recoilText: '{u} singed her own fringe a bit.' },
+  // Floppy (Poppy evolved, plastic and rock)
+  flopslam:   { name: 'Flop Slam', type: 'rock', power: 75, anim: 'hop', text: '{u} goes completely floppy and lands on {t}. All of her.' },
+  squeak:     { name: 'Squeak', type: 'plastic', power: 60, anim: 'shout', text: '{u} squeaks like a dog toy. It is deafening.' },
+  bubblewrap: { name: 'Bubble Wrap', type: 'plastic', power: 0, effect: { selfDef: 1, heal: 0.25 }, anim: 'heal', text: '{u} wraps herself in bubble wrap. Pop. Pop. Pop.' },
 
   // Wild things and bins
   flutter:    { name: 'Flutter', type: 'plastic', power: 30, anim: 'gust', text: '{u} flutters into {t}\'s face.' },
@@ -74,6 +87,40 @@ export const MOVES = {
   flatwhite:  { name: 'Flat White', type: 'old', power: 0, effect: { heal: 0.35, usesHeld: true }, anim: 'heal', text: '{u} takes a long sip of a flat white. Slightly calmer.' },
   jab:        { name: 'Beak Jab', type: 'street', power: 45, anim: 'lunge', text: '{u} jabs {t} with its beak.' },
   warble:     { name: 'Warble', type: 'old', power: 0, effect: { foeDef: 1 }, anim: 'shout', text: '{u} warbles beautifully. It is somehow a threat.' },
+  // Brunswick: nonnas, designer dogs, the hipster's team
+  woodenspoon:{ name: 'Wooden Spoon', type: 'old', power: 50, anim: 'lunge', text: '{u} brandishes the wooden spoon. Everyone remembers the wooden spoon.' },
+  mangia:     { name: 'Mangia!', type: 'old', power: 0, effect: { foeHeal: 0.2, foeAtk: 1 }, anim: 'shout', text: '{u} feeds {t} a bowl of pasta. {t} is too polite to say no, and now too full to fight.' },
+  lemonthrow: { name: 'Lemon Lob', type: 'fire', power: 45, anim: 'gust', text: '{u} lobs a lemon from her tree. It is very sour and very fast.' },
+  guilttrip:  { name: 'Guilt Trip', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'beam', text: '{u}: "You never visit." {t} feels terrible.' },
+  yapyap:     { name: 'Yap Yap', type: 'fairy', power: 40, anim: 'shout', text: '{u} yaps. And yaps. And yaps.' },
+  fluffup:    { name: 'Fluff Up', type: 'fairy', power: 0, effect: { selfDef: 1 }, anim: 'heal', text: '{u} fluffs up. It cost $300 at the groomer.' },
+  pose:       { name: 'Pose', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} poses for its 40,000 followers. {t} feels inadequate.' },
+  shot:       { name: 'Ristretto Shot', type: 'fire', power: 55, anim: 'flame', text: '{u} fires a ristretto so short it is basically a rumour.' },
+  jitters:    { name: 'Jitters', type: 'fire', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} vibrates with caffeine.' },
+  latteart:   { name: 'Latte Art', type: 'psychic', power: 0, effect: { foeDef: 1 }, anim: 'beam', text: '{u} pours a perfect tiny swan. {t} is mesmerised.' },
+  starter:    { name: 'Starter Burp', type: 'smelly', power: 50, anim: 'stink', text: '{u} burps a cloud of wild yeast.' },
+  prove:      { name: 'Prove', type: 'smelly', power: 0, effect: { heal: 0.2, selfDef: 1 }, anim: 'heal', text: '{u} sits somewhere warm and rises.' },
+  crust:      { name: 'Crust', type: 'rock', power: 45, anim: 'lunge', text: '{u} attacks with a crust you could build a house with.' },
+  bside:      { name: 'Obscure B-side', type: 'old', power: 55, anim: 'beam', text: '{u} plays a B-side you have definitely never heard of.' },
+  scratchvinyl:{ name: 'Scratch', type: 'plastic', power: 45, anim: 'claw', text: '{u} scratches. Wikka wikka.' },
+  actually:   { name: 'Actually...', type: 'old', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '"Actually, it sounds warmer on vinyl." {t} loses the will to fight.' },
+  // Reservoir: the bulldog next door, the golfer next door
+  headbutt:   { name: 'Headbutt', type: 'rock', power: 55, anim: 'lunge', text: '{u} headbutts with a skull like a besser block.' },
+  slobber:    { name: 'Slobber', type: 'smelly', power: 40, anim: 'stink', text: '{u} slobbers all over {t}.' },
+  snore:      { name: 'Snore', type: 'rock', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} falls asleep mid-battle. It snores. It feels better.' },
+  fore:       { name: 'FORE!', type: 'plastic', power: 50, anim: 'lunge', text: 'FORE! {u} flies straight at {t}.' },
+  slice:      { name: 'Slice', type: 'plastic', power: 40, anim: 'gust', text: '{u} slices badly. Somehow it still hits {t}.' },
+  bunker:     { name: 'Bunker', type: 'plastic', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} rolls into a bunker and hides.' },
+  swing:      { name: 'Swing', type: 'steel', power: 55, anim: 'claw', text: '{u} takes a big swing.' },
+  chip:       { name: 'Chip Shot', type: 'steel', power: 45, anim: 'hop', text: '{u} chips one up and over.' },
+  practice:   { name: 'Practice Swing', type: 'steel', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} does three practice swings. Then a fourth.' },
+  runover:    { name: 'Run Over', type: 'steel', power: 60, anim: 'lunge', text: '{u} trundles over {t} at 8km/h.' },
+  nineteenth: { name: '19th Hole', type: 'old', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} pops off to the 19th hole and comes back refreshed.' },
+  // The stranger under the skyrail. Every drug hurts him more than anyone.
+  haze:       { name: 'Haze', type: 'smelly', power: 30, effect: { foeAtk: 1, recoil: 0.25 }, anim: 'stink', text: 'He smokes. A thick haze rolls over {t}.', recoilText: 'His eyes glaze over. He is slow and foggy, and he knows it.' },
+  paranoia:   { name: 'Paranoia', type: 'psychic', power: 35, effect: { recoil: 0.25 }, anim: 'beam', text: 'He gets scared and suspicious, and it spills over onto {t}.', recoilText: 'He is shaking. The fear is hurting him most.' },
+  binge:      { name: 'Wired', type: 'street', power: 50, effect: { recoil: 0.3 }, anim: 'lunge', text: 'He has not slept in days. He lashes out at {t}.', recoilText: 'His heart is pounding far too fast. It is hurting him.' },
+  comedown:   { name: 'Comedown', type: 'street', power: 25, effect: { recoil: 0.35 }, anim: 'shout', text: 'He crashes. He snaps at {t}, then folds in on himself.', recoilText: 'He is exhausted and miserable. This is what the drug does.' },
   binlid:     { name: 'Bin Dive', type: 'smelly', power: 50, anim: 'dig', text: '{u} dives into a bin and comes up swinging.' },
 };
 

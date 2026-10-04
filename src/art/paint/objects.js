@@ -14,6 +14,7 @@ import { hash } from '../../util.js';
 import { textWidth } from './painter.js';
 import { FURNITURE } from './furniture.js';
 import { LAVERTON } from './laverton.js';
+import { CITY } from './city.js';
 import { BRUNSWICK } from './brunswick.js';
 import { RESERVOIR } from './reservoir.js';
 
@@ -576,7 +577,7 @@ const BASE = {
   },
 };
 
-export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...RESERVOIR };
+export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...RESERVOIR, ...CITY };
 
 // Which object kinds give off light at night.
 export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 }, floorlamp: { x: 8, y: 5, r: 40 }, hphouse: { x: 86, y: 56, r: 30 } };

@@ -25,6 +25,13 @@ export const FRIENDSHIP = { talk: 10, love: 45, like: 25, neutral: 10, dislike: 
 
 // Battles: chance of a wild encounter each new tall-grass tile you step on.
 export const ENCOUNTER_RATE = 0.12;
+// Battle balance knobs (check changes with: node tools/balance.mjs)
+//   hp      multiplies everyone's max HP (higher = longer battles)
+//   damage  multiplies all damage
+//   xp      multiplies experience earned
+//   xpCurve experience to level up = base + level^2 * curve
+//   money   multiplies prize money
+export const BALANCE = { hp: 1.6, damage: 1, xp: 1, xpBase: 20, xpCurve: 1.6, money: 1 };
 
 export const RAIN_CHANCE = 0.3;         // chance each day has a Melbourne shower
 
