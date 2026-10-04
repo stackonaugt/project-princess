@@ -31,7 +31,7 @@ export const PETS = [
     clue: 'Locals talk about a tiny, very fluffy security guard who patrols Allen St. Try right out the front.',
     funFact: 'Her pink tail and pink paws are not natural. Her confidence absolutely is.',
     favouriteSpot: 'The exact centre of the Allen St court, where everyone can see her.',
-    loves: ['ribbon', 'chicken'], likes: ['cheese', 'croissant'], dislikes: ['lemon', 'tennis'],
+    loves: ['ribbon', 'chicken', 'strawberry'], likes: ['cheese', 'croissant', 'chilli'], dislikes: ['lemon', 'tennis', 'zucchini'],
     stats: { hp: 55, attack: 72, defence: 45, speed: 80, special: 95 },
     lines: {
       0: ['Princess looks you up and down. You have not passed inspection.', 'Princess yaps once. That was a warning.', 'Princess fluffs her pom-poms. Laverton is under her protection.'],
@@ -60,7 +60,7 @@ export const PETS = [
     clue: 'Something stripy rules the driveway of a blue-grey block of flats on Donald St.',
     funFact: 'Owns at least three milk crates and one wheelie bin, by right of conquest.',
     favouriteSpot: 'The warm concrete of the driveway at 10 Donald St, around mid-morning.',
-    loves: ['sardine', 'feather'], likes: ['snag', 'chicken', 'cheese'], dislikes: ['carrot', 'lemon'],
+    loves: ['sardine', 'feather'], likes: ['snag', 'chicken', 'cheese', 'tomato'], dislikes: ['carrot', 'lemon', 'basil'],
     stats: { hp: 60, attack: 88, defence: 50, speed: 85, special: 60 },
     lines: {
       0: ['Salami eyes your ankles like they owe her money.', 'Salami headbutts your leg, then swipes it. Mixed signals.', 'Salami has claimed a milk crate. It is hers now.'],
@@ -82,7 +82,7 @@ export const PETS = [
     clue: 'Late-night diners at A1 Bakery on Sydney Rd swear a black shape flickers between the tables. Easier to spot after dark.',
     funFact: 'Has been seen in two places at once. Nobody has been brave enough to check which was the real one.',
     favouriteSpot: 'Under the outdoor tables at A1 Bakery, catching dropped za\'atar.',
-    loves: ['carrot', 'lemon'], likes: ['feather', 'croissant'], dislikes: ['snag', 'chicken'],
+    loves: ['carrot', 'lemon', 'basil'], likes: ['feather', 'croissant', 'strawberry', 'zucchini'], dislikes: ['snag', 'chicken', 'chilli'],
     stats: { hp: 50, attack: 55, defence: 60, speed: 95, special: 90 },
     lines: {
       0: ['Spooky flickers out of sight, then reappears right behind you.', "Spooky stares at something you can't see.", 'You blink and Spooky is somewhere else entirely.'],
@@ -104,7 +104,7 @@ export const PETS = [
     clue: 'Unit 1, 835 Plenty Rd (round the corner on Loddon Ave) reports being "body-checked by a small black brick" in the driveway.',
     funFact: 'Has tried to race every jogger at Edwardes Lake. Win record: zero. Enthusiasm: infinite.',
     favouriteSpot: 'The middle of the shared driveway, where every delivery driver has to say hello.',
-    loves: ['tennis', 'snag'], likes: ['chicken', 'cheese', 'croissant', 'sardine', 'carrot', 'lemon'], dislikes: [],
+    loves: ['tennis', 'snag', 'pumpkin', 'potato'], likes: ['chicken', 'cheese', 'croissant', 'sardine', 'carrot', 'lemon', 'zucchini', 'tomato', 'strawberry'], dislikes: [],
     stats: { hp: 85, attack: 80, defence: 90, speed: 50, special: 20 },
     lines: {
       0: ['Poppy charges at you and bounces off. She is thrilled about it.', 'Poppy snorts loudly. Possibly a thought. Probably not.', 'Poppy tries to squeeze through a gap that is clearly too small.'],
@@ -133,7 +133,7 @@ export const PETS = [
     clue: 'A distinguished grey gentleman supervises Glasgow Ave from behind an orange brick fence. He will not come to you.',
     funFact: 'Thinks most dogs are idiots. Is usually right.',
     favouriteSpot: 'The front lawn at 57C, where he can judge the whole street at once.',
-    loves: ['cheese', 'croissant'], likes: ['chicken', 'sardine'], dislikes: ['tennis', 'lemon'],
+    loves: ['cheese', 'croissant'], likes: ['chicken', 'sardine', 'basil', 'pumpkin'], dislikes: ['tennis', 'lemon', 'chilli'],
     stats: { hp: 60, attack: 50, defence: 70, speed: 55, special: 98 },
     lines: {
       0: ['Stanley sighs. He was hoping for more intelligent company.', 'Stanley grumbles, but stays close by.', 'Stanley raises one bushy eyebrow at you.'],

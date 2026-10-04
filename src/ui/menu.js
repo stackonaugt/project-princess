@@ -12,7 +12,7 @@ export function openMenu(panel, close) {
   const canFull = document.fullscreenEnabled && !navigator.standalone;
 
   panel.replaceChildren(
-    h('div', { class: 'm-head' }, h('h2', {}, 'Menu'), h('button', { class: 'wood-btn small', onclick: close }, 'Close')),
+    h('div', { class: 'm-head' }, h('h2', {}, 'Settings'), h('button', { class: 'wood-btn small', onclick: close }, 'Back')),
     h('div', { class: 'm-scroll' },
       h('div', { class: 'note' }, h('h4', {}, 'Settings'),
         h('div', { class: 'row' },
@@ -47,17 +47,23 @@ export function openMenu(panel, close) {
           h('li', {}, 'Most pets have owners. Talk to them for a friendly play-fight, and win to befriend their pet. Princess is free.'),
           h('li', {}, 'Battles earn experience and a bit of money. Spend it at The Leash You Can Do, Olly\'s pet shop on Hope St, Brunswick: treats, and gear to put on your pets from the bag.'),
           h('li', {}, 'Some pets evolve once they reach a high enough level AND like you enough. Check the Petdex for hints.'),
+          h('li', {}, 'Townsfolk have hearts too. Chat daily and bring gifts. Good friends help in battles: look for Call.'),
+          h('li', {}, 'Farming: Wen at the Edgars Creek community garden gives you plots. Water once a day (rain counts), then sell crops at Dimitri\'s milk bar.'),
+          h('li', {}, 'Gaz at the Laverton Station sausage sizzle sells seeds and house upgrades.'),
+          h('li', {}, 'Use your bed at home to sleep until morning or have a nap.'),
           h('li', {}, 'You can walk all the way from Laverton to Brunswick to Reservoir, through Altona North, Footscray, Flemington, Coburg and Preston. Or catch the train.'),
           h('li', {}, 'Phone: drag on the left of the screen to move, push the stick all the way (or hold B) to run, tap A to talk. You can also tap a pet or a spot on the map.'),
-          h('li', {}, 'Keyboard: arrows or WASD to move, Shift to run, Space to talk, P for the Petdex, B for the bag, M for this menu.'))),
+          h('li', {}, 'Keyboard: arrows or WASD to move, Shift to run, Space to talk, P for the Petdex, B for the bag, M for your phone.'))),
       h('div', { class: 'note' }, h('h4', {}, 'Your stats'),
         h('p', {}, `Day ${d.day}. ${d.stats.chats} chats, ${d.stats.gifts} treats given, ${d.stats.treats} treats collected.`)),
-      h('div', { class: 'note' }, h('h4', {}, 'New game'),
-        h('p', {}, 'Start again from day one. Your Petdex, bag, levels and friendships on this device will be wiped.'),
-        h('div', { class: 'row' }, h('button', { class: 'wood-btn danger', onclick: () => {
-          if (!confirm('Start a new game? Everything on this device will be cleared. Copy your save code first if you want a backup.')) return;
-          bus.emit('game:reset');
-        } }, 'New game'))),
+      h('div', { class: 'note' }, h('h4', {}, `Save slot ${state.slot || ''}`),
+        h('p', {}, 'Switch to another save slot, or start this slot again from day one.'),
+        h('div', { class: 'row' },
+          h('button', { class: 'wood-btn', onclick: () => bus.emit('game:title') }, 'Back to title screen'),
+          h('button', { class: 'wood-btn danger', onclick: () => {
+            if (!confirm('Delete this save slot and start again? Copy your save code first if you want a backup.')) return;
+            bus.emit('game:reset');
+          } }, 'Delete this slot'))),
       msg,
       h('p', { class: 'small center credits' }, 'Project Princess. The pets belong to their humans. Made with Phaser.')));
 }

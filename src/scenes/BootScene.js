@@ -2,7 +2,8 @@
 // builds the built-in textures for everything else.
 import { ART_PATH } from '../config.js';
 import { queueCustomArt, buildTextures } from '../art/textures.js';
-import { state } from '../systems/state.js';
+import { state, SLOT_COUNT } from '../systems/state.js';
+import { showTitle } from '../ui/title.js';
 
 export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
@@ -20,9 +21,13 @@ export class BootScene extends Phaser.Scene {
     this.load.start();
   }
 
-  finish() {
+  async finish() {
     buildTextures(this);
     document.getElementById('loading')?.classList.add('done');
+    // ?slot=2 in the address skips the title screen (handy for testing)
+    const asked = +new URLSearchParams(location.search).get('slot');
+    const slot = asked >= 1 && asked <= SLOT_COUNT ? asked : await showTitle(this);
+    state.useSlot(slot);
     this.scene.start('World', { region: state.data.region, firstLoad: true });
   }
 }

@@ -1,6 +1,7 @@
 // YARD: the big backyard behind the Allen St house. Lawn, a steel carport
 // over the old picnic table, the shed, a Hills Hoist and tall paling fences.
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildYard() {
   const b = new MapBuilder({ id: 'yard', w: 30, h: 22, fill: 'L', seed: 52 });
@@ -38,9 +39,15 @@ export function buildYard() {
   b.entry('backdoor', 13, 7, 'down').entry('gate', 27, 4, 'left');
   // Family clutter: the twins' trampoline and toys, garden bits
   b.put('trampoline', 12, 13);
-  b.put('trike', 6, 9); b.put('ball', 10, 8, { v: 'beach' }); b.put('ball', 17, 16, { v: 'soccer' });
+  b.put('trike', 6, 9); b.put('ball', 10, 8, { v: 'beach' }); b.put('ball', 21, 15, { v: 'soccer' });
   b.put('wheelbarrow', 7, 15); b.put('hosereel', 18, 7);
   b.put('potplant', 3, 6, { v: 'herbs' }); b.put('potplant', 15, 6, { v: 'geranium' }); b.put('potplant', 16, 6, { v: 'succulent' });
+  // House upgrades (bought from Gaz): the veggie patch and the paddling pool
+  if (state.hasUpgrade('veggiepatch')) {
+    [[16, 15], [17, 15], [18, 15], [16, 17], [17, 17], [18, 17]].forEach(([x, y], i) => b.plot(`yd${i + 1}`, x, y, `Bed ${i + 1}`));
+    b.sign(19, 16, ['The veggie patch.', 'Water each bed once a day. Rain counts. The pets will "help".']);
+  }
+  if (state.hasUpgrade('pool')) b.put('paddlingpool', 2, 12);
   b.put('flowerbed', 8, 19, { v: 'natives' }); b.put('birdbath', 22, 18); b.put('gnome', 4, 17, { v: 'red' });
   return b.finish();
 }

@@ -127,6 +127,15 @@ export const PROPS = {
       p.r('#8a8e94', 4, 2, 40, 1);
     },
   },
+  paddlingpool: {
+    foot: [2, 2], tex: [32, 32], variants: ['blue'],
+    paint(p) {
+      p.shadow(16, 31, 30);
+      p.blob(16, 18, 13, '#3a8ad0'); p.blob(16, 18, 11, '#7ac8f0'); p.blob(16, 19, 9, '#5ab0e8');
+      p.r('#c8ecff', 9, 13, 6, 1); p.r('#c8ecff', 18, 21, 5, 1); p.r('#ffffff', 11, 12, 2, 1);
+      p.r('#f5d63a', 21, 14, 4, 3); p.r('#f08020', 24, 15, 2, 1); p.r('#1e1e22', 22, 14, 1, 1);   // a rubber duck
+    },
+  },
   meterbox: {
     foot: [1, 1], tex: [16, 16], variants: ['grey'], solid: false,
     paint(p) { box(p, 3, 4, 10, 10, '#b8bcc0'); p.r('#8a8e94', 5, 6, 6, 4); p.r('#f4d040', 6, 7, 2, 1); p.r('#5a5e64', 7, 14, 2, 2); },

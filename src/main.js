@@ -7,13 +7,20 @@ import { BootScene } from './scenes/BootScene.js';
 import { WorldScene } from './scenes/WorldScene.js';
 import { BattleScene } from './scenes/BattleScene.js';
 
-state.load();
+state.migrateToSlots();
 controls.init();
 ui.init();
 
+// Delete this slot and go back to the title screen.
 bus.on('game:reset', () => {
   window.__ppResetting = true;
   state.reset();
+  location.reload();
+});
+// Save and go back to the title screen.
+bus.on('game:title', () => {
+  bus.emit('game:save');
+  window.__ppResetting = true;
   location.reload();
 });
 

@@ -28,7 +28,7 @@ export const NPCS = {
     hints: { princess: 'The poodle? Over on Allen St. Do not let her size fool you. She once chased off a council truck.' },
   },
   gaz: {
-    name: 'Gaz', role: 'Sausage sizzle volunteer', look: { hair: '#8a8d94', hairStyle: 'bald', skin: '#e8b48a', shirt: '#c8443a', pants: '#3a3a48', apron: '#f4efe0', moustache: true },
+    name: 'Gaz', role: 'Sausage sizzle volunteer. Also sells seeds and house bits', shop: 'gaz', look: { hair: '#8a8d94', hairStyle: 'bald', skin: '#e8b48a', shirt: '#c8443a', pants: '#3a3a48', apron: '#f4efe0', moustache: true },
     lines: [
       ['Snag? Onions go on the bottom, mate. Stops them falling out. It is science.'],
       ['Been running this sizzle for eleven years. Raised enough for three new netball uniforms and a defibrillator.'],
@@ -93,7 +93,7 @@ export const NPCS = {
     gift: 'lemon', giftLine: 'Take a lemon. Take two. The tree, she never stops.',
   },
   dimitri: {
-    name: 'Dimitri', role: 'Runs the milk bar', look: { hair: '#3a3a3a', hairStyle: 'short', skin: '#d8a070', shirt: '#f4efe0', pants: '#3a3a48', moustache: true, apron: '#2f6aa3' },
+    name: 'Dimitri', role: 'Runs the milk bar', shop: 'dimitri', look: { hair: '#3a3a3a', hairStyle: 'short', skin: '#d8a070', shirt: '#f4efe0', pants: '#3a3a48', moustache: true, apron: '#2f6aa3' },
     lines: [
       ['Milk bar has been in the family since 1974. We still sell the bags of mixed lollies. Twenty cents each. Inflation.'],
       ['The new supermarket down the road has self-checkouts. I have a self too. I am right here.'],
@@ -224,7 +224,7 @@ export const NPCS = {
     ],
   },
   olly: {
-    name: 'Olly', role: 'Runs The Leash You Can Do, Hope St', shop: true, look: { hair: '#5a3a1e', hairStyle: 'short', skin: '#f0c8a0', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', stubble: true },
+    name: 'Olly', role: 'Runs The Leash You Can Do, Hope St', shop: 'olly', look: { hair: '#5a3a1e', hairStyle: 'short', skin: '#f0c8a0', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', stubble: true },
     lines: [
       ['Welcome to The Leash You Can Do! Treats, gear, and a goldfish called Kevin who is not for sale.'],
       ['Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.'],

@@ -13,7 +13,9 @@ import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
 import { drawPerson } from './paint/people.js';
 import { OBJECTS } from './paint/objects.js';
-import { ITEM_ART, GEAR_ART } from './paint/items.js';
+import { ITEM_ART, GEAR_ART, paintSeedPacket } from './paint/items.js';
+import { CROPS } from '../data/crops.js';
+import { paintCrop } from './paint/crops.js';
 import { FX, FX_STRIPS, VEHICLES } from './paint/fx.js';
 import { paintTuft } from './paint/tiles.js';
 import { FOE_ART } from './paint/enemies.js';
@@ -102,6 +104,7 @@ export function buildTextures(scene) {
   for (const [id, [w, h, draw]] of Object.entries(FOE_ART)) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
   // Items
   for (const [id, art] of Object.entries(ITEM_ART)) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
+  for (const [id, c] of Object.entries(CROPS)) canvasTexture(scene, `item-seed-${id}`, 16, 16, p => paintSeedPacket(p, c.colour));
   for (const [id, art] of Object.entries(GEAR_ART)) canvasTexture(scene, `item-gear-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   // Effects and vehicles
   for (const [key, [w, h, draw]] of Object.entries(FX)) canvasTexture(scene, key, w, h, draw);
@@ -109,6 +112,13 @@ export function buildTextures(scene) {
   for (const [key, [w, h, draw]] of Object.entries(VEHICLES)) canvasTexture(scene, key, w, h, draw);
 
   createAnims(scene);
+}
+
+// Crop sprites are made the first time a plot needs them.
+export function cropTexture(scene, id, stage) {
+  const key = `crop-${id}-${stage}`;
+  canvasTexture(scene, key, 16, 16, p => { paintCrop(p, id, stage); if (stage > 0) outline(p.ctx, 0, 0, 16, 16); });
+  return key;
 }
 
 export function tuftTexture(scene, region, grass) {

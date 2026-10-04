@@ -14,6 +14,8 @@ import { PET_BY_ID } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { effectiveness, typeList, typeName } from '../data/types.js';
 import { form, canEvolve, evolve, petTex } from '../systems/forms.js';
+import { friendInfo, ASSIST_HEARTS } from '../data/friends.js';
+import { npcIcon } from '../ui/images.js';
 import { state } from '../systems/state.js';
 import { sfx } from '../systems/sfx.js';
 import { isNight } from '../systems/clock.js';
@@ -417,6 +419,7 @@ export class BattleScene extends Phaser.Scene {
         { label: 'Fight', value: 'fight' },
         { label: 'Treat', value: 'treat', note: bag.length ? `${bag.reduce((a, id) => a + state.count(id), 0)} in bag` : 'bag empty', disabled: !bag.length },
         { label: 'Swap', value: 'swap', disabled: !others.length },
+        ...(this.callable().length && !this.calledFriend ? [{ label: 'Call', value: 'call', note: 'a friend' }] : []),
         { label: this.trainer ? 'Give up' : 'Run', value: 'run', back: true },
       ]);
       if (pick === 'fight') {
@@ -435,6 +438,10 @@ export class BattleScene extends Phaser.Scene {
         B.prompt('Who should go in?');
         const f = await B.menu([...others.map(o => ({ label: o.name, value: o, icon: petIcon(o.petId, 32), note: `Lv ${o.level} · ${o.hp}/${o.maxHp} HP` })), { label: '◀ Back', value: null, back: true }], { layout: 'list' });
         if (f) return { kind: 'swap', f };
+      } else if (pick === 'call') {
+        B.prompt('Who will you call? (once per battle)');
+        const who = await B.menu([...this.callable().map(id => ({ label: NPCS[id].name, value: id, icon: npcIcon(id), note: `${state.friendHearts(id)} hearts` })), { label: '◀ Back', value: null, back: true }], { layout: 'list' });
+        if (who) return { kind: 'call', who };
       } else if (pick === 'run') return { kind: 'run' };
     }
   }
@@ -466,6 +473,7 @@ export class BattleScene extends Phaser.Scene {
       return this.act(this.foe, foeMove);
     }
     if (action.kind === 'treat') { await this.giveTreat(action.item); return this.act(this.foe, foeMove); }
+    if (action.kind === 'call') { await this.callFriend(action.who); await this.checkOuts(); return this.act(this.foe, foeMove); }
     if (action.kind === 'swap') { await this.swapTo(action.f); return this.act(this.foe, foeMove); }
     // Both use a move. Dodges go first, then the faster one.
     const prio = id => (MOVES[id].effect?.evade ? 1 : 0);
@@ -581,6 +589,19 @@ export class BattleScene extends Phaser.Scene {
     if (e.selfDef) await stage(user, 'def', e.selfDef, 'defence');
     if (e.evade) user.evade = true;
     if (e.charge) { user.charged = true; await this.say(`${user.name} is ready to strike hard!`); }
+  }
+
+  // Friends with enough hearts can be called in once per battle.
+  callable() { return Object.keys(NPCS).filter(id => friendInfo(id).assist && state.friendHearts(id) >= ASSIST_HEARTS); }
+  async callFriend(id) {
+    this.calledFriend = true;
+    const a = friendInfo(id).assist, me = this.mine, foe = this.foe;
+    sfx.myki();
+    await this.say(`You call ${NPCS[id].name}...`);
+    await this.say(a.line);
+    if (a.heal) { await this.play('heal', me, foe, typeList(me.type)[0], false); me.hp = Math.min(me.maxHp, me.hp + Math.ceil(me.maxHp * a.heal)); B.hp(me); }
+    if (a.damage) { this.cameras.main.shake(200, 0.01); foe.hp = Math.max(0, foe.hp - Math.ceil(foe.maxHp * a.damage)); B.hp(foe); await this.hurt(foe, 1); }
+    await this.applyEffects(me, foe, { selfAtk: a.selfAtk, selfDef: a.selfDef, foeAtk: a.foeAtk, foeDef: a.foeDef });
   }
 
   async giveTreat(item) {

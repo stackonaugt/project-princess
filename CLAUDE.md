@@ -66,6 +66,10 @@ src/
     moves.js          Every battle move (type, power, effect, animation, text) and PET_MOVES
     enemies.js        Wild things, the Bin Man's bins, ENCOUNTERS per suburb, TRAINERS (owners and others)
     gear.js           Pet shop gear (leads, collars...) and their battle bonuses
+    friends.js        Townsfolk friendships: loves/likes, heart events (+rewards), battle assists
+    crops.js          Crops: growing days, seed and sell prices, regrow
+    upgrades.js       House upgrades (veggie patch, pet door, twins' room, paddling pool)
+    shops.js          The shops and their tabs (Olly, Gaz, Dimitri)
     regions.js        SUBURBS and ZONES (each zone is one map), grass palettes, getMap() cache
     flavour.js        Text for inspecting objects (houses, bins, trams...)
   world/
@@ -75,7 +79,7 @@ src/
     traffic.js        Cars, trams, bikes, trains (scenery that waits for you)
   art/
     sprites.js        Built-in character pixel art as strings
-    paint/*.js        Procedural painters: enemies.js (battle foes), city.js (tower blocks, billboards, Pentridge), props.js (pot plants, garden beds, toys, bikes, trampoline), tiles (ground + interior walls/floors), objects (+ furniture.js, laverton.js), people.js (16x32 people and toddlers from a "look"), brunswick.js, items, fx
+    paint/*.js        Procedural painters: enemies.js (battle foes), crops.js (crops by growth stage), city.js (tower blocks, billboards, Pentridge), props.js (pot plants, garden beds, toys, bikes, trampoline), tiles (ground + interior walls/floors), objects (+ furniture.js, laverton.js), people.js (16x32 people and toddlers from a "look"), brunswick.js, items, fx
     textures.js       Builds textures; swaps in custom PNGs from assets/sprites via the manifest
   scenes/
     BootScene.js      Loads the sprite manifest and custom PNGs, builds textures
@@ -88,7 +92,7 @@ src/
     battle.js         Battle rules: levels, stats, damage, enemy AI, XP, money, gear bonuses
     forms.js          A pet's current form (evolved or not): form(id), petTex(id), canEvolve, evolve
     sfx.js            Synthesised WebAudio blips (no audio files)
-  ui/                 HTML interface: ui.js (HUD, dialogue, banner, toasts, modals), battle.js (battle boxes, messages, menus), shop.js (pet shop), petdex.js, bag.js (treats and gear), menu.js, team.js, hero.js
+  ui/                 HTML interface: ui.js (HUD, dialogue, banner, toasts, modals), title.js (title screen and save slots), phone.js (the Pawphone menu) with apps friends.js, map.js, garden.js; battle.js (battle boxes, messages, menus), shop.js (all shops), petdex.js, bag.js (treats and gear), menu.js, team.js, hero.js
 assets/sprites/       Custom art drop zone (see its README). templates/ has every built-in sprite as PNG
 tools/                serve.mjs (dev server), build-manifest.mjs (used by the deploy workflow), balance.mjs (battle simulator)
 archive/prototype.html  The original single-file canvas prototype, kept for reference
@@ -104,7 +108,9 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Objects** are defined in `src/art/paint/objects.js` plus `furniture.js` and `laverton.js` (`foot` = blocking footprint in tiles, `tex` = texture size, anchored bottom-centre on the footprint). Every standing object gets a Stardew-style 1px dark outline automatically in `objectTexture()` (textures.js); objects that tile together or draw their own outline are listed in `NO_OUTLINE` / `ALREADY_OUTLINED` there, or set `lined: true`. House painters share helpers in laverton.js: `tileRoof`, `bricks`, `window_` (glint, sill, optional flower `box`), `door` (frame, porch light), `veneer` (plinth, gutter, downpipe, meter box, aircon). Flags: `flat` (rugs, mats: drawn under everything, can overlap), `roof` (carports, canopies: drawn over characters and fade when you walk under), `deck` (the footbridge: drawn over trains but under people; put walkable `B` rail tiles underneath and give train lanes `under: true`). Fences auto-join with neighbours; styles picket, colorbond, park, paling, metal.
 - **Team.** `state.data.party` (max 3) holds pets following you. Exits with `{ team: true }` (front door, side gate) open the team picker when you have pets. Pets spawn per zone in one of three modes (`Pet` in entities.js): `follow` (on your team, trails behind you on `scene.trail`), `home` (found, not on the team, at `pet.homeSpot` in the home or yard zone), or `wild` (not on the team, in `pet.zone`). A pet on your team is never also in its wild zone.
 - **Textures and custom art.** Built-in textures are painted onto canvases at startup (`textures.js`). Keys: `player-<hero>-<dir>` (custom `player-<dir>` applies to everyone), `pet-<id>`, `npc-<id>-<dir>` (or `npc-<id>` for custom), `item-<id>`, `obj-<kind>-<variant>`, `tile-<name>`, `veh-<name>`, `portrait-<id>`. A PNG at `assets/sprites/<folder>/<name>.png` loads as `<prefix>-<name>` and wins over the built-in. Character PNGs are split into square frames. Always size sprites through `fitScale()` so custom art of any resolution fits its slot.
+- **The Pawphone** (HUD Phone button, M key) is the menu: apps Petdex, Bag, Friends, Map, Garden, Settings. Apps opened from the phone return to it when closed (`ui._fromPhone`). The Map app draws `ROUTE` from regions.js.
 - **UI is HTML, not canvas**, for crisp text on phones. Scenes talk to it through `ui` (`ui.say(lines, { name, portrait })` returns a promise resolving to the picked choice) and the `bus`.
+- **Save slots and the title screen.** Three slots (`${SAVE_KEY}-slot1..3` in localStorage). `BootScene` shows the title screen (`ui/title.js`) and calls `state.useSlot(n)` before starting World; `?slot=N` in the URL skips it (the Playwright helper uses `?slot=1`). An old single save (or the prototype's) moves into slot 1 once (`state.migrateToSlots`). `state.save()` does nothing until a slot is chosen. Settings has Back to title screen (`game:title`) and Delete this slot (`game:reset`).
 - **Saving.** `state.data` is the whole save. It is sanitised on load, so adding a field means adding a default in `fresh()` and copying it in `sanitise()`. Bump `VERSION` and add a migration if the shape changes incompatibly. The prototype's old save (`whisker-hollow-v2`) is migrated automatically.
 - **Time.** The day runs 6am to 2am (`DAY_START`/`DAY_END`), 10 game minutes per 7 real seconds, paused while any dialogue or menu is open. At 2am the day ends and you wake up in bed at home. You can also use your bed at home (`sleep` interactable on `bed`/`single`, and `cot` for the twins): sleep until morning, or a 2-hour nap that heals your pets. Rain is decided per day from the day number (`state.rainWindow`), so it is stable across reloads.
 - **Pets** have one chat per day (+friendship) and one treat per day (love/like/neutral/dislike). 25 points per heart, 10 hearts. Lines unlock by heart level. Behaviours live in `Pet.think()`: `patrol` (Princess), `stalk` (Salami), `phase` (Spooky teleports, solid at night), `zoomies` (Poppy charges and bonks), `aloof` (Stanley walks away until 3 hearts, approaches at 6). Pets can sleep on a schedule.
@@ -133,9 +139,26 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Evolutions:** a pet's `evolution` in pets.js (name, species, type, level, hearts, stats, moves, sprite, pal, bio). It evolves after a battle level-up or a chat/treat once both thresholds are met (`canEvolve`), with an animation in either place. Save: `evolved`. Always read a pet's name/type/stats/moves/texture through `form(id)` and `petTex(id)` (systems/forms.js). Custom art: `pets/<id>-evolved.png`, `portraits/<id>-evolved.png`.
 - **Types** may be a string or an array (dual type). Use `typeList`, `typeName` and `effectiveness` from types.js (dual types multiply).
 
+### Friends (townsfolk)
+
+- Every NPC has hearts like the pets (`state.data.friends[id]`: points, talkedDay, giftedDay, reactions, events, met). First chat each day +10, a gift once a day (love/like/neutral/dislike from `src/data/friends.js`, generic tastes for anyone not listed).
+- **Heart events:** the first chat at or above a heart level listed in `events` plays that little scene instead of a normal line, with an optional reward. Real friends of the owner: keep them affectionate, specific and never mean.
+- **Call a friend:** friends at `ASSIST_HEARTS` (4) or more with an `assist` appear under "Call" in the battle menu, once per battle (heal, stat changes, or chip damage).
+- Trainers who haven't been beaten still go straight to their challenge; friendship starts once that's done.
+
+### Farming and house upgrades
+
+- **Plots** are placed in maps with `b.plot(id, x, y, label)` (walkable soil). The community garden (`cg1..8` in wetlands) opens when you first chat to Wen (`flags.garden`, plus starter seeds). The backyard beds (`yd1..6`) exist once you buy the veggie patch upgrade (yard.js checks `state.hasUpgrade`).
+- `state.data.farm[plotId] = { crop, growth, watered, boost }`. Planting waters it. Water once a day; at the start of each day (`state.newDay()`, called by sleeping and the 2am day end) a plot grows one day if it was watered or it rained. Crops with `regrow` keep producing after picking.
+- **Pet helpers** (when on your team): Poppy digs up one extra at harvest, Stanley sometimes spots a bonus one, Spooky watered at night gives a double day of growth, Princess gets 20% more when selling.
+- Crop sprites are drawn per stage in `art/paint/crops.js` (`cropTexture`); crops are also bag items (`crop: true` in items.js) that pets and townsfolk can love.
+- **House upgrades** (Gaz's House tab, `data/upgrades.js`): veggie patch, pet door (a pet at home brings a present most mornings), finished twins' room (home.js swaps the renovation junk for a rug and books), paddling pool (pets at home +5 friendship once a day when you visit the yard). Buying one calls `invalidateMap('home'|'yard')`; maps carry a `rev` so the ground texture rebuilds.
+- `state.newDay()` returns overnight news lines (rain on the garden, pet door presents) which World shows when you wake up.
+
 ### Economy
 
-- `state.data.money` (dollars, HUD shows it). Earned: loose change after wild wins (`wildMoney`), a trainer's `money` once a day. Spent at **The Leash You Can Do** (zone `petshop`, door on Hope St, Brunswick, near Mem and Corni's; Olly, the owner's friend, has `shop: true`, talking to her opens `src/ui/shop.js`). Treat prices are `price` in items.js.
+- **Shops** (`data/shops.js`, `ui/shop.js`): an NPC with `shop: '<id>'` opens their shop after chatting. Olly (Hope St): treats and gear. Gaz (Laverton Station sizzle): seeds and house upgrades. Dimitri (Reservoir Station milk bar): buys crops (full price) and treats (half), sells more seeds and treats.
+- `state.data.money` (dollars, HUD shows it). Earned: loose change after wild wins (`wildMoney`), a trainer's `money` once a day, selling crops. Spent at **The Leash You Can Do** (zone `petshop`, door on Hope St, Brunswick, near Mem and Corni's; Olly, the owner's friend, has `shop: true`, talking to her opens `src/ui/shop.js`). Treat prices are `price` in items.js.
 - **Gear** (`src/data/gear.js`): bought into `state.data.gear` (counts), put on a pet from the bag (`state.equip(petId, gearId)`, one each, stored as the pet record's `gear`). Bonuses: stat multipliers, crit, regen per turn, XP multiplier. Icons `item-gear-<id>`.
 
 ### Balance
@@ -157,11 +180,14 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 ### More economy
 - A shop in Brunswick and Reservoir, selling back items, gear that changes a pet's look, rent jokes.
 
-### 2. Farming
-- Groundwork: the Reservoir Community Garden already has tilled soil (`d` tiles), decorative crops and a gardener NPC (Wen) who talks about plots opening soon. The day clock, daily resets and the bag all exist.
-- Plan: let the player claim a plot, plant seeds (bought or gifted), water daily, harvest after N days. Crops become treats pets love (carrots for Spooky) and battle items later. Seasons would follow (Melbourne gets all four in a day, which is a joke worth keeping). Possibly a small home garden or balcony pots in Brunswick.
+### Done: save slots, Pawphone, friends, farming, upgrades, more shops
+- See the sections above.
+
+### 2. Farming, next steps
+- Pests (snails, cabbage moths, a possum boss at night), seasons (four in one day), crop quality, cooking with Nonna, a swap table at the community garden, balcony pots in Brunswick.
 
 ### Next up (agreed with the owner)
+- The agreed order after this: story chapters (Housewarming as the spine, the Pet Census as Act 2), Coburg and Preston as full suburbs, then Brunswick East; more pets and evolutions as the owner sends photos; mini-games; Carlton and the CBD; the Meredith expansion as the finale.
 - Balance battles after the owner plays them (`node tools/balance.mjs`, then `BALANCE` in config.js and levels in `TRAINERS`/`ENCOUNTERS`). More spots in any suburb as the owner sends photos.
 - A deeper detail pass on the older zones to match the in-between city zones and the reference screenshots (Zuzu City style): more props, signage and shopfronts per zone. The ground painter already has asphalt wear, drains, manholes, kerbs, cracks and weeds.
 - Extra Laverton spots and shops, once the core zones feel right.

@@ -11,6 +11,7 @@
 //   y12 bed 1 (yours) | bed 2 (storage)
 //   y18 ######## bottom wall ####  front door at x16
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildHome() {
   const b = new MapBuilder({ id: 'home', w: 24, h: 19, fill: 'W', seed: 41 });
@@ -65,12 +66,18 @@ export function buildHome() {
   b.put('bookshelf', 3, 2);
   b.put('armchair', 4, 6);
   b.put('iwindow', 2, 1, { v: 'blind', onWall: true });
-  // bed 2: the twins' room, half finished. Cots in, paint tins not out yet.
+  // bed 2: the twins' room. Half finished until you buy the upgrade from Gaz.
   b.put('cot', 6, 12, { v: 'white' }); b.put('cot', 7, 12, { v: 'oak' });
   b.put('toybox', 9, 12);
-  b.put('dropsheet', 7, 14);
-  b.put('ladder', 10, 12);
-  b.put('paint', 9, 17); b.put('toolbox', 6, 17); b.put('boxes', 10, 17, { v: 'stack' });
+  if (state.hasUpgrade('twinsroom')) {   // finished: rug, plants, a bookshelf of picture books
+    b.put('rug', 6, 14, { v: 'blue' });
+    b.put('plant', 10, 12, { v: 'fern' }); b.put('plant', 10, 17, { v: 'fiddle' });
+    b.put('bookshelf', 6, 17);
+  } else {
+    b.put('dropsheet', 7, 14);
+    b.put('ladder', 10, 12);
+    b.put('paint', 9, 17); b.put('toolbox', 6, 17); b.put('boxes', 10, 17, { v: 'stack' });
+  }
   b.put('picture', 7, 11, { v: 'beach', onWall: true });
 
   // Bathroom and laundry
