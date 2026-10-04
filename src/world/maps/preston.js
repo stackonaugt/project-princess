@@ -42,5 +42,7 @@ export function buildPreston() {
   b.exit(0, 9, 1, 1, 'coburg', 'east', 'Coburg');
   b.exit(47, 14, 1, 1, 'loddon', 'west', 'Loddon Ave, Reservoir');
   b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left');
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.015, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }

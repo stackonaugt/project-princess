@@ -223,12 +223,13 @@ export const NPCS = {
       ['Day by day, mate. Day by day. Thanks for not walking past.'],
     ],
   },
-  dee: {
-    name: 'Dee', role: 'Runs The Leash You Can Do', shop: true, look: { hair: '#c8582a', hairStyle: 'curly', skin: '#d8a070', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', glasses: '#3a2a20' },
+  olly: {
+    name: 'Olly', role: 'Runs The Leash You Can Do, Hope St', shop: true, look: { hair: '#5a3a1e', hairStyle: 'short', skin: '#f0c8a0', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', stubble: true },
     lines: [
       ['Welcome to The Leash You Can Do! Treats, gear, and a goldfish called Kevin who is not for sale.'],
       ['Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.'],
-      ['Pet prices are up again. It is the rents, love. Even the goldfish is on a lease.'],
+      ['Mem and Corni pop in most days. Corni\'s monkey has a loyalty card. It is up to nine stamps.'],
+      ['Rent on this place went up again. Kevin and I are thinking of moving into the aquarium.'],
     ],
   },
 };

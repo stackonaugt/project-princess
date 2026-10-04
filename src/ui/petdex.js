@@ -105,7 +105,7 @@ function battleNote(p, d, statBar) {
   const hp = rec.hp === 0 ? 'Resting at home' : `${f.hp} / ${f.maxHp} HP`;
   return h('div', { class: 'note battle' }, h('h4', {}, `Level ${petLevel(p.id)} `, h('small', {}, `${hp} · ${rec.xp || 0} / ${xpToNext(petLevel(p.id))} XP`)),
     statBar('HP', d.stats.hp), statBar('Attack', d.stats.attack), statBar('Defence', d.stats.defence), statBar('Speed', d.stats.speed), statBar('Special', d.stats.special),
-    h('p', { class: 'small' }, rec.gear ? `Wearing: ${GEAR[rec.gear].name}. ${GEAR[rec.gear].desc}` : 'No gear. Buy some at the pet shop by Laverton Station.'),
+    h('p', { class: 'small' }, rec.gear ? `Wearing: ${GEAR[rec.gear].name}. ${GEAR[rec.gear].desc}` : 'No gear. Buy some at the pet shop on Hope St, Brunswick.'),
     h('h4', { style: { marginTop: '8px' } }, 'Moves'),
     ...d.moves.map(id => {
       const m = MOVES[id];

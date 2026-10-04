@@ -61,5 +61,7 @@ export function buildWetlands() {
   b.magpies([[16, 17], [35, 17]]);
   b.border(['gum', 'gum', 'oak']);
   b.scatter([13, 3, 30, 26], 0.06, [['tree', 2, ['gum']], ['bush', 3, ['green', 'berry']]]);
+  // Lived-in touches (walk-through props)
+  b.scatter([0, 0, b.w, b.h], 0.008, [['flowerbed', 2, ['natives', 'mixed']], ['ball', 1, ['soccer', 'beach']], ['bike', 1, ['blue', 'red', 'kids']]], { clearance: 0 });
   return b.finish();
 }

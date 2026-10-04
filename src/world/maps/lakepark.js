@@ -50,5 +50,7 @@ export function buildLakePark() {
   b.magpies([[20, 22], [9, 15], [31, 10]]);
   b.border(['gum', 'gum', 'oak']);
   b.scatter([1, 1, 35, 28], 0.04, [['tree', 2, ['gum']], ['bush', 2, ['green', 'berry']]]);
+  // Lived-in touches (walk-through props)
+  b.scatter([0, 0, b.w, b.h], 0.01, [['flowerbed', 2, ['natives', 'mixed']], ['ball', 1, ['soccer', 'beach']], ['bike', 1, ['blue', 'red', 'kids']]], { clearance: 0 });
   return b.finish();
 }

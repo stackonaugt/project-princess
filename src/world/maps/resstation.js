@@ -60,5 +60,7 @@ export function buildResStation() {
   b.scatter([37, 7, 6, 8], 0.15, [['bush', 2, ['green']], ['tree', 1, ['gum']]]);
   // Tall grass for wild encounters
   b.wildGrass(3, 8); b.wildGrass(8, 25);
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }

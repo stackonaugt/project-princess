@@ -36,5 +36,11 @@ export function buildYard() {
   b.exit(13, 5, 1, 1, 'home', 'back', 'Home');
   b.exit(29, 3, 1, 2, 'allen', 'driveway', 'Allen St', null, { team: true });
   b.entry('backdoor', 13, 7, 'down').entry('gate', 27, 4, 'left');
+  // Family clutter: the twins' trampoline and toys, garden bits
+  b.put('trampoline', 12, 13);
+  b.put('trike', 6, 9); b.put('ball', 10, 8, { v: 'beach' }); b.put('ball', 17, 16, { v: 'soccer' });
+  b.put('wheelbarrow', 7, 15); b.put('hosereel', 18, 7);
+  b.put('potplant', 3, 6, { v: 'herbs' }); b.put('potplant', 15, 6, { v: 'geranium' }); b.put('potplant', 16, 6, { v: 'succulent' });
+  b.put('flowerbed', 8, 19, { v: 'natives' }); b.put('birdbath', 22, 18); b.put('gnome', 4, 17, { v: 'red' });
   return b.finish();
 }

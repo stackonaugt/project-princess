@@ -45,5 +45,7 @@ export function buildTrack() {
   b.magpies([[30, 22], [12, 18], [35, 9]]);
   b.border(['gum', 'gum', 'oak']);
   b.scatter([5, 1, 38, 28], 0.05, [['tree', 2, ['gum', 'oak']], ['bush', 2, ['green', 'berry']]]);
+  // Lived-in touches (walk-through props)
+  b.scatter([0, 0, b.w, b.h], 0.008, [['flowerbed', 2, ['natives', 'mixed']], ['ball', 1, ['soccer', 'beach']], ['bike', 1, ['blue', 'red', 'kids']]], { clearance: 0 });
   return b.finish();
 }

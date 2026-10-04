@@ -123,8 +123,31 @@ export function objectTexture(scene, o) {
   const variantName = String(o.kind === 'fence' ? String(o.v).split(':')[0] : o.v).replace(/\s+/g, '').toLowerCase();
   for (const k of [`obj-${o.kind}-${variantName}`, `obj-${o.kind}`]) if (custom.has(k)) return k;
   const key = `obj-${o.kind}-${o.v}`;
-  canvasTexture(scene, key, def.tex[0], def.tex[1], p => def.paint(p, o.v, o));
+  canvasTexture(scene, key, def.tex[0], def.tex[1], p => {
+    def.paint(p, o.v, o);
+    if (needsOutline(o.kind, def)) objectOutline(p.ctx, def.tex[0], def.tex[1]);
+  });
   return key;
+}
+
+// Stardew-style 1px dark outline on standing objects. Skips flat things,
+// things that tile together (fences, rails, the viaduct), wall decorations
+// and art that draws its own outline. Soft ground shadows are ignored.
+const NO_OUTLINE = new Set(['fence', 'viaduct', 'pier', 'trackoval', 'footbridge', 'iwindow', 'picture', 'shelf', 'verandah', 'canopy', 'carport', 'shade', 'archshelter', 'tank', 'crops', 'reeds']);
+function needsOutline(kind, def) { return !def.flat && !def.deck && !def.lined && !NO_OUTLINE.has(kind) && !ALREADY_OUTLINED.has(kind); }
+const ALREADY_OUTLINED = new Set(['bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
+function objectOutline(ctx, w, h, colour = '#2a1810') {
+  const img = ctx.getImageData(0, 0, w, h), d = img.data;
+  const solid = i => d[i * 4 + 3] > 150;
+  const marks = [];
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const k = j * w + i;
+    if (solid(k)) continue;
+    if ((i > 0 && solid(k - 1)) || (i < w - 1 && solid(k + 1)) || (j > 0 && solid(k - w)) || (j < h - 1 && solid(k + w))) marks.push(k);
+  }
+  const n = parseInt(colour.slice(1), 16);
+  for (const k of marks) { d[k * 4] = n >> 16; d[k * 4 + 1] = (n >> 8) & 255; d[k * 4 + 2] = n & 255; d[k * 4 + 3] = 235; }
+  ctx.putImageData(img, 0, 0);
 }
 
 function createAnims(scene) {

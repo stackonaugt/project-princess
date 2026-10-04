@@ -42,5 +42,7 @@ export function buildFootscray() {
   b.exit(0, 9, 1, 1, 'altona', 'east', 'Altona North');
   b.exit(47, 12, 1, 1, 'flemington', 'west', 'Flemington');
   b.entry('west', 1, 9, 'right').entry('east', 46, 12, 'left');
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.015, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }

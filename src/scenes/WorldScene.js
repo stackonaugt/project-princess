@@ -168,6 +168,7 @@ export class WorldScene extends Phaser.Scene {
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
       if (o.kind === 'sign' && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (this.region.home && ['bed', 'single', 'cot'].includes(o.kind)) this.interactables.push({ kind: 'sleep', x, y: y - 4, r: Math.max(18, o.w * 9), bubble: 'fx-bubble-zzz', cot: o.kind === 'cot' });
       else {
         const lines = flavourFor(o.kind, o.v);
         if (lines) this.interactables.push({ kind: 'look', x, y: y - 4, r: Math.max(16, o.w * 8), lines, bubble: 'fx-bubble-dots', quiet: true });
@@ -359,6 +360,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'travel') return this.travel();
     if (t.kind === 'sign') return ui.say(t.lines);
     if (t.kind === 'look') return ui.say(pick(t.lines));
+    if (t.kind === 'sleep') return this.sleep(t);
   }
 
   // ------------------------------------------------------------ pets
@@ -650,6 +652,35 @@ export class WorldScene extends Phaser.Scene {
     }
     state.setParty(team);
     this.goTo(ex.to, ex.entry, 3);
+  }
+
+  // Your bed (or a twin's cot): sleep until morning, or a quick nap.
+  async sleep(t) {
+    const baby = HEROES[state.data.hero]?.look.baby;
+    if (t.cot && !baby) return ui.say(['A cot. You would not fit. You would also never get back out.']);
+    const late = state.data.minutes >= 18 * 60;
+    const choice = await ui.say({
+      text: late ? 'Getting late. Go to bed?' : 'Your bed looks very comfy.',
+      choices: [{ label: 'Sleep until morning', value: 'night' }, { label: 'Have a nap (2 hours)', value: 'nap' }, { label: 'Not yet', value: null }],
+    }, { cancelValue: null });
+    if (choice === 'nap') {
+      state.data.minutes = Math.min(DAY_END - 30, state.data.minutes + 120);
+      state.healAll();
+      this.cameras.main.fadeOut(400, 0, 0, 0);
+      await new Promise(r => this.cameras.main.once('camerafadeoutcomplete', r));
+      this.cameras.main.fadeIn(500, 0, 0, 0);
+      ui.updateHud(this.regionId);
+      return ui.say([baby ? 'A big nap. Everyone is relieved, mostly the grown-ups.' : 'A lovely nap. Everyone feels refreshed.']);
+    }
+    if (choice !== 'night') return;
+    await ui.say([baby ? 'Into the cot. Zzz.' : 'You climb into bed. The house creaks. Somewhere, a possum. Zzz.']);
+    this.endingDay = true;
+    state.data.day += 1; state.data.minutes = DAY_START; state.data.pos = null;
+    state.healAll();
+    state.save();
+    this.leaving = true;
+    this.cameras.main.fadeOut(700, 0, 0, 0);
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true }));
   }
 
   async endDay() {

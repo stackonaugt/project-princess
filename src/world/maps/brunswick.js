@@ -78,5 +78,7 @@ export function buildBrunswick() {
   b.forage(36, 12, ['carrot', 'feather']);
   b.forage(5, 10, ['sardine', 'tennis']);
   b.magpies([[35, 9], [5, 9]]);
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.02, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }

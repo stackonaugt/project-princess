@@ -19,13 +19,9 @@ export function buildStation() {
 
   // Car parks either side of the plaza
   b.fill(0, 3, 14, 5, 'P').fill(30, 3, 14, 5, 'P').fill(14, 3, 16, 5, 'c');
-  [[8, 4, 'blue'], [32, 4, 'silver'], [36, 6, 'yellow'], [40, 4, 'white'], [11, 6, 'silver']].forEach(([x, y, v]) => b.put('car', x, y, { v }));
+  [[2, 4, 'white'], [8, 4, 'blue'], [5, 6, 'red'], [32, 4, 'silver'], [36, 6, 'yellow'], [40, 4, 'white'], [11, 6, 'silver']].forEach(([x, y, v]) => b.put('car', x, y, { v }));
   b.put('tall', 0, 6, { v: 'biggum' }); b.put('tall', 13, 7, { v: 'biggum' }); b.put('tall', 43, 6, { v: 'biggum' }); b.put('tall', 30, 7, { v: 'biggum' });
   b.put('carparksign', 14, 3);
-  // The pet shop, THE LEASH YOU CAN DO (inside: src/world/maps/petshop.js)
-  b.put('petshop', 1, 3);
-  b.put('doormat', 4, 6);
-  b.exit(4, 6, 1, 1, 'petshop', 'door', 'The Leash You Can Do');
 
   // The plaza
   b.put('reunion', 16, 4);
@@ -79,7 +75,7 @@ export function buildStation() {
 
   b.exit(18, 0, 2, 1, 'lohse', 'south', 'Lohse St Reserve');
   b.exit(43, 24, 1, 2, 'altona', 'west', 'Altona North');
-  b.entry('petshop', 4, 7, 'down').entry('north', 18, 3, 'down').entry('station', 21, 12, 'down').entry('east', 42, 25, 'left');
+  b.entry('north', 18, 3, 'down').entry('station', 21, 12, 'down').entry('east', 42, 25, 'left');
 
   b.npc('commuter', 31, 12, { face: 'down' });
   b.npc('gaz', 20, 4, { face: 'down' });
@@ -100,5 +96,7 @@ export function buildStation() {
   b.scatter([1, 27, 42, 2], 0.2, [['bush', 2, ['green']], ['tree', 1, ['gum']]]);
   // Tall grass for wild encounters
   b.wildGrass(4, 27, 1.5, 1); b.wildGrass(25, 27, 1.5, 1); b.wildGrass(38, 27, 1.5, 1);
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.01, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }
