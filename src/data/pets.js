@@ -20,14 +20,14 @@
 export const PETS = [
   {
     id: 'princess', name: 'Princess', species: 'Toy poodle', type: 'fairy', sprite: 'poodle',
-    pal: { a: '#f4f0e8', b: '#d6cec2', w: '#ffffff', r: '#e8508a' },
+    pal: { a: '#f4f0ea', b: '#d8d0c8', w: '#ffffff', c: '#6a3a28', p: '#f07cc0', n: '#5a3028', e: '#2a1a10' },
     owner: 'Helen and Paddy', region: 'laverton', zone: 'allen', home: [20, 12], range: 3,
     homeSpot: { zone: 'home', x: 19, y: 15 },
     behaviour: 'patrol', patrol: [[17, 9], [24, 10], [25, 14], [20, 16], [15, 14]],
     sleeps: [22 * 60, 26 * 60],
     bio: 'The guardian of Laverton. Sassy, fluffy, and ready to attack.',
     clue: 'Locals talk about a tiny, very fluffy security guard who patrols Allen St. Try right out the front.',
-    funFact: 'Has never once lost a staring contest. Has never once blinked first.',
+    funFact: 'Her pink tail and pink paws are not natural. Her confidence absolutely is.',
     favouriteSpot: 'The exact centre of the Allen St court, where everyone can see her.',
     loves: ['ribbon', 'chicken'], likes: ['cheese', 'croissant'], dislikes: ['lemon', 'tennis'],
     stats: { hp: 55, attack: 72, defence: 45, speed: 80, special: 95 },
@@ -44,7 +44,7 @@ export const PETS = [
   },
   {
     id: 'salami', name: 'Salami', species: 'Tabby cat', type: 'street', sprite: 'tabby',
-    pal: { a: '#c4843e', b: '#8a5a2a', w: '#f0d8b0', s: '#7a4a1a' },
+    pal: { a: '#8a6a42', s: '#3a2a18', c: '#c88a4a', w: '#e8d8b8', e: '#8ab83a', p: '#d89a9a' },
     owner: 'Rose', region: 'brunswick', zone: 'brunswick', home: [17, 14.5], range: 3,
     homeSpot: { zone: 'home', x: 18, y: 3 },
     behaviour: 'stalk', sleeps: [13 * 60, 15 * 60],
@@ -90,7 +90,7 @@ export const PETS = [
   },
   {
     id: 'poppy', name: 'Poppy', species: 'French bulldog', type: 'rock', sprite: 'frenchie',
-    pal: { a: '#2c2b2f', b: '#1a1a1e', w: '#d8d0c8', p: '#a07070', n: '#0a0a0a', e: '#d8b070' },
+    pal: { a: '#26252a', b: '#141418', w: '#f0ece4', g: '#7a7670', p: '#a87878', e: '#7a5030', n: '#0a0a0a', l: '#3a3940' },
     owner: 'Seb and Sinead', region: 'reservoir', zone: 'reservoir', home: [30, 10], range: 4,
     homeSpot: { zone: 'yard', x: 25, y: 9 },
     behaviour: 'zoomies', sleeps: [21 * 60, 26 * 60],
@@ -113,7 +113,7 @@ export const PETS = [
   },
   {
     id: 'stanley', name: 'Stanley', species: 'Mini schnauzer', type: 'psychic', sprite: 'schnauzer',
-    pal: { a: '#7a7d84', b: '#5a5d64', w: '#dcdee1' },
+    pal: { a: '#55585f', l: '#9a9ea6', w: '#e8e6e0', d: '#3a3c42', e: '#2a1a10', n: '#1a1a1a' },
     owner: 'Tim and Nicholas', region: 'reservoir', zone: 'reservoir', home: [10, 25.5], range: 3,
     homeSpot: { zone: 'home', x: 12, y: 16 },
     behaviour: 'aloof', sleeps: [23 * 60, 26 * 60],
