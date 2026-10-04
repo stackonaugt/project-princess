@@ -213,3 +213,8 @@ body.touch.talking #joyZone { pointer-events: none; }
   #dialog .more, .toast { animation: none; }
   #banner, .toast { transition: none; }
 }
+
+/* Team picker */
+.team-card { position: relative; }
+.team-card.picked { border-color: var(--wood); background: #fff4d6; box-shadow: inset 0 0 0 2px var(--heart); }
+.team-card .tick { position: absolute; right: 10px; top: 8px; font-size: 22px; color: var(--heart); font-weight: 700; }

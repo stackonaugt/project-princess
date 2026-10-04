@@ -54,7 +54,7 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
 // ---------------------------------------------------------------- Player
 export class Player extends Actor {
   constructor(scene, x, y, dir = 'down') {
-    super(scene, x, y, 'player-down');
+    super(scene, x, y, 'player-down', 32);
     this.fitBody(8, 5);
     this.dir = dir; this.moving = false;
     this.target = null;   // tap-to-walk destination
@@ -102,21 +102,27 @@ export class Player extends Actor {
 }
 
 // ---------------------------------------------------------------- Pets
+// mode: 'wild' (in its own patch), 'home' (relaxing at your place) or
+// 'follow' (on your team, trailing behind you).
 export class Pet extends Actor {
-  constructor(scene, data) {
-    const home = toWorld(data.home[0], data.home[1]);
+  constructor(scene, data, { mode = 'wild', index = 0, near = null } = {}) {
+    const spot = mode === 'home' ? [data.homeSpot.x, data.homeSpot.y] : data.home;
+    let home = toWorld(spot[0], spot[1]);
+    if (mode === 'follow' && near) home = { x: near.x - 10 - index * 8, y: near.y + 4 + index * 4 };
     super(scene, home.x, home.y, `pet-${data.id}`);
     this.data_ = data; this.id = data.id;
+    this.mode = mode; this.index = index;
+    this.range = mode === 'home' ? 1.5 : data.range;
     this.home = home;
     this.fitBody(8, 5);
-    this.mode = 'idle'; this.timer = 0.5 + Math.random() * 2; this.target = null;
+    this.state_ = 'idle'; this.timer = 0.5 + Math.random() * 2; this.target = null;
     this.speedMul = 1; this.patrolIndex = 0; this.cool = 0; this.alertedDay = 0;
     this.phaseT = 4 + Math.random() * 4;
     this.setInteractive({ useHandCursor: true });
   }
-  get asleep() { return inWindow(state.data.minutes, this.data_.sleeps); }
+  get asleep() { return this.mode !== 'follow' && inWindow(state.data.minutes, this.data_.sleeps); }
 
-  pause(sec) { this.mode = 'idle'; this.timer = sec; this.target = null; this.setVelocity(0, 0); }
+  pause(sec) { this.state_ = 'idle'; this.timer = sec; this.target = null; this.setVelocity(0, 0); }
   facePoint(x) { this.setFlipX(x < this.x); }
 
   randomPointNearHome(range) {
@@ -127,10 +133,11 @@ export class Pet extends Actor {
     }
     return { ...this.home };
   }
-  walkTo(p, speedMul = 1, maxTime = 5) { this.target = p; this.speedMul = speedMul; this.mode = 'walk'; this.timer = this.lastTimer = maxTime; }
+  walkTo(p, speedMul = 1, maxTime = 5) { this.target = p; this.speedMul = speedMul; this.state_ = 'walk'; this.timer = this.lastTimer = maxTime; }
 
   think(player, dt) {
     const d = this.data_, hearts = state.hearts(this.id);
+    if (this.mode === 'home') return this.walkTo(this.randomPointNearHome(this.range), 0.8);
     const dist = Math.hypot(player.x - this.x, player.y - this.y);
     const night = isNight(state.data.minutes);
     this.cool -= dt;
@@ -161,13 +168,34 @@ export class Pet extends Actor {
       const p = d.patrol[this.patrolIndex++ % d.patrol.length];
       return this.walkTo(toWorld(p[0], p[1]), 1, 8);
     }
-    if (d.behaviour === 'zoomies' && Math.random() < 0.3) return this.walkTo(this.randomPointNearHome(d.range * 1.4), 2.4, 3);
-    const range = d.behaviour === 'stalk' && night ? d.range * 1.8 : d.range;
+    if (d.behaviour === 'zoomies' && Math.random() < 0.3) return this.walkTo(this.randomPointNearHome(this.range * 1.4), 2.4, 3);
+    const range = d.behaviour === 'stalk' && night ? this.range * 1.8 : this.range;
     this.walkTo(this.randomPointNearHome(range), d.behaviour === 'phase' && night ? 1.3 : 1);
+  }
+
+  // Team pets trot along a breadcrumb trail behind you.
+  follow(player, dt, frozen) {
+    const trail = this.scene.trail, gap = 7 * (this.index + 1);
+    const t = trail.length > gap ? trail[trail.length - 1 - gap] : { x: player.x - 12, y: player.y + 4 };
+    const dx = t.x - this.x, dy = t.y - this.y, d = Math.hypot(dx, dy);
+    if (d > 160) { this.setPosition(t.x, t.y); this.body.reset(t.x, t.y); }
+    const moving = !frozen && d > 4;
+    if (moving) {
+      const sp = Math.min(150, Math.max(30, d * 4));
+      this.setVelocity(dx / d * sp, dy / d * sp);
+      if (Math.abs(dx) > 0.5) this.setFlipX(dx < 0);
+    } else this.setVelocity(0, 0);
+    const anim = `pet-${this.id}-walk`;
+    if (moving && this.scene.anims.exists(anim)) { this.anims.play(anim, true); this.anims.timeScale = d > 30 ? 1.6 : 1; }
+    else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); }
+    if (!this.scene.anims.exists(anim)) this.setBob(moving, 8);
+    if (this.data_.behaviour === 'phase') this.setAlpha(isNight(state.data.minutes) ? 1 : 0.85);
+    this.syncExtras();
   }
 
   update(player, dt, frozen) {
     const d = this.data_;
+    if (this.mode === 'follow') return this.follow(player, dt, frozen);
     if (frozen || this.asleep) {
       this.setVelocity(0, 0); this.anims.stop(); this.setBob(false);
       if (this.asleep && !frozen && !this.bubble.visible && Math.random() < 0.01) this.emote('fx-bubble-zzz', 2200);
@@ -176,8 +204,8 @@ export class Pet extends Actor {
       return;
     }
     this.timer -= dt;
-    if (this.mode === 'idle' && this.timer <= 0) this.think(player, dt);
-    if (this.mode === 'walk') {
+    if (this.state_ === 'idle' && this.timer <= 0) this.think(player, dt);
+    if (this.state_ === 'walk') {
       const dx = this.target.x - this.x, dy = this.target.y - this.y, dist = Math.hypot(dx, dy);
       const blocked = !this.body.blocked.none && this.timer < this.lastTimer - 0.4;
       if (dist < 2 || this.timer <= 0 || blocked) {
@@ -191,7 +219,7 @@ export class Pet extends Actor {
         if (this.body.blocked.none) this.lastTimer = this.timer;
       }
     }
-    const moving = this.mode === 'walk';
+    const moving = this.state_ === 'walk';
     const anim = `pet-${this.id}-walk`;
     if (moving && this.scene.anims.exists(anim)) { this.anims.play(anim, true); this.anims.timeScale = this.speedMul; }
     else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); }
@@ -218,7 +246,7 @@ export class Pet extends Actor {
     if (this.phaseT < 0.6 && this.phaseT > 0) this.setAlpha(base * Math.abs(Math.cos(this.phaseT * 14)));
     else this.setAlpha(base);
     if (this.phaseT <= 0) {
-      const p = this.randomPointNearHome(this.data_.range);
+      const p = this.randomPointNearHome(this.range);
       this.setPosition(p.x, p.y); this.body.reset(p.x, p.y);
       this.phaseT = night ? 12 + Math.random() * 8 : 5 + Math.random() * 5;
       this.pause(1 + Math.random() * 2);
@@ -231,7 +259,7 @@ export class Npc extends Actor {
   constructor(scene, id, info, spot) {
     const pos = toWorld(spot.x, spot.y);
     const tex = custom.has(`npc-${id}`) ? `npc-${id}` : `npc-${id}-down`;
-    super(scene, pos.x, pos.y, tex);
+    super(scene, pos.x, pos.y, tex, 32);
     this.id = id; this.info = info; this.spot = spot;
     this.customArt = custom.has(`npc-${id}`);
     this.fitBody(10, 6);

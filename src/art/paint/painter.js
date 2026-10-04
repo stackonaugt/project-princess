@@ -63,3 +63,27 @@ const GLYPHS = {
   '!': '010010010000010', '.': '000000000000010', '&': '010101010101011', '1': '010110010010111',
   '9': '111101111001001', '0': '111101101101111', '2': '110001010100111',
 };
+
+// Lighten (amt > 0) or darken (amt < 0) a #rrggbb colour.
+export function shade(hex, amt) {
+  const n = parseInt(hex.slice(1, 7), 16);
+  let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+  const f = c => Math.round(amt < 0 ? c * (1 + amt) : c + (255 - c) * amt);
+  r = f(r); g = f(g); b = f(b);
+  return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
+}
+
+// Give everything drawn in a box a 1px outline (Stardew style).
+export function outline(ctx, x, y, w, h, colour = '#2a1810') {
+  const img = ctx.getImageData(x, y, w, h), d = img.data;
+  const solid = i => d[i * 4 + 3] > 40;
+  const n = parseInt(colour.slice(1), 16), R = n >> 16, G = (n >> 8) & 255, B = n & 255;
+  const marks = [];
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const k = j * w + i;
+    if (solid(k)) continue;
+    if ((i > 0 && solid(k - 1)) || (i < w - 1 && solid(k + 1)) || (j > 0 && solid(k - w)) || (j < h - 1 && solid(k + w))) marks.push(k);
+  }
+  for (const k of marks) { d[k * 4] = R; d[k * 4 + 1] = G; d[k * 4 + 2] = B; d[k * 4 + 3] = 255; }
+  ctx.putImageData(img, x, y);
+}

@@ -1,12 +1,14 @@
 # Project Princess
 
-A cosy pet-collecting adventure across Melbourne. Explore Laverton, Brunswick and Reservoir, find your friends' pets, become their best mate, and fill your Petdex.
+A cosy pet-collecting adventure across Melbourne. Explore Laverton (home, Allen St, Woods St, Lohse St Reserve and the station), Brunswick and Reservoir, find your friends' pets, become their best mate, and fill your Petdex.
 
-**Play:** once GitHub Pages is switched on, the game lives at `https://<your-github-username>.github.io/project-princess/`. On a phone, use your browser's "Add to Home Screen" for a full-screen app.
+**Play:** https://stackonaugt.github.io/project-princess/ On a phone, use your browser's "Add to Home Screen" for a full-screen app.
 
 ## How to play
 
-- Walk around and find the five pets: Princess, Salami, Spooky, Poppy and Stanley.
+- You live at Helen and Paddy's new place on Allen St, Laverton (mid-renovation). Head out the front door to start exploring.
+- Find the five pets: Princess, Salami, Spooky, Poppy and Stanley. Once you find a pet, it comes to live at your place.
+- Each time you leave the house, pick up to three pets for your team. They follow you around. Pets you leave behind relax at home, or wander their usual patch.
 - Press **A** (or Space) next to a pet, person or sign to talk.
 - Chat with each pet once a day, and give them one treat a day. Find out what they love.
 - Treats appear around town each morning, and some locals hand them out too.

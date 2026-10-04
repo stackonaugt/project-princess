@@ -8,7 +8,8 @@ import { sfx } from '../systems/sfx.js';
 import { state } from '../systems/state.js';
 import { timeLabel } from '../systems/clock.js';
 import { PETS } from '../data/pets.js';
-import { REGIONS } from '../data/regions.js';
+import { ZONES, SUBURBS } from '../data/regions.js';
+import { openTeam } from './team.js';
 import { openPetdex } from './petdex.js';
 import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
@@ -50,7 +51,8 @@ export const ui = {
   // ---------- HUD ----------
   updateHud(region) {
     const d = state.data;
-    $('hudRegion').textContent = REGIONS[region].name;
+    const z = ZONES[region], sub = SUBURBS[z.suburb].name;
+    $('hudRegion').textContent = z.name === sub ? z.name : `${z.name}, ${sub}`;
     $('hudClock').textContent = `Day ${d.day} · ${timeLabel(d.minutes)}`;
     $('hudWeather').textContent = state.isRaining() ? '☂' : (d.minutes >= 20 * 60 ? '☾' : '☀');
     $('hudWeather').title = state.isRaining() ? 'Raining' : 'Clear';
@@ -162,9 +164,18 @@ export const ui = {
     d.resolve(d.result);
   },
 
+  // ---------- Team ----------
+  // Resolves with an array of pet ids, or null if they backed out.
+  chooseTeam() {
+    return new Promise(resolve => {
+      this._teamResolve = resolve;
+      this.openModal('team');
+    });
+  },
+
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog) return;
+    if (this.dialog || this.modalOpen === 'team') return;
     if (this.modalOpen === which) return this.closeModal();
     this.openModal(which);
   },
@@ -176,6 +187,7 @@ export const ui = {
     if (which === 'dex') openPetdex(panel, close);
     if (which === 'bag') openBag(panel, close);
     if (which === 'menu') openMenu(panel, close);
+    if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
     $('modal').hidden = false;
     if (!this.modalOpen) sfx.open();
     this.modalOpen = which;
@@ -187,5 +199,7 @@ export const ui = {
     this.modalOpen = false;
     sfx.close();
     bus.emit('ui:modal', null);
+    // Closing the team picker without choosing means "not leaving yet".
+    if (this._teamResolve) { const r = this._teamResolve; this._teamResolve = null; r(null); }
   },
 };

@@ -6,17 +6,25 @@
 //   #  road         +  tram tracks  x  level crossing r  railway
 //   f  footpath     c  concrete     p  platform       b  bluestone lane
 //   ~  water        w  bridge       s  sand           d  tilled soil
-//   g  gravel       m  mulch
+//   g  gravel       m  mulch        L  mown lawn      u  park gravel (decomposed granite)
+//   z  zebra crossing               P  car park bay   h  driveway slabs
+// Indoors:
+//   W  wall         V  void (outside the house)       D  doorway
+//   o  timber floor T  bathroom tiles K  carpet        n  lino (laundry)
 import { hash } from '../../util.js';
 
 export const TILE_NAMES = {
   '.': 'grass', ',': 'flowers', '"': 'tallgrass', '=': 'path', '#': 'road', '+': 'tram', 'x': 'crossing',
   'r': 'rail', 'f': 'footpath', 'c': 'concrete', 'p': 'platform', 'b': 'bluestone', '~': 'water',
   'w': 'bridge', 's': 'sand', 'd': 'soil', 'g': 'gravel', 'm': 'mulch',
+  'L': 'lawn', 'u': 'parkgravel', 'z': 'zebra', 'P': 'carpark', 'h': 'driveway',
+  'B': 'rail', 'W': 'wall', 'V': 'void', 'D': 'doorway', 'o': 'timber', 'T': 'bathtile', 'K': 'carpet', 'n': 'lino',
 };
+const WALLISH = 'WV';
+const FLOORS = 'oTKnD';
 
 const FLOWERS = ['#f5e66b', '#f28bb0', '#ffffff', '#b79cf0', '#f29a5b'];
-const ROADLIKE = '#+x';
+const ROADLIKE = '#+xzP';
 const T = 16;
 
 export function paintGround(p, map, grass, custom = {}) {
@@ -76,7 +84,80 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       p.r('#e3c290', sx + Math.floor(r2 * 12), sy + Math.floor(r * 12), 2, 1);
       return;
     }
-    case '#': case '+': case 'x': {
+    case 'W': {
+      const below = get(tx, ty + 1), below2 = get(tx, ty + 2);
+      const face = below !== null && !WALLISH.includes(below);
+      const upper = below === 'W' && below2 !== null && !WALLISH.includes(below2);
+      const bathy = (face ? below : below2) === 'T' || (face ? below : below2) === 'n';
+      const paper = bathy ? '#dfeef0' : '#eadcbc', paper2 = bathy ? '#c4dadf' : '#e0cfab';
+      if (face) {
+        p.r(paper, sx, sy, T, T);
+        if (bathy) { for (let y = 3; y < T; y += 5) p.r(paper2, sx, sy + y, T, 1); for (let x = (ty % 2) * 4; x < T; x += 8) p.r(paper2, sx + x, sy, 1, T); }
+        else for (let x = 2; x < T; x += 4) p.r(paper2, sx + x, sy, 1, T - 3);
+        p.r('#8a5a3a', sx, sy + T - 3, T, 3); p.r('#a8723c', sx, sy + T - 3, T, 1);
+        if (!upper && get(tx, ty - 1) !== 'W') p.r('#5a4232', sx, sy, T, 2);
+      } else if (upper) {
+        p.r('#5a4232', sx, sy, T, 5); p.r('#6e5440', sx, sy + 4, T, 1);
+        p.r(paper, sx, sy + 5, T, T - 5);
+        if (bathy) for (let y = 8; y < T; y += 5) p.r(paper2, sx, sy + y, T, 1);
+        else for (let x = 2; x < T; x += 4) p.r(paper2, sx + x, sy + 6, 1, T - 6);
+      } else {
+        p.r('#5a4232', sx, sy, T, T);
+        p.r('#6e5440', sx + 2, sy + 2, T - 4, T - 4);
+        if (FLOORS.includes(get(tx - 1, ty) || 'V')) p.r('#3a2a20', sx, sy, 2, T);
+        if (FLOORS.includes(get(tx + 1, ty) || 'V')) p.r('#3a2a20', sx + T - 2, sy, 2, T);
+      }
+      return;
+    }
+    case 'V': p.r('#1a1410', sx, sy, T, T); return;
+    case 'o': case 'D': {
+      for (let row = 0; row < 4; row++) {
+        const y = sy + row * 4, off = (row * 7 + tx * 3) % 16;
+        p.r(row % 2 ? '#b07a48' : '#a8703e', sx, y, T, 4);
+        p.r('#8a5a30', sx, y + 3, T, 1);
+        p.r('#8a5a30', sx + off % T, y, 1, 3);
+        if (hash(tx * 4 + row, ty) > 0.7) p.r('#bc8a58', sx + (off + 5) % 14, y + 1, 3, 1);
+      }
+      if (c === 'D') { p.r('#7a5030', sx, sy, T, 2); p.r('#7a5030', sx, sy + T - 2, T, 2); p.r('#5a3a20', sx, sy, 1, T); p.r('#5a3a20', sx + T - 1, sy, 1, T); }
+      return;
+    }
+    case 'T': {
+      p.r('#eef2f2', sx, sy, T, T);
+      for (let i = 0; i < 2; i++) for (let j = 0; j < 2; j++) if ((i + j + tx + ty) % 2) p.r('#d8e2e4', sx + i * 8, sy + j * 8, 8, 8);
+      p.r('#c4cfd2', sx, sy + 7, T, 1); p.r('#c4cfd2', sx + 7, sy, 1, T);
+      return;
+    }
+    case 'n': {
+      p.r('#d8d0b8', sx, sy, T, T);
+      for (let i = 0; i < 4; i++) p.r('#c8bea4', sx + Math.floor(hash(tx * 3 + i, ty) * 14), sy + Math.floor(hash(tx, ty * 3 + i) * 14), 2, 2);
+      return;
+    }
+    case 'K': {
+      p.r('#c9b49a', sx, sy, T, T);
+      for (let i = 0; i < 10; i++) p.r(i % 2 ? '#bca68c' : '#d4c0a6', sx + Math.floor(hash(tx * 13 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 13 + i) * 15), 1, 1);
+      return;
+    }
+    case 'L': {
+      const stripe = Math.floor(tx / 2) % 2;
+      p.r(stripe ? '#6cbc4a' : '#62b244', sx, sy, T, T);
+      for (let i = 0; i < 5; i++) { const q = hash(tx * 7 + i, ty * 5); p.r(stripe ? '#58a83c' : '#7cc858', sx + Math.floor(q * 15), sy + Math.floor(hash(ty, tx + i) * 14), 1, 2); }
+      return;
+    }
+    case 'u': {
+      p.r('#d8b884', sx, sy, T, T);
+      for (let i = 0; i < 8; i++) p.r(i % 3 ? '#c8a670' : '#e8cca0', sx + Math.floor(hash(tx * 11 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 11 + i) * 15), 1, 1);
+      if (!same(get, tx, ty - 1, 'u=')) p.r('#c29a64', sx, sy, T, 1);
+      if (!same(get, tx, ty + 1, 'u=')) p.r('#b98f5c', sx, sy + T - 1, T, 1);
+      return;
+    }
+    case 'h': {
+      p.r('#c4c0b6', sx, sy, T, T);
+      if (tx % 3 === 0) p.r('#aaa69c', sx, sy, 1, T);
+      if (ty % 3 === 0) p.r('#aaa69c', sx, sy, T, 1);
+      if (hash(tx, ty) > 0.8) p.r('#b4b0a6', sx + 5, sy + 6, 4, 2);
+      return;
+    }
+    case '#': case '+': case 'x': case 'z': case 'P': {
       p.r('#5d5f66', sx, sy, T, T);
       p.r('#6b6d74', sx + Math.floor(r * 13), sy + Math.floor(r2 * 13), 2, 1);
       p.r('#53555c', sx + Math.floor(r2 * 13), sy + Math.floor(r * 11), 1, 1);
@@ -96,16 +177,21 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
         if ((roadL || roadR) && roadD && !roadU && get(tx, ty + 1) === '#' && tx % 2 === 0) p.r('#e8e4d8', sx + 4, sy + 15, 8, 1);
         if ((roadU || roadD) && roadR && !roadL && get(tx + 1, ty) === '#' && ty % 2 === 0) p.r('#e8e4d8', sx + 15, sy + 4, 1, 8);
       }
+      if (c === 'z') {
+        const vert = same(get, tx - 1, ty, ROADLIKE) && same(get, tx + 1, ty, ROADLIKE);
+        for (let i = 1; i < T; i += 5) vert ? p.r('#ece8dc', sx + 1, sy + i, T - 2, 3) : p.r('#ece8dc', sx + i, sy + 1, 3, T - 2);
+      }
+      if (c === 'P') { p.r('#ece8dc', sx, sy + 1, 1, T - 2); if (get(tx, ty + 1) !== 'P') p.r('#ece8dc', sx, sy + T - 2, T, 1); }
       if (!roadU) p.r('#9a9ca2', sx, sy, T, 1);
       if (!roadD) p.r('#46484e', sx, sy + T - 1, T, 1);
       if (!roadL) p.r('#9a9ca2', sx, sy, 1, T);
       if (!roadR) p.r('#46484e', sx + T - 1, sy, 1, T);
       return;
     }
-    case 'r': {
+    case 'r': case 'B': {
       p.r('#8a8478', sx, sy, T, T);
       for (let i = 0; i < 6; i++) p.r(i % 2 ? '#a09a8c' : '#6e695f', sx + Math.floor(hash(tx * 9 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 9 + i) * 15), 1, 1);
-      const vert = 'rx'.includes(get(tx, ty - 1)) || 'rx'.includes(get(tx, ty + 1));
+      const vert = 'rxB'.includes(get(tx, ty - 1) || '-') || 'rxB'.includes(get(tx, ty + 1) || '-');
       if (vert) {
         for (let y = 1; y < T; y += 4) p.r('#6b4a2e', sx + 1, sy + y, 14, 2);
         p.r('#5d616a', sx + 3, sy, 2, T); p.r('#5d616a', sx + 11, sy, 2, T); p.r('#c9ccd2', sx + 3, sy, 1, T); p.r('#c9ccd2', sx + 11, sy, 1, T);

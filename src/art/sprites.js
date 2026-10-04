@@ -1,65 +1,125 @@
-// Built-in pixel sprites, written as strings. Each letter is a palette colour,
-// '.' is transparent. Characters are 12x12 and get centred in a 16x16 frame.
+// Built-in pet pixel art, written as strings. Each letter is a palette
+// colour, '.' is transparent. Pets are 16x16, drawn side-on facing right,
+// and get a dark outline added automatically. A second walking frame is
+// made by spreading the legs (see stride()).
 //
-// Every sprite has a list of frames. Pets: [idle, step]. People: [idle, stepA, stepB].
 // You never need to touch this file to use your own art: drop PNGs into
 // assets/sprites/ instead (see assets/sprites/README.md).
 
-// Replace the last N rows of a sprite to make an extra animation frame.
-const legs = (rows, ...tail) => rows.slice(0, rows.length - tail.length).concat(tail);
+// Second frame: legs in the bottom `n` rows step apart.
+function stride(rows, n = 4) {
+  const top = rows.slice(0, rows.length - n);
+  const mid = 8;
+  const legs = rows.slice(rows.length - n).map(r => {
+    const left = r.slice(0, mid), right = r.slice(mid);
+    return (left.slice(1) + '.') .slice(0, mid) + ('.' + right).slice(0, 16 - mid);
+  });
+  return top.concat(legs);
+}
 
 const poodle = [
-  '.....rr.....', '....kaak....', '...kaaaak...', '.kkkaaaakkk.', 'kbbkaaaakbbk', 'kbbaeaaeabbk',
-  'kbbaaaaaabbk', '.kbaakkaabk.', '..kaaaaaak..', '..kbaaaabk..', '.kaak..kaak.', '.kkk....kkk.',
+  '................',
+  '..........rr....',
+  '.........wwww...',
+  '........wwaaab..',
+  '..ww....waaaaab.',
+  '.wwab..bbaeaaab.',
+  '.waab..bbaaaaan.',
+  '..bb...bbbaaab..',
+  '...a.aaaabbab...',
+  '...aaaaaaaaab...',
+  '...waaaaaaaab...',
+  '....bbbbbbbb....',
+  '....ab....ab....',
+  '....ab....ab....',
+  '...wab...wab....',
+  '...bbb...bbb....',
 ];
 const tabby = [
-  '............', '.k........k.', '.kk......kk.', '.kpk....kpk.', '.kaabbbbaak.', '.kaaabbaaak.',
-  '.kaeaaaaeak.', '.kaaaaaaaak.', '.kaaappaaak.', '..kbaaaabk..', '..kak..kak..', '..kk....kk..',
+  '................',
+  '..........a...a.',
+  '..a.......aa.aa.',
+  '.ab.......aaaaa.',
+  '.ab......aaeaaa.',
+  '..ab.....aaaaaan',
+  '..ab.....wawwab.',
+  '...ab....aawwa..',
+  '...aaaasasaaab..',
+  '...asasasasaab..',
+  '...aaaaaaaaaab..',
+  '...bsbsbsbsbb...',
+  '....ab....ab....',
+  '....ab....ab....',
+  '....ab....ab....',
+  '....bb....bb....',
 ];
 const bunny = [
-  '...kk..kk...', '..kbk..kbk..', '..kbk..kbk..', '..kak..kak..', '..kaakkaak..', '.kaaaaaaaak.',
-  '.kaeaaaaeak.', '.kaaappaaak.', '.kaaaaaaaak.', '..kaaaaaak..', '..kaaaaaak..', '...kk..kk...',
+  '.........aa.....',
+  '........apa.aa..',
+  '........apaapa..',
+  '........apaapa..',
+  '.........aaaa...',
+  '........aaaaab..',
+  '.......aaaeaab..',
+  '.......aaaaaaap.',
+  '...aaaaaaaaaab..',
+  '..aaaaaaaaaaab..',
+  '.wwaaaaaaaaaab..',
+  '.wwaaaaaaaaaab..',
+  '..baaaaaaaaab...',
+  '..bbbbbbbbbbb...',
+  '..aab....aab....',
+  '..bbbb...bbbb...',
 ];
 const frenchie = [
-  '.kk......kk.', 'kbak....kabk', 'kbaak..kaabk', '.kaakkkkaak.', '.kaaaaaaaak.', 'kaeaaaaaaeak',
-  'kaaaaaaaaaak', 'kaaakkkkaaak', '.kaaawwaaak.', '.kaaawwaaak.', '.kaak..kaak.', '.kkk....kkk.',
+  '................',
+  '..........a..a..',
+  '.........aaa.aa.',
+  '.........apaapa.',
+  '.........aaaaaa.',
+  '.........aaeaaa.',
+  '.........aaaawwn',
+  '..a......aaaawwb',
+  '..ab...aaaaawwb.',
+  '...aaaaaaaaawwb.',
+  '..aaaaaaaaaawwb.',
+  '..aaaaaaaaaaab..',
+  '..bbbbbbbbbbbb..',
+  '...ab.....ab....',
+  '...ab.....ab....',
+  '...bb.....bb....',
 ];
 const schnauzer = [
-  '.kk......kk.', '.kak....kak.', '..kakkkkak..', '..kaaaaaak..', '.kbbbaabbbk.', '.kaeaaaaeak.',
-  '.kaaaaaaaak.', '.kawwkkwwak.', '..kwwwwwwk..', '..kwwwwwwk..', '.kaak..kaak.', '.kkk....kkk.',
+  '................',
+  '..........aa....',
+  '.........aaab...',
+  '.........wwwaa..',
+  '..a......aeaaaa.',
+  '..ab.....aaaaaan',
+  '...ab....awwwww.',
+  '....aaaaaawwwww.',
+  '...aaaaaaaaawww.',
+  '...aaaaaaaaaab..',
+  '...baaaaaaaaab..',
+  '...wwbbbbbbbww..',
+  '...ww.....ww....',
+  '...ww.....ww....',
+  '...ww.....ww....',
+  '...bb.....bb....',
 ];
 
 export const PET_FRAMES = {
-  poodle:    [poodle, legs(poodle, '..kaakkaak..', '..kkk..kkk..')],
-  tabby:     [tabby, legs(tabby, '...kakkak...', '...kk..kk...')],
-  bunny:     [bunny, legs(bunny, '..kaaaaaak..', '..kk....kk..')],
-  frenchie:  [frenchie, legs(frenchie, '..kaakkaak..', '..kkk..kkk..')],
-  schnauzer: [schnauzer, legs(schnauzer, '..kaakkaak..', '..kkk..kkk..')],
+  poodle:    [poodle, stride(poodle)],
+  tabby:     [tabby, stride(tabby)],
+  bunny:     [bunny, stride(bunny, 3)],
+  frenchie:  [frenchie, stride(frenchie, 3)],
+  schnauzer: [schnauzer, stride(schnauzer)],
 };
 
-const pDown = [
-  '...kkkkkk...', '..khhhhhhk..', '.khhhhhhhhk.', '.khsssssshk.', '.kskssssksk.', '..kssssssk..',
-  '..kcccccck..', '.ksccccccsk.', '.ksccccccsk.', '..kllllllk..', '..kll..llk..', '..kkk..kkk..',
-];
-const pUp = [
-  '...kkkkkk...', '..khhhhhhk..', '.khhhhhhhhk.', '.khhhhhhhhk.', '.khhhhhhhhk.', '..khhhhhhk..',
-  '..kcccccck..', '.ksccccccsk.', '.ksccccccsk.', '..kllllllk..', '..kll..llk..', '..kkk..kkk..',
-];
-const pLeft = [
-  '...kkkkkk...', '..khhhhhhk..', '.khhhhhhhhk.', '.ksssshhhhk.', '.kkssshhhhk.', '..kssssshk..',
-  '..kcccccck..', '..kscccccck.', '..kscccccck.', '..kllllllk..', '..kll..llk..', '..kkk..kkk..',
-];
-const walk = rows => [
-  rows,
-  legs(rows, '..kll..lk...', '..kkk..kk...'),
-  legs(rows, '...kl..llk..', '...kk..kkk..'),
-];
-export const PERSON_FRAMES = { down: walk(pDown), up: walk(pUp), left: walk(pLeft) };
-
-// Colours shared by every sprite unless a pet or person overrides them.
+// Colours shared by every pet unless the pet overrides them in pets.js.
 export const BASE_PALETTE = {
-  k: '#3a2412', e: '#2a1a0c', p: '#f08aa0', y: '#f0a030', w: '#ffffff', r: '#d83c3c',
-  h: '#6b3f1f', s: '#f2c79a', c: '#3fa38f', l: '#33446e',
+  e: '#1a1010', n: '#2a1a1a', p: '#f08aa0', r: '#e8508a', w: '#ffffff', s: '#5a3a1a',
 };
 
-export const PLAYER_PALETTE = { h: '#6b3f1f', s: '#f2c79a', c: '#3fa38f', l: '#33446e' };
+// The player's look (see src/art/paint/people.js for the options).
+export const PLAYER_LOOK = { skin: '#f2c79a', hair: '#6b3f1f', hairStyle: 'short', shirt: '#3fa38f', pants: '#33446e', shoes: '#4a2a18' };

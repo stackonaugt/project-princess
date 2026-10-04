@@ -37,6 +37,7 @@ export function openMenu(panel, close) {
       h('div', { class: 'note' }, h('h4', {}, 'How to play'),
         h('ul', { class: 'help' },
           h('li', {}, 'Find every pet in Laverton, Brunswick and Reservoir. Walk up and press A (or Space) to say hello.'),
+          h('li', {}, 'Pets you find move into your place on Allen St. When you head out the door, pick up to three to come along. They follow you around.'),
           h('li', {}, 'Chat once a day and give one treat a day to grow your friendship. Find out what each pet loves.'),
           h('li', {}, 'Treats appear around town each morning. Some locals will give you one a day too.'),
           h('li', {}, 'Tap your myki at a green reader to catch the train to a station you have already visited.'),

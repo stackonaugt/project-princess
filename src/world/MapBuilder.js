@@ -5,8 +5,8 @@
 import { OBJECTS } from '../art/paint/objects.js';
 import { rng } from '../util.js';
 
-const SOLID_GROUND = '~r';
-const GRASSY = '.,"';
+const SOLID_GROUND = '~rWV';
+const GRASSY = '.,"L';
 
 export class MapBuilder {
   constructor({ id, w, h, fill = '.', seed = 1 }) {
@@ -50,10 +50,12 @@ export class MapBuilder {
     const def = OBJECTS[kind];
     if (!def) throw new Error(`Unknown object kind: ${kind}`);
     const [fw, fh] = def.foot;
-    if (!this.free(x, y, fw, fh)) return null;
+    // Flat things (rugs, mats) and wall decorations can overlap other objects.
+    const layered = def.flat || def.roof || def.deck || opts.onWall;
+    if (!layered && !this.free(x, y, fw, fh)) return null;
     const o = { kind, x, y, w: fw, h: fh, v: opts.v ?? (Array.isArray(def.variants) ? def.variants[0] : ''), ...opts };
     this.objects.push(o);
-    for (let j = y; j < y + fh; j++) for (let i = x; i < x + fw; i++) this.occ[j][i] = o;
+    if (!layered) for (let j = y; j < y + fh; j++) for (let i = x; i < x + fw; i++) this.occ[j][i] = o;
     return o;
   }
   fenceH(x0, x1, y, style, gaps = []) { for (let x = x0; x <= x1; x++) if (!gaps.includes(x)) this.put('fence', x, y, { style }); return this; }
@@ -99,7 +101,7 @@ export class MapBuilder {
 
   // Gameplay markers
   // to = null makes a locked exit that shows `lines` instead.
-  exit(x, y, w, h, to, entry, label, lines = null) { this.exits.push({ x, y, w, h, to, entry, label, lines }); return this; }
+  exit(x, y, w, h, to, entry, label, lines = null, extra = {}) { this.exits.push({ x, y, w, h, to, entry, label, lines, ...extra }); return this; }
   entry(name, x, y, dir = 'down') { this.entries[name] = { x, y, dir }; return this; }
   forage(x, y, items) { this.spawns.push({ x, y, items }); this.reserve(x, y, 0.5); return this; }
   npc(id, x, y, extra = {}) { this.npcs.push({ id, x, y, ...extra }); this.reserve(x, y, 1); return this; }

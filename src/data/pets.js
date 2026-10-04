@@ -6,8 +6,10 @@
 //             assets/sprites/pets/<id>.png and assets/sprites/portraits/<id>.png
 //  sprite     which built-in pixel sprite to use (see src/art/sprites.js)
 //  pal        colour overrides for the built-in sprite
-//  region     'laverton' | 'brunswick' | 'reservoir'
-//  home       [x, y] tile the pet hangs around; range = how far it wanders
+//  region     suburb: 'laverton' | 'brunswick' | 'reservoir' (Petdex grouping)
+//  zone       the area it lives in before you find it (see data/regions.js)
+//  home       [x, y] tile in that zone it hangs around; range = how far it wanders
+//  homeSpot   where it hangs out at your place once found: { zone: 'home' | 'yard', x, y }
 //  behaviour  'wander' | 'patrol' | 'phase' | 'zoomies' | 'stalk' | 'aloof'
 //  sleeps     [from, to] in minutes after midnight (26*60 = 2am), or null
 //  loves / likes / dislikes   item ids from src/data/items.js
@@ -18,14 +20,15 @@
 export const PETS = [
   {
     id: 'princess', name: 'Princess', species: 'Toy poodle', type: 'fairy', sprite: 'poodle',
-    pal: { a: '#f7f4ee', b: '#ddd5ca', r: '#f07ab0' },
-    owner: 'Helen and Paddy', region: 'laverton', home: [19.5, 24], range: 3,
-    behaviour: 'patrol', patrol: [[17.5, 23.5], [21.5, 23.5], [21.5, 28.5], [17.5, 28.5]],
+    pal: { a: '#f4f0e8', b: '#d6cec2', w: '#ffffff', r: '#e8508a' },
+    owner: 'Helen and Paddy', region: 'laverton', zone: 'allen', home: [20, 12], range: 3,
+    homeSpot: { zone: 'home', x: 19, y: 15 },
+    behaviour: 'patrol', patrol: [[17, 9], [24, 10], [25, 14], [20, 16], [15, 14]],
     sleeps: [22 * 60, 26 * 60],
     bio: 'The guardian of Laverton. Sassy, fluffy, and ready to attack.',
-    clue: 'Locals talk about a tiny, very fluffy security guard who patrols a court south of Aviation Rd.',
+    clue: 'Locals talk about a tiny, very fluffy security guard who patrols Allen St. Try right out the front.',
     funFact: 'Has never once lost a staring contest. Has never once blinked first.',
-    favouriteSpot: 'The exact centre of Kookaburra Court, where everyone can see her.',
+    favouriteSpot: 'The exact centre of the Allen St court, where everyone can see her.',
     loves: ['ribbon', 'chicken'], likes: ['cheese', 'croissant'], dislikes: ['lemon', 'tennis'],
     stats: { hp: 55, attack: 72, defence: 45, speed: 80, special: 95 },
     moves: ['Pom-pom Pummel', 'Withering Look', 'Yap Attack', 'Guardian Stance'],
@@ -41,8 +44,9 @@ export const PETS = [
   },
   {
     id: 'salami', name: 'Salami', species: 'Tabby cat', type: 'street', sprite: 'tabby',
-    pal: { a: '#a5723e', b: '#6b4422' },
-    owner: 'Rose', region: 'brunswick', home: [17, 14.5], range: 3,
+    pal: { a: '#c4843e', b: '#8a5a2a', w: '#f0d8b0', s: '#7a4a1a' },
+    owner: 'Rose', region: 'brunswick', zone: 'brunswick', home: [17, 14.5], range: 3,
+    homeSpot: { zone: 'home', x: 18, y: 3 },
     behaviour: 'stalk', sleeps: [13 * 60, 15 * 60],
     bio: 'A foundling with a vicious strike.',
     clue: 'Something stripy rules the bluestone laneways behind the terraces off Sydney Rd.',
@@ -63,8 +67,9 @@ export const PETS = [
   },
   {
     id: 'spooky', name: 'Spooky', species: 'Bunny', type: 'ghost', sprite: 'bunny',
-    pal: { a: '#2e2836', b: '#6a5878', k: '#120d18', e: '#9fe8ff', p: '#9a78b0' },
-    owner: 'Slinks', region: 'brunswick', home: [40, 22.5], range: 3,
+    pal: { a: '#2e2836', b: '#1c1622', w: '#4a405a', e: '#9fe8ff', p: '#9a78b0' },
+    owner: 'Slinks', region: 'brunswick', zone: 'brunswick', home: [40, 22.5], range: 3,
+    homeSpot: { zone: 'home', x: 2, y: 6 },
     behaviour: 'phase', sleeps: [9 * 60, 12 * 60],
     bio: 'A night walker who can phase in and out of reality at will.',
     clue: 'People in Randall Park swear they saw a black shape near the pond. Easier to spot after dark.',
@@ -85,8 +90,9 @@ export const PETS = [
   },
   {
     id: 'poppy', name: 'Poppy', species: 'French bulldog', type: 'rock', sprite: 'frenchie',
-    pal: { a: '#2c2b2f', b: '#4c3c3c', k: '#0f0f11', e: '#d8b070', w: '#f4f1ea' },
-    owner: 'Seb and Sinead', region: 'reservoir', home: [30, 10], range: 4,
+    pal: { a: '#2c2b2f', b: '#1a1a1e', w: '#d8d0c8', p: '#a07070', n: '#0a0a0a', e: '#d8b070' },
+    owner: 'Seb and Sinead', region: 'reservoir', zone: 'reservoir', home: [30, 10], range: 4,
+    homeSpot: { zone: 'yard', x: 25, y: 9 },
     behaviour: 'zoomies', sleeps: [21 * 60, 26 * 60],
     bio: 'Pure muscle and brawn, with very little brains. Ready to bust her way through.',
     clue: 'Joggers at Edwardes Lake report being "body-checked by a small black brick" near the picnic tables.',
@@ -107,8 +113,9 @@ export const PETS = [
   },
   {
     id: 'stanley', name: 'Stanley', species: 'Mini schnauzer', type: 'psychic', sprite: 'schnauzer',
-    pal: { a: '#8a8d94', b: '#d4d7db', w: '#dcdee1' },
-    owner: 'Tim and Nicholas', region: 'reservoir', home: [10, 25.5], range: 3,
+    pal: { a: '#7a7d84', b: '#5a5d64', w: '#dcdee1' },
+    owner: 'Tim and Nicholas', region: 'reservoir', zone: 'reservoir', home: [10, 25.5], range: 3,
+    homeSpot: { zone: 'home', x: 12, y: 16 },
     behaviour: 'aloof', sleeps: [23 * 60, 26 * 60],
     bio: 'Grumpy but loyal. Only likes smart animals like him.',
     clue: 'A distinguished grey gentleman supervises the weatherboards south of Broadway. He will not come to you.',
