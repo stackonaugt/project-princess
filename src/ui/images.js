@@ -1,5 +1,5 @@
 // Turns game textures into <img> sources for the HTML interface.
-import { frameDataURL, custom, customURL } from '../art/textures.js';
+import { frameDataURL, custom, customURL, playerTexture } from '../art/textures.js';
 
 let scene = null;
 export const setImageScene = s => { scene = s; };
@@ -13,3 +13,4 @@ export const npcIcon = id => {
 // A custom portrait (photo or art) if there is one, otherwise the sprite.
 export const petPortrait = id => customURL[`portrait-${id}`] || petIcon(id, 128);
 export const hasPhoto = id => custom.has(`portrait-${id}`);
+export const heroIcon = id => scene ? frameDataURL(scene, playerTexture(id, 'down')[0], 0, 96) : '';

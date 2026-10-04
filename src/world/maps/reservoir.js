@@ -80,7 +80,7 @@ export function buildReservoir() {
   b.sign(46, 20, ['Plenty Rd: CLOSED.', 'Level crossing removal works. Expected completion: 2031. Probably.']);
   b.exit(0, 17, 1, 2, null, null, 'Coburg North', ['The road west is blocked by roadworks.', 'A man in a hi-vis vest gives you a thumbs up. You give him one back. Nothing changes.']);
   b.exit(47, 17, 1, 2, null, null, 'Plenty Rd', ['Plenty Rd is closed for level crossing removal works.', 'The new skyrail will be lovely. Eventually.']);
-  b.exit(22, 33, 2, 1, 'brunswick', 'north', 'Brunswick');
+  b.exit(22, 33, 2, 1, 'sydney', 'east', 'Brunswick');
 
   b.entry('station', 42, 11, 'left').entry('south', 23, 32, 'up');
 

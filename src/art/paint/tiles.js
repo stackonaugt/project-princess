@@ -164,7 +164,11 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       p.r('#53555c', sx + Math.floor(r2 * 13), sy + Math.floor(r * 11), 1, 1);
       const roadU = same(get, tx, ty - 1, ROADLIKE), roadD = same(get, tx, ty + 1, ROADLIKE);
       const roadL = same(get, tx - 1, ty, ROADLIKE), roadR = same(get, tx + 1, ty, ROADLIKE);
-      if (c === '+') {
+      if (c === '+' && (get(tx - 1, ty) === '+' || get(tx + 1, ty) === '+') && !(get(tx, ty - 1) === '+' && get(tx, ty + 1) === '+')) {
+        // tram tracks running east-west
+        p.r('#3e4046', sx, sy + 3, T, 2); p.r('#3e4046', sx, sy + 11, T, 2);
+        p.r('#b8bcc4', sx, sy + 3, T, 1); p.r('#b8bcc4', sx, sy + 11, T, 1);
+      } else if (c === '+') {
         p.r('#3e4046', sx + 3, sy, 2, T); p.r('#3e4046', sx + 11, sy, 2, T);
         p.r('#b8bcc4', sx + 3, sy, 1, T); p.r('#b8bcc4', sx + 11, sy, 1, T);
       } else if (c === 'x') {

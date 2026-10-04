@@ -2,7 +2,9 @@
 
 A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You live at Helen and Paddy's new house on Allen St, Laverton, and wander three suburbs (Laverton, Brunswick, Reservoir) finding, befriending and cataloguing the real pets of the owner's friends. Found pets move into your house; each time you leave you pick a team of up to three who follow you around. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.
 
-Laverton is modelled on real places from the owner's screenshots: the Allen St house (floor plan and backyard from the real estate listing, walls between kitchen, meals and lounge removed), the Allen St cul-de-sac, Woods St (the old house at 72, where Helen's parents Trish and Gordon now live), Lohse St Reserve and Laverton Station. Recreate real places recognisably but compressed; avoid real business names on shopfronts.
+Laverton is modelled on real places from the owner's screenshots: the Allen St house (floor plan and backyard from the real estate listing, walls between kitchen, meals and lounge removed), the Allen St cul-de-sac, Woods St (the old house at 72, where Helen's parents Trish and Gordon now live), Lohse St Reserve and Laverton Station. Brunswick so far has four zones from the owner's screenshots: Brunswick Station (heritage building, Upfield path, Dawson St level crossing), Sydney Rd (A1 Bakery, Spooky's spot), Donald St (Rose's blue-grey flats, Salami's spot) and Hope St (Mem and Corni's apartments). Recreate real places recognisably but compressed. Avoid real business names on shopfronts, except A1 Bakery, which the owner specifically asked for.
+
+**Who you play.** At the start you choose Helen or one of her twin toddlers, Hadrian and Aleksy (`src/data/heroes.js`). Each has a perk (`talkBonus`, `runBoost`, `forageBonus`) and starting treats. The choice is saved as `state.data.hero` and can be changed from the menu; older saves are asked once.
 
 **Art direction.** The owner plans to draw the final art. The built-in art is code-drawn reference art in a Stardew style: 16px tiles, people 16x32, pets 16x16 side-on, 1px dark outline, shaded with a light top edge and darker bottom/right. Keep new built-in art consistent with that so custom PNGs can drop straight in.
 
@@ -52,6 +54,7 @@ src/
   bus.js              Tiny event bus shared by scenes and the HTML UI
   util.js             hash() noise, seeded rng(), pick/clamp/lerp
   data/               CONTENT. Most edits happen here.
+    heroes.js         Playable characters (Helen, Hadrian, Aleksy): looks, perks, starting treats
     pets.js           The pets: stats, behaviours, favourite treats, dialogue by heart level
     npcs.js           Townsfolk: lines, hints about unfound pets, daily gifts
     items.js          Treats
@@ -60,12 +63,12 @@ src/
     flavour.js        Text for inspecting objects (houses, bins, trams...)
   world/
     MapBuilder.js     DSL for building maps in code (fill, put, scatter, exits, lanes...)
-    maps/*.js         One file per zone: home, yard, allen, woods, lohse, station (Laverton), brunswick, reservoir
+    maps/*.js         One file per zone: home, yard, allen, woods, lohse, station (Laverton); brunswick (station), sydney, donald, hope (Brunswick); reservoir
     entities.js       Player, Pet (behaviour AI), Npc. Arcade physics sprites
     traffic.js        Cars, trams, bikes, trains (scenery that waits for you)
   art/
     sprites.js        Built-in character pixel art as strings
-    paint/*.js        Procedural painters: tiles (ground + interior walls/floors), objects (+ furniture.js, laverton.js), people.js (16x32 people from a "look"), items, fx
+    paint/*.js        Procedural painters: tiles (ground + interior walls/floors), objects (+ furniture.js, laverton.js), people.js (16x32 people and toddlers from a "look"), brunswick.js, items, fx
     textures.js       Builds textures; swaps in custom PNGs from assets/sprites via the manifest
   scenes/
     BootScene.js      Loads the sprite manifest and custom PNGs, builds textures
@@ -90,7 +93,7 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Interiors** use ground letters `W` (wall; draws as wallpaper face when floor is below, a 2-tall top wall gets an upper face), `V` (void), `D` (doorway), and floors `o` `T` `K` `n`. Doors are exits on `D` tiles. Wall decorations use `put(..., { onWall: true })`.
 - **Objects** are defined in `src/art/paint/objects.js` plus `furniture.js` and `laverton.js` (`foot` = blocking footprint in tiles, `tex` = texture size, anchored bottom-centre on the footprint). Flags: `flat` (rugs, mats: drawn under everything, can overlap), `roof` (carports, canopies: drawn over characters and fade when you walk under), `deck` (the footbridge: drawn over trains but under people; put walkable `B` rail tiles underneath and give train lanes `under: true`). Fences auto-join with neighbours; styles picket, colorbond, park, paling, metal.
 - **Team.** `state.data.party` (max 3) holds pets following you. Exits with `{ team: true }` (front door, side gate) open the team picker when you have pets. Pets spawn per zone in one of three modes (`Pet` in entities.js): `follow` (on your team, trails behind you on `scene.trail`), `home` (found, not on the team, at `pet.homeSpot` in the home or yard zone), or `wild` (not on the team, in `pet.zone`). A pet on your team is never also in its wild zone.
-- **Textures and custom art.** Built-in textures are painted onto canvases at startup (`textures.js`). Keys: `player-<dir>`, `pet-<id>`, `npc-<id>-<dir>` (or `npc-<id>` for custom), `item-<id>`, `obj-<kind>-<variant>`, `tile-<name>`, `veh-<name>`, `portrait-<id>`. A PNG at `assets/sprites/<folder>/<name>.png` loads as `<prefix>-<name>` and wins over the built-in. Character PNGs are split into square frames. Always size sprites through `fitScale()` so custom art of any resolution fits its slot.
+- **Textures and custom art.** Built-in textures are painted onto canvases at startup (`textures.js`). Keys: `player-<hero>-<dir>` (custom `player-<dir>` applies to everyone), `pet-<id>`, `npc-<id>-<dir>` (or `npc-<id>` for custom), `item-<id>`, `obj-<kind>-<variant>`, `tile-<name>`, `veh-<name>`, `portrait-<id>`. A PNG at `assets/sprites/<folder>/<name>.png` loads as `<prefix>-<name>` and wins over the built-in. Character PNGs are split into square frames. Always size sprites through `fitScale()` so custom art of any resolution fits its slot.
 - **UI is HTML, not canvas**, for crisp text on phones. Scenes talk to it through `ui` (`ui.say(lines, { name, portrait })` returns a promise resolving to the picked choice) and the `bus`.
 - **Saving.** `state.data` is the whole save. It is sanitised on load, so adding a field means adding a default in `fresh()` and copying it in `sanitise()`. Bump `VERSION` and add a migration if the shape changes incompatibly. The prototype's old save (`whisker-hollow-v2`) is migrated automatically.
 - **Time.** The day runs 6am to 2am (`DAY_START`/`DAY_END`), 10 game minutes per 7 real seconds, paused while any dialogue or menu is open. At 2am the day ends and you wake up in bed at home. Rain is decided per day from the day number (`state.rainWindow`), so it is stable across reloads.
@@ -103,7 +106,7 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **A treat:** add to `ITEMS` and `ITEM_ART`, then list it in forage spawns (`b.forage`) or an NPC `gift`, and in pets' loves/likes.
 - **A zone:** write `src/world/maps/<id>.js` (copy a similar one), register it in `ZONES` in `regions.js`, and connect it with `b.exit(...)` and `b.entry(...)` on both sides. Run the reachability check.
 - **A suburb:** add it to `SUBURBS`/`SUBURB_ORDER` with a `station` zone containing a myki reader (`put('myki', x, y, { travel: true })`) and a `station` entry. The locked exits (the city, Coburg North, Plenty Rd) are ready-made hooks.
-- **Rebuilding Brunswick and Reservoir** the way Laverton was done (several zones from the owner's screenshots) is the next big job. Their current single maps still use the older, simpler art.
+- **Rebuilding Reservoir** the way Laverton and Brunswick were done (several zones from the owner's screenshots) is the next big job. Its current single map still uses the older, simpler art.
 
 ## Future plans
 
@@ -135,7 +138,7 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - Plan: let the player claim a plot, plant seeds (bought or gifted), water daily, harvest after N days. Crops become treats pets love (carrots for Spooky) and battle items later. Seasons would follow (Melbourne gets all four in a day, which is a joke worth keeping). Possibly a small home garden or balcony pots in Brunswick.
 
 ### Next up (agreed with the owner)
-- Rebuild Brunswick and Reservoir as several zones each, from the owner's screenshots and pet photos.
+- Rebuild Reservoir as several zones from the owner's screenshots. Brunswick may get more spots too.
 - Extra Laverton spots and shops, once the core zones feel right.
 - Real pet photos as Petdex portraits (`assets/sprites/portraits/`), and the owner's own sprite art replacing the built-in reference art.
 

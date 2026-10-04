@@ -5,6 +5,7 @@ import { TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_
 import { ZONES, SUBURBS, SUBURB_ORDER, getMap } from '../data/regions.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
+import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
 import { flavourFor } from '../data/flavour.js';
@@ -93,6 +94,7 @@ export class WorldScene extends Phaser.Scene {
     const offs = [
       bus.on('layout:changed', () => this.onResize()),
       bus.on('game:save', () => this.save()),
+      bus.on('game:hero', () => this.pickHero(true)),
       bus.on('ui:modal', () => controls.release()),
     ];
     this.scale.on('resize', this.onResize, this);
@@ -393,7 +395,7 @@ export class WorldScene extends Phaser.Scene {
     const lines = [pick(pool)];
     if (rec.talkedDay !== day) {
       rec.talkedDay = day; rec.chats++; state.data.stats.chats++;
-      const r = state.addPoints(d.id, FRIENDSHIP.talk);
+      const r = state.addPoints(d.id, FRIENDSHIP.talk + (HEROES[state.data.hero]?.perk.talkBonus || 0));
       sfx.heart();
       lines.push(...this.heartLines(d, r));
     }
@@ -463,11 +465,12 @@ export class WorldScene extends Phaser.Scene {
   pickUp(f) {
     this.forage = this.forage.filter(x => x !== f);
     state.takeForage(this.regionId, f.index);
-    state.addItem(f.item); state.data.stats.treats++;
+    const n = Math.random() < (HEROES[state.data.hero]?.perk.forageBonus || 0) ? 2 : 1;
+    state.addItem(f.item, n); state.data.stats.treats += n;
     sfx.pickup();
     this.tweens.killTweensOf(f.sprite);
     this.tweens.add({ targets: f.sprite, y: f.sprite.y - 12, alpha: 0, duration: 400, onComplete: () => f.sprite.destroy() });
-    ui.toast(`+1 ${ITEMS[f.item].name}`, itemIcon(f.item, 32));
+    ui.toast(n > 1 ? `+2 ${ITEMS[f.item].name}! Snack magnet!` : `+1 ${ITEMS[f.item].name}`, itemIcon(f.item, 32));
     this.save();
   }
 
@@ -546,7 +549,23 @@ export class WorldScene extends Phaser.Scene {
     state.save();
   }
 
+  // Pick (or change) who you are playing as.
+  async pickHero(canCancel = false) {
+    const id = await ui.chooseHero(canCancel);
+    if (!id) return;
+    const first = !state.data.startGiven;
+    state.data.hero = id;
+    if (first) {
+      for (const [item, n] of Object.entries(HEROES[id].start)) state.addItem(item, n);
+      state.data.startGiven = true;
+    }
+    this.player.refreshLook();
+    this.save();
+    if (first) ui.toast(`${HEROES[id].name}'s treats are in your bag`);
+  }
+
   async intro(firstVisit) {
+    if (this.firstLoad && !state.data.hero) await this.pickHero(false);
     if (!this.firstLoad) {
       if (firstVisit && this.region.name === this.suburb.name) ui.toast(`New station unlocked: ${this.suburb.name}`);
       return;
@@ -557,7 +576,7 @@ export class WorldScene extends Phaser.Scene {
     }
     if (!state.data.seenIntro) {
       await ui.say([
-        'Welcome to Project Princess!',
+        `Welcome to Project Princess, ${HEROES[state.data.hero].name}!`,
         "Your friends' pets are scattered across Laverton, Brunswick and Reservoir.",
         controls.touchMode
           ? 'Drag on the left side of the screen to walk. Tap A to talk to pets, people and signs. Tap things to walk to them.'

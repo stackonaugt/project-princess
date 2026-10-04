@@ -17,6 +17,7 @@ function fresh() {
     day: 1, minutes: 9 * 60,     // the very first day starts at 9am
     region: 'home', pos: null, dir: 'down',   // region = the zone you're in (see data/regions.js)
     visited: ['home'],
+    hero: null, startGiven: false,        // 'helen' | 'hadrian' | 'aleksy' (see data/heroes.js)
     party: [],         // pet ids on your team (max 3), they follow you around
     pets: {},          // id -> { found, day, date, points, talkedDay, giftedDay, reactions: {item: 'love'|...}, chats }
     inventory: {},     // item id -> count
@@ -49,6 +50,8 @@ function sanitise(raw) {
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
+  if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
+  d.startGiven = !!raw.startGiven;
   if (Array.isArray(raw.party)) d.party = raw.party.filter(id => d.pets[id]?.found).slice(0, MAX_TEAM);
   d.seenIntro = !!raw.seenIntro;
   d.created = raw.created || d.created;

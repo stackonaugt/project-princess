@@ -10,6 +10,7 @@ import { timeLabel } from '../systems/clock.js';
 import { PETS } from '../data/pets.js';
 import { ZONES, SUBURBS } from '../data/regions.js';
 import { openTeam } from './team.js';
+import { openHero } from './hero.js';
 import { openPetdex } from './petdex.js';
 import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
@@ -173,9 +174,17 @@ export const ui = {
     });
   },
 
+  // Resolves with a hero id (or null if cancelled, when allowed).
+  chooseHero(canCancel = false) {
+    return new Promise(resolve => {
+      this._heroResolve = resolve; this._heroCancel = canCancel;
+      this.openModal('hero');
+    });
+  },
+
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || this.modalOpen === 'team') return;
+    if (this.dialog || this.modalOpen === 'team' || this.modalOpen === 'hero') return;
     if (this.modalOpen === which) return this.closeModal();
     this.openModal(which);
   },
@@ -187,6 +196,7 @@ export const ui = {
     if (which === 'dex') openPetdex(panel, close);
     if (which === 'bag') openBag(panel, close);
     if (which === 'menu') openMenu(panel, close);
+    if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
     $('modal').hidden = false;
     if (!this.modalOpen) sfx.open();
@@ -201,5 +211,6 @@ export const ui = {
     bus.emit('ui:modal', null);
     // Closing the team picker without choosing means "not leaving yet".
     if (this._teamResolve) { const r = this._teamResolve; this._teamResolve = null; r(null); }
+    if (this._heroResolve) { if (!this._heroCancel) { this.openModal('hero'); return; } const r = this._heroResolve; this._heroResolve = null; r(null); }
   },
 };

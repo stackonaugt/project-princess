@@ -1,6 +1,7 @@
 // Characters that walk around: the player, pets and townsfolk.
 import { TILE as T, WALK_SPEED, RUN_SPEED, PET_SPEED } from '../config.js';
-import { custom, fitScale, frameCount } from '../art/textures.js';
+import { custom, fitScale, frameCount, playerTexture } from '../art/textures.js';
+import { HEROES } from '../data/heroes.js';
 import { state } from '../systems/state.js';
 import { inWindow, isNight } from '../systems/clock.js';
 import { sfx } from '../systems/sfx.js';
@@ -54,17 +55,15 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
 // ---------------------------------------------------------------- Player
 export class Player extends Actor {
   constructor(scene, x, y, dir = 'down') {
-    super(scene, x, y, 'player-down', 32);
+    super(scene, x, y, playerTexture(state.data.hero || 'helen', 'down')[0], 32);
     this.fitBody(8, 5);
     this.dir = dir; this.moving = false;
     this.target = null;   // tap-to-walk destination
     this.stuck = 0;
     this.setDir(dir);
   }
-  texFor(dir) {
-    if (dir === 'right') return custom.has('player-right') ? ['player-right', false] : ['player-left', true];
-    return [`player-${dir}`, false];
-  }
+  texFor(dir) { return playerTexture(state.data.hero || 'helen', dir); }
+  refreshLook() { const d = this.dir; this.dir = null; this.setTexture(this.texFor(d)[0], 0); this.setDir(d); }
   setDir(dir) {
     this.dir = dir;
     const [tex, flip] = this.texFor(dir);
@@ -81,7 +80,8 @@ export class Player extends Actor {
       if (d < 3) this.target = null; else { x = dx / d; y = dy / d; analog = 1; run = d > 80; }
     } else if (x || y) this.target = null;
     this.moving = !!(x || y);
-    const speed = (run ? RUN_SPEED : WALK_SPEED) * (analog ?? 1);
+    const boost = run ? (HEROES[state.data.hero]?.perk.runBoost || 1) : 1;
+    const speed = (run ? RUN_SPEED * boost : WALK_SPEED) * (analog ?? 1);
     this.setVelocity(x * speed, y * speed);
     if (this.moving) {
       const dir = Math.abs(x) > Math.abs(y) ? (x > 0 ? 'right' : 'left') : (y > 0 ? 'down' : 'up');
