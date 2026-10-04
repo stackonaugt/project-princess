@@ -161,13 +161,25 @@ export const LAVERTON = {
     },
   },
   tall: {
-    foot: [1, 1], tex: [40, 72], variants: ['cypress', 'pear', 'biggum', 'poplar'],
+    foot: [1, 1], tex: [40, 72], variants: ['cypress', 'pear', 'biggum', 'poplar', 'bottlebrush', 'hedge'],
     paint(p, v) {
       p.shadow(20, 70, 22);
       if (v === 'cypress') {
         p.r('#4e2f1a', 18, 60, 4, 12);
         for (let j = 0; j < 58; j++) { const w = Math.round(Math.min(16, 3 + j * 0.45) * (j > 46 ? (58 - j) / 12 + 0.2 : 1)); const c = j % 5 < 2 ? '#2a5a3a' : (j % 5 === 2 ? '#3a6e48' : '#244e32'); p.r(c, 20 - w, 4 + j, w * 2, 1); }
         for (let i = 0; i < 14; i++) p.r('#4a7e58', 14 + Math.floor(hash(i, 3) * 12), 10 + Math.floor(hash(i, 5) * 44), 3, 2);
+        return;
+      }
+      if (v === 'bottlebrush') {
+        p.r('#5e3a1a', 18, 50, 4, 22);
+        for (let i = 0; i < 40; i++) { const a = i * 2.4, r = Math.sqrt(i) * 3; p.blob(20 + Math.cos(a) * r, 30 + Math.sin(a) * r * 0.9, 3, i % 3 ? '#3a6a3a' : '#4a7e46'); }
+        for (let i = 0; i < 26; i++) { const a = i * 1.7, r = 2 + Math.sqrt(i) * 3; p.r(i % 2 ? '#d83040' : '#e84858', 19 + Math.cos(a) * r, 28 + Math.sin(a) * r * 0.9, 2, 3); }
+        return;
+      }
+      if (v === 'hedge') {
+        p.r('#5e3a1a', 18, 60, 4, 12);
+        p.blob(20, 42, 18, '#2f6a33'); p.blob(20, 40, 17, '#3f8a3e'); p.blob(14, 34, 7, '#57a84a'); p.blob(26, 46, 5, '#2f6a33');
+        for (let i = 0; i < 20; i++) p.r('#6dbb58', 6 + ((i * 37) % 28), 26 + ((i * 23) % 30), 2, 1);
         return;
       }
       if (v === 'poplar') {

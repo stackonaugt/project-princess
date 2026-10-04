@@ -1,10 +1,11 @@
-// RESERVOIR: the north. Edwardes Lake, weatherboards with lemon trees,
+// EDWARDES LAKE (placeholder, from the first version of the game; to be
+// rebuilt from the owner's photos). RESERVOIR: the north. Edwardes Lake, weatherboards with lemon trees,
 // Broadway and the milk bar, the Mernda line, and a community garden
 // waiting for farming to arrive.
 import { MapBuilder } from '../MapBuilder.js';
 
 export function buildReservoir() {
-  const b = new MapBuilder({ id: 'reservoir', w: 48, h: 34, seed: 33 });
+  const b = new MapBuilder({ id: 'lake', w: 48, h: 34, seed: 33 });
 
   // Edwardes Lake with its walking loop
   const LX = 14, LY = 8.2;
@@ -26,10 +27,7 @@ export function buildReservoir() {
   // Mernda line and Reservoir station
   b.vline(38, 0, 33, 'r').vline(39, 0, 33, 'r');
   b.fill(40, 6, 4, 9, 'p');
-  b.put('shelter', 41, 7, { v: 'reservoir' });
-  b.put('myki', 40, 9, { travel: true });
   b.put('lamp', 43, 13);
-  b.sign(44, 14, ['Reservoir Station. Mernda line.', 'Tap your myki at the reader to catch a train.']);
 
   // Broadway, crossing the line
   b.fill(0, 17, 48, 2, '#').hline(1, 46, 16, 'f').hline(1, 46, 19, 'f');
@@ -80,7 +78,7 @@ export function buildReservoir() {
   b.sign(46, 20, ['Plenty Rd: CLOSED.', 'Level crossing removal works. Expected completion: 2031. Probably.']);
   b.exit(0, 17, 1, 2, null, null, 'Coburg North', ['The road west is blocked by roadworks.', 'A man in a hi-vis vest gives you a thumbs up. You give him one back. Nothing changes.']);
   b.exit(47, 17, 1, 2, null, null, 'Plenty Rd', ['Plenty Rd is closed for level crossing removal works.', 'The new skyrail will be lovely. Eventually.']);
-  b.exit(22, 33, 2, 1, 'sydney', 'east', 'Brunswick');
+  b.exit(22, 33, 2, 1, 'reservoir', 'north', 'Reservoir Station');
 
   b.entry('station', 42, 11, 'left').entry('south', 23, 32, 'up');
 
@@ -91,7 +89,6 @@ export function buildReservoir() {
   b.forage(45, 31, ['cheese', 'chicken']);
 
   b.npc('pina', 9, 23, { face: 'down' });
-  b.npc('dimitri', 43, 23, { face: 'down' });
   b.npc('wen', 31, 25, { face: 'down' });
   const loop = []; for (let i = 0; i < 16; i++) { const a = -i / 16 * Math.PI * 2; loop.push([LX + Math.cos(a) * 11.8, LY + Math.sin(a) * 6.65]); }
   b.npc('kez', loop[0][0], loop[0][1], { path: loop, speed: 46 });

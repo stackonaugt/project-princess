@@ -45,7 +45,7 @@ export function buildSydney() {
   b.put('bikehoop', 13, 13);
 
   b.exit(0, 12, 1, 8, 'brunswick', 'east', 'Brunswick Station');
-  b.exit(43, 12, 1, 8, 'reservoir', 'south', 'Coburg and Reservoir');
+  b.exit(43, 12, 1, 8, 'reservoir', 'west', 'Reservoir');
   b.exit(27, 0, 2, 1, 'donald', 'south', 'Donald St');
   b.entry('west', 1, 13, 'right').entry('east', 42, 13, 'left').entry('donald', 27, 2, 'down');
 
