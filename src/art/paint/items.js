@@ -30,7 +30,35 @@ export const ITEM_ART = {
   feather: { pal: { a: '#1e1e24', b: '#f4f4f0', g: '#5a5a66' }, rows: [
     '..........g.', '.........ag.', '........aag.', '.......abg..', '......abb...', '.....abbg...',
     '....aabg....', '...aaag.....', '..aag.......', '.ag.........', 'g...........', '............'] },
+  basil: { pal: { a: '#3f8a3e', b: '#6dbb58', k: '#2a5e2e', s: '#8a6a4a' }, rows: [
+    '............', '....bb.bb...', '...baakaab..', '..baak.kaab.', '..bak...kab.', '...ak.bb.k..',
+    '.....baab...', '....bak.ab..', '.....k.k....', '......s.....', '......s.....', '............'] },
+  zucchini: { pal: { a: '#3f8a3e', b: '#6dbb58', k: '#2a5e2e', y: '#f5d63a' }, rows: [
+    '............', '..........yy', '.........kyy', '........kak.', '.......kbak.', '......kbak..',
+    '.....kbak...', '....kbak....', '...kbak.....', '..kaak......', '..kkk.......', '............'] },
+  potato: { pal: { a: '#c8a060', b: '#e0c088', k: '#8a6a3a', d: '#6a4a2a' }, rows: [
+    '............', '............', '....kkkk....', '..kkbbaakk..', '.kbbaaadaak.', '.kbaaaaaaak.',
+    '.kadaaaaadk.', '.kaaaaaaaak.', '..kkaadakk..', '....kkkk....', '............', '............'] },
+  tomato: { pal: { a: '#d8403a', b: '#f07a6a', k: '#8a2020', g: '#3f8a3e' }, rows: [
+    '............', '.....gg.....', '...g.gg.g...', '...kggggk...', '..kbbaaaak..', '.kbbaaaaaak.',
+    '.kbaaaaaaak.', '.kaaaaaaaak.', '..kaaaaaak..', '...kkkkkk...', '............', '............'] },
+  strawberry: { pal: { a: '#e83a5a', b: '#f87a8a', k: '#8a2030', g: '#3f8a3e', y: '#f5e66b' }, rows: [
+    '............', '....g.g.g...', '...ggggggg..', '...kaaaaak..', '..kbaayaaak.', '..kbayaaaya.',
+    '..kaaaayaak.', '...kayaaak..', '...kaaaak...', '....kaak....', '.....kk.....', '............'] },
+  chilli: { pal: { a: '#e8502a', b: '#f08a5a', k: '#8a2a10', g: '#3f8a3e' }, rows: [
+    '............', '..g.........', '..gg........', '...kak......', '...kbak.....', '....kbak....',
+    '.....kbak...', '......kaak..', '.......kak..', '........kk..', '............', '............'] },
+  pumpkin: { pal: { a: '#e89030', b: '#f8b860', k: '#a85a1a', g: '#3f8a3e', s: '#6a4a2a' }, rows: [
+    '............', '.....sg.....', '.....s.gg...', '..kkkkkkkk..', '.kbakbaakbk.', 'kbaakaaakaak',
+    'kaaakaaakaak', 'kaaakaaakaak', '.kaakaaakak.', '..kkkkkkkk..', '............', '............'] },
 };
+
+// Seed packets: drawn from the crop's colour (texture item-seed-<crop>).
+export function paintSeedPacket(p, colour) {
+  p.r('#6a4a2a', 3, 1, 10, 14); p.r('#f4efe0', 4, 2, 8, 12); p.r('#d8d0b8', 4, 12, 8, 2);
+  p.blob(8, 7, 3, colour); p.r('#3f8a3e', 8, 3, 1, 2); p.r('#ffffff', 7, 6, 1, 1);
+  p.r('#c8b898', 5, 11, 6, 1);
+}
 
 // Gear icons (pet shop), same format. Texture keys: item-gear-<id>.
 export const GEAR_ART = {

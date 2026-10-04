@@ -72,9 +72,17 @@ export const ZONES = {
   wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, tagline: 'Reeds, frogs and paths that all look the same.' },
 };
 
+// The whole route in walking order (the Map app draws this).
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'station', 'altona', 'footscray', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'donald', 'coburg', 'preston', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
+
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;
 export const REGION_ORDER = SUBURB_ORDER;
 
-const cache = {};
-export function getMap(id) { return cache[id] || (cache[id] = ZONES[id].build()); }
+const cache = {}, revs = {};
+export function getMap(id) {
+  if (!cache[id]) { cache[id] = ZONES[id].build(); cache[id].rev = revs[id] || 0; }
+  return cache[id];
+}
+// Rebuild a map next time it's needed (house upgrades change home and yard).
+export function invalidateMap(id) { delete cache[id]; revs[id] = (revs[id] || 0) + 1; }

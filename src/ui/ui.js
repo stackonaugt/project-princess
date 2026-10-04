@@ -15,6 +15,10 @@ import { openPetdex } from './petdex.js';
 import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
 import { openShop } from './shop.js';
+import { openPhone } from './phone.js';
+import { openFriends } from './friends.js';
+import { openMap } from './map.js';
+import { openGarden } from './garden.js';
 import { battleUI } from './battle.js';
 
 const TYPE_SPEED = 38; // characters per second
@@ -43,10 +47,10 @@ export const ui = {
     bus.on('input:dir', (dx, dy) => { if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); });
     bus.on('input:dex', () => this.toggle('dex'));
     bus.on('input:bag', () => this.toggle('bag'));
-    bus.on('input:menu', () => this.toggle('menu'));
+    bus.on('input:menu', () => this.toggle('phone'));
     $('btnDex').addEventListener('click', () => this.toggle('dex'));
     $('btnBag').addEventListener('click', () => this.toggle('bag'));
-    $('btnMenu').addEventListener('click', () => this.toggle('menu'));
+    $('btnMenu').addEventListener('click', () => this.toggle('phone'));
     $('dialog').addEventListener('click', e => { if (!e.target.closest('.d-choices')) this.advance(); });
     $('modal').addEventListener('click', e => { if (e.target.id === 'modal') this.closeModal(); });
     bus.on('petdex:changed', () => this.updateDexCount());
@@ -183,7 +187,7 @@ export const ui = {
   },
 
   // The pet shop. Resolves when you close it.
-  shop() { return new Promise(resolve => { this._shopResolve = resolve; this.openModal('shop'); }); },
+  shop(id = 'olly') { return new Promise(resolve => { this._shopResolve = resolve; this._shopId = id; this.openModal('shop'); }); },
 
   // Resolves with a hero id (or null if cancelled, when allowed).
   chooseHero(canCancel = false) {
@@ -197,6 +201,7 @@ export const ui = {
   toggle(which) {
     if (this.dialog || battleUI.active || ['team', 'hero', 'shop'].includes(this.modalOpen)) return;
     if (this.modalOpen === which) return this.closeModal();
+    this._fromPhone = false;
     this.openModal(which);
   },
   openModal(which) {
@@ -207,7 +212,11 @@ export const ui = {
     if (which === 'dex') openPetdex(panel, close);
     if (which === 'bag') openBag(panel, close);
     if (which === 'menu') openMenu(panel, close);
-    if (which === 'shop') openShop(panel, close);
+    if (which === 'shop') openShop(panel, close, this._shopId);
+    if (which === 'phone') openPhone(panel, close, app => { this._fromPhone = true; this.openModal(app); });
+    if (which === 'friends') openFriends(panel, close);
+    if (which === 'map') openMap(panel, close);
+    if (which === 'garden') openGarden(panel, close);
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
     $('modal').hidden = false;
@@ -217,6 +226,9 @@ export const ui = {
   },
   closeModal() {
     if (!this.modalOpen) return;
+    // Apps opened from the phone go back to the phone.
+    if (this._fromPhone && this.modalOpen !== 'phone') { this._fromPhone = false; sfx.close(); this.openModal('phone'); return; }
+    this._fromPhone = false;
     $('modal').hidden = true;
     this.modalOpen = false;
     sfx.close();

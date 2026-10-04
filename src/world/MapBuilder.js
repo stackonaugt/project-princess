@@ -18,7 +18,7 @@ export class MapBuilder {
     this.reserved = Array.from({ length: h }, () => Array(w).fill(false));
     this.objects = [];
     this.rand = rng(seed);
-    this.exits = []; this.entries = {}; this.spawns = []; this.npcs = []; this.lanes = []; this.decor = [];
+    this.exits = []; this.entries = {}; this.spawns = []; this.npcs = []; this.lanes = []; this.decor = []; this.plots = [];
   }
 
   inside(x, y) { return x >= 0 && y >= 0 && x < this.w && y < this.h; }
@@ -107,6 +107,8 @@ export class MapBuilder {
   // to = null makes a locked exit that shows `lines` instead.
   exit(x, y, w, h, to, entry, label, lines = null, extra = {}) { this.exits.push({ x, y, w, h, to, entry, label, lines, ...extra }); return this; }
   entry(name, x, y, dir = 'down') { this.entries[name] = { x, y, dir }; return this; }
+  // A garden plot you can plant in (see systems state.farm). Walkable soil.
+  plot(id, x, y, label = '') { this.set(x, y, 'd'); this.plots.push({ id, x, y, label: label || `Plot ${this.plots.length + 1}` }); this.reserve(x, y, 0.5); return this; }
   forage(x, y, items) { this.spawns.push({ x, y, items }); this.reserve(x, y, 0.5); return this; }
   npc(id, x, y, extra = {}) { this.npcs.push({ id, x, y, ...extra }); this.reserve(x, y, 1); return this; }
   lane(def) { this.lanes.push(def); return this; }
@@ -155,7 +157,7 @@ export class MapBuilder {
       id: this.id, w: this.w, h: this.h,
       ground: this.ground.map(r => r.join('')),
       objects: this.objects, solid,
-      exits: this.exits, entries: this.entries, spawns: this.spawns, npcs: this.npcs, lanes: this.lanes, decor: this.decor,
+      exits: this.exits, entries: this.entries, spawns: this.spawns, npcs: this.npcs, lanes: this.lanes, decor: this.decor, plots: this.plots,
     };
   }
 }

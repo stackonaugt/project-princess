@@ -1,16 +1,23 @@
 // Everything that gets saved lives in `state.data`. Saved to localStorage
-// automatically, and can be exported as a code to move between devices.
+// automatically, in one of three save slots (picked on the title screen),
+// and can be exported as a code to move between devices.
 
-import { SAVE_KEY, LEGACY_SAVE_KEYS, POINTS_PER_HEART, MAX_HEARTS, RAIN_CHANCE } from '../config.js';
+import { SAVE_KEY, LEGACY_SAVE_KEYS, POINTS_PER_HEART, MAX_HEARTS, RAIN_CHANCE, DAY_START } from '../config.js';
+const DAY_START_MIN = DAY_START;
 import { PETS, PET_BY_ID } from '../data/pets.js';
 import { ITEMS } from '../data/items.js';
 import { GEAR } from '../data/gear.js';
 import { bus } from '../bus.js';
 import { rng } from '../util.js';
 import { ZONES } from '../data/regions.js';
+import { CROPS } from '../data/crops.js';
+import { UPGRADES } from '../data/upgrades.js';
+import { FRIEND_POINTS } from '../data/friends.js';
 
-const VERSION = 8;
+const VERSION = 9;
 export const MAX_TEAM = 3;
+export const SLOT_COUNT = 3;
+const slotKey = n => `${SAVE_KEY}-slot${n}`;
 
 function fresh() {
   return {
@@ -24,6 +31,11 @@ function fresh() {
     beaten: {},        // trainer id -> day you last beat them
     money: 25,         // dollars, earned in battles and spent at the pet shop
     gear: {},          // gear id -> how many you own but haven't put on a pet
+    friends: {},       // npc id -> { points, talkedDay, giftedDay, reactions, events: [hearts seen], met }
+    seeds: {},         // crop id -> packets of seeds
+    farm: {},          // plot id -> { crop, growth, watered (day), boost } (see data/crops.js)
+    upgrades: {},      // upgrade id -> true (see data/upgrades.js)
+    flags: {},         // one-off story flags, e.g. garden (Wen gave you plots)
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
@@ -57,6 +69,11 @@ function sanitise(raw) {
   if (Number.isFinite(raw.money)) d.money = Math.max(0, Math.floor(raw.money));
   if (raw.gear && typeof raw.gear === 'object') for (const [k, n] of Object.entries(raw.gear)) if (GEAR[k] && n > 0) d.gear[k] = n | 0;
   for (const r of Object.values(d.pets)) if (r.gear && !GEAR[r.gear]) r.gear = null;
+  if (raw.friends && typeof raw.friends === 'object') d.friends = raw.friends;
+  if (raw.seeds && typeof raw.seeds === 'object') for (const [k, n] of Object.entries(raw.seeds)) if (CROPS[k] && n > 0) d.seeds[k] = n | 0;
+  if (raw.farm && typeof raw.farm === 'object') for (const [k, f] of Object.entries(raw.farm)) if (f && CROPS[f.crop]) d.farm[k] = f;
+  if (raw.upgrades && typeof raw.upgrades === 'object') for (const k of Object.keys(raw.upgrades)) if (UPGRADES[k]) d.upgrades[k] = true;
+  if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
@@ -86,20 +103,41 @@ export const state = {
   isNewGame: true,
   migrated: false,
 
-  load() {
-    let raw = null;
-    try { raw = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { /* ignore */ }
-    if (raw) { this.data = sanitise(raw); this.isNewGame = false; return; }
-    const legacy = migrateLegacy();
-    if (legacy) { this.data = legacy; this.isNewGame = false; this.migrated = true; this.save(); return; }
-    this.data = fresh(); this.isNewGame = true;
+  slot: null,   // 1..SLOT_COUNT once a slot is picked on the title screen
+
+  // Older single saves (and the prototype's) move into slot 1 the first time.
+  migrateToSlots() {
+    try {
+      if (localStorage.getItem(slotKey(1))) return;
+      const old = localStorage.getItem(SAVE_KEY);
+      if (old) { localStorage.setItem(slotKey(1), old); return; }
+      const legacy = migrateLegacy();
+      if (legacy) { localStorage.setItem(slotKey(1), JSON.stringify(legacy)); this.migrated = true; }
+    } catch (e) { /* storage blocked */ }
   },
+  readSlot(n) {
+    try { const raw = JSON.parse(localStorage.getItem(slotKey(n)) || 'null'); return raw ? sanitise(raw) : null; } catch (e) { return null; }
+  },
+  // A short summary of each slot for the title screen (null = empty).
+  slots() {
+    return Array.from({ length: SLOT_COUNT }, (_, i) => {
+      const d = this.readSlot(i + 1);
+      return d && { n: i + 1, hero: d.hero, day: d.day, pets: PETS.filter(p => d.pets[p.id]?.found).length, money: d.money, region: d.region };
+    });
+  },
+  useSlot(n) {
+    this.slot = n;
+    const d = this.readSlot(n);
+    this.data = d || fresh();
+    this.isNewGame = !d;
+    for (const ev of ['petdex:changed', 'bag:changed', 'money:changed']) bus.emit(ev);
+  },
+  deleteSlot(n) { try { localStorage.removeItem(slotKey(n)); } catch (e) { /* ignore */ } },
   save() {
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(this.data)); } catch (e) { /* storage full or blocked */ }
+    if (!this.slot) return;
+    try { localStorage.setItem(slotKey(this.slot), JSON.stringify(this.data)); } catch (e) { /* storage full or blocked */ }
   },
-  reset() {
-    try { localStorage.removeItem(SAVE_KEY); LEGACY_SAVE_KEYS.forEach(k => localStorage.removeItem(k)); } catch (e) { /* ignore */ }
-  },
+  reset() { if (this.slot) this.deleteSlot(this.slot); },
 
   // Save codes: a compact text version of the save you can paste on another device.
   exportCode() {
@@ -157,6 +195,47 @@ export const state = {
     r.gear = id || null;
     bus.emit('bag:changed');
     return true;
+  },
+
+  // Friends (townsfolk). Same heart scale as pets.
+  friend(id) { return this.data.friends[id] || (this.data.friends[id] = { points: 0, talkedDay: 0, giftedDay: 0, reactions: {}, events: [], met: false }); },
+  friendHearts(id) { return Math.min(MAX_HEARTS, Math.floor((this.data.friends[id]?.points || 0) / POINTS_PER_HEART)); },
+  addFriendPoints(id, n) {
+    const f = this.friend(id), before = this.friendHearts(id);
+    f.points = Math.max(0, Math.min(MAX_HEARTS * POINTS_PER_HEART, f.points + n));
+    bus.emit('friends:changed');
+    return { before, after: this.friendHearts(id) };
+  },
+  friendPoints: FRIEND_POINTS,
+
+  // Seeds, plots and house upgrades
+  seedCount(c) { return this.data.seeds[c] || 0; },
+  addSeeds(c, n = 1) { this.data.seeds[c] = this.seedCount(c) + n; bus.emit('bag:changed'); },
+  useSeed(c) { if (!this.seedCount(c)) return false; this.data.seeds[c]--; if (!this.data.seeds[c]) delete this.data.seeds[c]; bus.emit('bag:changed'); return true; },
+  hasUpgrade(id) { return !!this.data.upgrades[id]; },
+
+  // A new day: plots grow if they were watered (or it rained) on the day that
+  // just ended, pets rest, and the pet door may turn up a present.
+  // Returns lines to show when you wake up.
+  newDay() {
+    const d = this.data, ended = d.day, rained = !!this.rainWindow(ended), news = [];
+    for (const plot of Object.values(d.farm)) {
+      const c = CROPS[plot.crop];
+      if (!c || plot.growth >= c.days) continue;
+      if (plot.watered === ended || rained) plot.growth = Math.min(c.days, plot.growth + 1 + (plot.boost ? 1 : 0));
+      plot.boost = false;
+    }
+    if (rained && Object.keys(d.farm).length) news.push('It rained yesterday, so the garden got a free drink.');
+    d.day += 1; d.minutes = DAY_START_MIN; d.pos = null;
+    this.healAll();
+    const home = this.foundIds().filter(id => !this.inParty(id));
+    if (this.hasUpgrade('petdoor') && home.length && rng(d.day * 31 + 7)() < 0.7) {
+      const r = rng(d.day * 131 + 3), who = home[Math.floor(r() * home.length)];
+      const item = ['tennis', 'feather', 'lemon', 'chicken', 'carrot'][Math.floor(r() * 5)];
+      this.addItem(item);
+      news.push(`${PET_BY_ID[who].name} came in through the pet door with a present: ${ITEMS[item].name.toLowerCase()}.`);
+    }
+    return news;
   },
 
   // World

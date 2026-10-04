@@ -1,38 +1,74 @@
-// The pet shop: buy treats and gear with the money you earn in battles.
+// Shops: buy treats, gear, seeds and house upgrades, and sell your crops.
+// Which tabs a shop has is set in src/data/shops.js.
 import { h } from './dom.js';
 import { state } from '../systems/state.js';
+import { bus } from '../bus.js';
 import { ITEMS } from '../data/items.js';
 import { GEAR, GEAR_ORDER } from '../data/gear.js';
+import { CROPS, CROP_ORDER } from '../data/crops.js';
+import { UPGRADES, UPGRADE_ORDER } from '../data/upgrades.js';
+import { SHOPS } from '../data/shops.js';
+import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-let tab = 'treats';
+const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', upgrades: 'House', sell: 'Sell' };
+const tabFor = {};
 
-export function openShop(panel, close) {
+// What a shop pays for one of an item: crops at their price, treats at half.
+// Princess on your team charms an extra 20% out of them.
+export function sellPrice(id) {
+  const base = CROPS[id] ? CROPS[id].sell : Math.floor((ITEMS[id].price || 2) / 2);
+  return Math.max(1, Math.round(base * (state.inParty('princess') ? 1.2 : 1)));
+}
+
+export function openShop(panel, close, shopId = 'olly') {
+  const shop = SHOPS[shopId];
   const msg = h('p', { class: 'small center', role: 'status' });
+  if (!shop.tabs.includes(tabFor[shopId])) tabFor[shopId] = shop.tabs[0];
+  const buy = (name, price, give) => () => {
+    if (!state.spend(price)) { sfx.bump(); return; }
+    give(); sfx.pickup(); state.save();
+    msg.textContent = `Bought: ${name}.`;
+    render();
+  };
+  const rowsFor = tab => {
+    if (tab === 'treats') return Object.entries(ITEMS).filter(([, it]) => it.price && !it.crop).map(([id, it]) => ({ name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }));
+    if (tab === 'gear') return GEAR_ORDER.map(id => ({ name: GEAR[id].name, desc: GEAR[id].desc, price: GEAR[id].price, icon: itemIcon(`gear-${id}`, 32), have: state.gearCount(id), act: buy(GEAR[id].name, GEAR[id].price, () => state.addGear(id)) }));
+    if (tab === 'seeds') return (shop.seeds || CROP_ORDER).map(id => {
+      const c = CROPS[id];
+      return { name: `${c.name} seeds`, desc: `${c.blurb} Ready in ${c.days} days${c.regrow ? ', keeps producing' : ''}.`, price: c.seed, icon: itemIcon(`seed-${id}`, 32), have: state.seedCount(id), act: buy(`${c.name} seeds`, c.seed, () => state.addSeeds(id)) };
+    });
+    if (tab === 'upgrades') return UPGRADE_ORDER.map(id => {
+      const u = UPGRADES[id], owned = state.hasUpgrade(id);
+      return { name: u.name, desc: u.desc, price: u.price, owned, act: buy(u.name, u.price, () => {
+        state.data.upgrades[id] = true;
+        invalidateMap('home'); invalidateMap('yard');
+        bus.emit('upgrade', id);
+      }) };
+    });
+    if (tab === 'sell') return state.bagItems().map(id => ({
+      name: ITEMS[id].name, desc: `You have ${state.count(id)}.`, price: sellPrice(id), icon: itemIcon(id, 32), sell: true,
+      act: () => { state.removeItem(id); state.addMoney(sellPrice(id)); sfx.pickup(); state.save(); msg.textContent = `Sold: ${ITEMS[id].name} for $${sellPrice(id)}.`; render(); },
+    }));
+    return [];
+  };
   const render = () => {
-    const rows = tab === 'treats'
-      ? Object.entries(ITEMS).filter(([, it]) => it.price).map(([id, it]) => ({ id, name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), buy: () => state.addItem(id) }))
-      : GEAR_ORDER.map(id => ({ id, name: GEAR[id].name, desc: GEAR[id].desc, price: GEAR[id].price, icon: itemIcon(`gear-${id}`, 32), have: state.gearCount(id), buy: () => state.addGear(id) }));
+    const tab = tabFor[shopId], rows = rowsFor(tab);
     panel.replaceChildren(
-      h('div', { class: 'm-head' }, h('h2', {}, 'The Leash You Can Do'), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
+      h('div', { class: 'm-head' }, h('h2', {}, shop.name), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
       h('p', { class: 'dex-sum shop-money' }, `You have $${state.data.money}`),
-      h('div', { class: 'tabs', role: 'tablist' }, ...[['treats', 'Treats'], ['gear', 'Gear']].map(([id, label]) =>
-        h('button', { class: 'tab' + (tab === id ? ' on' : ''), role: 'tab', 'aria-selected': tab === id, onclick: () => { tab = id; sfx.select(); render(); } }, label))),
+      shop.tabs.length > 1 ? h('div', { class: 'tabs', role: 'tablist' }, ...shop.tabs.map(id =>
+        h('button', { class: 'tab' + (tab === id ? ' on' : ''), role: 'tab', 'aria-selected': tab === id, onclick: () => { tabFor[shopId] = id; sfx.select(); render(); } }, TAB_NAMES[id]))) : null,
       h('div', { class: 'm-scroll' },
         tab === 'gear' ? h('p', { class: 'small' }, 'Gear goes on a pet from your bag. One piece each. It helps in battles.') : null,
+        tab === 'sell' ? h('p', { class: 'small' }, state.inParty('princess') ? 'Princess is charming the shopkeeper. You get 20% more.' : 'Crops sell well. Treats go for half what they cost.') : null,
+        tab === 'sell' && !rows.length ? h('p', { class: 'center' }, 'Nothing to sell.') : null,
         ...rows.map(r => h('div', { class: 'shop-row' },
-          h('img', { class: 'pix', src: r.icon, alt: '' }),
+          r.icon ? h('img', { class: 'pix', src: r.icon, alt: '' }) : h('span', { class: 'shop-glyph' }, '🏠'),
           h('div', { class: 'shop-info' }, h('b', {}, r.name), h('p', {}, r.desc), h('small', {}, r.have ? `You have ${r.have}` : '')),
-          h('button', {
-            class: 'wood-btn small', disabled: state.data.money < r.price,
-            onclick: () => {
-              if (!state.spend(r.price)) { sfx.bump(); return; }
-              r.buy(); sfx.pickup(); state.save();
-              msg.textContent = `Bought: ${r.name}.`;
-              render();
-            },
-          }, `$${r.price}`))),
+          r.owned ? h('span', { class: 'meta' }, 'Done ✓')
+            : h('button', { class: 'wood-btn small', disabled: !r.sell && state.data.money < r.price, onclick: r.act }, r.sell ? `Sell $${r.price}` : `$${r.price}`))),
         msg));
   };
   render();

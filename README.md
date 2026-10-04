@@ -17,13 +17,17 @@ A cosy pet-collecting adventure across Melbourne. Explore Laverton (home, Allen 
 - **Evolutions:** level a pet up AND become close friends and something may happen. Princess and Poppy have surprises in store.
 - **The long walk:** you can walk from Laverton to Brunswick to Reservoir through Altona North, Footscray, Flemington, Coburg and Preston. Or tap your myki.
 - Tap your **myki** at a station to catch the train to suburbs you have already visited.
+- **Your Pawphone** (Phone button, or M) has everything: Petdex, Bag, Friends, a Map of the whole route, your Garden and Settings. Three save slots live on the title screen.
+- **Friends:** chat to townsfolk every day and bring them gifts. Each heart unlocks a little scene, and good friends will come to your rescue in battles (Call).
+- **Farming:** Wen at the Edgars Creek community garden gives you plots and seeds. Water once a day (rain counts), pick when ripe, sell at Dimitri's milk bar. Your pets help.
+- **House upgrades:** Gaz at the Laverton Station sausage sizzle sells seeds and upgrades: a backyard veggie patch, a pet door, finishing the twins' room and a paddling pool.
 - Tired? Use your bed at home to sleep until morning, or have a nap to rest your pets.
 - The clock is ticking: there is day and night, Melbourne showers, and some pets keep odd hours.
 
 **Phone:** drag on the left side of the screen to walk (push all the way, or hold B, to run). Tap A to talk. You can also tap a pet or a spot on the map to walk there.
 **Keyboard:** arrows or WASD, Shift to run, Space to talk, P for the Petdex, B for the bag, M for the menu.
 
-Your progress saves automatically on each device. Menu > New game starts again from scratch. To move it to another device: Menu > Copy save code, then Menu > Load save code on the other one.
+Your progress saves automatically on each device. Settings > Delete this slot starts that slot again from scratch. To move it to another device: Phone > Settings > Copy save code, then Load save code on the other one.
 
 ## Add your own art
 

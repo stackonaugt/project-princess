@@ -11,12 +11,14 @@ import { TYPES } from '../data/types.js';
 import { TRAINERS, PRIZE_TRAINER } from '../data/enemies.js';
 import { rollEncounter, readyTeam, START_LEVEL } from '../systems/battle.js';
 import { form, canEvolve, evolve } from '../systems/forms.js';
+import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
+import { CROPS } from '../data/crops.js';
 import { typeName } from '../data/types.js';
 import { flavourFor } from '../data/flavour.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
-import { custom, objectTexture, tuftTexture, fitScale } from '../art/textures.js';
+import { custom, objectTexture, tuftTexture, fitScale, cropTexture } from '../art/textures.js';
 import { Player, Pet, Npc, toWorld } from '../world/entities.js';
 import { Traffic } from '../world/traffic.js';
 import { state } from '../systems/state.js';
@@ -35,6 +37,7 @@ export class WorldScene extends Phaser.Scene {
     this.regionId = data.region || state.data.region;
     this.entryName = data.entry || null;
     this.newDay = !!data.newDay;
+    this.news = data.news || [];
     this.firstLoad = !!data.firstLoad;
     this.leaving = false; this.endingDay = false; this.pending = null; this.lockedExit = null;
   }
@@ -58,6 +61,7 @@ export class WorldScene extends Phaser.Scene {
     this.buildObjects();
     this.buildDecor();
     this.buildForage();
+    this.buildPlots();
 
     const spawn = this.spawnPoint();
     this.player = new Player(this, spawn.x, spawn.y, spawn.dir);
@@ -116,12 +120,27 @@ export class WorldScene extends Phaser.Scene {
       ui.banner(`Day ${state.data.day}`, rain ? `Forecast: showers around ${timeLabel(rain[0])}` : 'Forecast: clear skies');
     } else ui.banner(region.name, region.name === this.suburb.name ? region.tagline : `${this.suburb.name}. ${region.tagline}`);
     this.save();
-    this.intro(firstVisit);
+    this.intro(firstVisit).then(() => this.morningNews());
+  }
+
+  // Things that happened overnight (pet door presents, rain on the garden),
+  // and the daily splash in the paddling pool.
+  async morningNews() {
+    if (this.news.length) { await ui.say(this.news); this.news = []; }
+    if (this.regionId === 'yard' && state.hasUpgrade('pool') && state.data.flags.poolDay !== state.data.day) {
+      const home = state.foundIds().filter(id => !state.inParty(id));
+      if (home.length) {
+        state.data.flags.poolDay = state.data.day;
+        home.forEach(id => state.addPoints(id, 5));
+        ui.toast('Splash! The pets at home love the pool. +friendship');
+        this.save();
+      }
+    }
   }
 
   // ------------------------------------------------------------ building
   buildGround() {
-    const key = `ground-${this.regionId}`;
+    const key = `ground-${this.regionId}-${this.map.rev || 0}`;
     if (!this.textures.exists(key)) {
       const { w, h } = this.map;
       const tex = this.textures.createCanvas(key, w * T * GROUND_SCALE, h * T * GROUND_SCALE);
@@ -211,6 +230,73 @@ export class WorldScene extends Phaser.Scene {
       this.tweens.add({ targets: img, y: pos.y - 5, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       this.forage.push({ kind: 'item', item, index: i, x: pos.x, y: pos.y, sprite: img, bubble: 'fx-bubble-alert' });
     });
+  }
+
+  // ------------------------------------------------------------ garden plots
+  plotOpen(p) {
+    if (p.id.startsWith('cg')) return !!state.data.flags.garden;
+    return true;   // backyard beds only exist once you've bought the veggie patch
+  }
+  buildPlots() {
+    this.plots = [];
+    for (const p of this.map.plots || []) {
+      const pos = toWorld(p.x, p.y);
+      const soil = this.add.rectangle((p.x + 0.5) * T, (p.y + 0.5) * T, T - 2, T - 2, 0x2a1a0c, 0).setDepth(-899);
+      const crop = this.add.image(pos.x, (p.y + 1) * T - 1, '__WHITE').setOrigin(0.5, 1).setVisible(false);
+      const t = { kind: 'plot', plot: p, x: pos.x, y: pos.y - 2, soil, crop, bubble: 'fx-bubble-dots' };
+      this.plots.push(t);
+      this.refreshPlot(t);
+    }
+    this.interactables.push(...this.plots);
+  }
+  refreshPlot(t) {
+    const f = state.data.farm[t.plot.id], c = f && CROPS[f.crop];
+    t.soil.setFillStyle(0x2a1a0c, f && f.watered === state.data.day ? 0.35 : 0);
+    if (!c) { t.crop.setVisible(false); t.bubble = this.plotOpen(t.plot) ? 'fx-bubble-read' : 'fx-bubble-dots'; return; }
+    const stage = f.growth >= c.days ? 3 : f.growth === 0 ? 0 : f.growth >= c.days / 2 ? 2 : 1;
+    t.crop.setTexture(cropTexture(this, f.crop, stage)).setVisible(true).setDepth(t.crop.y);
+    t.bubble = stage === 3 ? 'fx-bubble-alert' : f.watered === state.data.day ? 'fx-bubble-heart' : 'fx-bubble-dots';
+  }
+  async usePlot(t) {
+    const p = t.plot, day = state.data.day;
+    if (!this.plotOpen(p)) return ui.say(['These are community garden plots. Have a chat with Wen first.']);
+    const f = state.data.farm[p.id], c = f && CROPS[f.crop];
+    if (!c) {
+      const seeds = Object.keys(state.data.seeds).filter(k => state.seedCount(k));
+      if (!seeds.length) return ui.say(['An empty bed of good soil. You have no seeds. Gaz at Laverton Station and Dimitri at Reservoir sell them.']);
+      const pick = await ui.say({ text: 'Plant something?', choices: [...seeds.map(k => ({ label: `${CROPS[k].name} seeds`, value: k, icon: itemIcon(`seed-${k}`, 32), note: `×${state.seedCount(k)} · ${CROPS[k].days} days` })), { label: 'Not now', value: null }] }, { cancelValue: null });
+      if (!pick || !state.useSeed(pick)) return;
+      state.data.farm[p.id] = { crop: pick, growth: 0, watered: day, boost: false };
+      sfx.pickup(); this.splash(t);
+      this.refreshPlot(t); this.save();
+      return ui.say([`You plant the ${CROPS[pick].name.toLowerCase()} and give it a drink.`, 'Water it once a day. Rain counts. Check the Garden app on your phone.']);
+    }
+    if (f.growth >= c.days) {
+      let n = c.yield;
+      const extra = [];
+      if (state.inParty('poppy')) { n++; extra.push(`${form('poppy').name} digs with total enthusiasm and finds an extra one.`); }
+      if (state.inParty('stanley') && Math.random() < 0.4) { n++; extra.push(`${form('stanley').name} points, sternly, at one you missed.`); }
+      state.addItem(f.crop, n);
+      sfx.found(); this.heartsFx(t, 4);
+      if (c.regrow) Object.assign(f, { growth: Math.max(0, c.days - c.regrow), watered: 0 });
+      else delete state.data.farm[p.id];
+      this.refreshPlot(t); this.save();
+      ui.toast(`+${n} ${c.name}`, itemIcon(f.crop, 32));
+      return ui.say([`You pick ${n} ${c.name.toLowerCase()}${n > 1 && !c.name.endsWith('s') ? 's' : ''}!`, ...extra, ...(c.regrow ? ['It will keep producing. Keep watering it.'] : [])]);
+    }
+    if (f.watered === day) return ui.say([`The ${c.name.toLowerCase()} has had its water today. ${f.growth} of ${c.days} days grown.`]);
+    f.watered = day;
+    const lines = [`You water the ${c.name.toLowerCase()}. ${f.growth} of ${c.days} days grown.`];
+    if (state.inParty('spooky') && isNight(state.data.minutes)) { f.boost = true; lines.push(`${form('spooky').name} hops into the bed and does something spooky to it. It will grow extra tonight.`); }
+    sfx.pickup(); this.splash(t);
+    this.refreshPlot(t); this.save();
+    return ui.say(lines);
+  }
+  splash(t) {
+    for (let i = 0; i < 8; i++) {
+      const d = this.add.image(t.x + (Math.random() - 0.5) * 12, t.y - 6, 'fx-sparkle').setDepth(9700).setTint(0x7ac8f0);
+      this.tweens.add({ targets: d, y: d.y + 6 + Math.random() * 6, alpha: 0, duration: 500 + Math.random() * 300, onComplete: () => d.destroy() });
+    }
   }
 
   spawnPoint() {
@@ -361,6 +447,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'sign') return ui.say(t.lines);
     if (t.kind === 'look') return ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
+    if (t.kind === 'plot') return this.usePlot(t);
   }
 
   // ------------------------------------------------------------ pets
@@ -478,23 +565,91 @@ export class WorldScene extends Phaser.Scene {
     const trainer = TRAINERS[npc.id];
     const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
     if (trainer && !done) return this.challenge(npc, trainer, opts);
-    const hints = Object.entries(info.hints || {}).filter(([id]) => !state.isFound(id));
-    let lines;
-    if (hints.length && Math.random() < 0.6) lines = [hints[0][1]];
+    const f = state.friend(npc.id), fi = friendInfo(npc.id);
+    if (!f.met) { f.met = true; bus.emit('friends:changed'); }
+    // Wen hands out the community garden plots the first time you chat
+    if (npc.id === 'wen' && !state.data.flags.garden) await this.wenGarden(opts);
+    // A heart event the first time you chat at a new heart level, otherwise a normal line
+    const hc = state.friendHearts(npc.id);
+    const ev = Object.keys(fi.events || {}).map(Number).sort((x, y) => x - y).find(n => n <= hc && !f.events.includes(n));
+    if (ev) await this.heartEvent(npc, ev, opts);
     else {
-      const i = this.talkIndex[npc.id] = ((this.talkIndex[npc.id] ?? Math.floor(Math.random() * info.lines.length)) + 1) % info.lines.length;
-      lines = info.lines[i];
+      const hints = Object.entries(info.hints || {}).filter(([id]) => !state.isFound(id));
+      let lines;
+      if (hints.length && Math.random() < 0.6) lines = [hints[0][1]];
+      else {
+        const i = this.talkIndex[npc.id] = ((this.talkIndex[npc.id] ?? Math.floor(Math.random() * info.lines.length)) + 1) % info.lines.length;
+        lines = info.lines[i];
+      }
+      await ui.say(lines, opts);
     }
-    await ui.say(lines, opts);
+    // First chat of the day: friendship
+    if (f.talkedDay !== day) {
+      f.talkedDay = day;
+      const r = state.addFriendPoints(npc.id, FRIEND_POINTS.talk + (HEROES[state.data.hero]?.perk.talkBonus ? 5 : 0));
+      if (r.after > r.before) { sfx.heart(); this.heartsFx(npc, 3); ui.toast(`${info.name}: ${r.after} ${r.after === 1 ? 'heart' : 'hearts'}`); }
+    }
     if (info.gift && state.data.npcDay[npc.id] !== day) {
       state.data.npcDay[npc.id] = day;
       state.addItem(info.gift); state.data.stats.treats++;
       sfx.pickup();
       ui.toast(`+1 ${ITEMS[info.gift].name}`, itemIcon(info.gift, 32));
       await ui.say([info.giftLine, `You got: ${ITEMS[info.gift].name}.`], opts);
-      this.save();
     }
-    if (info.shop) { await ui.shop(); this.save(); }
+    // Your gift to them (once a day)
+    if (f.giftedDay !== day && state.bagItems().length) {
+      const choice = await ui.say({
+        text: `Give ${info.name} a gift?`,
+        choices: [...state.bagItems().map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not today', value: null }],
+      }, { ...opts, cancelValue: null });
+      if (choice) await this.giveFriendGift(npc, choice, opts);
+    }
+    this.save();
+    if (info.shop) { await ui.shop(info.shop === true ? 'olly' : info.shop); this.save(); }
+  }
+
+  async heartEvent(npc, hearts, opts) {
+    const f = state.friend(npc.id), fi = friendInfo(npc.id);
+    f.events.push(hearts);
+    sfx.found(); this.heartsFx(npc, 6);
+    ui.banner(`${npc.info.name}`, `${hearts} hearts`);
+    await ui.say(fi.events[hearts], opts);
+    const reward = fi.rewards?.[hearts];
+    if (reward?.item) { state.addItem(reward.item, reward.n || 1); await ui.say(`You got: ${reward.n || 1} ${ITEMS[reward.item].name}.`, opts); }
+    if (reward?.money) { state.addMoney(reward.money); await ui.say(`You got: $${reward.money}.`, opts); }
+    if (hearts >= 4 && fi.assist) await ui.say(`${npc.info.name} will help you out in battles now. Look for "Call" in the battle menu.`);
+  }
+
+  async giveFriendGift(npc, item, opts) {
+    const f = state.friend(npc.id), fi = friendInfo(npc.id), name = ITEMS[item].name.toLowerCase();
+    const reaction = fi.loves.includes(item) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
+    state.removeItem(item);
+    f.giftedDay = state.data.day; f.reactions[item] = reaction;
+    const r = state.addFriendPoints(npc.id, FRIEND_POINTS[reaction]);
+    const n = npc.info.name;
+    const text = {
+      love: `${n} LOVES the ${name}! "How did you know?"`,
+      like: `${n} is pleased with the ${name}. "Ta, that's lovely."`,
+      neutral: `${n} takes the ${name} politely. "Oh. Thanks."`,
+      dislike: `${n} looks at the ${name}. "...I'll find a use for it."`,
+    }[reaction];
+    if (reaction === 'love' || reaction === 'like') { sfx.heart(); this.heartsFx(npc, reaction === 'love' ? 8 : 3); } else if (reaction === 'dislike') sfx.sad();
+    const lines = [text];
+    if (r.after > r.before) lines.push(`You and ${n} are now ${r.after} ${r.after === 1 ? 'heart' : 'hearts'} close.`);
+    await ui.say(lines, opts);
+  }
+
+  // Wen gives you the community garden plots and some seeds to start.
+  async wenGarden(opts) {
+    state.data.flags.garden = true;
+    state.addSeeds('carrot', 3); state.addSeeds('basil', 2);
+    sfx.found();
+    await ui.say([
+      'Wen: "Oh, perfect timing. Plots are open! The two beds on the right are yours."',
+      '"Here: carrot and basil seeds to start. Water every day. Rain counts. Snails do not count."',
+      'You got: 3 carrot seeds and 2 basil seeds. The Garden app on your phone keeps track.',
+    ], opts);
+    this.plots?.forEach(t => this.refreshPlot(t));
   }
 
   // ------------------------------------------------------------ battles
@@ -675,23 +830,22 @@ export class WorldScene extends Phaser.Scene {
     if (choice !== 'night') return;
     await ui.say([baby ? 'Into the cot. Zzz.' : 'You climb into bed. The house creaks. Somewhere, a possum. Zzz.']);
     this.endingDay = true;
-    state.data.day += 1; state.data.minutes = DAY_START; state.data.pos = null;
-    state.healAll();
+    const news = state.newDay();
     state.save();
     this.leaving = true;
     this.cameras.main.fadeOut(700, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true }));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true, news }));
   }
 
   async endDay() {
     if (this.endingDay) return;
     this.endingDay = true;
     await ui.say(["It's 2am. You are exhausted.", 'You head home and fall asleep the moment your head hits the pillow.']);
-    state.data.day += 1; state.data.minutes = DAY_START; state.data.pos = null;
+    const news = state.newDay();
     state.save();
     this.leaving = true;
     this.cameras.main.fadeOut(600, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true }));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true, news }));
   }
 
   checkExits() {
