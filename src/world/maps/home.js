@@ -15,14 +15,14 @@ import { MapBuilder } from '../MapBuilder.js';
 export function buildHome() {
   const b = new MapBuilder({ id: 'home', w: 24, h: 19, fill: 'W', seed: 41 });
 
-  b.fill(1, 2, 5, 6, 'K');            // bed 3 (study)
+  b.fill(1, 2, 5, 6, 'o');            // bed 3 (study)
   b.fill(7, 2, 3, 6, 'T');            // bathroom
   b.fill(11, 2, 8, 7, 'o');           // kitchen and meals, open to the lounge
   b.fill(20, 2, 3, 6, 'n');           // laundry and WC
   b.fill(1, 9, 10, 2, 'o');           // hall
   b.fill(11, 9, 12, 9, 'o');          // lounge
-  b.fill(1, 12, 4, 6, 'K');           // bed 1
-  b.fill(6, 12, 5, 6, 'K');           // bed 2
+  b.fill(1, 12, 4, 6, 'o');           // bed 1 (yours)
+  b.fill(6, 12, 5, 6, 'o');           // bed 2
   b.set(3, 8, 'D').set(8, 8, 'D').set(19, 3, 'D').set(2, 11, 'D').set(8, 11, 'D');
   b.set(21, 0, 'D').set(21, 1, 'D');  // back door to the yard
   b.set(16, 18, 'D');                 // front door to Allen St
@@ -33,7 +33,7 @@ export function buildHome() {
   b.put('island', 12, 5);
   b.put('dining', 15, 6);
   b.put('cattree', 18, 2);
-  b.put('iwindow', 13, 1, { onWall: true });
+  b.put('iwindow', 13, 1, { v: 'blind', onWall: true });
   b.put('plant', 17, 2, { v: 'fiddle' });
 
   // Lounge
@@ -51,14 +51,14 @@ export function buildHome() {
   b.put('boxes', 21, 17, { v: 'open' });
 
   // Bedrooms
-  b.put('bed', 3, 12, { v: 'blue' });
+  b.put('bed', 3, 12, { v: 'sage' });
   b.put('robe', 1, 17);
   b.put('plant', 1, 12, { v: 'fern' });
-  b.put('picture', 4, 11, { v: 'beach', onWall: true });
+  b.put('iwindow', 3, 11, { v: 'curtain', onWall: true });
   b.put('single', 1, 3);
   b.put('bookshelf', 3, 2);
   b.put('armchair', 4, 6);
-  b.put('iwindow', 2, 1, { onWall: true });
+  b.put('iwindow', 2, 1, { v: 'blind', onWall: true });
   // bed 2 is the renovation dumping ground
   b.put('dropsheet', 7, 14);
   b.put('ladder', 10, 12); b.put('boxes', 6, 12, { v: 'stack' }); b.put('boxes', 7, 12, { v: 'open' });
@@ -66,7 +66,8 @@ export function buildHome() {
 
   // Bathroom and laundry
   b.put('bath', 7, 2); b.put('vanity', 9, 6);
-  b.put('washer', 20, 2); b.put('toilet', 22, 2);
+  b.put('washer', 20, 2); b.put('trough', 21, 5); b.put('toilet', 22, 2);
+  b.put('iwindow', 7, 1, { v: 'frosted', onWall: true }); b.put('shelf', 20, 1, { onWall: true });
 
   // Pet beds (pets you have found hang out here when they're not on your team)
   b.put('petbed', 19, 15, { v: 'pink' });
