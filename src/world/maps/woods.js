@@ -51,6 +51,9 @@ export function buildWoods() {
 
   b.npc('trish', 19, 9, { face: 'down' });
   b.npc('gordon', 21, 9, { face: 'down' });
+  // The Bin Man and his three bins, out on the nature strip for bin night
+  b.put('bin', 37, 15, { v: 'yellow' }); b.put('bin', 38, 15, { v: 'garbage' }); b.put('bin', 39, 15, { v: 'compost' });
+  b.npc('binman', 38, 14, { face: 'down' });
 
   b.lane({ axis: 'x', pos: 12.5, dir: -1, from: -3, to: 47, every: [9, 18], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 47, every: [10, 20], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });
@@ -62,5 +65,7 @@ export function buildWoods() {
   b.scatter([19, 17, 24, 8], 0.08, [['bush', 2, ['green', 'berry']], ['tree', 1, ['gum']]]);
   b.scatter([37, 1, 6, 9], 0.2, [['tree', 2, ['gum', 'oak']], ['bush', 1, ['green']]]);
   for (let y = 1; y < 25; y++) for (let x = 1; x < 43; x++) if (b.get(x, y) === '.' && b.rand() < 0.05 && !b.occ[y][x]) b.set(x, y, ',');
+  // Tall grass for wild encounters
+  b.wildGrass(9, 2); b.wildGrass(29, 2); b.wildGrass(36, 21);
   return b.finish();
 }

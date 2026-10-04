@@ -43,14 +43,18 @@ export function openMenu(panel, close) {
           h('li', {}, 'Treats appear around town each morning. Some locals will give you one a day too.'),
           h('li', {}, 'Tap your myki at a green reader to catch the train to a station you have already visited.'),
           h('li', {}, 'Some pets keep odd hours. Try visiting at different times of day.'),
+          h('li', {}, 'Battles: with a team, wild things jump out of tall grass. Pick moves that suit their type. A pet who has had enough runs home; everyone rests up at home.'),
+          h('li', {}, 'Most pets have owners. Talk to them for a friendly play-fight, and win to befriend their pet. Princess is free.'),
           h('li', {}, 'Phone: drag on the left of the screen to move, push the stick all the way (or hold B) to run, tap A to talk. You can also tap a pet or a spot on the map.'),
           h('li', {}, 'Keyboard: arrows or WASD to move, Shift to run, Space to talk, P for the Petdex, B for the bag, M for this menu.'))),
       h('div', { class: 'note' }, h('h4', {}, 'Your stats'),
         h('p', {}, `Day ${d.day}. ${d.stats.chats} chats, ${d.stats.gifts} treats given, ${d.stats.treats} treats collected.`)),
-      h('div', { class: 'row center' }, h('button', { class: 'link-btn', onclick: () => {
-        if (!confirm('Start over? Your Petdex, bag and friendships will be cleared.')) return;
-        bus.emit('game:reset');
-      } }, 'Start over')),
+      h('div', { class: 'note' }, h('h4', {}, 'New game'),
+        h('p', {}, 'Start again from day one. Your Petdex, bag, levels and friendships on this device will be wiped.'),
+        h('div', { class: 'row' }, h('button', { class: 'wood-btn danger', onclick: () => {
+          if (!confirm('Start a new game? Everything on this device will be cleared. Copy your save code first if you want a backup.')) return;
+          bus.emit('game:reset');
+        } }, 'New game'))),
       msg,
       h('p', { class: 'small center credits' }, 'Project Princess. The pets belong to their humans. Made with Phaser.')));
 }

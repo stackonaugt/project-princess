@@ -20,7 +20,8 @@ import { buildGlasgow } from '../world/maps/glasgow.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
-const BRUNSWICK_GRASS = ['#7cbd4e', '#74b548', '#5a9a38', '#9ad466'];
+// Brunswick is mostly concrete; its grass is the weedy, sun-baked kind.
+const BRUNSWICK_GRASS = ['#93a85a', '#8a9f52', '#6a7f3a', '#b4c47a'];
 const RES_GRASS = ['#68b04a', '#61a845', '#4b8f36', '#86ca5e'];
 const LAWN = ['#6cbc4a', '#62b244', '#4f9a38', '#86ca5e'];
 

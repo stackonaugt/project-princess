@@ -23,6 +23,9 @@ export const POINTS_PER_HEART = 25;
 export const MAX_HEARTS = 10;
 export const FRIENDSHIP = { talk: 10, love: 45, like: 25, neutral: 10, dislike: -15 };
 
+// Battles: chance of a wild encounter each new tall-grass tile you step on.
+export const ENCOUNTER_RATE = 0.12;
+
 export const RAIN_CHANCE = 0.3;         // chance each day has a Melbourne shower
 
 export const ART_PATH = 'assets/sprites/';

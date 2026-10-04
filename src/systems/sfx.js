@@ -40,5 +40,17 @@ export const sfx = {
   honk: () => { tone(330, 0.18, { type: 'square', vol: 0.04 }); tone(415, 0.18, { type: 'square', vol: 0.03 }); },
   myki: () => { tone(1568, 0.07, { vol: 0.05 }); tone(1568, 0.07, { vol: 0.05, delay: 0.12 }); },
   quack: () => tone(480, 0.09, { type: 'sawtooth', vol: 0.04, slide: -200 }),
+  // Battles
+  encounter: () => [880, 660, 880, 660, 1046].forEach((f, i) => tone(f, 0.06, { type: 'square', vol: 0.03, delay: i * 0.07 })),
+  hit: () => tone(180, 0.1, { type: 'square', vol: 0.06, slide: -90 }),
+  superHit: () => { tone(220, 0.08, { type: 'square', vol: 0.07, slide: -120 }); tone(110, 0.14, { type: 'sawtooth', vol: 0.05, delay: 0.06, slide: -50 }); },
+  weakHit: () => tone(260, 0.06, { type: 'triangle', vol: 0.05, slide: -40 }),
+  whoosh: () => tone(300, 0.18, { type: 'sawtooth', vol: 0.025, slide: 500 }),
+  healUp: () => [523, 659, 784].forEach((f, i) => tone(f, 0.08, { type: 'triangle', vol: 0.06, delay: i * 0.06 })),
+  statDown: () => tone(600, 0.2, { type: 'triangle', vol: 0.05, slide: -300 }),
+  statUp: () => tone(400, 0.2, { type: 'triangle', vol: 0.05, slide: 400 }),
+  faint: () => tone(500, 0.4, { type: 'triangle', vol: 0.06, slide: -380 }),
+  levelUp: () => [523, 659, 784, 659, 784, 1046].forEach((f, i) => tone(f, 0.09, { type: 'square', vol: 0.03, delay: i * 0.08 })),
+  win: () => [784, 784, 784, 1046].forEach((f, i) => tone(f, i === 3 ? 0.3 : 0.08, { type: 'square', vol: 0.035, delay: i * 0.1 })),
   sad: () => { tone(392, 0.12, { type: 'triangle' }); tone(330, 0.18, { type: 'triangle', delay: 0.12 }); },
 };

@@ -58,5 +58,7 @@ export function buildAllen() {
   b.border(['gum', 'oak', 'gum', 'pine']);
   b.scatter([1, 1, 38, 28], 0.05, [['tree', 2, ['gum', 'oak']], ['bush', 3, ['green', 'rose', 'hydrangea']], ['agapanthus', 2, ['purple']]]);
   for (let y = 1; y < 29; y++) for (let x = 1; x < 39; x++) if (b.get(x, y) === '.' && b.rand() < 0.05 && !b.occ[y][x]) b.set(x, y, ',');
+  // Tall grass for wild encounters
+  b.wildGrass(33, 3); b.wildGrass(3, 11); b.wildGrass(35, 25); b.wildGrass(12, 27);
   return b.finish();
 }

@@ -120,4 +120,82 @@ export const NPCS = {
     ],
     hints: { poppy: 'There is a frenchie by the picnic tables who keeps trying to race me. She has never won. She has never stopped trying.' },
   },
+  rose: {
+    name: 'Rose', role: "Salami's human. Donald St", look: { hair: '#b08a58', hairStyle: 'wavy', skin: '#f2c8a0', shirt: '#1e1e24', pants: '#d8a860', pantsPattern: 'leopard', shoes: '#1e1e24', sunglasses: '#9a5ad0', frame: '#d8dce4', bumbag: '#18181c', lips: '#c0505a' },
+    lines: [
+      ['Oh, you want to be friends with Salami? Cute. Everyone does.', 'You will have to get past me first. Friendly battle. Loser buys the oat milk.'],
+      ['These pants are leopard print because Salami is basically a tiny leopard. I am dressing for my role as her manager.'],
+      ['The rent on these flats went up again. Salami has not contributed a single cent. She does contribute vibes.'],
+      ['I have trained Salami for years. Well. She has trained me. Same thing really.'],
+    ],
+    hints: { salami: 'Salami is around the flats somewhere, judging people. Bring a sardine and some patience. Then come and battle me for her heart.' },
+    gift: 'sardine', giftLine: 'Here, a sardine. For Salami, not for you. I can see you eyeing it.',
+  },
+  slinks: {
+    name: 'Slinks', role: "Spooky's human. Lurks near the bakery", look: { hair: '#16121a', hairStyle: 'bob', streak: '#8a5ad0', skin: '#f4dcc8', shirt: '#4a2a5a', blazer: '#1a181e', blazerTrim: '#3a3440', pants: '#1a181e', shoes: '#0e0e10', lips: '#6a2a4a' },
+    lines: [
+      ['I am not lurking. I am waiting for the bakery to put out the day-old bread. There is a difference.'],
+      ['People think I dress like this because I am spooky. No. Spooky is spooky. I just like black. It hides the bunny fur.'],
+      ['The 19 tram goes past every few minutes and I still manage to miss it. It is a gift.'],
+    ],
+    hints: { spooky: 'Spooky goes see-through when she is shy. Come back after dark, when she is solid. And bring a carrot. She is not made of stone.' },
+    gift: 'carrot', giftLine: 'Have a carrot. I carry them everywhere now. My bag is basically a crisper.',
+  },
+  mem: {
+    name: 'Mem', role: 'Hope St. Cool, unbothered', look: { hair: '#ecd490', hairStyle: 'bob', skin: '#f2c8a0', shirt: '#2a2a30', blazer: '#1a1a1e', blazerTrim: '#4a4a54', pants: '#8aa4c8', shoes: '#1e1e24', sunglasses: '#1a1a20', shades: 'wrap' },
+    lines: [
+      ['Yes, sunglasses in winter. Melbourne could produce sun at any moment. I like to be ready.'],
+      ['Corni and I live just here. Our apartment is small but the rent is enormous, so it evens out.'],
+      ['Leather jacket, 1998. Older than some of the people in the bar downstairs. Still looks better.'],
+    ],
+    hints: { salami: 'The tabby on Donald St? That is Rose\'s. Rose will want a battle. Rose always wants a battle.' },
+  },
+  corni: {
+    name: 'Corni', role: 'Hope St. Never without the monkey', look: { hair: '#a87a4a', hairStyle: 'mullet', skin: '#f2c79a', shirt: '#2a3a68', pants: '#4a4a52', shoes: '#e8e4dc', holding: 'monkey' },
+    lines: [
+      ['This is Monkey. He goes everywhere with me. He has been to more gigs than most people in Brunswick.'],
+      ['The mullet is a commitment. Business at the front, Sydney Rd at the back.'],
+      ['Monkey says hello. Monkey also says the pets around here are very good. Monkey is never wrong.'],
+    ],
+    hints: { spooky: 'Monkey saw a black bunny near the bakery last night. Then it vanished. Monkey has not slept since.' },
+  },
+  sinead: {
+    name: 'Sinead', role: "Poppy's human. Unit 1, 835 Plenty Rd", look: { hair: '#3a2416', hairStyle: 'long', skin: '#f2c8a8', shirt: '#2a2a30', blazer: '#18181c', blazerTrim: '#44444c', pants: '#2a2a34', shoes: '#1e1e24', sunglasses: '#5a3218', shades: 'round', frame: '#8a5428', hoops: '#f06aa8' },
+    lines: [
+      ['Welcome to the units! Mind the driveway. Poppy has claimed it, and also the bins, and also you.'],
+      ['Poppy has two speeds: asleep and absolutely flat out. There is nothing in between. There never will be.'],
+      ['Seb says Plenty Rd is too loud. I say it is just Reservoir saying hello. Six lanes of hello.'],
+    ],
+    hints: { poppy: 'Poppy will bonk into you at full speed. That is how she says hi. Throw her a tennis ball and you are mates for life.' },
+    gift: 'tennis', giftLine: 'Take a tennis ball. We have forty. Poppy loses one a day and finds two.',
+  },
+  tim: {
+    name: 'Tim', role: "Stanley's human. 57C Glasgow Ave", look: { hair: '#2a1a12', hairStyle: 'wavyshort', skin: '#eec09a', shirt: '#3a8a4a', shirtPattern: 'stripes', shirtAccent: '#f2f2ea', blazer: '#22305a', pants: '#3a3a44', shoes: '#4a2e1a', moustache: '#2a1a12', stubble: true },
+    lines: [
+      ['Stanley is a gentleman and a scholar. Mostly a scholar of cheese.'],
+      ['You want Stanley to like you? Do not chase him. Let him come to you. He is like a cat in a schnauzer costume.'],
+      ['I could beat you in a battle. Stanley could beat you in a battle. Stanley could beat me in a battle, honestly.'],
+    ],
+    hints: { stanley: 'Stanley walks away from strangers. It is not personal. Bring him something fancy, then give him time. He comes around.' },
+    gift: 'cheese', giftLine: 'Have a cheese stick. We buy them by the crate. Stanley has standards.',
+  },
+  nicholas: {
+    name: 'Nicholas', role: "Tim's partner. Also lives at 57C", look: { hair: '#2a1c14', hairStyle: 'curly', skin: '#f0c8a4', shirt: '#f4f4f0', collar: true, blazer: '#2a3a34', blazerPattern: 'plaid', blazerAccent: ['#5a2a2a', '#1a2420'], pants: '#2a2a30', shoes: '#2a1a12', glasses: '#7a4a22' },
+    lines: [
+      ['Tim does the battling. I do the commentary. And what a performance that was. Truly. Riveting.'],
+      ['Stanley sleeps on my side of the bed. Tim says that means Stanley loves me more. I say it means Stanley likes the electric blanket.'],
+      ['The tartan is vintage. So is the house. So is Stanley, in schnauzer years. We are a very vintage household.'],
+    ],
+    hints: { stanley: 'If Stanley walks off, keep at it. Three hearts and he stops ignoring you. Six and he comes to say hi. It is very moving.' },
+  },
+  binman: {
+    name: 'Bin Man', role: 'Bin trainer of Laverton', look: { hair: '#5a3a1a', hairStyle: 'cap', cap: '#f07a1a', skin: '#e0a880', shirt: '#f07a1a', hivis: true, pants: '#2a3a5a', shoes: '#2a2a2a', gloves: '#e8c040', stubble: true },
+    lines: [
+      ['These are my bins. Yellow lid, recycling. Dark green, garbage. Little white one, compost. Raised them from tiny wheelie bins.'],
+      ['Bin night is Tuesday. The bins know. They get restless around 6pm.'],
+      ['Somebody put a pizza box with cheese stuck on it in the yellow bin. Contamination. My recycling bin is devastated.'],
+      ['Soft plastics do not go in the yellow bin! I will tell you that one for free, every single time.'],
+    ],
+    hints: { princess: 'The poodle on Allen St barks at my truck every single week. She is a worthy rival. My bins respect her.' },
+  },
 };

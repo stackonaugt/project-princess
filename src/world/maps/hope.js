@@ -1,11 +1,12 @@
 // HOPE ST: Mem and Corni's apartment building, with its concrete fins,
-// balconies overflowing with plants and sage green awnings. Across the road
-// is a gravel lot and an old warehouse. The Upfield path runs past on the
-// west, back down to Brunswick Station.
+// balconies overflowing with plants and sage green awnings. Around it:
+// roller doors, a bike co-op in an old workshop, a gravel lot gone to weeds
+// and an empty tin shed. The Upfield path runs past on the west, back down
+// to Brunswick Station.
 import { MapBuilder } from '../MapBuilder.js';
 
 export function buildHope() {
-  const b = new MapBuilder({ id: 'hope', w: 40, h: 24, seed: 121 });
+  const b = new MapBuilder({ id: 'hope', w: 40, h: 24, fill: 'c', seed: 121 });
 
   // Upfield line and shared path down the west side
   b.vline(1, 0, 23, 'r').vline(2, 0, 23, 'r');
@@ -17,37 +18,53 @@ export function buildHope() {
   b.fill(3, 13, 37, 2, '#').hline(6, 39, 12, 'f').hline(6, 39, 15, 'f');
   b.fill(1, 13, 2, 2, 'x');
 
+  // Weedy gravel strip beside the path, and two lock-ups facing the street
+  b.fill(6, 0, 6, 7, 'g').fill(6, 2, 3, 3, '"');
+  b.put('rollerdoor', 6, 7, { v: 'tagged' }); b.put('rollerdoor', 9, 7, { v: 'grey' });
+  b.fenceV(12, 0, 8, 'paling');
+  b.put('crate', 11, 9, { v: 'red' });
+
   // Mem and Corni's building, with a wide forecourt
   b.put('hopeapts', 13, 6);
   b.fill(12, 9, 16, 3, 'f');
   b.put('bikehoop', 13, 10); b.put('bikehoop', 14, 10);
-  b.put('bush', 26, 9, { v: 'green' }); b.put('bush', 12, 9, { v: 'green' });
-  b.sign(21, 10, ['Mem and Corni\'s place.', 'Fourth floor. You can tell which balcony: it has the most plants. It always has the most plants.']);
-  b.put('tall', 9, 6, { v: 'biggum' }); b.put('tall', 31, 7, { v: 'pear' });
-  b.put('shed', 30, 4, { v: 'grey' });
+  b.sign(24, 10, ['Mem and Corni\'s place.', 'Fourth floor. You can tell which balcony: it has the most plants. It always has the most plants.']);
 
-  // Across the road: an empty gravel lot behind a low wall, and a warehouse
-  b.fill(10, 17, 16, 6, 'g');
-  b.fenceH(9, 26, 16, 'bluestone', [17, 18]).fenceV(9, 17, 22, 'bluestone').fenceV(26, 17, 22, 'bluestone');
-  b.put('shed', 29, 18, { v: 'blue' });
-  b.put('mural', 7, 17, { v: 'b' });
+  // East: a little car park, the bike co-op and an old tin shed
+  b.fenceV(25, 0, 5, 'paling');
+  b.put('graffiti', 26, 4, { v: 'paste' });
+  b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 30, 6, { v: 'yellow' }); b.put('bin', 31, 6, { v: 'red' });
+  b.put('bshop', 28, 8, { v: 'bikecoop' });
+  b.put('factory', 32, 3, { v: 'brewery' });
+  b.put('bikehoop', 32, 10); b.put('bikehoop', 33, 10);
+  b.put('powerpole', 10, 12); b.put('powerpole', 35, 12);
+  b.put('streettree', 20, 15);
+
+  // Across the road: a vacant lot behind a low bluestone wall
+  b.fill(11, 17, 15, 6, 'g').fill(12, 19, 3, 2, '"');
+  b.fenceH(10, 26, 16, 'bluestone', [17, 18]).fenceV(10, 17, 23, 'bluestone').fenceV(26, 17, 23, 'bluestone').fenceH(11, 25, 23, 'bluestone');
   b.sign(17, 17, ['Vacant lot.', 'Coming soon: "luxury living". Currently: weeds, one shopping trolley, excellent cat hangout.']);
-  b.put('trolley', 20, 20);
-  b.put('powerpole', 10, 12); b.put('powerpole', 30, 12);
+  b.put('trolley', 21, 20);
+  b.put('graffiti', 6, 17, { v: 'tags' });
+  b.fill(6, 20, 2, 2, '"');
+  b.put('shed', 28, 18, { v: 'blue' });
+  b.put('rollerdoor', 35, 19, { v: 'green' });
+  b.put('crate', 34, 20, { v: 'blue' });
 
   b.exit(5, 23, 1, 1, 'brunswick', 'north', 'Brunswick Station');
   b.entry('south', 5, 21, 'up');
 
+  b.npc('mem', 16, 9, { face: 'down' });
+  b.npc('corni', 18, 9, { face: 'down' });
+
   b.lane({ axis: 'y', pos: 1.5, dir: 1, from: -14, to: 38, every: [35, 60], speed: 110, kinds: ['veh-train-v'], train: true });
   b.lane({ axis: 'y', pos: 2.5, dir: -1, from: -14, to: 38, every: [40, 70], speed: 110, kinds: ['veh-train-v'], train: true });
-  b.lane({ axis: 'x', pos: 13.5, dir: -1, from: 3, to: 43, every: [12, 24], speed: 50, kinds: ['veh-car-h-red', 'veh-ute-h'] });
+  b.lane({ axis: 'x', pos: 13.5, dir: -1, from: 3, to: 43, every: [12, 24], speed: 50, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'y', pos: 5.5, dir: -1, from: -2, to: 26, every: [12, 26], speed: 72, kinds: ['veh-bike-v'] });
 
   b.forage(22, 19, ['tennis', 'carrot']);
-  b.forage(36, 9, ['feather', 'croissant']);
-  b.magpies([[16, 20], [35, 21]]);
-  b.border(['oak', 'gum']);
-  b.scatter([6, 1, 6, 10], 0.25, [['bush', 2, ['green', 'berry']], ['tree', 1, ['gum']]]);
-  b.scatter([33, 17, 6, 6], 0.2, [['bush', 2, ['green']], ['tree', 1, ['oak']]]);
+  b.forage(36, 10, ['feather', 'croissant']);
+  b.forage(8, 1, ['sardine', 'feather']);
+  b.magpies([[16, 20], [37, 22]]);
   return b.finish();
 }

@@ -94,5 +94,7 @@ export function buildStation() {
   b.magpies([[12, 28], [33, 28]]);
   b.border(['gum', 'oak']);
   b.scatter([1, 27, 42, 2], 0.2, [['bush', 2, ['green']], ['tree', 1, ['gum']]]);
+  // Tall grass for wild encounters
+  b.wildGrass(4, 27, 1.5, 1); b.wildGrass(25, 27, 1.5, 1); b.wildGrass(38, 27, 1.5, 1);
   return b.finish();
 }

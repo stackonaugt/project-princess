@@ -8,7 +8,7 @@ import { bus } from '../bus.js';
 import { rng } from '../util.js';
 import { ZONES } from '../data/regions.js';
 
-const VERSION = 6;
+const VERSION = 7;
 export const MAX_TEAM = 3;
 
 function fresh() {
@@ -19,7 +19,8 @@ function fresh() {
     visited: ['home'],
     hero: null, startGiven: false,        // 'helen' | 'hadrian' | 'aleksy' (see data/heroes.js)
     party: [],         // pet ids on your team (max 3), they follow you around
-    pets: {},          // id -> { found, day, date, points, talkedDay, giftedDay, reactions: {item: 'love'|...}, chats }
+    pets: {},          // id -> { found, day, date, points, talkedDay, giftedDay, reactions: {item: 'love'|...}, chats, level, xp, hp }
+    beaten: {},        // trainer id -> day you last beat them
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
@@ -30,7 +31,8 @@ function fresh() {
 }
 
 function petRecord(d, id) {
-  return d.pets[id] || (d.pets[id] = { found: false, day: 0, date: null, points: 0, talkedDay: 0, giftedDay: 0, reactions: {}, chats: 0 });
+  return d.pets[id] || (d.pets[id] = { found: false, day: 0, date: null, points: 0, talkedDay: 0, giftedDay: 0, reactions: {}, chats: 0, level: 0, xp: 0, hp: null });
+  // level 0 = not set yet (see START_LEVEL in systems/battle.js); hp null = full health
 }
 
 // Make sure anything loaded from storage or a code has the right shape.
@@ -48,11 +50,12 @@ function sanitise(raw) {
   if (raw.inventory) for (const [k, n] of Object.entries(raw.inventory)) if (ITEMS[k] && n > 0) d.inventory[k] = Math.min(99, n | 0);
   if (raw.forage && typeof raw.forage === 'object') d.forage = raw.forage;
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
+  if (raw.beaten && typeof raw.beaten === 'object') d.beaten = raw.beaten;
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
   d.startGiven = !!raw.startGiven;
-  if (Array.isArray(raw.party)) d.party = raw.party.filter(id => d.pets[id]?.found).slice(0, MAX_TEAM);
+  if (Array.isArray(raw.party)) d.party = raw.party.filter(id => d.pets[id]?.found && d.pets[id].hp !== 0).slice(0, MAX_TEAM);
   d.seenIntro = !!raw.seenIntro;
   d.created = raw.created || d.created;
   return d;
@@ -141,6 +144,8 @@ export const state = {
   // Team
   inParty(id) { return this.data.party.includes(id); },
   setParty(ids) { this.data.party = ids.filter(id => this.isFound(id)).slice(0, MAX_TEAM); bus.emit('petdex:changed'); },
+  // Pets get their energy back at home (and overnight).
+  healAll() { for (const r of Object.values(this.data.pets)) r.hp = null; },
   foundIds() { return PETS.filter(p => this.isFound(p.id)).map(p => p.id); },
   forageTaken(region, index) {
     const f = this.data.forage[region];

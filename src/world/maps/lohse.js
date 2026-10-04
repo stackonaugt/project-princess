@@ -63,5 +63,7 @@ export function buildLohse() {
   b.border(['gum', 'oak', 'gum']);
   b.scatter([4, 1, 34, 22], 0.04, [['bush', 2, ['green', 'berry']], ['tree', 1, ['gum']]]);
   for (let y = 1; y < 23; y++) for (let x = 4; x < 38; x++) if (b.get(x, y) === '.' && b.rand() < 0.08 && !b.occ[y][x]) b.set(x, y, ',');
+  // Tall grass for wild encounters
+  b.wildGrass(28, 2); b.wildGrass(13, 12); b.wildGrass(34, 12); b.wildGrass(21, 18);
   return b.finish();
 }

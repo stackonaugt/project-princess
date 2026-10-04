@@ -13,7 +13,7 @@
 //  behaviour  'wander' | 'patrol' | 'phase' | 'zoomies' | 'stalk' | 'aloof'
 //  sleeps     [from, to] in minutes after midnight (26*60 = 2am), or null
 //  loves / likes / dislikes   item ids from src/data/items.js
-//  stats / moves              for future battles (shown in the Petdex)
+//  stats      battle stats (moves are in src/data/moves.js, PET_MOVES)
 //  lines      what the pet "says", keyed by the hearts needed to unlock them
 //  night / rain / asleep      extra lines for those situations
 
@@ -31,7 +31,6 @@ export const PETS = [
     favouriteSpot: 'The exact centre of the Allen St court, where everyone can see her.',
     loves: ['ribbon', 'chicken'], likes: ['cheese', 'croissant'], dislikes: ['lemon', 'tennis'],
     stats: { hp: 55, attack: 72, defence: 45, speed: 80, special: 95 },
-    moves: ['Pom-pom Pummel', 'Withering Look', 'Yap Attack', 'Guardian Stance'],
     lines: {
       0: ['Princess looks you up and down. You have not passed inspection.', 'Princess yaps once. That was a warning.', 'Princess fluffs her pom-poms. Laverton is under her protection.'],
       3: ['Princess allows you to stand slightly closer than before. An honour.', 'Princess sniffs your shoe and decides it can stay.'],
@@ -45,7 +44,7 @@ export const PETS = [
   {
     id: 'salami', name: 'Salami', species: 'Tabby cat', type: 'street', sprite: 'tabby',
     pal: { a: '#8a6a42', s: '#3a2a18', c: '#c88a4a', w: '#e8d8b8', e: '#8ab83a', p: '#d89a9a' },
-    owner: 'Rose', region: 'brunswick', zone: 'donald', home: [13, 9], range: 3,
+    owner: 'Rose', region: 'brunswick', zone: 'donald', home: [11, 7], range: 3,
     homeSpot: { zone: 'home', x: 18, y: 3 },
     behaviour: 'stalk', sleeps: [13 * 60, 15 * 60],
     bio: 'A foundling with a vicious strike.',
@@ -54,7 +53,6 @@ export const PETS = [
     favouriteSpot: 'The warm concrete of the driveway at 10 Donald St, around mid-morning.',
     loves: ['sardine', 'feather'], likes: ['snag', 'chicken', 'cheese'], dislikes: ['carrot', 'lemon'],
     stats: { hp: 60, attack: 88, defence: 50, speed: 85, special: 60 },
-    moves: ['Ankle Ambush', 'Crate Claim', 'Mixed Signals', 'Laneway Lurk'],
     lines: {
       0: ['Salami eyes your ankles like they owe her money.', 'Salami headbutts your leg, then swipes it. Mixed signals.', 'Salami has claimed a milk crate. It is hers now.'],
       3: ['Salami follows you to the end of the lane, then pretends she was going there anyway.'],
@@ -77,7 +75,6 @@ export const PETS = [
     favouriteSpot: 'Under the outdoor tables at A1 Bakery, catching dropped za\'atar.',
     loves: ['carrot', 'lemon'], likes: ['feather', 'croissant'], dislikes: ['snag', 'chicken'],
     stats: { hp: 50, attack: 55, defence: 60, speed: 95, special: 90 },
-    moves: ['Phase Shift', 'Thousand-Yard Stare', 'Binky', 'Midnight Thump'],
     lines: {
       0: ['Spooky flickers out of sight, then reappears right behind you.', "Spooky stares at something you can't see.", 'You blink and Spooky is somewhere else entirely.'],
       3: ['Spooky lets you see her for a full five seconds. A rare privilege.'],
@@ -95,12 +92,11 @@ export const PETS = [
     homeSpot: { zone: 'yard', x: 25, y: 9 },
     behaviour: 'zoomies', sleeps: [21 * 60, 26 * 60],
     bio: 'Pure muscle and brawn, with very little brains. Ready to bust her way through.',
-    clue: 'Residents of a block of brick units on Loddon Ave, Reservoir, report being "body-checked by a small black brick" in the driveway.',
+    clue: 'Unit 1, 835 Plenty Rd (round the corner on Loddon Ave) reports being "body-checked by a small black brick" in the driveway.',
     funFact: 'Has tried to race every jogger at Edwardes Lake. Win record: zero. Enthusiasm: infinite.',
     favouriteSpot: 'The middle of the shared driveway, where every delivery driver has to say hello.',
     loves: ['tennis', 'snag'], likes: ['chicken', 'cheese', 'croissant', 'sardine', 'carrot', 'lemon'], dislikes: [],
     stats: { hp: 85, attack: 80, defence: 90, speed: 50, special: 20 },
-    moves: ['Headbutt', 'Snort', 'Zoomies', 'Unstoppable Snack Drive'],
     lines: {
       0: ['Poppy charges at you and bounces off. She is thrilled about it.', 'Poppy snorts loudly. Possibly a thought. Probably not.', 'Poppy tries to squeeze through a gap that is clearly too small.'],
       3: ['Poppy leans her whole weight against your legs. It is like being hugged by a bag of cement.'],
@@ -123,7 +119,6 @@ export const PETS = [
     favouriteSpot: 'The front lawn at 57C, where he can judge the whole street at once.',
     loves: ['cheese', 'croissant'], likes: ['chicken', 'sardine'], dislikes: ['tennis', 'lemon'],
     stats: { hp: 60, attack: 50, defence: 70, speed: 55, special: 98 },
-    moves: ['Judgemental Stare', 'Eyebrow Raise', 'Heavy Sigh', 'I Told You So'],
     lines: {
       0: ['Stanley sighs. He was hoping for more intelligent company.', 'Stanley grumbles, but stays close by.', 'Stanley raises one bushy eyebrow at you.'],
       3: ['Stanley no longer walks away when you approach. Progress.', 'Stanley gives a short, approving "hmph".'],

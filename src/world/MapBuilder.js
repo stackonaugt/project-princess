@@ -31,6 +31,8 @@ export class MapBuilder {
     }
     return this;
   }
+  // A patch of tall grass (wild encounters happen here). Only covers lawn.
+  wildGrass(cx, cy, rx = 2.4, ry = 1.4) { return this.ellipse(cx, cy, rx, ry, '"', ['.', ',']); }
   // Keep an area clear of random scatter (pet homes, spawn points).
   reserve(cx, cy, r) {
     for (let y = Math.floor(cy - r); y <= cy + r; y++) for (let x = Math.floor(cx - r); x <= cx + r; x++) {
