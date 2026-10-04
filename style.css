@@ -225,3 +225,61 @@ body.touch.talking #joyZone { pointer-events: none; }
 .thumb.tall { height: 96px; width: 64px; }
 .thumb.tall img { width: 48px; height: 96px; object-fit: contain; }
 .perk { margin: 4px 0; font-size: 14px; }
+
+/* ---------- battles ---------- */
+#battle { position: fixed; inset: 0; z-index: 25; pointer-events: none; --bt-panel: 172px; }
+#battle[hidden] { display: none; }
+#battle > * { pointer-events: auto; }
+body.battling #hud, body.battling #touch, body.battling #toasts { display: none; }
+.bt-box {
+  position: absolute; width: min(300px, 62vw); background: var(--parch); border: 3px solid var(--wood); border-radius: 8px;
+  box-shadow: inset 0 0 0 2px var(--parch-dark), 0 4px 0 var(--wood-dark); padding: 6px 10px 8px; transition: transform .35s ease-out, opacity .35s;
+}
+.bt-box.off { opacity: 0; }
+.bt-foe { top: calc(12px + var(--safe-t)); left: calc(12px + var(--safe-l)); }
+.bt-foe.off { transform: translateX(-30px); }
+.bt-mine { right: calc(12px + var(--safe-r)); bottom: calc(var(--bt-panel) + 14px + var(--safe-b)); }
+.bt-mine.off { transform: translateX(30px); }
+.bt-name { display: flex; align-items: baseline; gap: 6px; font-weight: 700; font-size: 18px; white-space: nowrap; }
+.bt-name > span:first-child { overflow: hidden; text-overflow: ellipsis; }
+.bt-name .lv { margin-left: auto; font-size: 14px; font-weight: 600; }
+.bt-sub { display: flex; align-items: center; gap: 6px; margin: 2px 0 4px; font-size: 12px; }
+.bt-held { opacity: .75; }
+.bt-hp { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; }
+.bt-hp .track { height: 9px; background: #5a4a3a; border: 2px solid var(--wood-dark); border-radius: 5px; overflow: hidden; }
+.bt-hp .fill { height: 100%; background: #58c040; transition: width .55s ease-out, background-color .3s; }
+.bt-hp .fill.mid { background: #e8c030; }
+.bt-hp .fill.low { background: #e05040; }
+.bt-nums { text-align: right; font-size: 14px; font-weight: 600; margin-top: 2px; }
+.bt-xp { height: 4px; background: var(--parch-dark); border-radius: 2px; overflow: hidden; margin-top: 3px; }
+.bt-xp span { display: block; height: 100%; background: #4a9ae0; transition: width .6s ease-out; }
+.bt-team { display: flex; gap: 4px; margin-top: 4px; }
+.bt-team i { width: 9px; height: 9px; border-radius: 50%; background: #e05040; border: 2px solid var(--wood-dark); }
+.bt-team i.ok { background: #58c040; }
+.bt-team i.empty { background: transparent; opacity: .35; }
+.bt-panel {
+  position: absolute; left: 0; right: 0; bottom: 0; min-height: calc(var(--bt-panel) + var(--safe-b));
+  background: var(--parch); border-top: 4px solid var(--wood); box-shadow: inset 0 3px 0 var(--parch-dark);
+  padding: 10px calc(12px + var(--safe-r)) calc(10px + var(--safe-b)) calc(12px + var(--safe-l));
+  display: flex; flex-direction: column; gap: 8px; cursor: pointer; touch-action: manipulation;
+}
+.bt-msg { margin: 0; font-size: clamp(16px, 4.2vw, 20px); line-height: 1.3; min-height: 2.6em; }
+.bt-msg.wait::after { content: ' ▼'; color: var(--red); font-size: 13px; animation: blink 1s steps(2) infinite; }
+.bt-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.bt-menu:empty { display: none; }
+.bt-menu.list { grid-template-columns: 1fr; max-height: 34vh; overflow: auto; }
+@media (min-width: 700px) { .bt-menu.moves { grid-template-columns: 1fr 1fr; } .bt-menu.list { grid-template-columns: 1fr 1fr; } }
+.bt-btn {
+  display: flex; align-items: center; gap: 6px; text-align: left; cursor: pointer; min-height: 46px;
+  background: var(--parch-light); border: 3px solid var(--parch-dark); border-left-width: 8px; border-radius: 7px; padding: 5px 9px; font-size: 17px; font-weight: 600;
+}
+.bt-btn small { margin-left: auto; font-size: 12px; font-weight: 400; opacity: .8; text-align: right; }
+.bt-btn img { width: 26px; height: 26px; image-rendering: pixelated; }
+.bt-btn.sel { background: #fff4d6; border-color: var(--wood); }
+.bt-btn:disabled { opacity: .45; cursor: default; }
+.bt-btn.back { font-weight: 400; }
+.bt-btn .tag { font-size: 11px; color: #fff; padding: 0 6px; border-radius: 8px; font-weight: 600; }
+body.touch .bt-btn { min-height: 52px; }
+.wood-btn.danger { background: #a8402e; border-color: #5a1e14; box-shadow: inset 0 2px 0 #d06a54, 0 3px 0 #5a1e14; }
+.move-row { display: grid; grid-template-columns: 1fr auto auto; gap: 6px; align-items: center; font-size: 14px; margin: 3px 0; }
+.move-row small { opacity: .75; }

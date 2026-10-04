@@ -2,7 +2,9 @@
 import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { PETS } from '../data/pets.js';
-import { TYPES } from '../data/types.js';
+import { TYPES, weaknessesOf } from '../data/types.js';
+import { MOVES, PET_MOVES } from '../data/moves.js';
+import { petLevel, petFighter, xpToNext } from '../systems/battle.js';
 import { ITEMS } from '../data/items.js';
 import { REGIONS, REGION_ORDER } from '../data/regions.js';
 import { MAX_HEARTS } from '../config.js';
@@ -89,8 +91,20 @@ function renderDetail(panel, close, p) {
         : h('div', { class: 'note locked' }, h('h4', {}, 'Fun fact'), h('p', {}, 'Reach 2 hearts to unlock.')),
       h('div', { class: 'note' }, h('h4', {}, 'Treats'), pref(p.loves, 'Loves'), pref(p.likes, 'Likes'), pref(p.dislikes, 'Dislikes'),
         h('p', { class: 'small' }, 'Give treats to discover what they like. One treat per pet per day.')),
-      h('div', { class: 'note battle' }, h('h4', {}, 'Battle stats ', h('small', {}, '(battles coming soon)')),
-        statBar('HP', p.stats.hp), statBar('Attack', p.stats.attack), statBar('Defence', p.stats.defence), statBar('Speed', p.stats.speed), statBar('Special', p.stats.special),
-        h('div', { class: 'moves' }, ...p.moves.map(m => h('span', { class: 'move' }, m)))),
-      h('div', { class: 'note' }, h('h4', {}, `${TYPES[p.type].name} type`), h('p', {}, TYPES[p.type].blurb))));
+      battleNote(p, statBar),
+      h('div', { class: 'note' }, h('h4', {}, `${TYPES[p.type].name} type`), h('p', {}, TYPES[p.type].blurb),
+        h('p', { class: 'small' }, `Strong against: ${TYPES[p.type].strong.map(t => TYPES[t].name).join(', ')}.`),
+        h('p', { class: 'small' }, `Watch out for: ${weaknessesOf(p.type).map(t => TYPES[t].name).join(', ')}.`))));
+}
+
+function battleNote(p, statBar) {
+  const f = petFighter(p.id), rec = state.pet(p.id);
+  const hp = rec.hp === 0 ? 'Resting at home' : `${f.hp} / ${f.maxHp} HP`;
+  return h('div', { class: 'note battle' }, h('h4', {}, `Level ${petLevel(p.id)} `, h('small', {}, `${hp} · ${rec.xp || 0} / ${xpToNext(petLevel(p.id))} XP`)),
+    statBar('HP', p.stats.hp), statBar('Attack', p.stats.attack), statBar('Defence', p.stats.defence), statBar('Speed', p.stats.speed), statBar('Special', p.stats.special),
+    h('h4', { style: { marginTop: '8px' } }, 'Moves'),
+    ...PET_MOVES[p.id].map(id => {
+      const m = MOVES[id];
+      return h('div', { class: 'move-row' }, h('span', {}, m.name), h('span', { class: 'type', style: { background: TYPES[m.type].colour } }, TYPES[m.type].name), h('small', {}, m.power ? `Power ${m.power}` : 'Special'));
+    }));
 }

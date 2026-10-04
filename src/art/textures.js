@@ -16,11 +16,12 @@ import { OBJECTS } from './paint/objects.js';
 import { ITEM_ART } from './paint/items.js';
 import { FX, FX_STRIPS, VEHICLES } from './paint/fx.js';
 import { paintTuft } from './paint/tiles.js';
+import { FOE_ART } from './paint/enemies.js';
 
 // Folder in assets/sprites -> texture key prefix
-const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh' };
+const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe' };
 // Character sheets get split into square frames.
-const CHARACTER_PREFIXES = ['player', 'pet', 'npc'];
+const CHARACTER_PREFIXES = ['player', 'pet', 'npc', 'foe'];
 
 export const custom = new Set();     // texture keys that came from PNGs
 export const customURL = {};         // key -> url (used for HTML portraits)
@@ -60,7 +61,7 @@ function stripTexture(scene, key, fw, fh, n, draw, outlined = false) {
 // square frames; people are twice as tall as they are wide (16x32).
 function splitCustom(scene, key) {
   const tex = scene.textures.get(key), src = tex.getSourceImage();
-  const h = src.height, fw = key.startsWith('pet-') ? h : h / 2, n = Math.max(1, Math.round(src.width / fw));
+  const h = src.height, fw = key.startsWith('pet-') || key.startsWith('foe-') ? h : h / 2, n = Math.max(1, Math.round(src.width / fw));
   for (let i = 0; i < n; i++) tex.add(i, 0, i * Math.floor(src.width / n), 0, Math.floor(src.width / n), h);
 }
 export const frameCount = (scene, key) => Math.max(1, scene.textures.get(key).frameTotal - 1);
@@ -92,6 +93,8 @@ export function buildTextures(scene) {
     if (custom.has(`npc-${id}`)) continue;
     for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, npc.look, dir, STEPS[i]), true);
   }
+  // Things you battle
+  for (const [id, [w, h, draw]] of Object.entries(FOE_ART)) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
   // Items
   for (const [id, art] of Object.entries(ITEM_ART)) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   // Effects and vehicles

@@ -5,6 +5,7 @@ import { ui } from './ui/ui.js';
 import { bus } from './bus.js';
 import { BootScene } from './scenes/BootScene.js';
 import { WorldScene } from './scenes/WorldScene.js';
+import { BattleScene } from './scenes/BattleScene.js';
 
 state.load();
 controls.init();
@@ -26,7 +27,7 @@ const game = new Phaser.Game({
   physics: { default: 'arcade', arcade: { debug: false } },
   input: { activePointers: 3 },
   audio: { noAudio: true },  // sound effects are synthesised in src/systems/sfx.js
-  scene: [BootScene, WorldScene],
+  scene: [BootScene, WorldScene, BattleScene],
 });
 
 window.addEventListener('pagehide', () => bus.emit('game:save'));

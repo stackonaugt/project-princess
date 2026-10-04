@@ -110,9 +110,15 @@ const BASE = {
   },
 
   bin: {
-    foot: [1, 1], tex: [16, 16], variants: ['red', 'yellow', 'green'],
+    foot: [1, 1], tex: [16, 16], variants: ['red', 'yellow', 'green', 'garbage', 'compost'],
     paint(p, v) {
-      const lid = { red: '#c8443a', yellow: '#e8c030', green: '#6aa83a' }[v];
+      if (v === 'compost') {   // the little white kitchen caddy
+        p.shadow(8, 15, 8);
+        p.r('#f0f0ea', 5, 9, 6, 6); p.r('#c8ccc0', 9, 9, 2, 6); p.r('#7ab83a', 4, 7, 8, 2); p.r('#9ad05a', 5, 7, 5, 1);
+        return;
+      }
+      if (v === 'garbage') v = 'dark';
+      const lid = { red: '#c8443a', yellow: '#e8c030', green: '#6aa83a', dark: '#24402c' }[v];
       p.shadow(8, 15, 10);
       p.r('#2f4a36', 4, 5, 8, 10); p.r('#3d5e45', 5, 5, 2, 10); p.r('#1e3024', 4, 14, 8, 1);
       p.r(lid, 3, 3, 10, 3); p.r('#ffffff40', 4, 3, 8, 1); p.r('#1e1e1e', 3, 13, 2, 2); p.r('#1e1e1e', 11, 13, 2, 2);

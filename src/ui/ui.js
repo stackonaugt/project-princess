@@ -14,6 +14,7 @@ import { openHero } from './hero.js';
 import { openPetdex } from './petdex.js';
 import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
+import { battleUI } from './battle.js';
 
 const TYPE_SPEED = 38; // characters per second
 
@@ -23,19 +24,22 @@ export const ui = {
   modalOpen: false,
   dialog: null,
 
-  blocking() { return !!this.dialog || this.modalOpen; },
+  blocking() { return !!this.dialog || this.modalOpen || battleUI.active || this.battlePending; },
+  battlePending: false,   // set while the screen flashes before a battle
 
   init() {
     bus.on('input:action', () => {
+      if (battleUI.active && !this.dialog) return battleUI.action();
       if (this.dialog) return this.advance();
       if (this.modalOpen) return;
       this.worldAction && this.worldAction();
     });
     bus.on('input:cancel', () => {
+      if (battleUI.active && !this.dialog) return battleUI.cancel();
       if (this.dialog) return this.cancelDialog();
       if (this.modalOpen) return this.closeModal();
     });
-    bus.on('input:dir', (dx, dy) => { if (this.dialog?.choices && dy) this.moveChoice(dy); });
+    bus.on('input:dir', (dx, dy) => { if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); });
     bus.on('input:dex', () => this.toggle('dex'));
     bus.on('input:bag', () => this.toggle('bag'));
     bus.on('input:menu', () => this.toggle('menu'));
@@ -184,7 +188,7 @@ export const ui = {
 
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || this.modalOpen === 'team' || this.modalOpen === 'hero') return;
+    if (this.dialog || battleUI.active || this.modalOpen === 'team' || this.modalOpen === 'hero') return;
     if (this.modalOpen === which) return this.closeModal();
     this.openModal(which);
   },

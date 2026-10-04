@@ -7,18 +7,19 @@ A cosy pet-collecting adventure across Melbourne. Explore Laverton (home, Allen 
 ## How to play
 
 - You live at Helen and Paddy's new place on Allen St, Laverton (mid-renovation). Head out the front door to start exploring.
-- Find the five pets: Princess, Salami, Spooky, Poppy and Stanley. Once you find a pet, it comes to live at your place.
+- Find the five pets: Princess, Salami, Spooky, Poppy and Stanley. Princess is free; for the others, find their owner and win a friendly play-fight. Once you have a pet, it comes to live at your place.
 - Each time you leave the house, pick up to three pets for your team. They follow you around. Pets you leave behind relax at home, or wander their usual patch.
 - Press **A** (or Space) next to a pet, person or sign to talk.
 - Chat with each pet once a day, and give them one treat a day. Find out what they love.
 - Treats appear around town each morning, and some locals hand them out too.
+- **Battles:** with pets on your team, wild things jump out of tall grass (plastic bags, street cats, bin chickens, angry commuters...). Pick moves that suit their type, toss treats to give energy back. A pet who has had enough runs home; everyone rests up at home. Fancy a challenge? Find the Bin Man on Woods St.
 - Tap your **myki** at a station to catch the train to suburbs you have already visited.
 - The clock is ticking: there is day and night, Melbourne showers, and some pets keep odd hours.
 
 **Phone:** drag on the left side of the screen to walk (push all the way, or hold B, to run). Tap A to talk. You can also tap a pet or a spot on the map to walk there.
 **Keyboard:** arrows or WASD, Shift to run, Space to talk, P for the Petdex, B for the bag, M for the menu.
 
-Your progress saves automatically on each device. To move it to another device: Menu > Copy save code, then Menu > Load save code on the other one.
+Your progress saves automatically on each device. Menu > New game starts again from scratch. To move it to another device: Menu > Copy save code, then Menu > Load save code on the other one.
 
 ## Add your own art
 
@@ -44,6 +45,6 @@ Note: GitHub Pages only works on **public** repos with a free account. A private
 
 ## Making changes
 
-Most fun edits are in `src/data/` (pets, people, treats) and `src/world/maps/` (the suburbs). `CLAUDE.md` explains how everything fits together and what is planned next: battles, types, region enemies, evolutions and farming.
+Most fun edits are in `src/data/` (pets, people, treats) and `src/world/maps/` (the suburbs). `CLAUDE.md` explains how everything fits together and how battles work, and what is planned next: evolutions and farming.
 
 Built with [Phaser 3](https://phaser.io). The pets belong to their humans.

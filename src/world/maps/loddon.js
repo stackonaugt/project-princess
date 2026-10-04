@@ -28,7 +28,7 @@ export function buildLoddon() {
   b.put('bin', 22, 12, { v: 'green' }); b.put('bin', 22, 11, { v: 'yellow' }); b.put('bin', 13, 10, { v: 'red' });
   b.put('car', 18, 6, { v: 'white' });
   b.fenceV(6, 1, 12, 'paling').fenceV(31, 1, 18, 'paling').fenceH(6, 31, 0, 'paling');
-  b.sign(16, 16, ['Loddon Ave units.', 'Unit 3 is Seb and Sinead\'s place. Poppy runs the courtyard, and the bins, and you.']);
+  b.sign(16, 16, ['Loddon Ave units.', 'Unit 1, 835 Plenty Rd is Seb and Sinead\'s place. Poppy runs the courtyard, and the bins, and you.']);
   b.reserve(18, 10, 3);
 
   // Vacant block next door
@@ -51,6 +51,8 @@ export function buildLoddon() {
   b.lane({ axis: 'y', pos: 35.5, dir: 1, from: -3, to: 33, every: [5, 10], speed: 66, kinds: ['veh-car-v-silver'] });
   b.lane({ axis: 'y', pos: 39.5, dir: -1, from: -3, to: 33, every: [4, 9], speed: 70, kinds: ['veh-car-v-yellow', 'veh-car-v-silver'] });
   b.lane({ axis: 'x', pos: 21.5, dir: -1, from: -3, to: 34, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-ute-h'] });
+
+  b.npc('sinead', 19, 13, { face: 'down' });
 
   b.forage(3, 6, ['tennis', 'snag']);
   b.forage(16, 9, ['chicken', 'tennis']);

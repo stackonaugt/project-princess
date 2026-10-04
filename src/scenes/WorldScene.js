@@ -1,13 +1,15 @@
 // The main game scene: one region at a time. Restarted (with new data)
 // whenever you walk to another suburb or catch a train.
 
-import { TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
+import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
 import { ZONES, SUBURBS, SUBURB_ORDER, getMap } from '../data/regions.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
+import { TRAINERS, PRIZE_TRAINER } from '../data/enemies.js';
+import { rollEncounter, readyTeam, START_LEVEL } from '../systems/battle.js';
 import { flavourFor } from '../data/flavour.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
@@ -43,6 +45,8 @@ export class WorldScene extends Phaser.Scene {
     state.data.region = this.regionId;
     const firstVisit = !state.data.visited.includes(this.regionId);
     state.visit(this.regionId);
+    if (region.home) state.healAll();   // a rest at home fixes everyone
+    this.lastTile = null; this.stepsSinceBattle = 0; this.inBattle = false;
     setImageScene(this); ui.scene = this;
     this.tuftKey = tuftTexture(this, this.regionId, region.grass);
     this.talkIndex = {};
@@ -369,6 +373,10 @@ export class WorldScene extends Phaser.Scene {
     pet.pause(5); pet.facePoint(this.player.x);
     this.heartsFx(pet, 2);
 
+    if (!rec.found && PRIZE_TRAINER[d.id]) {
+      const owner = TRAINERS[PRIZE_TRAINER[d.id]].name;
+      return ui.say([`${d.name} sizes you up.`, `${owner} is keeping an eye on things nearby. Win a friendly play-fight with ${owner}, and ${d.name} might come home with you.`], opts);
+    }
     if (!rec.found) {
       state.findPet(d.id);
       rec.talkedDay = day; rec.chats++; state.data.stats.chats++;
@@ -444,6 +452,8 @@ export class WorldScene extends Phaser.Scene {
     const info = npc.info, day = state.data.day;
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
+    const trainer = TRAINERS[npc.id];
+    if (trainer && !(trainer.prize && state.isFound(trainer.prize))) return this.challenge(npc, trainer, opts);
     const hints = Object.entries(info.hints || {}).filter(([id]) => !state.isFound(id));
     let lines;
     if (hints.length && Math.random() < 0.6) lines = [hints[0][1]];
@@ -460,6 +470,105 @@ export class WorldScene extends Phaser.Scene {
       await ui.say([info.giftLine, `You got: ${ITEMS[info.gift].name}.`], opts);
       this.save();
     }
+  }
+
+  // ------------------------------------------------------------ battles
+  // Talking to a trainer: they offer a play-fight.
+  async challenge(npc, t, opts) {
+    const beaten = state.data.beaten[npc.id];
+    await ui.say(beaten && t.again ? t.again : t.challenge, opts);
+    if (!readyTeam().length) {
+      const lines = state.foundCount()
+        ? ['You need a pet with you for that. Pick your team as you head out the front door at home.']
+        : ['You need a pet with you for that. Make friends with Princess on Allen St first. She is always up for a fight.'];
+      return ui.say(lines, opts);
+    }
+    const go = await ui.say({ text: t.ask, choices: [{ label: t.yes, value: true }, { label: t.no, value: false }] }, { ...opts, cancelValue: false });
+    if (!go) return;
+    const result = await this.startBattle({ trainer: npc.id });
+    if (result.outcome === 'win') {
+      const firstToday = beaten !== state.data.day;
+      state.data.beaten[npc.id] = state.data.day;
+      await ui.say(t.win, opts);
+      if (t.reward && firstToday) {
+        for (const [item, n] of Object.entries(t.reward)) state.addItem(item, n);
+        sfx.pickup();
+        await ui.say(`You got: ${Object.entries(t.reward).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ')}.`, opts);
+      }
+      if (t.prize) await this.winPet(t.prize);
+      this.save();
+    } else if (result.outcome === 'lose') {
+      await ui.say(t.lose, opts);
+      await this.lostBattle();
+    }
+  }
+
+  async winPet(id) {
+    const d = PETS.find(p => p.id === id), rec = state.pet(id);
+    state.findPet(id);
+    rec.level = rec.level || START_LEVEL[id]; rec.hp = null;
+    rec.talkedDay = state.data.day; rec.chats++;
+    state.addPoints(id, FRIENDSHIP.talk);
+    sfx.found();
+    const pet = this.pets.find(p => p.id === id);
+    if (pet) this.heartsFx(pet, 6);
+    ui.banner('New Petdex entry!', d.name);
+    const lines = [`You befriended ${d.name}, the ${TYPES[d.type].name.toLowerCase()} type ${d.species.toLowerCase()}!`, `${d.name} was added to your Petdex, and will hang out at your place on Allen St.`];
+    if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
+    await ui.say(lines, { name: d.name, portrait: petPortrait(id) });
+  }
+
+  // Tall grass: a chance of something jumping out each new tile you step on.
+  checkEncounter() {
+    if (this.region.home || this.inBattle) return;
+    const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 2) / T), key = tx + ',' + ty;
+    if (key === this.lastTile) return;
+    this.lastTile = key;
+    this.stepsSinceBattle++;
+    if (this.map.ground[ty]?.[tx] !== '"' || this.stepsSinceBattle < 6) return;
+    if (Math.random() > ENCOUNTER_RATE || !readyTeam().length) return;
+    const wild = rollEncounter(this.region.suburb, isNight(state.data.minutes));
+    if (!wild) return;
+    this.startBattle({ wild }).then(r => { if (r.outcome === 'lose') this.lostBattle(); });
+  }
+
+  // Flash the screen, pause the world and run the BattleScene over it.
+  startBattle(opts) {
+    this.inBattle = true; ui.battlePending = true;
+    controls.release();
+    this.player.target = null; this.pending = null; this.player.setVelocity(0, 0);
+    sfx.encounter();
+    const cam = this.cameras.main;
+    cam.flash(160, 255, 255, 255);
+    this.time.delayedCall(240, () => cam.flash(160, 255, 255, 255));
+    cam.shake(400, 0.004);
+    return new Promise(resolve => {
+      this.time.delayedCall(560, () => {
+        ui.battlePending = false;
+        this.scene.launch('Battle', { ...opts, suburb: this.region.suburb, done: result => {
+          this.scene.resume();
+          this.inBattle = false; this.stepsSinceBattle = 0;
+          this.syncFollowers();
+          this.save();
+          resolve(result);
+        } });
+        this.scene.pause();
+      });
+    });
+  }
+
+  // Pets that ran home stop following you.
+  syncFollowers() {
+    for (const pet of this.pets.filter(p => p.mode === 'follow' && !state.inParty(p.id))) {
+      this.pets.splice(this.pets.indexOf(pet), 1);
+      this.tweens.add({ targets: pet, alpha: 0, duration: 300, onComplete: () => pet.destroy() });
+    }
+    this.pets.filter(p => p.mode === 'follow').forEach((p, i) => { p.index = i; });
+  }
+
+  async lostBattle() {
+    await ui.say(['You scoop up your things and head home to Allen St. Everyone needs a lie down.']);
+    this.goTo('home', 'start', 30);
   }
 
   pickUp(f) {
@@ -626,7 +735,7 @@ export class WorldScene extends Phaser.Scene {
     this.updateDecor(dt, blocked);
     this.updateLighting();
     this.updateRain();
-    if (!blocked) this.checkExits();
+    if (!blocked) { this.checkExits(); this.checkEncounter(); }
 
     const t = blocked ? null : this.findTarget();
     if (t) {

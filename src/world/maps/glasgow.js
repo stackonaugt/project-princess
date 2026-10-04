@@ -48,6 +48,8 @@ export function buildGlasgow() {
   b.entry('west', 1, 14, 'right');
 
   b.npc('pina', 9, 15, { face: 'up' });
+  b.npc('tim', 23, 7, { face: 'down' });
+  b.npc('nicholas', 27, 7, { face: 'left' });
 
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 38, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-car-h-red'] });
 
@@ -55,5 +57,7 @@ export function buildGlasgow() {
   b.forage(10, 3, ['sardine', 'chicken']);
   b.magpies([[28, 15], [6, 23]]);
   b.border(['gum', 'oak', 'fruit']);
+  // Tall grass for wild encounters
+  b.wildGrass(3, 2); b.wildGrass(33, 2); b.wildGrass(13, 22); b.wildGrass(23, 22);
   return b.finish();
 }

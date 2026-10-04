@@ -15,10 +15,12 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 | `items/` | `<item id>.png`, e.g. `sardine.png` | A treat icon | 12 game pixels |
 | `objects/` | `<kind>.png` or `<kind>-<variant>.png` | Trees, houses, signs, etc. `tree.png` replaces every tree, `tree-gum.png` replaces only gum trees | Same width as the template |
 | `tiles/` | `<tile name>.png`, e.g. `grass.png` | A ground tile | One tile (16x16 or 32x32 recommended) |
+| `enemies/` | `<enemy id>.png`, e.g. `bag.png`, `recycling.png` | Things you battle (animals facing right; bins and objects facing the front) | 16x16 (bins 16x20, people 16x32) |
 | `vehicles/` | `tram.png`, `train-h.png`, `car-h-red.png`, ... | Trams, trains, cars and bikes | Same size as the template |
 
 Pet ids: `princess`, `salami`, `spooky`, `poppy`, `stanley` (see `src/data/pets.js`).
-People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez` (see `src/data/npcs.js`).
+People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez`, `rose`, `slinks`, `mem`, `corni`, `sinead`, `tim`, `nicholas`, `binman` (see `src/data/npcs.js`).
+Enemy ids: `bag`, `streetcat`, `dog`, `rat`, `boy`, `balls`, `commuter`, `ibis`, `scooter`, `duck`, `magpie`, `recycling`, `garbage`, `compost` (see `src/data/enemies.js`).
 Item ids: `chicken`, `sardine`, `carrot`, `cheese`, `snag`, `croissant`, `lemon`, `tennis`, `ribbon`, `feather`.
 Tile names: `grass`, `flowers`, `tallgrass`, `path`, `road`, `tram`, `crossing`, `rail`, `footpath`, `concrete`, `platform`, `bluestone`, `water`, `bridge`, `sand`, `soil`, `gravel`, `mulch`, `lawn`, `parkgravel`, `zebra`, `carpark`, `driveway`, and indoors `wall`, `timber`, `bathtile`, `carpet`, `lino`, `doorway`.
 Object kinds and variants: look at the file names in `templates/objects/`.

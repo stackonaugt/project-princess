@@ -1,57 +1,75 @@
-// DONALD ST: Rose's street, just off Sydney Rd. Her three-storey blue-grey
-// block of flats with the charcoal slat fence (Salami's turf), Victorian
-// houses with white rendered fences, tall poplars, and the new apartment
-// towers looming behind.
+// DONALD ST: Rose's street, just south of Sydney Rd. Her three-storey
+// blue-grey block of flats with the charcoal slat fence and the driveway
+// down the side (Salami's turf), an old knitting mill turned apartments,
+// a weedy vacant lot, and a bluestone lane full of roller doors behind
+// the terraces. North back up to Sydney Rd.
 import { MapBuilder } from '../MapBuilder.js';
 
 export function buildDonald() {
-  const b = new MapBuilder({ id: 'donald', w: 40, h: 26, seed: 111 });
+  const b = new MapBuilder({ id: 'donald', w: 40, h: 26, fill: 'c', seed: 111 });
 
-  // Donald St with parking lanes
-  b.fill(0, 14, 40, 2, '#').hline(0, 39, 13, 'f').hline(0, 39, 16, 'f');
-  // Down to Sydney Rd
-  b.fill(26, 16, 2, 10, '#').vline(25, 17, 25, 'f').vline(28, 17, 25, 'f');
+  // Donald St comes down from Sydney Rd, then runs across the map
+  b.fill(27, 0, 2, 14, '#').vline(26, 0, 12, 'f').vline(29, 0, 12, 'f');
+  b.hline(0, 39, 13, 'f').fill(0, 14, 40, 2, '#').hline(0, 39, 16, 'f');
+  b.fill(27, 13, 2, 1, '#');
 
-  // Rose's flats, driveway down the side to the car park behind
-  b.put('flats', 3, 7);
-  b.fill(12, 1, 3, 12, 'c');
-  b.put('car', 12, 3, { v: 'silver' });
-  b.fill(2, 10, 10, 2, '.');
-  b.fenceH(1, 15, 12, 'slat', [12, 13, 14]);
-  b.put('mailpillar', 15, 11);
-  b.put('bush', 4, 11, { v: 'green' }); b.put('agapanthus', 7, 11);
-  b.put('tree', 8, 13, { v: 'oak' });
-  b.put('bikehoop', 5, 13);
-  b.sign(11, 11, ['10 Donald St.', 'Rose lives here. So does Salami, who considers Rose a flatmate at best.']);
-  b.put('tall', 1, 5, { v: 'poplar' }); b.put('tall', 1, 9, { v: 'poplar' });
+  // Rose's flats at number 10, with a scrappy front strip and the driveway
+  b.fenceV(0, 0, 12, 'paling');
+  b.put('flats', 1, 8);
+  b.fill(1, 11, 8, 1, '.').fill(1, 11, 3, 1, '"');
+  b.fenceH(1, 9, 12, 'slat', [8]);
+  b.put('agapanthus', 9, 11);
+  b.fill(10, 0, 3, 13, 'h');
+  b.fenceV(9, 0, 7, 'slat');
+  b.put('car', 10, 1, { v: 'silver' });
+  b.put('crate', 12, 4, { v: 'blue' }); b.put('crate', 12, 5, { v: 'red' }); b.put('bin', 12, 9, { v: 'red' }); b.put('bin', 12, 10, { v: 'yellow' });
+  b.put('mailpillar', 13, 12);
+  b.sign(14, 12, ['10 Donald St.', 'Rose lives here. So does Salami, who considers Rose a flatmate at best.']);
 
-  // Victorian houses with rendered front walls
-  b.put('terrace', 17, 8, { v: 'cream' }); b.put('terrace', 20, 8, { v: 'sage' });
-  b.put('house', 29, 7, { v: 'red' });
-  b.fenceH(16, 38, 12, 'render', [18, 21, 32, 33]);
-  b.put('tree', 24, 11, { v: 'fruit' }); b.put('bush', 17, 11, { v: 'hydrangea' }); b.put('bin', 23, 11, { v: 'red' });
-  b.put('tree', 22, 13, { v: 'oak' }); b.put('tree', 34, 13, { v: 'oak' });
+  // The old knitting mill (apartments now, of course) and the towers behind
+  b.fenceV(13, 0, 10, 'paling');
+  b.put('aptblock', 14, 3);
+  b.put('factory', 14, 9, { v: 'brick' });
+  b.put('rollerdoor', 22, 10, { v: 'grey' });
+  b.fenceV(25, 0, 9, 'paling');
+  b.put('powerpole', 26, 13);
 
-  // The towers behind
-  b.put('aptblock', 18, 2);
-  b.put('tall', 16, 4, { v: 'poplar' }); b.put('tall', 37, 3, { v: 'biggum' });
+  // A vacant lot behind a palisade fence, in front of an empty tin shed
+  b.put('factory', 31, 0, { v: 'tin' });
+  b.fill(31, 3, 9, 9, 'g').fill(33, 5, 3, 2, '"').fill(37, 9, 2, 2, '"');
+  b.fenceV(30, 0, 12, 'park', [7, 8]).fenceH(31, 39, 12, 'park', [34, 35]);
+  b.put('trolley', 36, 5);
+  b.sign(32, 11, ['For lease.', 'Development site. Vision: "vibrant". Current residents: weeds, a trolley, one very proud magpie.']);
+  b.put('streettree', 38, 13);
 
-  // South side
-  b.put('terrace', 2, 18, { v: 'brick' }); b.put('terrace', 5, 18, { v: 'cream' }); b.put('terrace', 8, 18, { v: 'sand' });
-  b.put('house', 13, 18, { v: 'cream' });
-  b.put('terrace', 30, 18, { v: 'sage' }); b.put('terrace', 33, 18, { v: 'brick' });
-  b.fenceH(1, 23, 17, 'picket', [3, 6, 9, 15, 16]);
-  b.put('car', 3, 15, { v: 'blue' }); b.put('car', 18, 14, { v: 'red' }); b.put('car', 33, 15, { v: 'white' });
-  b.put('powerpole', 10, 16); b.put('powerpole', 36, 16);
+  // South side: terraces, a corner shop and walls, backing onto the lane
+  b.put('rollerdoor', 0, 19, { v: 'tagged' });
+  b.put('terrace', 3, 18, { v: 'brick' }); b.put('terrace', 6, 18, { v: 'cream' }); b.put('terrace', 9, 18, { v: 'sand' });
+  b.fill(12, 17, 1, 5, 'b');
+  b.put('graffiti', 13, 20, { v: 'piece' });
+  b.put('streettree', 14, 16);
+  b.put('terrace', 17, 18, { v: 'sage' }); b.put('terrace', 20, 18, { v: 'brick' });
+  b.put('rollerdoor', 23, 19, { v: 'green' });
+  b.put('redshop', 26, 18, { v: 'cream' });
+  b.put('terrace', 30, 18, { v: 'sage' }); b.put('terrace', 33, 18, { v: 'cream' });
+  b.put('graffiti', 36, 20, { v: 'paste' });
+  b.put('powerpole', 8, 16); b.put('powerpole', 36, 16);
 
-  b.exit(26, 25, 2, 1, 'sydney', 'donald', 'Sydney Rd');
-  b.entry('south', 26, 23, 'up');
+  // The bluestone lane behind, with back fences beyond
+  b.fill(0, 21, 40, 3, 'b').fill(1, 23, 3, 1, '"');
+  b.fenceH(0, 39, 24, 'paling');
+  b.put('bin', 10, 21, { v: 'red' }); b.put('crate', 16, 21, { v: 'blue' }); b.put('bin', 29, 21, { v: 'green' });
 
-  b.forage(36, 22, ['sardine', 'feather']);
-  b.forage(6, 3, ['chicken', 'ribbon']);
-  b.magpies([[20, 23], [6, 4]]);
-  b.border(['oak', 'gum', 'fruit']);
-  b.scatter([1, 1, 11, 5], 0.12, [['bush', 2, ['green', 'rose']], ['tree', 1, ['oak']]]);
-  b.scatter([15, 21, 10, 4], 0.25, [['bush', 2, ['green', 'rose']], ['tree', 1, ['fruit']]]);
+  // Parked cars
+  b.put('car', 3, 15, { v: 'blue' }); b.put('car', 19, 14, { v: 'red' }); b.put('car', 34, 15, { v: 'white' });
+
+  b.exit(27, 0, 2, 1, 'sydney', 'donald', 'Sydney Rd');
+  b.entry('north', 27, 2, 'down');
+
+  b.npc('rose', 10, 11, { face: 'up' });
+
+  b.forage(37, 7, ['sardine', 'feather']);
+  b.forage(5, 22, ['chicken', 'ribbon']);
+  b.magpies([[34, 8], [20, 22]]);
   return b.finish();
 }
