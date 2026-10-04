@@ -17,14 +17,14 @@ export const TILE_NAMES = {
   '.': 'grass', ',': 'flowers', '"': 'tallgrass', '=': 'path', '#': 'road', '+': 'tram', 'x': 'crossing',
   'r': 'rail', 'f': 'footpath', 'c': 'concrete', 'p': 'platform', 'b': 'bluestone', '~': 'water',
   'w': 'bridge', 's': 'sand', 'd': 'soil', 'g': 'gravel', 'm': 'mulch',
-  'L': 'lawn', 'u': 'parkgravel', 'z': 'zebra', 'P': 'carpark', 'h': 'driveway',
+  'A': 'track', 'k': 'pavers', 'L': 'lawn', 'u': 'parkgravel', 'z': 'zebra', 'P': 'carpark', 'h': 'driveway',
   'B': 'rail', 'W': 'wall', 'V': 'void', 'D': 'doorway', 'o': 'timber', 'T': 'bathtile', 'K': 'carpet', 'n': 'lino',
 };
 const WALLISH = 'WV';
 const FLOORS = 'oTKnD';
 
 const FLOWERS = ['#f5e66b', '#f28bb0', '#ffffff', '#b79cf0', '#f29a5b'];
-const ROADLIKE = '#+xzP';
+const ROADLIKE = '#+xzPk';
 const T = 16;
 
 export function paintGround(p, map, grass, custom = {}) {
@@ -149,6 +149,20 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       for (let i = 0; i < 8; i++) p.r(i % 3 ? '#c8a670' : '#e8cca0', sx + Math.floor(hash(tx * 11 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 11 + i) * 15), 1, 1);
       if (!same(get, tx, ty - 1, 'u=')) p.r('#c29a64', sx, sy, T, 1);
       if (!same(get, tx, ty + 1, 'u=')) p.r('#b98f5c', sx, sy + T - 1, T, 1);
+      return;
+    }
+    case 'A': {
+      // red athletics track; white lane lines follow whichever way the track runs
+      p.r('#c0503a', sx, sy, T, T);
+      for (let i = 0; i < 4; i++) p.r('#cc5e46', sx + Math.floor(hash(tx * 5 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 5 + i) * 15), 1, 1);
+      const horiz = same(get, tx - 1, ty, 'A') && same(get, tx + 1, ty, 'A');
+      if (horiz) { p.r('#ece4dc', sx, sy + 5, T, 1); p.r('#ece4dc', sx, sy + 11, T, 1); }
+      else { p.r('#ece4dc', sx + 5, sy, 1, T); p.r('#ece4dc', sx + 11, sy, 1, T); }
+      return;
+    }
+    case 'k': {
+      p.r('#b86a4a', sx, sy, T, T);
+      for (let y = 0; y < T; y += 4) for (let x = (y / 4) % 2 ? 0 : 4; x < T; x += 8) p.r('#c8805e', sx + x, sy + y, 7, 3);
       return;
     }
     case 'h': {

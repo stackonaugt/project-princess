@@ -40,7 +40,7 @@ export function buildResStation() {
   b.put('powerpole', 12, 19); b.put('powerpole', 30, 19);
 
   b.exit(0, 17, 1, 2, 'sydney', 'east', 'Brunswick');
-  b.exit(34, 0, 2, 1, 'lake', 'south', 'Edwardes Lake');
+  b.exit(34, 0, 2, 1, 'track', 'south', 'Edwardes Lake Park');
   b.exit(43, 17, 1, 2, 'loddon', 'west', 'Loddon Ave');
   b.entry('station', 20, 12, 'down').entry('west', 1, 18, 'right').entry('north', 34, 1, 'down').entry('east', 42, 18, 'left');
 

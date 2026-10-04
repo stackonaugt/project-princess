@@ -4,10 +4,18 @@
 import { MapBuilder } from '../MapBuilder.js';
 
 export function buildGlasgow() {
-  const b = new MapBuilder({ id: 'glasgow', w: 40, h: 26, seed: 151 });
+  const b = new MapBuilder({ id: 'glasgow', w: 48, h: 26, seed: 151 });
 
   // Glasgow Ave: footpath, nature strip, road, nature strip, footpath
-  b.hline(0, 39, 11, 'f').fill(0, 13, 40, 2, '#').hline(0, 39, 16, 'f');
+  b.hline(0, 40, 11, 'f').fill(0, 13, 48, 2, '#').hline(0, 40, 16, 'f');
+  // Botha Ave crosses at the roundabout, with a big yarn-bombed gum in the middle
+  b.fill(42, 0, 2, 26, '#').vline(41, 0, 25, 'f').vline(44, 0, 25, 'f');
+  b.ellipse(42.5, 13.5, 4.6, 4.6, '#');
+  b.ellipse(42.5, 13.5, 2.9, 2.9, 'k');
+  b.ellipse(42.5, 13.5, 1.8, 1.8, 'm');
+  b.put('tall', 42, 13, { v: 'yarngum' });
+  b.sign(45, 10, ['Botha Ave roundabout.', 'Someone has knitted the gum tree a jumper. Nobody knows who. Nobody asks.']);
+  b.put('car', 33, 12, { v: 'yellow' });
 
   // 48: the big brick house
   b.put('glasgowhouse', 2, 6);
@@ -30,8 +38,10 @@ export function buildGlasgow() {
 
   // Neighbours
   b.put('house', 32, 4, { v: 'cream' }); b.fenceH(31, 39, 10, 'metal', [34, 35]);
+  b.put('tall', 38, 7, { v: 'biggum' });
   b.put('house', 2, 18, { v: 'red' }); b.put('house', 12, 18, { v: 'grey' }); b.put('house', 22, 18, { v: 'cream' }); b.put('house', 31, 18, { v: 'orange' });
   b.fenceH(1, 38, 17, 'colorbond', [4, 5, 14, 15, 24, 25, 33, 34]);
+  b.put('house', 45, 18, { v: 'red' });
   b.put('powerpole', 14, 12); b.put('powerpole', 34, 15); b.put('pylon', 15, 3);
 
   b.exit(0, 13, 1, 2, 'loddon', 'south', 'Loddon Ave');
@@ -39,7 +49,7 @@ export function buildGlasgow() {
 
   b.npc('pina', 9, 15, { face: 'up' });
 
-  b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 43, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-car-h-red'] });
+  b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 38, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-car-h-red'] });
 
   b.forage(36, 12, ['cheese', 'croissant']);
   b.forage(10, 3, ['sardine', 'chicken']);

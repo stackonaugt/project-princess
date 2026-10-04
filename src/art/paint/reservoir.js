@@ -154,4 +154,90 @@ export const RESERVOIR = {
       p.r(c, 22, 2, 12, 3);
     },
   },
+  // Edwardes Lake Park
+  steamengine: {
+    foot: [6, 2], tex: [100, 46], variants: ['a2'],
+    paint(p) {
+      p.shadow(50, 45, 96, 0.3);
+      p.r('#3a3a3a', 0, 38, 100, 4); p.r('#6a6a6a', 0, 38, 100, 1);                                // rails
+      // tender
+      p.r('#1e1e22', 70, 16, 28, 20); p.r('#2a2a30', 70, 16, 28, 2); p.r('#141418', 70, 34, 28, 2);
+      for (const x of [76, 90]) { p.blob(x, 38, 4, '#141418'); p.blob(x, 38, 2, '#3a3a40'); }
+      // boiler, cab and chimney
+      p.r('#1e1e22', 8, 14, 46, 14); p.r('#2a2a30', 8, 14, 46, 2); p.r('#3a3a40', 10, 16, 20, 1);
+      p.r('#1e1e22', 52, 4, 18, 30); p.r('#2a2a30', 52, 4, 18, 2); p.r('#5a7a8a', 56, 8, 10, 7);
+      p.r('#1e1e22', 12, 4, 6, 10); p.r('#2a2a30', 11, 3, 8, 2); p.r('#1e1e22', 30, 8, 6, 6);
+      p.r('#c8282a', 4, 28, 66, 3);                                                                  // red running board
+      p.r('#c8282a', 2, 22, 6, 8); p.r('#e8e4dc', 4, 24, 2, 2);                                     // buffer beam
+      for (const x of [22, 36, 50]) { p.blob(x, 34, 7, '#141418'); p.blob(x, 34, 5, '#c8282a'); p.blob(x, 34, 2, '#141418'); }
+      p.r('#9a9ea6', 18, 33, 36, 2);                                                                 // coupling rod
+      p.blob(10, 36, 3, '#141418');
+      p.r('#d8c070', 58, 20, 6, 3); p.text('A2', 76, 20, '#d8c070'); p.text('964', 74, 27, '#d8c070');
+    },
+  },
+  // The athletics oval, drawn as one smooth shape on the ground
+  trackoval: {
+    foot: [27, 17], tex: [432, 272], variants: ['red'], solid: false, flat: true,
+    paint(p) {
+      const g = p.ctx, cx = 216, cy = 136, ell = (rx, ry, c, fill = true, w = 2) => { g.beginPath(); g.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); if (fill) { g.fillStyle = c; g.fill(); } else { g.strokeStyle = c; g.lineWidth = w; g.stroke(); } };
+      ell(208, 136, '#c0503a');
+      for (let i = 0; i < 300; i++) { const a = Math.random() * Math.PI * 2, t = Math.random(); p.r('#cc5e46', cx + Math.cos(a) * (165 + t * 40), cy + Math.sin(a) * (95 + t * 38), 1, 1); }
+      [0.2, 0.4, 0.6, 0.8].forEach(t => ell(160 + t * 48, 92 + t * 44, '#ece4dc', false, 1.5));
+      ell(160, 92, '#6cbc4a');
+      g.lineWidth = 1; ell(160, 92, '#ece4dc', false, 2);
+      for (let i = 0; i < 40; i++) p.r(i % 2 ? '#62b244' : '#58a83c', cx - 150 + (i * 37) % 300, cy - 80 + (i * 53) % 160, 2, 3);
+      p.r('#ece4dc', cx - 2, cy + 92, 3, 44);                                  // finish line
+    },
+  },
+  clubhouse: {
+    foot: [8, 2], tex: [128, 44], variants: ['athletics', 'scouts'],
+    paint(p, v) {
+      const W = 128, top = 12;
+      p.r('rgba(30,50,20,.22)', 2, 41, W - 2, 3);
+      bricks(p, 0, top, W, 44 - top, '#d8b878', v === 'scouts' ? 3 : 7);
+      p.r('#9aa0a8', -2, 4, W + 4, 9); for (let x = 0; x < W; x += 4) p.r('#8a9098', x, 4, 1, 9); p.r('#c8ccd0', -2, 4, W + 4, 1);
+      if (v === 'athletics') {
+        p.r('#2a2a2a', 54, top + 8, 22, 24); p.r('#4a4a4a', 55, top + 9, 20, 23); for (let y = 0; y < 22; y += 3) p.r('#3a3a3a', 55, top + 10 + y, 20, 1);
+        [12, 30, 90, 108].forEach(x => { p.r('#3a3a3a', x - 1, top + 7, 12, 9); p.r('#6a7a8a', x, top + 8, 10, 7); for (let i = x + 1; i < x + 10; i += 2) p.r('#3a3a3a', i, top + 8, 1, 7); });
+        p.r('#f4f4f0', 8, top + 20, 24, 6); p.text('LITTLE A', 9, top + 21, '#c8443a');
+      } else {
+        p.r('#5a5a5e', 40, top + 10, 12, 22); p.r('#7a8a9a', 60, top + 8, 18, 10);
+        p.r('#a24fc9', 66, top + 6, 8, 5); p.text('1ST RESERVOIR SCOUTS', 4, top + 2, '#5a3a8a');
+        p.r('#3a8a5a', 90, top + 14, 3, 4); p.r('#c8443a', 94, top + 16, 6, 2); p.r('#2a5ab8', 102, top + 12, 5, 6);           // graffiti tags
+      }
+    },
+  },
+  amenities: {
+    foot: [3, 2], tex: [48, 40], variants: ['tan'],
+    paint(p) {
+      p.r('rgba(30,50,20,.22)', 2, 37, 46, 3);
+      bricks(p, 0, 12, 48, 28, '#d0b080', 2);
+      p.r('#7a8088', -2, 6, 52, 7); p.r('#9aa0a8', -2, 6, 52, 1);
+      p.r('#5a7a8a', 6, 18, 12, 22); p.r('#5a7a8a', 30, 18, 12, 22); p.r('#f4f4f0', 20, 18, 8, 8); p.text('WC', 21, 20, '#2a5aa8');
+    },
+  },
+  gym: {
+    foot: [2, 1], tex: [32, 30], variants: ['outdoor'],
+    paint(p) {
+      p.shadow(16, 29, 28);
+      p.r('#3a6ab8', 4, 4, 3, 26); p.r('#3a6ab8', 25, 4, 3, 26); p.r('#3a6ab8', 4, 4, 24, 3);
+      p.r('#9aa0a8', 10, 7, 1, 10); p.r('#2a2a2a', 8, 17, 6, 3); p.r('#9aa0a8', 20, 7, 1, 14); p.r('#2a2a2a', 17, 21, 7, 2);
+      p.r('#e8c030', 12, 24, 10, 2);
+    },
+  },
+  tussock: {
+    foot: [1, 1], tex: [20, 22], variants: ['a', 'b'], solid: false,
+    paint(p, v) {
+      p.blob(10, 19, 7, v === 'b' ? '#8a8a40' : '#3f6a2e');
+      for (let i = 0; i < 40; i++) {
+        const x = 2 + (i * 7) % 16, h = 8 + (i * 5) % 12, lean = ((i % 5) - 2) / 3;
+        const c = i % 4 === 0 ? '#a8c060' : (v === 'b' ? (i % 2 ? '#c8b860' : '#a89848') : (i % 2 ? '#5a8a3a' : '#6aa048'));
+        for (let j = 0; j < h; j++) p.r(c, x + Math.round(lean * j), 22 - j, 1, 1);
+      }
+    },
+  },
+  infosign: {
+    foot: [1, 1], tex: [24, 30], variants: ['park'],
+    paint(p) { p.shadow(12, 29, 14); p.r('#6b4226', 4, 12, 2, 18); p.r('#6b4226', 18, 12, 2, 18); p.r('#3a5a3a', 1, 2, 22, 14); p.r('#e8e4d8', 3, 4, 18, 10); p.r('#3a8a5a', 5, 6, 14, 2); p.r('#5a8ac8', 5, 9, 8, 3); },
+  },
 };

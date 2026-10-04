@@ -10,7 +10,10 @@ import { buildBrunswick } from '../world/maps/brunswick.js';
 import { buildSydney } from '../world/maps/sydney.js';
 import { buildDonald } from '../world/maps/donald.js';
 import { buildHope } from '../world/maps/hope.js';
-import { buildReservoir } from '../world/maps/reservoir.js';
+import { buildLake } from '../world/maps/lake.js';
+import { buildTrack } from '../world/maps/track.js';
+import { buildLakePark } from '../world/maps/lakepark.js';
+import { buildWetlands } from '../world/maps/wetlands.js';
 import { buildResStation } from '../world/maps/resstation.js';
 import { buildLoddon } from '../world/maps/loddon.js';
 import { buildGlasgow } from '../world/maps/glasgow.js';
@@ -43,7 +46,10 @@ export const ZONES = {
   reservoir: { name: 'Reservoir Station', suburb: 'reservoir', build: buildResStation, grass: RES_GRASS, tagline: 'Mernda line, up on the skyrail.' },
   loddon: { name: 'Loddon Ave', suburb: 'reservoir', build: buildLoddon, grass: RES_GRASS, tagline: 'Seb and Sinead\'s units. Poppy\'s kingdom.' },
   glasgow: { name: 'Glasgow Ave', suburb: 'reservoir', build: buildGlasgow, grass: RES_GRASS, tagline: 'Tim and Nick\'s street. Stanley approves. Barely.' },
-  lake: { name: 'Edwardes Lake', suburb: 'reservoir', build: buildReservoir, grass: RES_GRASS, tagline: 'Lemon trees, weatherboards and a lake full of opinions (ducks).' },
+  track: { name: 'Athletics Track', suburb: 'reservoir', build: buildTrack, grass: RES_GRASS, tagline: 'Edwardes Lake Park. Tiny humans running in circles.' },
+  lake: { name: 'Edwardes Lake', suburb: 'reservoir', build: buildLake, grass: RES_GRASS, tagline: 'A lake full of opinions (ducks).' },
+  lakepark: { name: 'Lake Park', suburb: 'reservoir', build: buildLakePark, grass: RES_GRASS, tagline: 'Steam engines, pink slides and an ice cream van, rumour has it.' },
+  wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, tagline: 'Reeds, frogs and paths that all look the same.' },
 };
 
 // Kept for the Petdex tabs: pets are grouped by suburb.

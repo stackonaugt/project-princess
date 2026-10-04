@@ -2,7 +2,7 @@
 
 A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You live at Helen and Paddy's new house on Allen St, Laverton, and wander three suburbs (Laverton, Brunswick, Reservoir) finding, befriending and cataloguing the real pets of the owner's friends. Found pets move into your house; each time you leave you pick a team of up to three who follow you around. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.
 
-Laverton is modelled on real places from the owner's screenshots: the Allen St house (floor plan and backyard from the real estate listing, walls between kitchen, meals and lounge removed), the Allen St cul-de-sac, Woods St (the old house at 72, where Helen's parents Trish and Gordon now live), Lohse St Reserve and Laverton Station. Brunswick so far has four zones from the owner's screenshots: Brunswick Station (heritage building, Upfield path, Dawson St level crossing), Sydney Rd (A1 Bakery, Spooky's spot), Donald St (Rose's blue-grey flats, Salami's spot) and Hope St (Mem and Corni's apartments). Reservoir has Reservoir Station (the skyrail; trains run on top with lane `sky: true`), Loddon Ave (Seb and Sinead's block of five brick units off Plenty Rd, Poppy's spot) and Glasgow Ave (Tim and Nick's at 57C, Stanley's spot). The old single Reservoir map is kept as a placeholder Edwardes Lake zone (`lake`) until it is rebuilt from photos. Recreate real places recognisably but compressed. Avoid real business names on shopfronts, except A1 Bakery, which the owner specifically asked for.
+Laverton is modelled on real places from the owner's screenshots: the Allen St house (floor plan and backyard from the real estate listing, walls between kitchen, meals and lounge removed), the Allen St cul-de-sac, Woods St (the old house at 72, where Helen's parents Trish and Gordon now live), Lohse St Reserve and Laverton Station. Brunswick so far has four zones from the owner's screenshots: Brunswick Station (heritage building, Upfield path, Dawson St level crossing), Sydney Rd (A1 Bakery, Spooky's spot), Donald St (Rose's blue-grey flats, Salami's spot) and Hope St (Mem and Corni's apartments). Reservoir has Reservoir Station (the skyrail; trains run on top with lane `sky: true`), Loddon Ave (Seb and Sinead's block of five brick units off Plenty Rd, Poppy's spot) and Glasgow Ave (Tim and Nick's at 57C, Stanley's spot). Edwardes Lake Park is four zones joined in a loop so it is easy to wander and get lost: `track` (athletics oval, Little Athletics clubhouse), `lake` (the lake, tussocks, Edwardes St railing, outdoor gym), `lakepark` (A2 964 steam engine, pink slide playground, Griffiths St) and `wetlands` (Edgars Creek, scout hall, community garden). Every zone has tall grass patches ready for wild encounters. Glasgow Ave also has the Botha Ave roundabout with its yarn-bombed gum. Recreate real places recognisably but compressed. Avoid real business names on shopfronts, except A1 Bakery, which the owner specifically asked for.
 
 **Who you play.** At the start you choose Helen or one of her twin toddlers, Hadrian and Aleksy (`src/data/heroes.js`). Each has a perk (`talkBonus`, `runBoost`, `forageBonus`) and starting treats. The choice is saved as `state.data.hero` and can be changed from the menu; older saves are asked once.
 
@@ -63,7 +63,7 @@ src/
     flavour.js        Text for inspecting objects (houses, bins, trams...)
   world/
     MapBuilder.js     DSL for building maps in code (fill, put, scatter, exits, lanes...)
-    maps/*.js         One file per zone: home, yard, allen, woods, lohse, station (Laverton); brunswick (station), sydney, donald, hope (Brunswick); resstation (zone id `reservoir`), loddon, glasgow, reservoir.js (zone id `lake`, placeholder) (Reservoir)
+    maps/*.js         One file per zone: home, yard, allen, woods, lohse, station (Laverton); brunswick (station), sydney, donald, hope (Brunswick); resstation (zone id `reservoir`), loddon, glasgow, track, lake, lakepark, wetlands (Reservoir)
     entities.js       Player, Pet (behaviour AI), Npc. Arcade physics sprites
     traffic.js        Cars, trams, bikes, trains (scenery that waits for you)
   art/
@@ -106,7 +106,7 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **A treat:** add to `ITEMS` and `ITEM_ART`, then list it in forage spawns (`b.forage`) or an NPC `gift`, and in pets' loves/likes.
 - **A zone:** write `src/world/maps/<id>.js` (copy a similar one), register it in `ZONES` in `regions.js`, and connect it with `b.exit(...)` and `b.entry(...)` on both sides. Run the reachability check.
 - **A suburb:** add it to `SUBURBS`/`SUBURB_ORDER` with a `station` zone containing a myki reader (`put('myki', x, y, { travel: true })`) and a `station` entry. The locked exits (the city, Coburg North, Plenty Rd) are ready-made hooks.
-- **Rebuilding Edwardes Lake** (zone `lake`, file `reservoir.js`) is the next big job. It is the last map still using the older, simpler art.
+- All three suburbs are now built from the owner's screenshots. Battles and wild encounters are the next big job.
 
 ## Future plans
 
@@ -138,7 +138,7 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - Plan: let the player claim a plot, plant seeds (bought or gifted), water daily, harvest after N days. Crops become treats pets love (carrots for Spooky) and battle items later. Seasons would follow (Melbourne gets all four in a day, which is a joke worth keeping). Possibly a small home garden or balcony pots in Brunswick.
 
 ### Next up (agreed with the owner)
-- Rebuild Edwardes Lake and its park from the owner's photos (replacing the placeholder `lake` zone). Brunswick and Reservoir may get more spots too.
+- Wild encounters and battles in the tall grass of every zone (see Future plans). More spots in any suburb as the owner sends photos.
 - Extra Laverton spots and shops, once the core zones feel right.
 - Real pet photos as Petdex portraits (`assets/sprites/portraits/`), and the owner's own sprite art replacing the built-in reference art.
 
