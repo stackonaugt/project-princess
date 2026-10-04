@@ -20,7 +20,7 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 
 Pet ids: `princess`, `salami`, `spooky`, `poppy`, `stanley` (see `src/data/pets.js`). Evolved forms: `pets/princess-evolved.png` (Flamcess), `pets/poppy-evolved.png` (Floppy), and `portraits/<id>-evolved.png`.
 Gear icons: `items/gear-lead.png`, `gear-collar`, `gear-harness`, `gear-bell`, `gear-bandana`, `gear-pouch`, `gear-bowtie`.
-People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez`, `rose`, `slinks`, `mem`, `corni`, `sinead`, `tim`, `nicholas`, `binman`, `hipster`, `golfer`, `stranger`, `dee` (see `src/data/npcs.js`).
+People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez`, `rose`, `slinks`, `mem`, `corni`, `sinead`, `tim`, `nicholas`, `binman`, `hipster`, `golfer`, `stranger`, `olly` (see `src/data/npcs.js`).
 Enemy ids: `bag`, `streetcat`, `dog`, `rat`, `boy`, `balls`, `commuter`, `ibis`, `scooter`, `duck`, `magpie`, `recycling`, `garbage`, `compost`, `alleycat`, `nonna`, `cavoodle`, `ristretto`, `sourdough`, `recordplayer`, `bulldog`, `golfball`, `fiveiron`, `buggy`, `weed`, `ice`, `fentanyl` (see `src/data/enemies.js`).
 Item ids: `chicken`, `sardine`, `carrot`, `cheese`, `snag`, `croissant`, `lemon`, `tennis`, `ribbon`, `feather`.
 Tile names: `grass`, `flowers`, `tallgrass`, `path`, `road`, `tram`, `crossing`, `rail`, `footpath`, `concrete`, `platform`, `bluestone`, `water`, `bridge`, `sand`, `soil`, `gravel`, `mulch`, `lawn`, `parkgravel`, `zebra`, `carpark`, `driveway`, and indoors `wall`, `timber`, `bathtile`, `carpet`, `lino`, `doorway`.

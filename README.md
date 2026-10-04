@@ -13,10 +13,11 @@ A cosy pet-collecting adventure across Melbourne. Explore Laverton (home, Allen 
 - Chat with each pet once a day, and give them one treat a day. Find out what they love.
 - Treats appear around town each morning, and some locals hand them out too.
 - **Battles:** with pets on your team, wild things jump out of tall grass (plastic bags, street cats, bin chickens, angry commuters...). Pick moves that suit their type, toss treats to give energy back. A pet who has had enough runs home; everyone rests up at home. Fancy a challenge? Find the Bin Man on Woods St.
-- **Money and the pet shop:** battles earn a little money. Spend it at The Leash You Can Do, on the Laverton Station plaza: treats, plus gear like leads, collars and bow ties that you put on your pets (from the Bag) for a boost in battles.
+- **Money and the pet shop:** battles earn a little money. Spend it at The Leash You Can Do, Olly's pet shop on Hope St, Brunswick: treats, plus gear like leads, collars and bow ties that you put on your pets (from the Bag) for a boost in battles.
 - **Evolutions:** level a pet up AND become close friends and something may happen. Princess and Poppy have surprises in store.
 - **The long walk:** you can walk from Laverton to Brunswick to Reservoir through Altona North, Footscray, Flemington, Coburg and Preston. Or tap your myki.
 - Tap your **myki** at a station to catch the train to suburbs you have already visited.
+- Tired? Use your bed at home to sleep until morning, or have a nap to rest your pets.
 - The clock is ticking: there is day and night, Melbourne showers, and some pets keep odd hours.
 
 **Phone:** drag on the left side of the screen to walk (push all the way, or hold B, to run). Tap A to talk. You can also tap a pet or a spot on the map to walk there.

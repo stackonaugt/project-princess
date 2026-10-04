@@ -24,42 +24,72 @@ export function bricks(p, x, y, w, h, base, seed = 1) {
 }
 
 // Terracotta (or concrete) tile hip roof, as a trapezoid seen from the front.
+// Rows of tiles with per-tile colour variation, a ridge cap, the odd mossy
+// tile, and a shadow along the eaves.
 export function tileRoof(p, x, y, w, h, base, { hipL = true, hipR = true } = {}) {
-  const dark = shade(base, -0.25), light = shade(base, 0.15);
+  const dark = shade(base, -0.25), light = shade(base, 0.15), lighter = shade(base, 0.28);
   for (let j = 0; j < h; j++) {
     const inset = Math.round((h - j) * 0.9);
-    const x0 = x + (hipL ? inset : 0), x1 = x + w - (hipR ? inset : 0);
-    p.r(j % 3 === 2 ? dark : base, x0, y + j, x1 - x0, 1);
-    if (j % 3 === 0) for (let i = x0 + ((j / 3) % 2 ? 2 : 0); i < x1; i += 4) p.r(light, i, y + j, 2, 1);
+    const x0 = x + (hipL ? inset : 0), x1 = x + w - (hipL || hipR ? (hipR ? inset : 0) : 0);
+    const row = Math.floor(j / 3), inRow = j % 3;
+    p.r(inRow === 2 ? dark : base, x0, y + j, x1 - x0, 1);
+    if (inRow === 0) for (let i = x0 + (row % 2 ? 2 : 0); i < x1; i += 4) {
+      const v = hash(i * 3 + row, row * 7 + w);
+      p.r(v > 0.8 ? lighter : v < 0.12 ? shade(base, -0.1) : light, i, y + j, 2, 1);
+      if (v > 0.985) p.r('#7a8a4a', i, y + j + 1, 2, 1);   // a mossy tile
+    }
+    if (inRow === 1 && j > 1) for (let i = x0 + (row % 2 ? 0 : 2); i < x1; i += 4) p.r(shade(base, -0.08), i, y + j, 1, 1);
+    // hip edges catch the light
+    if (hipL) p.r(lighter, x0, y + j, 1, 1);
+    if (hipR) p.r(dark, x1 - 1, y + j, 1, 1);
   }
-  p.r(dark, x + (hipL ? Math.round(h * 0.9) : 0), y, w - (hipL ? Math.round(h * 0.9) : 0) - (hipR ? Math.round(h * 0.9) : 0), 1);
+  const rx0 = x + (hipL ? Math.round(h * 0.9) : 0), rx1 = x + w - (hipR ? Math.round(h * 0.9) : 0);
+  p.r(shade(base, -0.35), rx0, y, rx1 - rx0, 1); p.r(lighter, rx0, y + 1, rx1 - rx0, 1);   // ridge cap
+  p.r('rgba(0,0,0,0.22)', x, y + h, w, 2);   // eave shadow on the wall
 }
 
-function window_(p, x, y, w, h, { frame = '#f4f0e6', curtain = '#f0e8d8', split = true } = {}) {
-  p.r(shade(frame, -0.25), x - 1, y - 1, w + 2, h + 2);
+// A window with frame, sill, glass reflection and curtains. box: a flower box.
+export function window_(p, x, y, w, h, { frame = '#f4f0e6', curtain = '#f0e8d8', split = true, box = false } = {}) {
+  p.r(shade(frame, -0.3), x - 1, y - 1, w + 2, h + 2);
   p.r(frame, x, y, w, h);
-  p.r('#6a8aa8', x + 1, y + 1, w - 2, h - 2);
-  p.r('#9ab8d0', x + 2, y + 2, Math.floor(w / 3), 2);
-  if (curtain) { p.r(curtain, x + 1, y + 1, 3, h - 2); p.r(curtain, x + w - 4, y + 1, 3, h - 2); }
+  p.r('#5a7a98', x + 1, y + 1, w - 2, h - 2);
+  p.r('#7a9ab8', x + 1, y + 1, w - 2, Math.floor((h - 2) / 2));
+  for (let i = 0; i < Math.min(w, h) - 4; i++) p.r('rgba(255,255,255,0.28)', x + 2 + i, y + h - 3 - i, 1, 1);   // diagonal glint
+  p.r('#b8d4e8', x + 2, y + 2, Math.floor(w / 3), 1);
+  if (curtain) { p.r(curtain, x + 1, y + 1, 3, h - 2); p.r(curtain, x + w - 4, y + 1, 3, h - 2); p.r(shade(curtain, -0.15), x + 3, y + 1, 1, h - 2); p.r(shade(curtain, -0.15), x + w - 4, y + 1, 1, h - 2); }
   if (split) p.r(frame, x + Math.floor(w / 2), y, 1, h);
-  p.r(shade(frame, -0.1), x - 1, y + h + 1, w + 2, 1); // sill
+  p.r(shade(frame, 0.1), x - 2, y + h + 1, w + 4, 1); p.r(shade(frame, -0.25), x - 2, y + h + 2, w + 4, 1);   // sill
+  if (box) {
+    p.r('#7a4a24', x, y + h + 3, w, 3); p.r('#9a6a3a', x, y + h + 3, w, 1);
+    for (let i = 1; i < w - 1; i += 3) { p.r('#3f8a3e', x + i, y + h + 1, 2, 2); p.r(['#e83a4a', '#f5e66b', '#f28bb0', '#ffffff'][(i + x) % 4], x + i, y + h, 1, 1); }
+  }
 }
 
-function door(p, x, y, w, h, c = '#5a3a2a', screen = true) {
+// A front door with frame, glass panel, porch light and step.
+export function door(p, x, y, w, h, c = '#5a3a2a', screen = true) {
+  p.r('#f4f0e6', x - 2, y - 2, w + 4, h + 2); p.r('#c8c4b8', x + w + 1, y - 1, 1, h + 1);
   p.r('#2a1a10', x - 1, y - 1, w + 2, h + 1); p.r(c, x, y, w, h);
+  p.r(shade(c, 0.12), x + 1, y + 1, 1, h - 2);
   if (screen) { for (let j = 2; j < h; j += 3) p.r('#1e1e22', x + 1, y + j, w - 2, 1); p.r('#3a3a40', x + 1, y + 1, w - 2, 1); }
+  else { p.r('#9ab8d0', x + 2, y + 3, w - 4, 5); p.r('#c8dce8', x + 2, y + 3, 2, 1); }
   p.r('#d8b860', x + w - 3, y + Math.floor(h / 2), 1, 2);
+  p.r('#f4e8a0', x + w + 3, y + 2, 2, 3); p.r('#5a5a60', x + w + 3, y + 1, 2, 1);   // porch light
 }
 
-// A generic Melbourne brick veneer, front-on.
+// A generic Melbourne brick veneer, front-on: bricks, a darker plinth course,
+// fascia and gutter with a downpipe, a meter box and sometimes an aircon unit.
 function veneer(p, o) {
   const { W, H, sx, roof, brick, trim = '#f4f0e6', roofH = 32, wallTop, porch = true, garage = false, solar = false, chimney = true, seed = 1 } = o;
   const top = wallTop;
   bricks(p, sx, top, W, H - top, brick, seed);
-  if (chimney) { bricks(p, sx + W - 30, top - roofH - 6, 8, roofH, shade(brick, -0.05), seed + 3); p.r('#7a7d84', sx + W - 31, top - roofH - 7, 10, 2); }
+  p.r(shade(brick, -0.18), sx, H - 6, W, 2); p.r(shade(brick, -0.28), sx, H - 4, W, 1);   // plinth
+  if (chimney) { bricks(p, sx + W - 30, top - roofH - 6, 8, roofH, shade(brick, -0.05), seed + 3); p.r('#7a7d84', sx + W - 31, top - roofH - 7, 10, 2); p.r('#9a9da4', sx + W - 31, top - roofH - 7, 10, 1); }
   tileRoof(p, sx - 4, top - roofH, W + 8, roofH, roof);
-  if (solar) for (let i = 0; i < 4; i++) { p.r('#2a3a5a', sx + 20 + i * 11, top - roofH + 14, 10, 12); p.r('#4a6a9a', sx + 21 + i * 11, top - roofH + 15, 4, 2); }
+  if (solar) for (let i = 0; i < 4; i++) { p.r('#1e2a44', sx + 20 + i * 11, top - roofH + 14, 10, 12); p.r('#3a5a8a', sx + 21 + i * 11, top - roofH + 15, 8, 10); p.r('#6a8ac0', sx + 21 + i * 11, top - roofH + 15, 3, 1); for (let k = 0; k < 3; k++) p.r('#2a3a5a', sx + 21 + i * 11, top - roofH + 18 + k * 3, 8, 1); }
   p.r(trim, sx - 4, top - 1, W + 8, 3); p.r(shade(trim, -0.2), sx - 4, top + 2, W + 8, 1); // fascia and gutter
+  p.r(shade(trim, -0.15), sx + W - 3, top + 2, 2, H - top - 6); p.r(shade(trim, 0.1), sx + W - 3, top + 2, 1, H - top - 6);   // downpipe
+  p.r('#c8ccd0', sx + 2, top + 14, 6, 8); p.r('#8a8e94', sx + 3, top + 15, 4, 3);   // meter box
+  if (hash(seed, W) > 0.4) { p.r('#e8e8e4', sx + 3, top + 4, 12, 5); p.r('#c8c8c4', sx + 3, top + 8, 12, 1); p.r('#8a8e94', sx + 5, top + 6, 8, 1); }   // split system aircon
   return top;
 }
 
@@ -73,7 +103,7 @@ export const LAVERTON = {
       // antenna on the chimney
       p.r('#5a5d64', sx + W - 26, 2, 1, 14); p.r('#5a5d64', sx + W - 32, 4, 12, 1); p.r('#5a5d64', sx + W - 30, 7, 8, 1);
       p.r('#5a3a2a', sx, H - 4, W, 4); // garden bed edge
-      window_(p, sx + 10, top + 10, 24, 18); window_(p, sx + 42, top + 10, 24, 18);
+      window_(p, sx + 10, top + 10, 24, 18, { box: true }); window_(p, sx + 42, top + 10, 24, 18, { box: true });
       // porch with white posts, steps, lamp, security door
       p.r('#c9c5bb', sx + 70, top + 30, 28, 10); p.r('#b5b1a7', sx + 70, top + 30, 28, 1);
       p.r('#f4f0e6', sx + 70, top, 3, 36); p.r('#f4f0e6', sx + 92, top, 3, 36);
@@ -118,7 +148,7 @@ export const LAVERTON = {
       const sx = 4, W = 96, H = 84, top = 46;
       const style = { cream: ['#9a6a4a', '#e0c890'], red: ['#b4553a', '#a8553a'], grey: ['#5a5f6a', '#d8b484'], orange: ['#c8643a', '#c89a6a'] }[v];
       veneer(p, { W, H, sx, roof: style[0], brick: style[1], wallTop: top, roofH: 30, solar: v === 'grey', chimney: v !== 'grey', seed: v.length });
-      window_(p, sx + 8, top + 8, 22, 16, { curtain: v === 'red' ? '#d8d0b8' : '#f0e8d8' });
+      window_(p, sx + 8, top + 8, 22, 16, { curtain: v === 'red' ? '#d8d0b8' : '#f0e8d8', box: v !== 'grey' });
       door(p, sx + 40, top + 10, 11, 26, '#6b4226');
       p.r('#c9c5bb', sx + 36, H - 4, 20, 4);
       // garage roller door on the right
@@ -469,7 +499,7 @@ export const LAVERTON = {
     },
   },
 
-  // THE LEASH YOU CAN DO: Laverton's pet shop, on the station plaza.
+  // THE LEASH YOU CAN DO: the pet shop on Hope St, Brunswick (Olly's).
   petshop: {
     foot: [6, 3], tex: [96, 72], variants: ['laverton'],
     paint(p) {

@@ -47,5 +47,7 @@ export function buildLake() {
   b.forage(30, 25, ['sardine', 'croissant']);
   b.magpies([[16, 27], [38, 6]]);
   b.border(['gum', 'gum', 'oak']);
+  // Lived-in touches (walk-through props)
+  b.scatter([0, 0, b.w, b.h], 0.008, [['flowerbed', 2, ['natives', 'mixed']], ['ball', 1, ['soccer', 'beach']], ['bike', 1, ['blue', 'red', 'kids']]], { clearance: 0 });
   return b.finish();
 }

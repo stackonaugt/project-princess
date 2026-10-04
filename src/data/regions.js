@@ -50,7 +50,7 @@ export const ZONES = {
   home: { name: 'Home', suburb: 'laverton', build: buildHome, grass: LAWN, indoor: true, home: true, tagline: 'Your new place. Mid-renovation.' },
   yard: { name: 'Backyard', suburb: 'laverton', build: buildYard, grass: LAWN, home: true, tagline: 'Plenty of room for zoomies.' },
   allen: { name: 'Allen St', suburb: 'laverton', build: buildAllen, grass: LAVERTON_GRASS, tagline: 'A quiet court. Mostly quiet. There is a poodle.' },
-  petshop: { name: 'The Leash You Can Do', suburb: 'laverton', build: buildPetShop, grass: LAWN, indoor: true, tagline: 'Treats, leads and a very judgemental goldfish.' },
+  petshop: { name: 'The Leash You Can Do', suburb: 'brunswick', build: buildPetShop, grass: LAWN, indoor: true, tagline: 'Treats, leads and a very judgemental goldfish.' },
   woods: { name: 'Woods St', suburb: 'laverton', build: buildWoods, grass: LAVERTON_GRASS, tagline: 'Trish and Gordon\'s street.' },
   lohse: { name: 'Lohse St Reserve', suburb: 'laverton', build: buildLohse, grass: LAVERTON_GRASS, tagline: 'Gum trees, a playground and a very clean toilet block.' },
   station: { name: 'Laverton Station', suburb: 'laverton', build: buildStation, grass: LAVERTON_GRASS, tagline: 'Werribee line. Trains roughly as advertised.' },

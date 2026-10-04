@@ -65,5 +65,7 @@ export function buildLohse() {
   for (let y = 1; y < 23; y++) for (let x = 4; x < 38; x++) if (b.get(x, y) === '.' && b.rand() < 0.08 && !b.occ[y][x]) b.set(x, y, ',');
   // Tall grass for wild encounters
   b.wildGrass(28, 2); b.wildGrass(13, 12); b.wildGrass(34, 12); b.wildGrass(21, 18);
+  // Lived-in touches (walk-through props)
+  b.scatter([0, 0, b.w, b.h], 0.012, [['flowerbed', 2, ['natives', 'mixed']], ['ball', 1, ['soccer', 'beach']], ['bike', 1, ['blue', 'red', 'kids']]], { clearance: 0 });
   return b.finish();
 }

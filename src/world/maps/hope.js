@@ -34,9 +34,12 @@ export function buildHope() {
   b.fenceV(25, 0, 5, 'paling');
   b.put('graffiti', 26, 4, { v: 'paste' });
   b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 30, 6, { v: 'yellow' }); b.put('bin', 31, 6, { v: 'red' });
-  b.put('bshop', 28, 8, { v: 'bikecoop' });
+  // THE LEASH YOU CAN DO, the pet shop, run by Olly (inside: src/world/maps/petshop.js)
+  b.put('petshop', 28, 8);
+  b.put('doormat', 30, 11); b.put('doormat', 31, 11);
+  b.exit(30, 11, 2, 1, 'petshop', 'door', 'The Leash You Can Do');
   b.put('factory', 32, 3, { v: 'brewery' });
-  b.put('bikehoop', 32, 10); b.put('bikehoop', 33, 10);
+  b.put('bikehoop', 35, 10); b.put('bikehoop', 36, 10);
   b.put('powerpole', 10, 12); b.put('powerpole', 35, 12);
   b.put('streettree', 20, 15);
 
@@ -53,7 +56,7 @@ export function buildHope() {
 
   b.exit(5, 23, 1, 1, 'brunswick', 'north', 'Brunswick Station');
   b.exit(39, 15, 1, 2, 'sydney', 'west', 'Sydney Rd');
-  b.entry('south', 5, 21, 'up').entry('east', 38, 15, 'left');
+  b.entry('south', 5, 21, 'up').entry('east', 38, 15, 'left').entry('petshop', 30, 12, 'down');
 
   b.npc('mem', 16, 9, { face: 'down' });
   b.npc('corni', 18, 9, { face: 'down' });
@@ -67,5 +70,7 @@ export function buildHope() {
   b.forage(36, 10, ['feather', 'croissant']);
   b.forage(8, 1, ['sardine', 'feather']);
   b.magpies([[16, 20], [37, 22]]);
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.025, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }

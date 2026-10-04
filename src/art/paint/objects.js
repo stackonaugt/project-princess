@@ -13,8 +13,10 @@
 import { hash } from '../../util.js';
 import { textWidth } from './painter.js';
 import { FURNITURE } from './furniture.js';
-import { LAVERTON } from './laverton.js';
+import { LAVERTON, bricks, tileRoof, window_, door } from './laverton.js';
+import { shade } from './painter.js';
 import { CITY } from './city.js';
+import { PROPS } from './props.js';
 import { BRUNSWICK } from './brunswick.js';
 import { RESERVOIR } from './reservoir.js';
 
@@ -29,12 +31,18 @@ const BASE = {
   tree: {
     foot: [1, 1], tex: [32, 40], variants: ['gum', 'oak', 'fruit', 'lemon', 'pine', 'palm'],
     paint(p, v) {
-      p.shadow(16, 38, 16);
+      p.shadow(16, 38, 18);
+      // Foliage made of overlapping clumps: dark underside, mid body, light tops, and leafy specks.
+      const clump = (x, y, r, [d, m, l], seed) => {
+        p.blob(x, y + 1, r, d); p.blob(x - 1, y, r - 1, m); p.blob(x - Math.round(r / 3), y - Math.round(r / 3), Math.max(1, Math.round(r / 2)), l);
+        for (let i = 0; i < r * 2; i++) { const a = hash(seed, i) * 6.28, rr = hash(i, seed) * r; p.r(i % 3 ? l : d, Math.round(x + Math.cos(a) * rr), Math.round(y + Math.sin(a) * rr), 1, 1); }
+      };
       if (v === 'gum') {
-        p.r('#d8cbb4', 14, 16, 4, 24); p.r('#b5a68a', 17, 16, 1, 24); p.r('#c4b393', 15, 28, 1, 5);
+        p.r('#d8cbb4', 14, 16, 4, 24); p.r('#b5a68a', 17, 16, 1, 24); p.r('#c4b393', 15, 28, 1, 5); p.r('#e8dcc8', 14, 18, 1, 14);
+        p.r('#a89878', 15, 22, 2, 1); p.r('#a89878', 14, 33, 2, 1);   // peeling bark
         p.r('#d8cbb4', 10, 19, 4, 2); p.r('#d8cbb4', 18, 15, 5, 2);
-        p.blob(9, 15, 6, '#557f52'); p.blob(23, 11, 6, '#557f52'); p.blob(15, 8, 7, '#5f8a5a');
-        p.blob(22, 9, 4, '#73a06a'); p.blob(10, 12, 4, '#73a06a'); p.blob(15, 4, 3, '#8fbb80');
+        const g = ['#46704a', '#5f8a5a', '#86b07a'];
+        clump(9, 15, 6, g, 1); clump(23, 11, 6, g, 2); clump(15, 8, 7, g, 3); clump(20, 4, 3, g, 4); clump(8, 8, 3, g, 5);
         return;
       }
       if (v === 'pine') {
@@ -55,10 +63,12 @@ const BASE = {
         return;
       }
       const small = v === 'lemon';
-      p.r('#6b4226', 14, small ? 26 : 24, 4, 16); p.r('#4e2f1a', 17, small ? 26 : 24, 1, 16);
+      p.r('#6b4226', 14, small ? 26 : 24, 4, 16); p.r('#4e2f1a', 17, small ? 26 : 24, 1, 16); p.r('#8a5a36', 14, small ? 27 : 25, 1, 12);
+      p.r('#6b4226', 11, 37, 3, 2); p.r('#6b4226', 18, 37, 3, 2);   // roots
       const cy = small ? 19 : 16, rr = small ? 9 : 12;
-      const dark = small ? '#2a5e2e' : '#2c6a33', mid = small ? '#357a38' : '#3b8a3e', hi = small ? '#4a9447' : '#4f9e46';
-      p.blob(16, cy, rr, dark); p.blob(16, cy - 1, rr - 1, mid); p.blob(13, cy - 4, Math.round(rr / 2), hi); p.blob(11, cy - 6, 2, '#6dbb58');
+      const g = small ? ['#2a5e2e', '#357a38', '#4a9447'] : ['#2c6a33', '#3b8a3e', '#56a84a'];
+      clump(16, cy + 2, rr - 2, g, 7); clump(10, cy - 1, Math.round(rr * 0.6), g, 8); clump(22, cy - 1, Math.round(rr * 0.6), g, 9); clump(16, cy - 5, Math.round(rr * 0.6), g, 10);
+      p.blob(12, cy - 7, 2, '#7ac860');
       if (v === 'fruit') [[21, 18], [9, 20], [17, 11], [23, 12]].forEach(([x, y]) => p.r('#e05a4a', x, y, 2, 2));
       if (v === 'lemon') [[20, 19], [11, 21], [16, 14], [22, 23], [13, 16]].forEach(([x, y]) => { p.r('#f5d63a', x, y, 2, 2); p.px('#fff3a0', x, y); });
     },
@@ -67,8 +77,10 @@ const BASE = {
   bush: {
     foot: [1, 1], tex: [16, 16], variants: ['berry', 'green', 'rose', 'hydrangea'],
     paint(p, v) {
-      p.shadow(8, 15, 12);
-      p.blob(8, 10, 6, '#2f7a37'); p.blob(8, 9, 5, '#46993f'); p.blob(6, 7, 2, '#5fb24f');
+      p.shadow(8, 15, 13);
+      p.blob(8, 11, 6, '#24642c'); p.blob(5, 9, 4, '#2f7a37'); p.blob(11, 9, 4, '#2f7a37'); p.blob(8, 8, 4, '#46993f');
+      p.blob(5, 7, 2, '#5fb24f'); p.blob(10, 6, 2, '#5fb24f');
+      for (let i = 0; i < 8; i++) p.r(i % 2 ? '#6dc05a' : '#24642c', 3 + Math.floor(hash(i, 3) * 10), 5 + Math.floor(hash(3, i) * 8), 1, 1);
       const dots = { berry: '#d8405a', rose: '#f28bb0', hydrangea: '#7fa6e8' }[v];
       if (dots) [[5, 9], [10, 11], [9, 6], [3, 12]].forEach(([x, y]) => p.r(dots, x, y, 2, 2));
     },
@@ -334,16 +346,24 @@ const BASE = {
     paint(p, v) {
       const { sx, sy, W, H } = frame(this);
       const wall = { cream: ['#efe6cf', '#d6caae'], blue: ['#cfe0ea', '#b0c6d4'], mint: ['#d4ead6', '#b4d0b6'], lemon: ['#f4ecb8', '#ddd398'] }[v];
-      const roof = v === 'blue' ? ['#6c757a', '#5a6268'] : ['#b0583a', '#8e4430'];
+      const roof = v === 'blue' ? '#6c757a' : '#b0583a';
       p.r('rgba(30,50,20,.22)', sx + 2, sy + H - 2, W - 2, 4);
+      // weatherboards: each board has a light top edge and a shadow line under it
       p.r(wall[0], sx + 1, sy + 14, W - 2, H - 14);
-      for (let y = sy + 16; y < sy + H; y += 3) p.r(wall[1], sx + 1, y, W - 2, 1);
-      for (let i = 0; i < 18; i++) { const w = Math.round(W - 10 + i * 14 / 17); p.r(i % 4 === 3 ? roof[1] : roof[0], sx + W / 2 - Math.round(w / 2), sy - 4 + i, w, 1); }
-      p.r('#6e5a4a', sx + 10, sy - 9, 5, 7);
-      p.r('#6b4226', sx + 25, sy + 30, 12, 18); p.r('#f0c040', sx + 34, sy + 39, 1, 2);
-      p.r('#f4f0e6', sx + 22, sy + 26, 18, 2); p.r('#f4f0e6', sx + 22, sy + 26, 2, 22); p.r('#f4f0e6', sx + 38, sy + 26, 2, 22);
-      [5, 44].forEach(wx => { p.r('#f4f0e6', sx + wx, sy + 22, 14, 13); p.r('#86b8d6', sx + wx + 2, sy + 24, 10, 9); p.r('#f4f0e6', sx + wx + 6, sy + 24, 1, 9); p.r('#a8d0e6', sx + wx + 3, sy + 25, 2, 2); });
-      p.r('#c9c0a8', sx, sy + H - 3, W, 3);
+      for (let y = sy + 16; y < sy + H - 3; y += 3) { p.r(wall[1], sx + 1, y, W - 2, 1); p.r(shade(wall[0], 0.08), sx + 1, y + 1, W - 2, 1); }
+      p.r(shade(wall[1], -0.1), sx + W - 3, sy + 14, 2, H - 14);   // corner board
+      p.r('#f4f0e6', sx + 1, sy + 14, 2, H - 17);
+      tileRoof(p, sx - 3, sy - 6, W + 6, 20, roof);
+      p.r('#f4f0e6', sx - 3, sy + 13, W + 6, 2);   // gutter
+      p.r(shade(roof, -0.15), sx + 9, sy - 13, 6, 9); p.r(shade(roof, 0.2), sx + 9, sy - 13, 6, 1);   // chimney
+      // verandah posts and the front door
+      p.r('#f4f0e6', sx + 20, sy + 24, 22, 2); p.r('#d8d4c8', sx + 20, sy + 26, 22, 1);
+      for (const x of [21, 39]) { p.r('#f4f0e6', sx + x, sy + 26, 2, 22); p.r('#d8d4c8', sx + x + 1, sy + 26, 1, 22); }
+      for (let x = 24; x < 38; x += 2) p.r('#f4f0e6', sx + x, sy + 26, 1, 2);   // fretwork
+      door(p, sx + 25, sy + 30, 12, 18, '#6b4226', false);
+      window_(p, sx + 5, sy + 22, 13, 12, { box: v !== 'blue' });
+      window_(p, sx + 46, sy + 22, 13, 12, { box: v === 'lemon' || v === 'cream' });
+      p.r('#c9c0a8', sx, sy + H - 3, W, 3); p.r('#ddd6c2', sx + 22, sy + H - 4, 18, 2);   // stumps and step
     },
   },
 
@@ -351,19 +371,20 @@ const BASE = {
     foot: [4, 3], tex: [64, 56], variants: ['tan', 'red'],
     paint(p, v) {
       const { sx, sy, W, H } = frame(this);
-      const brick = v === 'red' ? ['#a8553a', '#8e4430'] : ['#c88a5a', '#ad7448'];
+      const brick = v === 'red' ? '#a8553a' : '#c88a5a';
       p.r('rgba(30,50,20,.22)', sx + 2, sy + H - 2, W - 2, 4);
-      p.r(brick[0], sx + 1, sy + 14, W - 2, H - 14);
-      for (let y = sy + 16; y < sy + H; y += 3) for (let x = sx + 1 + ((y / 3) % 2) * 3; x < sx + W - 1; x += 6) p.r(brick[1], x, y, 1, 1);
-      for (let y = sy + 16; y < sy + H; y += 3) p.r(brick[1], sx + 1, y, W - 2, 1);
-      // hip roof
-      for (let i = 0; i < 18; i++) { const w = W - 16 + i; p.r(i % 3 === 2 ? '#3e4046' : '#4e5158', sx + (W - w) / 2, sy - 4 + i, w, 1); }
-      p.r('#5d616a', sx + 8, sy - 4, W - 16, 1);
-      // garage roller door
+      bricks(p, sx + 1, sy + 14, W - 2, H - 14, brick, v.length * 3);
+      p.r(shade(brick, -0.2), sx + 1, sy + H - 5, W - 2, 2);
+      tileRoof(p, sx - 3, sy - 6, W + 6, 20, '#4e5158');
+      p.r('#f4f0e6', sx - 3, sy + 13, W + 6, 2); p.r('#d8d4c8', sx - 3, sy + 15, W + 6, 1);
+      p.r('#d8d4c8', sx + W - 4, sy + 16, 2, H - 20);   // downpipe
+      // garage roller door with a little shadow at the top
       p.r('#3a3a3a', sx + 34, sy + 24, 26, 24); p.r('#e8e4d8', sx + 35, sy + 25, 24, 23);
-      for (let y = 0; y < 23; y += 3) p.r('#c9c3b5', sx + 35, sy + 25 + y, 24, 1);
-      p.r('#f4f0e6', sx + 5, sy + 24, 20, 12); p.r('#86b8d6', sx + 6, sy + 25, 18, 10); p.r('#f4f0e6', sx + 14, sy + 25, 1, 10);
-      p.r('#6b4226', sx + 25, sy + 34, 8, 14); p.r('#f0c040', sx + 31, sy + 41, 1, 2);
+      for (let y = 0; y < 23; y += 3) { p.r('#c9c3b5', sx + 35, sy + 25 + y, 24, 1); p.r('#f4f0e6', sx + 35, sy + 26 + y, 24, 1); }
+      p.r('rgba(0,0,0,0.18)', sx + 35, sy + 25, 24, 2);
+      window_(p, sx + 5, sy + 23, 18, 11, { box: v === 'tan' });
+      door(p, sx + 25, sy + 34, 7, 14, '#6b4226');
+      p.r('#c8ccd0', sx + 3, sy + 38, 5, 6); p.r('#8a8e94', sx + 4, sy + 39, 3, 2);   // meter box
     },
   },
 
@@ -577,7 +598,7 @@ const BASE = {
   },
 };
 
-export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...RESERVOIR, ...CITY };
+export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...RESERVOIR, ...CITY, ...PROPS };
 
 // Which object kinds give off light at night.
 export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 }, floorlamp: { x: 8, y: 5, r: 40 }, hphouse: { x: 86, y: 56, r: 30 } };

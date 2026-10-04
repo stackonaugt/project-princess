@@ -86,5 +86,7 @@ export function buildSydney() {
   b.forage(40, 13, ['feather', 'cheese']);
   b.forage(33, 3, ['carrot', 'tennis']);
   b.magpies([[32, 4], [22, 7]]);
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.02, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }

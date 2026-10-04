@@ -3,10 +3,12 @@
 // Everything is deterministic, so every player sees the same world.
 
 import { OBJECTS } from '../art/paint/objects.js';
-import { rng } from '../util.js';
+import { hash, rng } from '../util.js';
 
 const SOLID_GROUND = '~rWV';
 const GRASSY = '.,"L';
+
+const DRESS_KINDS = new Set(['house', 'brickhouse', 'weatherboard', 'terrace', 'loddonunit', 'glasgowhouse', 'timunit', 'unit', 'hphouse']);
 
 export class MapBuilder {
   constructor({ id, w, h, fill = '.', seed = 1 }) {
@@ -111,7 +113,33 @@ export class MapBuilder {
   ducks(cx, cy, rx, ry, n) { this.decor.push({ kind: 'duck', cx, cy, rx, ry, n }); return this; }
   magpies(points) { this.decor.push({ kind: 'magpie', points }); return this; }
 
+  // Front-garden dressing: pot plants, garden beds, toys and bikes in the
+  // lawn just in front of (and beside) houses, so streets look lived in.
+  // Everything placed here is walk-through, so it never blocks a path.
+  // Set b.noDress = true in a map to skip it.
+  dress() {
+    if (this.noDress) return;
+    const grassy = (x, y) => '.,L'.includes(this.get(x, y) || '-') && this.free(x, y) && !this.reserved[y]?.[x];
+    const pickOf = (list, r) => list[Math.floor(r * list.length) % list.length];
+    const pots = ['succulent', 'fern', 'geranium', 'lavender', 'herbs'];
+    for (const o of [...this.objects]) {
+      if (!DRESS_KINDS.has(o.kind)) continue;
+      const fy = o.y + o.h;
+      for (let x = o.x - 1; x <= o.x + o.w; x++) {
+        const r = hash(x * 7 + this.w, fy * 13 + o.x);
+        if (!grassy(x, fy)) continue;
+        if (r < 0.22) this.put('potplant', x, fy, { v: pickOf(pots, hash(x, fy)) });
+        else if (r < 0.36 && grassy(x + 1, fy)) { this.put('flowerbed', x, fy, { v: pickOf(['mixed', 'roses', 'natives'], hash(fy, x)) }); x++; }
+        else if (r < 0.40) this.put(pickOf(['gnome', 'birdbath', 'ball', 'trike', 'bike', 'hosereel'], hash(x + 3, fy)), x, fy, {});
+      }
+      // an aircon unit or meter box down one side
+      const side = hash(o.x, o.y) > 0.5 ? o.x - 1 : o.x + o.w, sy = o.y + o.h - 1;
+      if (grassy(side, sy) && hash(o.y, o.x) > 0.45) this.put(hash(side, sy) > 0.5 ? 'acunit' : 'meterbox', side, sy, {});
+    }
+  }
+
   finish() {
+    this.dress();
     // Work out which way each fence joins up.
     for (const o of this.objects) if (o.kind === 'fence') {
       const n = (dx, dy) => this.occ[o.y + dy]?.[o.x + dx]?.kind === 'fence' ? 1 : 0;

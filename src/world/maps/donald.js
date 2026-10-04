@@ -72,5 +72,7 @@ export function buildDonald() {
   b.forage(37, 7, ['sardine', 'feather']);
   b.forage(5, 22, ['chicken', 'ribbon']);
   b.magpies([[34, 8], [20, 22]]);
+  // Lived-in touches: pot plants and bikes outside shops (walk-through)
+  b.scatter([0, 0, b.w, b.h], 0.02, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }
