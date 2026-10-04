@@ -1,0 +1,6 @@
+# Generated at deploy time (and on the fly by tools/serve.mjs)
+assets/sprites/manifest.json
+
+node_modules/
+.DS_Store
+Thumbs.db
