@@ -161,13 +161,18 @@ export const LAVERTON = {
     },
   },
   tall: {
-    foot: [1, 1], tex: [40, 72], variants: ['cypress', 'pear', 'biggum', 'poplar', 'bottlebrush', 'hedge'],
+    foot: [1, 1], tex: [40, 72], variants: ['cypress', 'pear', 'biggum', 'poplar', 'bottlebrush', 'hedge', 'yarngum', 'willowgum'],
     paint(p, v) {
       p.shadow(20, 70, 22);
       if (v === 'cypress') {
         p.r('#4e2f1a', 18, 60, 4, 12);
         for (let j = 0; j < 58; j++) { const w = Math.round(Math.min(16, 3 + j * 0.45) * (j > 46 ? (58 - j) / 12 + 0.2 : 1)); const c = j % 5 < 2 ? '#2a5a3a' : (j % 5 === 2 ? '#3a6e48' : '#244e32'); p.r(c, 20 - w, 4 + j, w * 2, 1); }
         for (let i = 0; i < 14; i++) p.r('#4a7e58', 14 + Math.floor(hash(i, 3) * 12), 10 + Math.floor(hash(i, 5) * 44), 3, 2);
+        return;
+      }
+      if (v === 'willowgum') {
+        p.r('#5a3a28', 18, 40, 5, 32); p.r('#3a2418', 21, 40, 2, 32); p.r('#5a3a28', 12, 44, 7, 3); p.r('#5a3a28', 22, 36, 8, 3);
+        for (let i = 0; i < 70; i++) { const x = 2 + hash(i, 1) * 36, y = 6 + hash(i, 2) * 38; p.r(i % 3 ? '#5a7a4a' : '#7a9a62', x, y, 2, 4 + Math.floor(hash(i, 3) * 4)); }
         return;
       }
       if (v === 'bottlebrush') {
@@ -194,9 +199,11 @@ export const LAVERTON = {
         for (let i = 0; i < 26; i++) p.blob(10 + hash(i, 9) * 20, 8 + hash(i, 11) * 42, 2, i % 3 ? '#2f7a37' : '#6dbb58');
         return;
       }
-      // big old river red gum
-      p.r('#c8b89a', 17, 34, 6, 38); p.r('#a8987a', 21, 34, 2, 38); p.r('#d8cbb4', 18, 40, 2, 20);
+      // big old river red gum (yarngum: with a yarn-bombed trunk)
+      p.r('#c8b89a', 17, 34, 6, 38);
+      if (v === 'yarngum') for (let y = 52; y < 68; y += 2) p.r(['#c8282a', '#e8c030', '#3a8a5a', '#2a5ab8', '#e77fb8'][(y / 2) % 5], 16, y, 8, 2); p.r('#a8987a', 21, 34, 2, 38); p.r('#d8cbb4', 18, 40, 2, 20);
       p.r('#c8b89a', 10, 38, 8, 3); p.r('#c8b89a', 22, 30, 9, 3);
+      if (v === 'yarngum') for (let y = 52; y < 68; y += 2) p.r(['#c8282a', '#e8c030', '#3a8a5a', '#2a5ab8', '#e77fb8'][(y / 2) % 5], 16, y, 8, 2);
       [[10, 22, 10], [28, 18, 10], [19, 12, 11], [8, 32, 7], [32, 30, 7], [20, 26, 8]].forEach(([x, y, r]) => p.blob(x, y, r, '#4f7a4a'));
       [[12, 18, 6], [26, 14, 6], [18, 8, 6], [30, 26, 4]].forEach(([x, y, r]) => p.blob(x, y, r, '#6a9a5e'));
       for (let i = 0; i < 18; i++) p.r('#86b07a', 4 + hash(i, 1) * 32, 4 + hash(i, 2) * 30, 2, 1);
@@ -280,14 +287,15 @@ export const LAVERTON = {
     paint(p) { p.r('#2a2c30', 0, 0, 80, 46); p.r('#3a3d44', 0, 0, 80, 2); for (let x = 6; x < 80; x += 12) p.r('#34373e', x, 2, 1, 44); p.r('#1e2024', 0, 44, 80, 2); },
   },
   playframe: {
-    foot: [4, 2], tex: [64, 64], variants: ['park'],
-    paint(p) {
+    foot: [4, 2], tex: [64, 64], variants: ['park', 'pink'],
+    paint(p, v) {
       p.shadow(32, 62, 56);
+      const slideA = v === 'pink' ? '#f08ac0' : '#5a9ad8', slideB = v === 'pink' ? '#e060a0' : '#2f8ac8';
       const post = (x, c = '#2f6aa3') => { p.r(c, x, 14, 3, 50); p.r(shade(c, 0.2), x, 14, 1, 50); };
       post(4); post(28); post(40, '#c8443a'); post(58, '#c8443a');
       p.r('#e8c030', 2, 30, 30, 4); p.r('#f0d050', 2, 30, 30, 1);           // deck
       p.r('#2f6aa3', 0, 8, 34, 6); for (let i = 0; i < 4; i++) p.r('#5a8ac8', 2 + i * 8, 9, 4, 4); // blue roof
-      for (let i = 0; i < 26; i++) p.r(i % 4 === 0 ? '#5a9ad8' : '#2f8ac8', 30 + i * 0.4 - 30 + 2, 34 + i, 7, 2); // slide down left
+      for (let i = 0; i < 26; i++) p.r(i % 4 === 0 ? slideA : slideB, 30 + i * 0.4 - 30 + 2, 34 + i, 7, 2); // slide down left
       for (let y = 36; y < 62; y += 5) p.r('#e8c030', 40, y, 21, 2);          // ladder bars
       p.r('#c8443a', 38, 22, 24, 3); p.r('#8dc63f', 44, 26, 4, 10); p.r('#8dc63f', 52, 26, 4, 10); // monkey bars
     },

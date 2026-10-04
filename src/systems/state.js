@@ -8,7 +8,7 @@ import { bus } from '../bus.js';
 import { rng } from '../util.js';
 import { ZONES } from '../data/regions.js';
 
-const VERSION = 5;
+const VERSION = 6;
 export const MAX_TEAM = 3;
 
 function fresh() {
@@ -39,7 +39,7 @@ function sanitise(raw) {
   if (!raw || typeof raw !== 'object') return d;
   for (const k of ['day', 'minutes']) if (Number.isFinite(raw[k])) d[k] = raw[k];
   // Version 3 saves had one big 'laverton' map; it's now several zones.
-  const oldLaverton = (raw.v || 0) < 4 || ((raw.v || 0) < 5 && raw.region === 'reservoir');  // maps that were rebuilt
+  const oldLaverton = (raw.v || 0) < 4 || ((raw.v || 0) < 6 && ['reservoir', 'lake'].includes(raw.region));  // maps that were rebuilt
   if (typeof raw.region === 'string' && ZONES[raw.region]) d.region = raw.region;
   if (!oldLaverton && raw.pos && Number.isFinite(raw.pos.x) && Number.isFinite(raw.pos.y)) d.pos = { x: raw.pos.x, y: raw.pos.y };
   if (typeof raw.dir === 'string') d.dir = raw.dir;

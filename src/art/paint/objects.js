@@ -134,7 +134,7 @@ const BASE = {
 
   // Fences join up with their neighbours. Variant = style:mask (mask bits L1 R2 U4 D8).
   fence: {
-    foot: [1, 1], tex: [16, 16], variants: 'mask', styles: ['picket', 'colorbond', 'park', 'paling', 'metal', 'panel', 'slat', 'render', 'bluestone', 'brickwall'],
+    foot: [1, 1], tex: [16, 16], variants: 'mask', styles: ['picket', 'colorbond', 'park', 'paling', 'metal', 'panel', 'slat', 'render', 'bluestone', 'brickwall', 'log', 'rail'],
     paint(p, v) {
       const [style, m] = v.split(':'); const mask = +m;
       const L = mask & 1, R = mask & 2, U = mask & 4, D = mask & 8;
@@ -155,6 +155,21 @@ const BASE = {
           p.r(d, x0, 4, x1 - x0, 1); p.r(d, x0, 11, x1 - x0, 1); p.r('rgba(30,50,20,.25)', x0, 15, x1 - x0, 1);
         }
         if (U || D) { const y0 = U ? 0 : 1, y1 = D ? 16 : 15; p.r(d, 6, y0, 4, y1 - y0); p.r(c, 7, y0, 2, y1 - y0); }
+        return;
+      }
+      if (style === 'log') {
+        // low timber post-and-rail barrier
+        const c = '#7a5a3a', d = '#5a3e26';
+        if (L || R || !(U || D)) { const x0 = L ? 0 : 6, x1 = R ? 16 : 10; p.r(c, x0, 8, x1 - x0, 3); p.r(d, x0, 10, x1 - x0, 1); }
+        if (U || D) { p.r(c, 6, 0, 3, 16); }
+        p.r(d, 6, 6, 4, 9); p.r(c, 6, 6, 3, 8);
+        return;
+      }
+      if (style === 'rail') {
+        const c = '#c8ccd0', d = '#9aa0a8';
+        if (L || R || !(U || D)) { const x0 = L ? 0 : 7, x1 = R ? 16 : 9; p.r(c, x0, 6, x1 - x0, 2); p.r(d, x0, 8, x1 - x0, 1); }
+        if (U || D) p.r(c, 7, 0, 2, 16);
+        if (!(L && R) || hash(Math.floor(mask), 1) > 0.5) { p.r(d, 7, 6, 2, 9); }
         return;
       }
       if (style === 'brickwall') {
