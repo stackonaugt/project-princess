@@ -31,7 +31,7 @@ export class Traffic {
         const half = (horiz ? s.width : s.height) / 2;
         const along = horiz ? player.x - s.x : player.y - s.y;
         const across = Math.abs(horiz ? player.y - 4 - s.y : player.x - s.x);
-        const blocking = !lane.under && across < (horiz ? s.height : s.width) / 2 + 4 && along * lane.dir > 0 && along * lane.dir < half + 20;
+        const blocking = !lane.under && !lane.sky && across < (horiz ? s.height : s.width) / 2 + 4 && along * lane.dir > 0 && along * lane.dir < half + 20;
         if (blocking || frozen) {
           s.stopped += dt;
           if (blocking && s.stopped > 1.5 && !s.honked && !lane.train && !lane.tram) { s.honked = true; sfx.honk(); }
@@ -41,7 +41,7 @@ export class Traffic {
           const step = lane.speed * lane.dir * dt;
           if (horiz) s.x += step; else s.y += step;
         }
-        s.setDepth(lane.under ? -995 : horiz ? s.y + s.height / 2 : s.y + half);
+        s.setDepth(lane.sky ? 8700 : lane.under ? -995 : horiz ? s.y + s.height / 2 : s.y + half);
       }
       lane.list = lane.list.filter(s => {
         const p = horiz ? s.x : s.y;

@@ -11,10 +11,14 @@ import { buildSydney } from '../world/maps/sydney.js';
 import { buildDonald } from '../world/maps/donald.js';
 import { buildHope } from '../world/maps/hope.js';
 import { buildReservoir } from '../world/maps/reservoir.js';
+import { buildResStation } from '../world/maps/resstation.js';
+import { buildLoddon } from '../world/maps/loddon.js';
+import { buildGlasgow } from '../world/maps/glasgow.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
 const BRUNSWICK_GRASS = ['#7cbd4e', '#74b548', '#5a9a38', '#9ad466'];
+const RES_GRASS = ['#68b04a', '#61a845', '#4b8f36', '#86ca5e'];
 const LAWN = ['#6cbc4a', '#62b244', '#4f9a38', '#86ca5e'];
 
 export const SUBURBS = {
@@ -36,7 +40,10 @@ export const ZONES = {
   sydney: { name: 'Sydney Rd', suburb: 'brunswick', build: buildSydney, grass: BRUNSWICK_GRASS, tagline: 'Trams, bakeries and somebody\'s band.' },
   donald: { name: 'Donald St', suburb: 'brunswick', build: buildDonald, grass: BRUNSWICK_GRASS, tagline: 'Rose\'s street. Salami\'s street, really.' },
   hope: { name: 'Hope St', suburb: 'brunswick', build: buildHope, grass: BRUNSWICK_GRASS, tagline: 'Mem and Corni\'s place, and a lot of balcony plants.' },
-  reservoir: { name: 'Reservoir', suburb: 'reservoir', build: buildReservoir, grass: ['#68b04a', '#61a845', '#4b8f36', '#86ca5e'], tagline: SUBURBS.reservoir.tagline },
+  reservoir: { name: 'Reservoir Station', suburb: 'reservoir', build: buildResStation, grass: RES_GRASS, tagline: 'Mernda line, up on the skyrail.' },
+  loddon: { name: 'Loddon Ave', suburb: 'reservoir', build: buildLoddon, grass: RES_GRASS, tagline: 'Seb and Sinead\'s units. Poppy\'s kingdom.' },
+  glasgow: { name: 'Glasgow Ave', suburb: 'reservoir', build: buildGlasgow, grass: RES_GRASS, tagline: 'Tim and Nick\'s street. Stanley approves. Barely.' },
+  lake: { name: 'Edwardes Lake', suburb: 'reservoir', build: buildReservoir, grass: RES_GRASS, tagline: 'Lemon trees, weatherboards and a lake full of opinions (ducks).' },
 };
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
