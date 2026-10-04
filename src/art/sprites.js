@@ -121,5 +121,3 @@ export const BASE_PALETTE = {
   e: '#1a1010', n: '#2a1a1a', p: '#f08aa0', r: '#e8508a', w: '#ffffff', s: '#5a3a1a',
 };
 
-// The player's look (see src/art/paint/people.js for the options).
-export const PLAYER_LOOK = { skin: '#f2c79a', hair: '#6b3f1f', hairStyle: 'short', shirt: '#3fa38f', pants: '#33446e', shoes: '#4a2a18' };

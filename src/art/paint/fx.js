@@ -47,6 +47,7 @@ export const VEHICLES = {
   // Metro trains: stainless steel, blue livery, yellow ends
   'veh-train-h': [184, 24, p => metroTrain(p, false)],
   'veh-train-v': [24, 184, p => metroTrain(p, true)],
+  'veh-tram-h': [76, 20, p => { p.ctx.save(); p.ctx.translate(0, 20); p.ctx.rotate(-Math.PI / 2); VEHICLES['veh-tram'][2](p); p.ctx.restore(); }],
   'veh-car-h-red': [28, 16, p => carH(p, '#c8443a', '#9a3028')],
   'veh-car-h-blue': [28, 16, p => carH(p, '#3a6aa8', '#2a5080')],
   'veh-car-h-white': [28, 16, p => carH(p, '#f0f0ec', '#c9c9c4')],

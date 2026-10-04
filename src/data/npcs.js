@@ -8,7 +8,7 @@
 
 export const NPCS = {
   trish: {
-    name: 'Trish', role: "Helen's mum. Lives at 72 Woods St", look: { hair: '#d8c8a8', hairStyle: 'bob', skin: '#f2c79a', shirt: '#c86a8a', pants: '#3a3a48', glasses: true },
+    name: 'Trish', role: "Helen's mum. Lives at 72 Woods St", look: { hair: '#d8d4cc', hairStyle: 'pixie', skin: '#f0c8a8', shirt: '#c8ccd0', pants: '#c8ccd0', shoes: '#6a5a4a', glasses: '#6a4a2a', scarf: '#3a8a6a', collar: true },
     lines: [
       ['Oh hello, love! Have you eaten? There is a casserole in the freezer with your name on it.'],
       ['How is the renovation going? Tell Helen to ring me. She never rings.', 'Well, she rang yesterday. But she never rings.'],
@@ -18,9 +18,10 @@ export const NPCS = {
     gift: 'chicken', giftLine: 'Here, take some treats for the dogs. I buy them in bulk. Do not tell Gordon how much bulk.',
   },
   gordon: {
-    name: 'Gordon', role: "Helen's dad. Gardener", look: { hair: '#c8c8c8', hairStyle: 'bald', skin: '#e8b48a', shirt: '#5a7a5a', pants: '#6a5a4a', moustache: true, cap: '#3a5a8a' },
+    name: 'Gordon', role: "Helen's dad. Beard of legend", look: { hair: '#c8c4bc', hairStyle: 'bald', skin: '#e8a890', shirt: '#2a3a5a', pants: '#2a2a2a', shoes: '#4a3a2a', longBeard: '#e8e4dc' },
     lines: [
       ['Morning. The agapanthus are taking over. I have given up fighting them. We have an understanding now.'],
+      ['People keep asking if I am Santa. I tell them Santa wishes he had this beard.'],
       ['Watch the magpies round here in spring. They know your face. They hold grudges.'],
       ['Paddy borrowed my good ladder for the renovation. That was in March. Which March, I could not tell you.'],
     ],

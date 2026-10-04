@@ -7,10 +7,14 @@ import { buildWoods } from '../world/maps/woods.js';
 import { buildLohse } from '../world/maps/lohse.js';
 import { buildStation } from '../world/maps/station.js';
 import { buildBrunswick } from '../world/maps/brunswick.js';
+import { buildSydney } from '../world/maps/sydney.js';
+import { buildDonald } from '../world/maps/donald.js';
+import { buildHope } from '../world/maps/hope.js';
 import { buildReservoir } from '../world/maps/reservoir.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
+const BRUNSWICK_GRASS = ['#7cbd4e', '#74b548', '#5a9a38', '#9ad466'];
 const LAWN = ['#6cbc4a', '#62b244', '#4f9a38', '#86ca5e'];
 
 export const SUBURBS = {
@@ -28,7 +32,10 @@ export const ZONES = {
   woods: { name: 'Woods St', suburb: 'laverton', build: buildWoods, grass: LAVERTON_GRASS, tagline: 'Trish and Gordon\'s street.' },
   lohse: { name: 'Lohse St Reserve', suburb: 'laverton', build: buildLohse, grass: LAVERTON_GRASS, tagline: 'Gum trees, a playground and a very clean toilet block.' },
   station: { name: 'Laverton Station', suburb: 'laverton', build: buildStation, grass: LAVERTON_GRASS, tagline: 'Werribee line. Trains roughly as advertised.' },
-  brunswick: { name: 'Brunswick', suburb: 'brunswick', build: buildBrunswick, grass: ['#7cbd4e', '#74b548', '#5a9a38', '#9ad466'], tagline: SUBURBS.brunswick.tagline },
+  brunswick: { name: 'Brunswick Station', suburb: 'brunswick', build: buildBrunswick, grass: BRUNSWICK_GRASS, tagline: 'Upfield line. Mind the gap, and the cyclists.' },
+  sydney: { name: 'Sydney Rd', suburb: 'brunswick', build: buildSydney, grass: BRUNSWICK_GRASS, tagline: 'Trams, bakeries and somebody\'s band.' },
+  donald: { name: 'Donald St', suburb: 'brunswick', build: buildDonald, grass: BRUNSWICK_GRASS, tagline: 'Rose\'s street. Salami\'s street, really.' },
+  hope: { name: 'Hope St', suburb: 'brunswick', build: buildHope, grass: BRUNSWICK_GRASS, tagline: 'Mem and Corni\'s place, and a lot of balcony plants.' },
   reservoir: { name: 'Reservoir', suburb: 'reservoir', build: buildReservoir, grass: ['#68b04a', '#61a845', '#4b8f36', '#86ca5e'], tagline: SUBURBS.reservoir.tagline },
 };
 

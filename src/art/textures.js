@@ -9,7 +9,8 @@ import { ART_PATH } from '../config.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { painter, outline } from './paint/painter.js';
-import { PET_FRAMES, BASE_PALETTE, PLAYER_LOOK } from './sprites.js';
+import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
+import { HEROES } from '../data/heroes.js';
 import { drawPerson } from './paint/people.js';
 import { OBJECTS } from './paint/objects.js';
 import { ITEM_ART } from './paint/items.js';
@@ -64,13 +65,23 @@ function splitCustom(scene, key) {
 }
 export const frameCount = (scene, key) => Math.max(1, scene.textures.get(key).frameTotal - 1);
 
+// The texture to use for the player: your own art for this character,
+// then your own art for everyone, then the built-in sprite. Returns
+// [key, flipX] (right-facing reuses left, mirrored, unless you drew it).
+export function playerTexture(hero, dir) {
+  for (const k of [`player-${hero}-${dir}`, `player-${dir}`]) if (custom.has(k)) return [k, false];
+  if (dir === 'right') { const [k] = playerTexture(hero, 'left'); return [k, true]; }
+  return [`player-${hero}-${dir}`, false];
+}
+
 const STEPS = [0, 1, 2]; // people: standing, left stride, right stride
 
 export function buildTextures(scene) {
   for (const key of custom) if (CHARACTER_PREFIXES.some(pfx => key.startsWith(pfx + '-'))) splitCustom(scene, key);
 
   // Player
-  for (const dir of ['down', 'up', 'left']) stripTexture(scene, `player-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, PLAYER_LOOK, dir, STEPS[i]), true);
+  for (const [id, hero] of Object.entries(HEROES)) for (const dir of ['down', 'up', 'left'])
+    stripTexture(scene, `player-${id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, hero.look, dir, STEPS[i]), true);
   // Pets
   for (const pet of PETS) {
     const frames = PET_FRAMES[pet.sprite], pal = { ...BASE_PALETTE, ...pet.pal };
@@ -113,8 +124,8 @@ function createAnims(scene) {
     scene.anims.create({ key, frames: frames.map(f => ({ key: tex, frame: f })), frameRate: rate, repeat: -1 });
   };
   const walkFrames = (tex, n) => custom.has(tex) ? (n > 2 ? [...Array(n - 1).keys()].map(i => i + 1) : [...Array(n).keys()]) : [1, 0, 2, 0];
-  for (const dir of ['down', 'up', 'left', 'right']) {
-    const tex = `player-${dir}`;
+  const playerKeys = ['down', 'up', 'left', 'right'].flatMap(d => [`player-${d}`, ...Object.keys(HEROES).map(h => `player-${h}-${d}`)]);
+  for (const tex of playerKeys) {
     if (!scene.textures.exists(tex)) continue;
     const n = frameCount(scene, tex);
     if (n > 1) make(`${tex}-walk`, tex, walkFrames(tex, n), 8);

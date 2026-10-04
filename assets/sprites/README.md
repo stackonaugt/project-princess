@@ -10,7 +10,7 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 |---|---|---|---|
 | `pets/` | `<pet id>.png`, e.g. `princess.png` | A pet's walking sprite (side-on, facing right) | 16x16 per frame (one tile) |
 | `portraits/` | `<pet id>.png` (or `.jpg`, `.webp`) | The big picture in the Petdex and dialogue. **A real photo of the pet works great here.** | Any size, square is best |
-| `player/` | `down.png`, `up.png`, `left.png`, `right.png` | You! `right.png` is optional (otherwise `left.png` is mirrored) | 16x32 per frame (one tile wide, two tall) |
+| `player/` | `helen-down.png`, `hadrian-left.png`, ... (or plain `down.png` for everyone) | You! Directions: down, up, left, right. Right is optional (left is mirrored) | 16x32 per frame (one tile wide, two tall) |
 | `npcs/` | `<person id>.png`, e.g. `trish.png` | A townsperson (front-facing; mirrored for left and right) | 16x32 per frame |
 | `items/` | `<item id>.png`, e.g. `sardine.png` | A treat icon | 12 game pixels |
 | `objects/` | `<kind>.png` or `<kind>-<variant>.png` | Trees, houses, signs, etc. `tree.png` replaces every tree, `tree-gum.png` replaces only gum trees | Same width as the template |

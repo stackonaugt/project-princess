@@ -17,6 +17,7 @@ export function openMenu(panel, close) {
       h('div', { class: 'note' }, h('h4', {}, 'Settings'),
         h('div', { class: 'row' },
           h('button', { class: 'wood-btn', onclick: e => { d.settings.sound = !d.settings.sound; e.target.textContent = `Sound: ${d.settings.sound ? 'on' : 'off'}`; state.save(); sfx.select(); } }, `Sound: ${d.settings.sound ? 'on' : 'off'}`),
+          h('button', { class: 'wood-btn', onclick: () => { close(); setTimeout(() => bus.emit('game:hero'), 50); } }, 'Change character'),
           canFull ? h('button', { class: 'wood-btn', onclick: () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) }, 'Full screen') : null)),
       h('div', { class: 'note' }, h('h4', {}, 'Saving'),
         h('p', {}, 'Your game saves itself every few seconds on this device.'),

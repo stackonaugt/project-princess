@@ -161,13 +161,19 @@ export const LAVERTON = {
     },
   },
   tall: {
-    foot: [1, 1], tex: [40, 72], variants: ['cypress', 'pear', 'biggum'],
+    foot: [1, 1], tex: [40, 72], variants: ['cypress', 'pear', 'biggum', 'poplar'],
     paint(p, v) {
       p.shadow(20, 70, 22);
       if (v === 'cypress') {
         p.r('#4e2f1a', 18, 60, 4, 12);
         for (let j = 0; j < 58; j++) { const w = Math.round(Math.min(16, 3 + j * 0.45) * (j > 46 ? (58 - j) / 12 + 0.2 : 1)); const c = j % 5 < 2 ? '#2a5a3a' : (j % 5 === 2 ? '#3a6e48' : '#244e32'); p.r(c, 20 - w, 4 + j, w * 2, 1); }
         for (let i = 0; i < 14; i++) p.r('#4a7e58', 14 + Math.floor(hash(i, 3) * 12), 10 + Math.floor(hash(i, 5) * 44), 3, 2);
+        return;
+      }
+      if (v === 'poplar') {
+        p.r('#5e3a1a', 18, 58, 4, 14);
+        for (let j = 0; j < 58; j++) { const w = Math.round(Math.sin((j + 3) / 62 * Math.PI) * 9); p.r(j % 4 === 0 ? '#3a7a2e' : '#4a8e36', 20 - w, 2 + j, w * 2, 1); }
+        for (let i = 0; i < 30; i++) p.r(i % 2 ? '#6aae4a' : '#2e6a26', 12 + hash(i, 4) * 16, 4 + hash(i, 6) * 52, 2, 2);
         return;
       }
       if (v === 'pear') {
@@ -385,16 +391,17 @@ export const LAVERTON = {
     },
   },
   ptsign: {
-    foot: [1, 1], tex: [34, 56], variants: ['laverton'],
-    paint(p) {
-      p.shadow(17, 55, 14);
-      p.r('#9aa0a8', 15, 40, 4, 16);
-      p.r('#2a6ac8', 1, 0, 32, 30); p.r('#4a8ae0', 1, 0, 32, 2);
-      p.text('PT', 24, 3, '#ffffff'); p.text('LAVERTON', 2, 10, '#ffffff'); p.text('STATION', 4, 17, '#ffffff');
-      p.r('#3a2a1e', 1, 30, 32, 6); p.r('#3a2a1e', 1, 36, 32, 4); p.r('#d8643a', 1, 40, 32, 5);
-      p.r('#f4f4f0', 3, 32, 14, 1); p.r('#f4f4f0', 3, 37, 10, 1); p.r('#f4f4f0', 3, 42, 10, 1);
+    foot: [1, 1], tex: [44, 56], variants: ['laverton', 'brunswick'],
+    paint(p, v) {
+      p.shadow(22, 55, 14);
+      p.r('#9aa0a8', 20, 40, 4, 16);
+      p.r('#2a6ac8', 2, 0, 40, 30); p.r('#4a8ae0', 2, 0, 40, 2);
+      p.text('PT', 33, 3, '#ffffff'); p.text(v.toUpperCase(), 4, 10, '#ffffff'); p.text('STATION', 4, 17, '#ffffff');
+      p.r('#3a2a1e', 2, 30, 40, 6); p.r('#3a2a1e', 2, 36, 40, 4); p.r('#d8643a', 2, 40, 40, 5);
+      p.r('#f4f4f0', 4, 32, 14, 1); p.r('#f4f4f0', 4, 37, 10, 1); p.r('#f4f4f0', 4, 42, 10, 1);
     },
   },
+
   bollard: {
     foot: [1, 1], tex: [16, 16], variants: ['steel'],
     paint(p) { p.shadow(8, 15, 6); p.r('#b8bcc4', 6, 3, 4, 12); p.r('#e8ecef', 6, 3, 1, 12); p.r('#e8c030', 6, 5, 4, 1); },

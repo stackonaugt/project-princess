@@ -14,6 +14,7 @@ import { hash } from '../../util.js';
 import { textWidth } from './painter.js';
 import { FURNITURE } from './furniture.js';
 import { LAVERTON } from './laverton.js';
+import { BRUNSWICK } from './brunswick.js';
 
 const T = 16;
 
@@ -132,7 +133,7 @@ const BASE = {
 
   // Fences join up with their neighbours. Variant = style:mask (mask bits L1 R2 U4 D8).
   fence: {
-    foot: [1, 1], tex: [16, 16], variants: 'mask', styles: ['picket', 'colorbond', 'park', 'paling', 'metal', 'panel'],
+    foot: [1, 1], tex: [16, 16], variants: 'mask', styles: ['picket', 'colorbond', 'park', 'paling', 'metal', 'panel', 'slat', 'render', 'bluestone'],
     paint(p, v) {
       const [style, m] = v.split(':'); const mask = +m;
       const L = mask & 1, R = mask & 2, U = mask & 4, D = mask & 8;
@@ -153,6 +154,28 @@ const BASE = {
           p.r(d, x0, 4, x1 - x0, 1); p.r(d, x0, 11, x1 - x0, 1); p.r('rgba(30,50,20,.25)', x0, 15, x1 - x0, 1);
         }
         if (U || D) { const y0 = U ? 0 : 1, y1 = D ? 16 : 15; p.r(d, 6, y0, 4, y1 - y0); p.r(c, 7, y0, 2, y1 - y0); }
+        return;
+      }
+      if (style === 'slat') {
+        // modern charcoal slat fence
+        const c = '#3a3e46', d = '#2a2e34', hi = '#5a5e66';
+        if (L || R || !(U || D)) { const x0 = L ? 0 : 4, x1 = R ? 16 : 12; for (let y = 1; y < 15; y += 2) { p.r(c, x0, y, x1 - x0, 1); p.r(d, x0, y + 1, x1 - x0, 1); } p.r(hi, x0, 1, x1 - x0, 1); }
+        if (U || D) { p.r(d, 6, 0, 4, 16); p.r(c, 7, 0, 2, 16); }
+        p.r('#9aa0a8', 7, 0, 2, 15);
+        return;
+      }
+      if (style === 'render') {
+        // white rendered front wall with square pillars
+        const c = '#ecece6', d = '#c8c8c0';
+        if (L || R || !(U || D)) { const x0 = L ? 0 : 4, x1 = R ? 16 : 12; p.r(c, x0, 6, x1 - x0, 9); p.r(d, x0, 14, x1 - x0, 1); p.r('#f8f8f4', x0, 6, x1 - x0, 1); }
+        if (U || D) { p.r(c, 5, 0, 6, 16); }
+        if (!(L && R)) { p.r(c, 4, 0, 8, 15); p.r('#6a8a6a', 4, 0, 8, 2); p.r(d, 10, 2, 2, 13); }
+        return;
+      }
+      if (style === 'bluestone') {
+        const c = '#4a4e58', l = '#5e6370';
+        if (L || R || !(U || D)) { const x0 = L ? 0 : 4, x1 = R ? 16 : 12; p.r('#34373e', x0, 8, x1 - x0, 7); for (let x = x0; x < x1; x += 5) { p.r(c, x, 8, 4, 3); p.r(l, x + 2, 11, 4, 3); } }
+        if (U || D) { p.r('#34373e', 4, 0, 8, 16); for (let y = 0; y < 16; y += 4) p.r(l, 5, y, 6, 3); }
         return;
       }
       if (style === 'panel') {
@@ -522,7 +545,7 @@ const BASE = {
   },
 };
 
-export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON };
+export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK };
 
 // Which object kinds give off light at night.
 export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 }, floorlamp: { x: 8, y: 5, r: 40 }, hphouse: { x: 86, y: 56, r: 30 } };
