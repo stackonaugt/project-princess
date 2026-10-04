@@ -12,7 +12,8 @@ import { ENEMIES, TRAINERS } from '../data/enemies.js';
 import { ITEMS } from '../data/items.js';
 import { PET_BY_ID } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
-import { effectiveness } from '../data/types.js';
+import { effectiveness, typeList, typeName } from '../data/types.js';
+import { form, canEvolve, evolve, petTex } from '../systems/forms.js';
 import { state } from '../systems/state.js';
 import { sfx } from '../systems/sfx.js';
 import { isNight } from '../systems/clock.js';
@@ -335,7 +336,7 @@ export class BattleScene extends Phaser.Scene {
     while (!this.over) {
       const action = await this.chooseAction();
       await this.turn(action);
-      if (!this.over) this.endOfTurn();
+      if (!this.over) await this.endOfTurn();
     }
   }
 
@@ -355,9 +356,9 @@ export class BattleScene extends Phaser.Scene {
     }
     await Promise.all(tweensIn);
     if (this.trainer) {
-      await this.say(this.trainer.prize ? `${this.trainer.name} wants a friendly play-fight!` : `The ${this.trainer.name} wants to battle!`);
+      await this.say(this.trainer.intro || (this.trainer.prize ? `${this.trainer.name} wants a friendly play-fight!` : `The ${this.trainer.name} wants to battle!`));
       await this.tw(this.trainerSpr, { x: W + 20 * u, duration: 400, ease: 'Quad.easeIn' });
-      await this.sendOutFoe(`${this.trainer.name} sends out ${this.foe.name}!`);
+      await this.sendOutFoe(this.sendText(this.foe));
     } else {
       B.setFighter(this.foe); B.show('foe');
       await this.say(ENEMIES[this.foe.id].appear);
@@ -367,12 +368,25 @@ export class BattleScene extends Phaser.Scene {
     await this.sendOutMine(this.mine, `Go, ${this.mine.name}!`);
   }
 
+  sendText(f) {
+    const t = this.trainer.sendOut;
+    return t ? t.replace('{f}', f.name.toLowerCase()) : `${this.trainer.name} sends out ${this.trainer.prize ? '' : 'the '}${f.name}!`;
+  }
+
+  // Some foes end the battle the moment they appear (the stranger's fentanyl).
+  async endingFoe(f) {
+    sfx.sad();
+    const lines = ENEMIES[f.id].endLines || [];
+    for (const line of lines) await B.message(line, { auto: false });
+    this.finish('win');
+  }
+
   async popIn(spr, f, pos) {
     this.setFighterSprite(spr, f);
     const s = spr.scaleX;
     spr.setPosition(pos.x, pos.y).setScale(0);
     const m = { x: pos.x, y: pos.y - 8 * this.unit };
-    const ring = this.add.image(m.x, m.y, 'bt-ring').setDepth(30).setTint(hex(TYPES[f.type].colour)).setScale(this.unit / 8);
+    const ring = this.add.image(m.x, m.y, 'bt-ring').setDepth(30).setTint(hex(TYPES[typeList(f.type)[0]].colour)).setScale(this.unit / 8);
     this.tweens.add({ targets: ring, scale: this.unit, alpha: 0, duration: 450, onComplete: () => ring.destroy() });
     this.burst(m.x, m.y, 0xffffff, 10, { key: 'bt-star' });
     sfx.select();
@@ -472,7 +486,13 @@ export class BattleScene extends Phaser.Scene {
     await this.checkOuts();
   }
 
-  endOfTurn() {
+  async endOfTurn() {
+    const regen = R.gearBonus(this.mine).regen;
+    if (regen && this.mine.hp > 0 && this.mine.hp < this.mine.maxHp) {
+      this.mine.hp = Math.min(this.mine.maxHp, this.mine.hp + Math.ceil(this.mine.maxHp * regen));
+      B.hp(this.mine);
+      await this.say(`${this.mine.name} has a snack from the snack pouch.`);
+    }
     for (const f of [this.mine, this.foe]) {
       if (f.evade) { f.evade = false; this.tweens.add({ targets: this.sprOf(f), alpha: 1, duration: 250 }); }
     }
@@ -544,6 +564,17 @@ export class BattleScene extends Phaser.Scene {
       else { sfx.statUp(); this.burst(m.x, m.y + 6 * this.unit, 0xe86a4a, 10, { rise: 30 }); }
       return this.say(`${f.name}'s ${label} ${delta < 0 ? 'fell' : 'rose'}!`);
     };
+    if (e.foeHeal && target.hp > 0) {
+      target.hp = Math.min(target.maxHp, target.hp + Math.ceil(target.maxHp * e.foeHeal));
+      B.hp(target);
+      await this.play('heal', target, user, typeList(target.type)[0], false);
+    }
+    if (e.recoil && user.hp > 0) {
+      user.hp = Math.max(0, user.hp - Math.ceil(user.maxHp * e.recoil));
+      B.hp(user);
+      await this.hurt(user, 1);
+      await this.say((MOVES[user.lastMove]?.recoilText || '{u} is hurt by the effort.').replaceAll('{u}', user.name));
+    }
     if (e.foeAtk && target.hp > 0) await stage(target, 'atk', -e.foeAtk, 'attack');
     if (e.foeDef && target.hp > 0) await stage(target, 'def', -e.foeDef, 'defence');
     if (e.selfAtk) await stage(user, 'atk', e.selfAtk, 'attack');
@@ -558,7 +589,7 @@ export class BattleScene extends Phaser.Scene {
     state.removeItem(item);
     rec.reactions[item] = reaction;
     await this.say(`You toss ${f.name} a ${name}.`);
-    await this.play('heal', f, this.foe, f.type, false);
+    await this.play('heal', f, this.foe, typeList(f.type)[0], false);
     f.hp = Math.min(f.maxHp, f.hp + Math.ceil(f.maxHp * { love: 0.6, like: 0.4, neutral: 0.25, dislike: 0.1 }[reaction]));
     B.hp(f);
     await this.say({
@@ -567,6 +598,33 @@ export class BattleScene extends Phaser.Scene {
       neutral: `${f.name} eats it politely. A bit of energy back.`,
       dislike: `${f.name} is not impressed, but nibbles it anyway.`,
     }[reaction]);
+  }
+
+  // Evolution, Pokémon style: flicker between the two forms, then a flash.
+  async evolveFighter(f) {
+    const id = f.petId, before = f.name, active = f === this.mine;
+    await this.say(`What's this? ${before} is changing!`);
+    if (active) {
+      const spr = this.mineSpr, newTex = `pet-${id}-evolved`;
+      for (let i = 0; i < 8; i++) {
+        spr.setTexture(i % 2 ? f.tex : newTex, 0).setTintFill(0xffffff);
+        sfx.blip();
+        await this.wait(260 - i * 25);
+      }
+      this.cameras.main.flash(500, 255, 255, 255);
+    }
+    evolve(id);
+    const d = form(id);
+    Object.assign(f, { name: d.name, type: d.type, base: d.stats, moves: d.moves, tex: petTex(id), stages: { atk: 0, def: 0 } });
+    f.stats = R.fighterStats(f); f.maxHp = f.stats.hp; f.hp = f.maxHp;
+    if (active) {
+      this.setFighterSprite(this.mineSpr, f); this.mineSpr.setPosition(this.minePos.x, this.minePos.y);
+      this.burst(this.mid(this.mineSpr).x, this.mid(this.mineSpr).y, hex(TYPES[typeList(f.type)[0]].colour), 24, { key: 'bt-star', spread: 70 });
+      this.showMine();
+    }
+    sfx.found();
+    await this.say(`${before} evolved into ${d.name}!`);
+    await this.say(`${d.name} is now ${typeName(d.type)} type, fully rested, with brand new moves.`);
   }
 
   async swapTo(f) {
@@ -590,16 +648,23 @@ export class BattleScene extends Phaser.Scene {
     if (f.owned) await this.tw(spr, { alpha: 0, duration: 250 });
     B.show('foe', false);
     // Experience for every pet that took part and is still going
-    const xp = R.xpReward(f, !!this.trainer);
-    for (const m of this.team.filter(t => this.participants.has(t.petId) && t.hp > 0)) {
-      const levels = R.gainXp(m, xp);
+    const xp = this.trainer?.noXp ? 0 : R.xpReward(f, !!this.trainer);
+    for (const m of this.team.filter(t => xp && this.participants.has(t.petId) && t.hp > 0)) {
+      const got = Math.round(xp * (R.gearBonus(m).xp || 1));
+      const levels = R.gainXp(m, got);
       if (m === this.mine) this.showMine();
-      await this.say(`${m.name} gained ${xp} experience!`);
+      await this.say(`${m.name} gained ${got} experience!`);
       for (const lv of levels) {
         sfx.levelUp();
         if (m === this.mine) { this.burst(this.mid(this.mineSpr).x, this.mid(this.mineSpr).y, 0xf8e070, 16, { key: 'bt-star', spread: 50 }); this.showMine(); }
         await this.say(`${m.name} grew to level ${lv}!`);
       }
+      if (canEvolve(m.petId, m.level)) await this.evolveFighter(m);
+    }
+    if (!this.trainer) {
+      const cash = R.wildMoney(f);
+      state.addMoney(cash);
+      await this.say(`You find $${cash} in loose change where ${f.name} was.`);
     }
     if (!this.trainer && ENEMIES[f.id].drop) {
       const [item, chance] = ENEMIES[f.id].drop;
@@ -609,7 +674,8 @@ export class BattleScene extends Phaser.Scene {
     if (next) {
       this.foe = next;
       this.participants = new Set([this.mine.petId]);
-      return this.sendOutFoe(`${this.trainer.name} sends out the ${next.name}!`);
+      if (ENEMIES[next.id]?.ends) return this.endingFoe(next);
+      return this.sendOutFoe(this.sendText(next));
     }
     sfx.win();
     for (const m of this.team) if (this.participants.has(m.petId) && m.hp > 0) state.addPoints(m.petId, 5);

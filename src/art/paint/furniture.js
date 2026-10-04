@@ -258,4 +258,86 @@ export const FURNITURE = {
     foot: [1, 1], tex: [16, 12], variants: ['welcome'], solid: false, flat: true,
     paint(p) { p.r('#8a5a3a', 1, 2, 14, 8); p.r('#a8723c', 2, 3, 12, 6); p.r('#6b4226', 4, 5, 8, 1); },
   },
+
+  // ---- The pet shop (THE LEASH YOU CAN DO, Laverton)
+  shopshelf: {
+    foot: [2, 1], tex: [32, 34], variants: ['treats', 'toys', 'gear'],
+    paint(p, v) {
+      box(p, 0, 0, 32, 34, '#e8e4dc');
+      const goods = {
+        treats: ['#c8823a', '#e8b060', '#c8443a', '#f5d63a', '#9fb8c8'],
+        toys: ['#d8e83a', '#e77fb8', '#3a8ad0', '#f0a050', '#6aa83a'],
+        gear: ['#c8443a', '#2a2a32', '#3a8ad0', '#6a3ab0', '#e8c040'],
+      }[v];
+      for (let s = 0; s < 3; s++) {
+        const y = 3 + s * 10;
+        p.r('#b8b4ac', 2, y + 8, 28, 1);
+        for (let i = 0; i < 6; i++) {
+          const c = goods[(i + s) % goods.length], x = 3 + i * 4 + (s % 2);
+          if (v === 'toys' && i % 2) { p.blob(x + 1.5, y + 6, 1.6, c); continue; }
+          if (v === 'gear') { p.r(c, x, y + 1, 1, 6); p.r(c, x + 1, y + 6, 2, 1); continue; }
+          p.r(c, x, y + 2, 3, 6); p.r(shade(c, 0.3), x, y + 2, 3, 1); p.r('#f4f4f0', x + 1, y + 4, 1, 2);
+        }
+      }
+      p.r('#c8443a', 4, 31, 24, 2); p.r('#f4f4f0', 6, 31, 4, 1);
+    },
+  },
+  shopcounter: {
+    foot: [3, 1], tex: [48, 26], variants: ['till'],
+    paint(p) {
+      box(p, 0, 10, 48, 16, '#7a5a3a'); p.r('#8a6a4a', 2, 14, 44, 1); p.r('#6a4a2a', 2, 20, 44, 1);
+      box(p, 0, 7, 48, 4, '#e8e4dc');
+      box(p, 30, 0, 12, 8, '#3a3a40'); p.r('#7ad0a0', 32, 2, 8, 3); p.r('#2a2a30', 31, 6, 10, 1);
+      p.r('#c8823a', 6, 3, 6, 5); p.r('#e8b060', 6, 3, 6, 1);   // a jar of treats
+      p.r('#f4f4f0', 16, 5, 8, 3); p.r('#c8443a', 17, 6, 6, 1);  // dog tags
+    },
+  },
+  aquarium: {
+    foot: [2, 1], tex: [32, 26], variants: ['tropical'],
+    paint(p) {
+      box(p, 0, 16, 32, 10, '#3a3a40');
+      p.r('#2a2a30', 0, 2, 32, 15); p.r('#5ab0d8', 1, 3, 30, 13); p.r('#8ad0f0', 1, 3, 30, 2);
+      p.r('#d8c890', 1, 13, 30, 3); p.r('#3a8a4a', 5, 7, 1, 7); p.r('#3a8a4a', 24, 8, 1, 6); p.r('#5aaa5a', 25, 9, 1, 4);
+      for (const [x, y, c] of [[9, 7, '#f08020'], [17, 10, '#e8c040'], [13, 5, '#e05a8a']]) { p.r(c, x, y, 3, 2); p.r(c, x - 1, y, 1, 2); p.r('#1a1010', x + 2, y, 1, 1); }
+      p.r('#ffffff', 28, 5, 1, 1); p.r('#ffffff', 27, 8, 1, 1);
+    },
+  },
+
+  // ---- Little extras around the house
+  cot: {
+    foot: [1, 1], tex: [16, 26], variants: ['white', 'oak'],
+    paint(p, v) {
+      const c = v === 'oak' ? woodL : '#f4f2ec', d = shade(c, -0.2);
+      box(p, 1, 12, 14, 12, '#e8eef8'); p.r('#b8d0f0', 2, 14, 12, 8); p.r('#f4f4f0', 3, 13, 5, 3);   // mattress, blanket, pillow
+      p.r('#f0c8d8', 9, 16, 4, 4); p.r('#e8a0b8', 10, 17, 2, 2);   // a little toy
+      for (let x = 1; x <= 14; x += 3) p.r(c, x, 8, 1, 16);
+      p.r(c, 0, 6, 16, 2); p.r(d, 0, 22, 16, 2); p.r(c, 0, 6, 1, 20); p.r(c, 15, 6, 1, 20);
+    },
+  },
+  toybox: {
+    foot: [1, 1], tex: [16, 16], variants: ['red'],
+    paint(p) {
+      box(p, 1, 6, 14, 9, '#c8443a'); p.r('#e8705f', 2, 7, 12, 1); p.r('#f4d040', 6, 9, 4, 3);
+      p.r('#3a8ad0', 3, 3, 3, 4); p.r('#6ab0f0', 3, 3, 3, 1);   // block poking out
+      p.blob(11, 5, 2, '#e8c040'); p.r('#f4f4f0', 2, 5, 2, 1);
+    },
+  },
+  sidetable: {
+    foot: [1, 1], tex: [16, 18], variants: ['oak'],
+    paint(p) {
+      box(p, 2, 6, 12, 11, wood); p.r(woodD, 3, 11, 10, 1); p.r('#e8c040', 7, 8, 2, 1);
+      p.r('#f4f0e6', 5, 0, 6, 5); p.r('#e8e0c8', 5, 4, 6, 1); p.r('#8a7a5a', 7, 5, 2, 1);   // lamp
+    },
+  },
+  stool: {
+    foot: [1, 1], tex: [16, 16], variants: ['oak'], solid: false,
+    paint(p) { p.r(woodD, 4, 9, 1, 6); p.r(woodD, 11, 9, 1, 6); p.r(woodD, 5, 12, 6, 1); box(p, 3, 6, 10, 3, woodL); },
+  },
+  washbasket: {
+    foot: [1, 1], tex: [16, 16], variants: ['wicker'],
+    paint(p) {
+      box(p, 2, 6, 12, 9, '#c8a870'); for (let y = 8; y < 14; y += 2) p.r('#a8884a', 3, y, 10, 1);
+      p.r('#3a8ad0', 4, 4, 5, 3); p.r('#f4f4f0', 8, 5, 4, 2); p.r('#e77fb8', 6, 3, 2, 2);
+    },
+  },
 };

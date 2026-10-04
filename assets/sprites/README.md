@@ -18,9 +18,10 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 | `enemies/` | `<enemy id>.png`, e.g. `bag.png`, `recycling.png` | Things you battle (animals facing right; bins and objects facing the front) | 16x16 (bins 16x20, people 16x32) |
 | `vehicles/` | `tram.png`, `train-h.png`, `car-h-red.png`, ... | Trams, trains, cars and bikes | Same size as the template |
 
-Pet ids: `princess`, `salami`, `spooky`, `poppy`, `stanley` (see `src/data/pets.js`).
-People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez`, `rose`, `slinks`, `mem`, `corni`, `sinead`, `tim`, `nicholas`, `binman` (see `src/data/npcs.js`).
-Enemy ids: `bag`, `streetcat`, `dog`, `rat`, `boy`, `balls`, `commuter`, `ibis`, `scooter`, `duck`, `magpie`, `recycling`, `garbage`, `compost` (see `src/data/enemies.js`).
+Pet ids: `princess`, `salami`, `spooky`, `poppy`, `stanley` (see `src/data/pets.js`). Evolved forms: `pets/princess-evolved.png` (Flamcess), `pets/poppy-evolved.png` (Floppy), and `portraits/<id>-evolved.png`.
+Gear icons: `items/gear-lead.png`, `gear-collar`, `gear-harness`, `gear-bell`, `gear-bandana`, `gear-pouch`, `gear-bowtie`.
+People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `jules`, `busker`, `priya`, `pina`, `dimitri`, `wen`, `kez`, `rose`, `slinks`, `mem`, `corni`, `sinead`, `tim`, `nicholas`, `binman`, `hipster`, `golfer`, `stranger`, `dee` (see `src/data/npcs.js`).
+Enemy ids: `bag`, `streetcat`, `dog`, `rat`, `boy`, `balls`, `commuter`, `ibis`, `scooter`, `duck`, `magpie`, `recycling`, `garbage`, `compost`, `alleycat`, `nonna`, `cavoodle`, `ristretto`, `sourdough`, `recordplayer`, `bulldog`, `golfball`, `fiveiron`, `buggy`, `weed`, `ice`, `fentanyl` (see `src/data/enemies.js`).
 Item ids: `chicken`, `sardine`, `carrot`, `cheese`, `snag`, `croissant`, `lemon`, `tennis`, `ribbon`, `feather`.
 Tile names: `grass`, `flowers`, `tallgrass`, `path`, `road`, `tram`, `crossing`, `rail`, `footpath`, `concrete`, `platform`, `bluestone`, `water`, `bridge`, `sand`, `soil`, `gravel`, `mulch`, `lawn`, `parkgravel`, `zebra`, `carpark`, `driveway`, and indoors `wall`, `timber`, `bathtile`, `carpet`, `lino`, `doorway`.
 Object kinds and variants: look at the file names in `templates/objects/`.

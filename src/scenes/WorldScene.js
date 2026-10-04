@@ -10,6 +10,8 @@ import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
 import { TRAINERS, PRIZE_TRAINER } from '../data/enemies.js';
 import { rollEncounter, readyTeam, START_LEVEL } from '../systems/battle.js';
+import { form, canEvolve, evolve } from '../systems/forms.js';
+import { typeName } from '../data/types.js';
 import { flavourFor } from '../data/flavour.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
@@ -369,7 +371,7 @@ export class WorldScene extends Phaser.Scene {
 
   async talkToPet(pet) {
     const d = pet.data_, rec = state.pet(d.id), day = state.data.day;
-    const opts = { name: d.name, portrait: petPortrait(d.id) };
+    const opts = { name: form(d.id).name, portrait: petPortrait(d.id) };
     pet.pause(5); pet.facePoint(this.player.x);
     this.heartsFx(pet, 2);
 
@@ -384,7 +386,7 @@ export class WorldScene extends Phaser.Scene {
       sfx.found(); this.heartsFx(pet, 6);
       ui.banner('New Petdex entry!', d.name);
       const lines = [
-        `You found ${d.name}, the ${TYPES[d.type].name.toLowerCase()} type ${d.species.toLowerCase()}!`,
+        `You found ${d.name}, the ${typeName(d.type).toLowerCase()} type ${d.species.toLowerCase()}!`,
         d.bio,
         `${d.name} was added to your Petdex.`,
       ];
@@ -408,6 +410,7 @@ export class WorldScene extends Phaser.Scene {
       lines.push(...this.heartLines(d, r));
     }
     await ui.say(lines, opts);
+    if (canEvolve(d.id)) await this.evolveInWorld(pet);
 
     if (rec.giftedDay !== day && state.bagItems().length) {
       const choice = await ui.say({
@@ -445,6 +448,24 @@ export class WorldScene extends Phaser.Scene {
     else if (reaction === 'dislike') { sfx.sad(); pet.emote('fx-bubble-dots', 1600); }
     else { sfx.heart(); this.heartsFx(pet, 3); }
     await ui.say([text, ...this.heartLines(d, r)], opts);
+    if (canEvolve(d.id)) await this.evolveInWorld(pet);
+  }
+
+  // A pet that's levelled up enough evolves once your friendship is strong enough.
+  async evolveInWorld(pet) {
+    const id = pet.id, before = form(id).name;
+    await ui.say([`What's this? ${before} is glowing!`]);
+    sfx.found();
+    const cam = this.cameras.main;
+    for (let i = 0; i < 6; i++) { pet.setTintFill(0xffffff); await new Promise(r => setTimeout(r, 140)); pet.clearTint(); await new Promise(r => setTimeout(r, 120)); }
+    cam.flash(500, 255, 255, 255);
+    evolve(id);
+    pet.refreshForm();
+    this.heartsFx(pet, 10);
+    const d = form(id);
+    ui.banner('Evolution!', `${before} became ${d.name}`);
+    await ui.say([`${before} evolved into ${d.name}!`, d.bio, `${d.name} is ${typeName(d.type)} type now, with brand new moves. Check the Petdex.`], { name: d.name, portrait: petPortrait(id) });
+    this.save();
   }
 
   // ------------------------------------------------------------ people, items, trains
@@ -453,7 +474,8 @@ export class WorldScene extends Phaser.Scene {
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
     const trainer = TRAINERS[npc.id];
-    if (trainer && !(trainer.prize && state.isFound(trainer.prize))) return this.challenge(npc, trainer, opts);
+    const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
+    if (trainer && !done) return this.challenge(npc, trainer, opts);
     const hints = Object.entries(info.hints || {}).filter(([id]) => !state.isFound(id));
     let lines;
     if (hints.length && Math.random() < 0.6) lines = [hints[0][1]];
@@ -470,6 +492,7 @@ export class WorldScene extends Phaser.Scene {
       await ui.say([info.giftLine, `You got: ${ITEMS[info.gift].name}.`], opts);
       this.save();
     }
+    if (info.shop) { await ui.shop(); this.save(); }
   }
 
   // ------------------------------------------------------------ battles
@@ -490,6 +513,12 @@ export class WorldScene extends Phaser.Scene {
       const firstToday = beaten !== state.data.day;
       state.data.beaten[npc.id] = state.data.day;
       await ui.say(t.win, opts);
+      if (firstToday && (t.money ?? (t.prize ? 0 : 20))) {
+        const cash = t.money ?? (t.prize ? 0 : 20);
+        state.addMoney(cash);
+        sfx.pickup();
+        await ui.say(`${t.name} hands over $${cash}. Fair's fair.`, opts);
+      }
       if (t.reward && firstToday) {
         for (const [item, n] of Object.entries(t.reward)) state.addItem(item, n);
         sfx.pickup();
@@ -513,7 +542,7 @@ export class WorldScene extends Phaser.Scene {
     const pet = this.pets.find(p => p.id === id);
     if (pet) this.heartsFx(pet, 6);
     ui.banner('New Petdex entry!', d.name);
-    const lines = [`You befriended ${d.name}, the ${TYPES[d.type].name.toLowerCase()} type ${d.species.toLowerCase()}!`, `${d.name} was added to your Petdex, and will hang out at your place on Allen St.`];
+    const lines = [`You befriended ${d.name}, the ${typeName(d.type).toLowerCase()} type ${d.species.toLowerCase()}!`, `${d.name} was added to your Petdex, and will hang out at your place on Allen St.`];
     if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
     await ui.say(lines, { name: d.name, portrait: petPortrait(id) });
   }
@@ -527,7 +556,7 @@ export class WorldScene extends Phaser.Scene {
     this.stepsSinceBattle++;
     if (this.map.ground[ty]?.[tx] !== '"' || this.stepsSinceBattle < 6) return;
     if (Math.random() > ENCOUNTER_RATE || !readyTeam().length) return;
-    const wild = rollEncounter(this.region.suburb, isNight(state.data.minutes));
+    const wild = rollEncounter(this.region.suburb, isNight(state.data.minutes), this.regionId);
     if (!wild) return;
     this.startBattle({ wild }).then(r => { if (r.outcome === 'lose') this.lostBattle(); });
   }

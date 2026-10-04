@@ -4,11 +4,12 @@
 import { SAVE_KEY, LEGACY_SAVE_KEYS, POINTS_PER_HEART, MAX_HEARTS, RAIN_CHANCE } from '../config.js';
 import { PETS, PET_BY_ID } from '../data/pets.js';
 import { ITEMS } from '../data/items.js';
+import { GEAR } from '../data/gear.js';
 import { bus } from '../bus.js';
 import { rng } from '../util.js';
 import { ZONES } from '../data/regions.js';
 
-const VERSION = 7;
+const VERSION = 8;
 export const MAX_TEAM = 3;
 
 function fresh() {
@@ -21,6 +22,8 @@ function fresh() {
     party: [],         // pet ids on your team (max 3), they follow you around
     pets: {},          // id -> { found, day, date, points, talkedDay, giftedDay, reactions: {item: 'love'|...}, chats, level, xp, hp }
     beaten: {},        // trainer id -> day you last beat them
+    money: 25,         // dollars, earned in battles and spent at the pet shop
+    gear: {},          // gear id -> how many you own but haven't put on a pet
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
@@ -31,7 +34,7 @@ function fresh() {
 }
 
 function petRecord(d, id) {
-  return d.pets[id] || (d.pets[id] = { found: false, day: 0, date: null, points: 0, talkedDay: 0, giftedDay: 0, reactions: {}, chats: 0, level: 0, xp: 0, hp: null });
+  return d.pets[id] || (d.pets[id] = { found: false, day: 0, date: null, points: 0, talkedDay: 0, giftedDay: 0, reactions: {}, chats: 0, level: 0, xp: 0, hp: null, evolved: false, gear: null });
   // level 0 = not set yet (see START_LEVEL in systems/battle.js); hp null = full health
 }
 
@@ -51,6 +54,9 @@ function sanitise(raw) {
   if (raw.forage && typeof raw.forage === 'object') d.forage = raw.forage;
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
   if (raw.beaten && typeof raw.beaten === 'object') d.beaten = raw.beaten;
+  if (Number.isFinite(raw.money)) d.money = Math.max(0, Math.floor(raw.money));
+  if (raw.gear && typeof raw.gear === 'object') for (const [k, n] of Object.entries(raw.gear)) if (GEAR[k] && n > 0) d.gear[k] = n | 0;
+  for (const r of Object.values(d.pets)) if (r.gear && !GEAR[r.gear]) r.gear = null;
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
@@ -136,6 +142,22 @@ export const state = {
     bus.emit('bag:changed');
   },
   bagItems() { return Object.keys(ITEMS).filter(k => this.count(k) > 0); },
+
+  // Money and gear
+  addMoney(n) { this.data.money = Math.max(0, this.data.money + Math.round(n)); bus.emit('money:changed'); },
+  spend(n) { if (this.data.money < n) return false; this.addMoney(-n); return true; },
+  gearCount(id) { return this.data.gear[id] || 0; },
+  addGear(id, n = 1) { this.data.gear[id] = this.gearCount(id) + n; bus.emit('bag:changed'); },
+  // Put gear on a pet (the old piece goes back in the bag). id null takes it off.
+  equip(petId, id) {
+    const r = this.pet(petId);
+    if (id && !this.gearCount(id)) return false;
+    if (r.gear) this.addGear(r.gear);
+    if (id) { this.data.gear[id]--; if (!this.data.gear[id]) delete this.data.gear[id]; }
+    r.gear = id || null;
+    bus.emit('bag:changed');
+    return true;
+  },
 
   // World
   visit(zone) { if (!this.data.visited.includes(zone)) this.data.visited.push(zone); },

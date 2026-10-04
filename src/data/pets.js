@@ -14,6 +14,8 @@
 //  sleeps     [from, to] in minutes after midnight (26*60 = 2am), or null
 //  loves / likes / dislikes   item ids from src/data/items.js
 //  stats      battle stats (moves are in src/data/moves.js, PET_MOVES)
+//  evolution  optional new form: { name, species, type (one or two), level, hearts, stats, moves, sprite, pal, bio }
+//             The pet evolves once it reaches `level` AND your friendship reaches `hearts`.
 //  lines      what the pet "says", keyed by the hearts needed to unlock them
 //  night / rain / asleep      extra lines for those situations
 
@@ -40,6 +42,13 @@ export const PETS = [
     night: ['Princess is on night patrol. Her eyes glint under the streetlight.'],
     rain: ['Princess refuses to acknowledge the rain. The rain is beneath her.'],
     asleep: ['Princess is asleep, curled into a perfect cloud. She snores like a tiny diesel engine.'],
+    evolution: {
+      name: 'Flamcess', species: 'Toy poodle (on fire)', type: 'fire', level: 14, hearts: 5, sprite: 'flamcess',
+      pal: { a: '#ffe0b0', b: '#f0b070', w: '#fff0a0', c: '#c8501a', p: '#e83a2a', y: '#ffd030', o: '#f08020', r: '#d8301a', n: '#5a2010', e: '#2a1a10' },
+      stats: { hp: 70, attack: 88, defence: 55, speed: 92, special: 112 },
+      moves: ['blazeclaws', 'hotbite', 'scorchbed', 'pompom'],
+      bio: 'Princess, but on fire. Laverton has never been safer, or warmer.',
+    },
   },
   {
     id: 'salami', name: 'Salami', species: 'Tabby cat', type: 'street', sprite: 'tabby',
@@ -106,6 +115,13 @@ export const PETS = [
     night: ['Poppy is fighting sleep and losing. Her eyelids are doing their best.'],
     rain: ['Poppy is trying to eat the raindrops. She is getting some.'],
     asleep: ['Poppy is asleep on her back with all four legs in the air. Snoring at an impressive volume.'],
+    evolution: {
+      name: 'Floppy', species: 'French bulldog (squeaky)', type: ['plastic', 'rock'], level: 16, hearts: 5, sprite: 'floppy',
+      pal: { a: '#6a5ab0', b: '#483a88', w: '#f0ece4', g: '#b0a8e0', p: '#f07ab0', e: '#1a1010', n: '#1a1010', l: '#8a7ad0', h: '#ffffff', k: '#9a9aa4' },
+      stats: { hp: 105, attack: 98, defence: 110, speed: 52, special: 35 },
+      moves: ['flopslam', 'squeak', 'bubblewrap', 'chew'],
+      bio: 'Poppy has become a squeaky rubber toy made of rock. Nobody, including Poppy, knows how.',
+    },
   },
   {
     id: 'stanley', name: 'Stanley', species: 'Mini schnauzer', type: 'psychic', sprite: 'schnauzer',

@@ -64,7 +64,8 @@ export function buildDonald() {
   b.put('car', 3, 15, { v: 'blue' }); b.put('car', 19, 14, { v: 'red' }); b.put('car', 34, 15, { v: 'white' });
 
   b.exit(27, 0, 2, 1, 'sydney', 'donald', 'Sydney Rd');
-  b.entry('north', 27, 2, 'down');
+  b.exit(39, 16, 1, 2, 'coburg', 'west', 'Bell St, Coburg');
+  b.entry('north', 27, 2, 'down').entry('east', 38, 16, 'left');
 
   b.npc('rose', 10, 11, { face: 'up' });
 

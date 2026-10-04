@@ -17,18 +17,31 @@ import { buildWetlands } from '../world/maps/wetlands.js';
 import { buildResStation } from '../world/maps/resstation.js';
 import { buildLoddon } from '../world/maps/loddon.js';
 import { buildGlasgow } from '../world/maps/glasgow.js';
+import { buildAltona } from '../world/maps/altona.js';
+import { buildFootscray } from '../world/maps/footscray.js';
+import { buildFlemington } from '../world/maps/flemington.js';
+import { buildCoburg } from '../world/maps/coburg.js';
+import { buildPreston } from '../world/maps/preston.js';
+import { buildPetShop } from '../world/maps/petshop.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
 // Brunswick is mostly concrete; its grass is the weedy, sun-baked kind.
 const BRUNSWICK_GRASS = ['#93a85a', '#8a9f52', '#6a7f3a', '#b4c47a'];
 const RES_GRASS = ['#68b04a', '#61a845', '#4b8f36', '#86ca5e'];
+const CITY_GRASS = ['#9aaa5a', '#91a253', '#73873e', '#b8c47e'];
 const LAWN = ['#6cbc4a', '#62b244', '#4f9a38', '#86ca5e'];
 
 export const SUBURBS = {
   laverton: { name: 'Laverton', tagline: 'Out west, where the sheds are big and the poodles are bigger.', station: 'station' },
   brunswick: { name: 'Brunswick', tagline: 'Trams, terraces and an oat milk surcharge.', station: 'brunswick' },
   reservoir: { name: 'Reservoir', tagline: 'Lemon trees, weatherboards and a lake full of opinions (ducks).', station: 'reservoir' },
+  // In-between suburbs: walk through them, or skip them on the train (no station stop).
+  altona: { name: 'Altona North', tagline: 'Sheds, trucks and the Westgate on the horizon.', between: true },
+  footscray: { name: 'Footscray', tagline: 'Halfway to Brunswick. Pho, the river and a lot of pigeons.', between: true },
+  flemington: { name: 'Flemington', tagline: 'Racecourse Rd. Nearly at Brunswick now.', between: true },
+  coburg: { name: 'Coburg', tagline: 'Bell St traffic and bluestone walls.', between: true },
+  preston: { name: 'Preston', tagline: 'Nearly at Reservoir. You can smell the lemon trees.', between: true },
 };
 export const SUBURB_ORDER = ['laverton', 'brunswick', 'reservoir'];
 
@@ -37,6 +50,7 @@ export const ZONES = {
   home: { name: 'Home', suburb: 'laverton', build: buildHome, grass: LAWN, indoor: true, home: true, tagline: 'Your new place. Mid-renovation.' },
   yard: { name: 'Backyard', suburb: 'laverton', build: buildYard, grass: LAWN, home: true, tagline: 'Plenty of room for zoomies.' },
   allen: { name: 'Allen St', suburb: 'laverton', build: buildAllen, grass: LAVERTON_GRASS, tagline: 'A quiet court. Mostly quiet. There is a poodle.' },
+  petshop: { name: 'The Leash You Can Do', suburb: 'laverton', build: buildPetShop, grass: LAWN, indoor: true, tagline: 'Treats, leads and a very judgemental goldfish.' },
   woods: { name: 'Woods St', suburb: 'laverton', build: buildWoods, grass: LAVERTON_GRASS, tagline: 'Trish and Gordon\'s street.' },
   lohse: { name: 'Lohse St Reserve', suburb: 'laverton', build: buildLohse, grass: LAVERTON_GRASS, tagline: 'Gum trees, a playground and a very clean toilet block.' },
   station: { name: 'Laverton Station', suburb: 'laverton', build: buildStation, grass: LAVERTON_GRASS, tagline: 'Werribee line. Trains roughly as advertised.' },
@@ -50,6 +64,11 @@ export const ZONES = {
   track: { name: 'Athletics Track', suburb: 'reservoir', build: buildTrack, grass: RES_GRASS, tagline: 'Edwardes Lake Park. Tiny humans running in circles.' },
   lake: { name: 'Edwardes Lake', suburb: 'reservoir', build: buildLake, grass: RES_GRASS, tagline: 'A lake full of opinions (ducks).' },
   lakepark: { name: 'Lake Park', suburb: 'reservoir', build: buildLakePark, grass: RES_GRASS, tagline: 'Steam engines, pink slides and an ice cream van, rumour has it.' },
+  altona: { name: 'Kororoit Creek Rd', suburb: 'altona', build: buildAltona, grass: CITY_GRASS, tagline: 'The long walk east begins.' },
+  footscray: { name: 'Barkly St', suburb: 'footscray', build: buildFootscray, grass: CITY_GRASS, tagline: 'Halfway there. Keep going.' },
+  flemington: { name: 'Racecourse Rd', suburb: 'flemington', build: buildFlemington, grass: CITY_GRASS, tagline: 'Brunswick is just up the road.' },
+  coburg: { name: 'Bell St', suburb: 'coburg', build: buildCoburg, grass: CITY_GRASS, tagline: 'Halfway to Reservoir.' },
+  preston: { name: 'Gilbert Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, tagline: 'Reservoir is the next suburb up.' },
   wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, tagline: 'Reeds, frogs and paths that all look the same.' },
 };
 

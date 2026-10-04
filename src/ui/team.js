@@ -2,7 +2,8 @@
 import { h } from './dom.js';
 import { state, MAX_TEAM } from '../systems/state.js';
 import { PET_BY_ID } from '../data/pets.js';
-import { TYPES } from '../data/types.js';
+import { TYPES, typeList } from '../data/types.js';
+import { form } from '../systems/forms.js';
 import { MAX_HEARTS } from '../config.js';
 import { petIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
@@ -26,8 +27,8 @@ export function openTeam(panel, done) {
           },
           h('span', { class: 'thumb' }, h('img', { class: 'pix', src: petIcon(id), alt: '' })),
           h('div', { class: 'card-info' },
-            h('div', { class: 'card-top' }, h('span', { class: 'type', style: { background: TYPES[p.type].colour } }, TYPES[p.type].name)),
-            h('h3', {}, p.name),
+            h('div', { class: 'card-top' }, ...typeList(form(id).type).map(t => h('span', { class: 'type', style: { background: TYPES[t].colour } }, TYPES[t].name))),
+            h('h3', {}, form(id).name),
             h('p', { class: 'meta' }, `${state.hearts(id)} of ${MAX_HEARTS} hearts`)),
           h('span', { class: 'tick', 'aria-hidden': 'true' }, on ? '✓' : ''));
         })),

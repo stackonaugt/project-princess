@@ -108,7 +108,47 @@ const schnauzer = [
   '...ww.....ww....',
 ];
 
+// Evolved forms
+const flamcess = [
+  '..y.......y.y...',
+  '.yoy.....yoyoy..',
+  '.roor...rwwwwwr.',
+  '.ryyr...cwwwwww.',
+  '..rr...ccwcceww.',
+  '...a...cccwwwwwn',
+  '...aa..cccawwww.',
+  '..oaaaacccaaaa..',
+  '.o.aaaapppaaaao.',
+  '...aaaaaaaaaab.o',
+  '..ybaaaaaaaab...',
+  '....bbbbbbbb....',
+  '....aa....aa....',
+  '....aa....aa....',
+  '...rooy..rooy...',
+  '...yyyy..yyyy...',
+];
+const floppy = [
+  '................',
+  '................',
+  '........aaaaa...',
+  '.......paaaaaap.',
+  '.......paahaaap.',
+  '.......ppaeaalp.',
+  '........aaaaggn.',
+  '...a....aaaaggg.',
+  '...aa.aaaaaaww..',
+  '...aahaaahaww...',
+  '..aaaakaaaaaw...',
+  '..akaaaaakaaa...',
+  '..bbbbbbbbbbb...',
+  '...aa....aa.....',
+  '...aa....aa.....',
+  '...gg....gg.....',
+];
+
 export const PET_FRAMES = {
+  flamcess:  [flamcess, stride(flamcess)],
+  floppy:    [floppy, stride(floppy, 3)],
   poodle:    [poodle, stride(poodle)],
   tabby:     [tabby, stride(tabby)],
   bunny:     [bunny, stride(bunny, 3)],

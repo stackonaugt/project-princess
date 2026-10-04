@@ -2,13 +2,13 @@
 // The BattleScene drives it; this file only shows things and waits for taps.
 
 import { h, $ } from './dom.js';
-import { TYPES } from '../data/types.js';
+import { TYPES, typeList } from '../data/types.js';
 import { sfx } from '../systems/sfx.js';
 
 const TYPE_SPEED = 55;   // characters per second
 const AUTO_MS = 1500;    // messages move on by themselves after this (plus reading time)
 
-const typeTag = type => h('span', { class: 'tag', style: { background: TYPES[type].colour } }, TYPES[type].name);
+const typeTag = type => typeList(type).map(t => h('span', { class: 'tag', style: { background: TYPES[t].colour } }, TYPES[t].name));
 
 export const battleUI = {
   active: false,

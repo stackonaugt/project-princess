@@ -13,7 +13,7 @@ import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
 import { drawPerson } from './paint/people.js';
 import { OBJECTS } from './paint/objects.js';
-import { ITEM_ART } from './paint/items.js';
+import { ITEM_ART, GEAR_ART } from './paint/items.js';
 import { FX, FX_STRIPS, VEHICLES } from './paint/fx.js';
 import { paintTuft } from './paint/tiles.js';
 import { FOE_ART } from './paint/enemies.js';
@@ -87,6 +87,11 @@ export function buildTextures(scene) {
   for (const pet of PETS) {
     const frames = PET_FRAMES[pet.sprite], pal = { ...BASE_PALETTE, ...pet.pal };
     stripTexture(scene, `pet-${pet.id}`, 16, 16, frames.length, (p, i) => p.sprite(frames[i], pal, 0, 0), true);
+    const e = pet.evolution;
+    if (e) {
+      const ef = PET_FRAMES[e.sprite] || frames, epal = { ...BASE_PALETTE, ...pet.pal, ...e.pal };
+      stripTexture(scene, `pet-${pet.id}-evolved`, 16, 16, ef.length, (p, i) => p.sprite(ef[i], epal, 0, 0), true);
+    }
   }
   // People
   for (const [id, npc] of Object.entries(NPCS)) {
@@ -97,6 +102,7 @@ export function buildTextures(scene) {
   for (const [id, [w, h, draw]] of Object.entries(FOE_ART)) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
   // Items
   for (const [id, art] of Object.entries(ITEM_ART)) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
+  for (const [id, art] of Object.entries(GEAR_ART)) canvasTexture(scene, `item-gear-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   // Effects and vehicles
   for (const [key, [w, h, draw]] of Object.entries(FX)) canvasTexture(scene, key, w, h, draw);
   for (const [key, [fw, fh, n, draw]] of Object.entries(FX_STRIPS)) stripTexture(scene, `fx-${key}`, fw, fh, n, draw);
@@ -133,8 +139,9 @@ function createAnims(scene) {
     const n = frameCount(scene, tex);
     if (n > 1) make(`${tex}-walk`, tex, walkFrames(tex, n), 8);
   }
-  for (const pet of PETS) {
-    const tex = `pet-${pet.id}`, n = frameCount(scene, tex);
+  for (const pet of PETS) for (const tex of [`pet-${pet.id}`, `pet-${pet.id}-evolved`]) {
+    if (!scene.textures.exists(tex)) continue;
+    const n = frameCount(scene, tex);
     if (n > 1) make(`${tex}-walk`, tex, custom.has(tex) ? [...Array(n).keys()] : [0, 1], 6);
   }
   for (const id of Object.keys(NPCS)) {

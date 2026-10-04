@@ -1,10 +1,12 @@
 # Project Princess
 
-A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You live at Helen and Paddy's new house on Allen St, Laverton, and wander three suburbs (Laverton, Brunswick, Reservoir) finding, befriending and cataloguing the real pets of the owner's friends. Found pets move into your house; each time you leave you pick a team of up to three who follow you around. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.
+A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You live at Helen and Paddy's new house on Allen St, Laverton, and wander three suburbs (Laverton, Brunswick, Reservoir, joined by walkable in-between zones) finding, befriending and cataloguing the real pets of the owner's friends. Found pets move into your house; each time you leave you pick a team of up to three who follow you around. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.
 
 Laverton is modelled on real places from the owner's screenshots: the Allen St house (floor plan and backyard from the real estate listing, walls between kitchen, meals and lounge removed), the Allen St cul-de-sac, Woods St (the old house at 72, where Helen's parents Trish and Gordon now live), Lohse St Reserve and Laverton Station. Brunswick has four zones from the owner's screenshots: Brunswick Station (heritage building, Upfield path, Dawson St level crossing), Sydney Rd (A1 Bakery, Spooky's spot), Donald St (south off Sydney Rd: Rose's blue-grey flats, Salami's spot) and Hope St (Mem and Corni's apartments). Brunswick is deliberately concrete and industrial: bluestone laneways, roller doors, sawtooth factories, graffiti, barely any grass. Its jokes are the shopfronts (INK & IRONY tattoos, OAT CUISINE, BRAKE FAST in an old mechanic's), drawn as `bshop`/`factory`/`garagecafe` variants in `brunswick.js`. Reservoir has Reservoir Station (the skyrail; trains run on top with lane `sky: true`), Loddon Ave (Seb and Sinead's block of five brick units off Plenty Rd, Poppy's spot) and Glasgow Ave (Tim and Nick's at 57C, Stanley's spot). Edwardes Lake Park is four zones joined in a loop so it is easy to wander and get lost: `track` (athletics oval, Little Athletics clubhouse), `lake` (the lake, tussocks, Edwardes St railing, outdoor gym), `lakepark` (A2 964 steam engine, pink slide playground, Griffiths St) and `wetlands` (Edgars Creek, scout hall, community garden). Every zone has tall grass patches ready for wild encounters. Glasgow Ave also has the Botha Ave roundabout with its yarn-bombed gum. Recreate real places recognisably but compressed. Avoid real business names on shopfronts, except A1 Bakery, which the owner specifically asked for.
 
-**Battles.** Pokémon-style play-fights with 11 types. Wild things jump out of tall grass; pet owners and the Bin Man battle you when you talk to them. You win each pet (except Princess, who is free) by beating their owner.
+**The route.** The world is one walkable chain, in this order: Allen St + house, Woods St, Lohse St Reserve, Laverton Station, then three in-between city zones (`altona` Kororoit Creek Rd, `footscray` Barkly St, `flemington` Racecourse Rd) that represent the long walk, Brunswick Station, Hope St, Sydney Rd, Donald St, two more (`coburg` Bell St with the Pentridge watchtower, `preston` Gilbert Rd), Loddon Ave (our unit on Plenty Rd), the Edwardes Lake zones, Glasgow Ave, Reservoir Station. The train skips the in-between zones (their suburbs have `between: true` and no station). A few shortcuts are locked with signs (Dawson St, Sydney Rd north, the skyrail path) to keep the order.
+
+**Battles.** Pokémon-style play-fights with 11 types (pets can have two). Wild things jump out of tall grass; pet owners and other trainers battle you when you talk to them. You win each pet (except Princess, who is free) by beating their owner. Pets level up, and evolve when level and friendship are both high enough (Princess into Flamcess, Poppy into Floppy). Battles pay a little money, spent at the pet shop on treats and gear.
 
 **Who you play.** At the start you choose Helen or one of her twin toddlers, Hadrian and Aleksy (`src/data/heroes.js`). Each has a perk (`talkBonus`, `runBoost`, `forageBonus`) and starting treats. The choice is saved as `state.data.hero` and can be changed from the menu; older saves are asked once.
 
@@ -62,17 +64,18 @@ src/
     items.js          Treats
     types.js          The 11 battle types, matchup chart (strong/resist), effectiveness()
     moves.js          Every battle move (type, power, effect, animation, text) and PET_MOVES
-    enemies.js        Wild things, the Bin Man's bins, ENCOUNTERS per suburb, TRAINERS (owners)
+    enemies.js        Wild things, the Bin Man's bins, ENCOUNTERS per suburb, TRAINERS (owners and others)
+    gear.js           Pet shop gear (leads, collars...) and their battle bonuses
     regions.js        SUBURBS and ZONES (each zone is one map), grass palettes, getMap() cache
     flavour.js        Text for inspecting objects (houses, bins, trams...)
   world/
     MapBuilder.js     DSL for building maps in code (fill, put, scatter, exits, lanes...)
-    maps/*.js         One file per zone: home, yard, allen, woods, lohse, station (Laverton); brunswick (station), sydney, donald, hope (Brunswick); resstation (zone id `reservoir`), loddon, glasgow, track, lake, lakepark, wetlands (Reservoir)
+    maps/*.js         One file per zone: home, yard, allen, woods, lohse, station, petshop (Laverton); altona, footscray, flemington, coburg, preston (in-between, built with citykit.js); brunswick (station), sydney, donald, hope (Brunswick); resstation (zone id `reservoir`), loddon, glasgow, track, lake, lakepark, wetlands (Reservoir)
     entities.js       Player, Pet (behaviour AI), Npc. Arcade physics sprites
     traffic.js        Cars, trams, bikes, trains (scenery that waits for you)
   art/
     sprites.js        Built-in character pixel art as strings
-    paint/*.js        Procedural painters: enemies.js (battle foes), tiles (ground + interior walls/floors), objects (+ furniture.js, laverton.js), people.js (16x32 people and toddlers from a "look"), brunswick.js, items, fx
+    paint/*.js        Procedural painters: enemies.js (battle foes), city.js (tower blocks, billboards, Pentridge), tiles (ground + interior walls/floors), objects (+ furniture.js, laverton.js), people.js (16x32 people and toddlers from a "look"), brunswick.js, items, fx
     textures.js       Builds textures; swaps in custom PNGs from assets/sprites via the manifest
   scenes/
     BootScene.js      Loads the sprite manifest and custom PNGs, builds textures
@@ -82,11 +85,12 @@ src/
     state.js          The save (localStorage), legacy migration, save codes, weather per day
     controls.js       Keyboard + floating joystick + A/B buttons -> movement vector and bus events
     clock.js          Time labels, darkness curve, night checks
-    battle.js         Battle rules: levels, stats, damage, enemy AI, XP, run chance
+    battle.js         Battle rules: levels, stats, damage, enemy AI, XP, money, gear bonuses
+    forms.js          A pet's current form (evolved or not): form(id), petTex(id), canEvolve, evolve
     sfx.js            Synthesised WebAudio blips (no audio files)
-  ui/                 HTML interface: ui.js (HUD, dialogue, banner, toasts, modals), battle.js (battle boxes, messages, menus), petdex.js, bag.js, menu.js, team.js, hero.js
+  ui/                 HTML interface: ui.js (HUD, dialogue, banner, toasts, modals), battle.js (battle boxes, messages, menus), shop.js (pet shop), petdex.js, bag.js (treats and gear), menu.js, team.js, hero.js
 assets/sprites/       Custom art drop zone (see its README). templates/ has every built-in sprite as PNG
-tools/                serve.mjs (dev server), build-manifest.mjs (used by the deploy workflow)
+tools/                serve.mjs (dev server), build-manifest.mjs (used by the deploy workflow), balance.mjs (battle simulator)
 archive/prototype.html  The original single-file canvas prototype, kept for reference
 ```
 
@@ -125,6 +129,19 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Rules** (`src/systems/battle.js`): Pokémon-lite. Stats scale with level from the pet's base `stats`. Fairy, ghost and psychic moves use `special`. Same-type bonus 1.5x, effectiveness 2x or 0.5x, stat stages, dodge moves go first and can't be chained, Charge doubles the next hit, Chew wrecks a foe's held snack. Friendship matters: crit chance rises with hearts, and at 6+ hearts a pet may refuse to lose (hangs on at 1 HP). Treats heal in battle by how much the pet likes them.
 - **Save:** each pet record has `level` (0 = use `START_LEVEL`), `xp` and `hp` (null = full, 0 = ran home). A pet that runs home leaves the party. Entering a `home` zone heals everyone (`state.healAll()`). Losing sends you home.
 - Custom battle art: `assets/sprites/enemies/<id>.png` (texture `foe-<id>`); pets use their normal sprite.
+- **Special trainer fields:** `once` (never again after a win; the NPC then just chats), `noXp`, `intro` (replaces "X wants to battle!"), `sendOut` ('He pulls out {f}.'), `money` (prize, paid once a day; owners pay nothing). Enemy `ends: true` with `endLines` ends the battle the moment it appears (the stranger's fentanyl: it is a serious, non-comic moment that ends with 000, naloxone and the DirectLine number. Keep that tone if you touch it). Move effects also include `recoil` (+ `recoilText`) and `foeHeal`.
+- **Evolutions:** a pet's `evolution` in pets.js (name, species, type, level, hearts, stats, moves, sprite, pal, bio). It evolves after a battle level-up or a chat/treat once both thresholds are met (`canEvolve`), with an animation in either place. Save: `evolved`. Always read a pet's name/type/stats/moves/texture through `form(id)` and `petTex(id)` (systems/forms.js). Custom art: `pets/<id>-evolved.png`, `portraits/<id>-evolved.png`.
+- **Types** may be a string or an array (dual type). Use `typeList`, `typeName` and `effectiveness` from types.js (dual types multiply).
+
+### Economy
+
+- `state.data.money` (dollars, HUD shows it). Earned: loose change after wild wins (`wildMoney`), a trainer's `money` once a day. Spent at **The Leash You Can Do** (zone `petshop`, door on the Laverton Station plaza; Dee has `shop: true`, talking to her opens `src/ui/shop.js`). Treat prices are `price` in items.js.
+- **Gear** (`src/data/gear.js`): bought into `state.data.gear` (counts), put on a pet from the bag (`state.equip(petId, gearId)`, one each, stored as the pet record's `gear`). Bonuses: stat multipliers, crit, regen per turn, XP multiplier. Icons `item-gear-<id>`.
+
+### Balance
+
+- Knobs live in `BALANCE` in config.js (HP, damage, XP, XP curve, money) plus levels in `ENCOUNTERS`/`TRAINERS` and `START_LEVEL`.
+- `node tools/balance.mjs` simulates thousands of battles along the route with the real rules and prints win rates, battle length and XP pace. Targets: wild 80-98% wins in 3-5 turns; trainers roughly 50-90% at the expected level; 2 to 5 wild battles per level rising through the game. Run it after any change to stats, moves or levels.
 
 ## Future plans
 
@@ -134,15 +151,19 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - 11 types (Rock, Fairy, Fire, Street, Ghost, Psychic, Smelly, Old, Plastic, Steel, Leather), each pet's four moves as the owner asked, Laverton/Brunswick/Reservoir wild things, the Bin Man, and owner battles to win pets. See **Battles** above.
 - Ideas still open: a Rat King of Sydney Rd boss in the laneways, a Boom Gate boss at a level crossing, the Myki Inspector as a wandering mini-boss, a Hoon in a Commodore on Aviation Rd at night, magpies only swooping in spring, battle music.
 
-### 1. Evolutions
-- Plan: friendship-driven rather than level-driven, to suit the cosy tone. At 10 hearts plus a condition (time of day, a loved item, a location), a pet gains a new form: new sprite, title and boosted stats. Ideas: Princess to Empress Princess (crown), Spooky to Poltergeist Spooky, Poppy to Wrecking Ball Poppy, Stanley to Professor Stanley, Salami to Sopressa (the elder salami). Store as `evolvesTo` data on the pet and an `evolved` flag in the save. Custom art: `pets/<id>-evolved.png`.
+### 1. More evolutions
+- Done: Princess to Flamcess (fire), Poppy to Floppy (plastic/rock). The owner will decide the rest. Earlier ideas: Spooky to Poltergeist Spooky, Stanley to Professor Stanley, Salami to Sopressa (the elder salami).
+
+### More economy
+- A shop in Brunswick and Reservoir, selling back items, gear that changes a pet's look, rent jokes.
 
 ### 2. Farming
 - Groundwork: the Reservoir Community Garden already has tilled soil (`d` tiles), decorative crops and a gardener NPC (Wen) who talks about plots opening soon. The day clock, daily resets and the bag all exist.
 - Plan: let the player claim a plot, plant seeds (bought or gifted), water daily, harvest after N days. Crops become treats pets love (carrots for Spooky) and battle items later. Seasons would follow (Melbourne gets all four in a day, which is a joke worth keeping). Possibly a small home garden or balcony pots in Brunswick.
 
 ### Next up (agreed with the owner)
-- Balance battles after the owner plays them (levels in `TRAINERS`/`ENCOUNTERS`, `ENCOUNTER_RATE`). More spots in any suburb as the owner sends photos.
+- Balance battles after the owner plays them (`node tools/balance.mjs`, then `BALANCE` in config.js and levels in `TRAINERS`/`ENCOUNTERS`). More spots in any suburb as the owner sends photos.
+- A deeper detail pass on the older zones to match the in-between city zones and the reference screenshots (Zuzu City style): more props, signage and shopfronts per zone. The ground painter already has asphalt wear, drains, manholes, kerbs, cracks and weeds.
 - Extra Laverton spots and shops, once the core zones feel right.
 - Real pet photos as Petdex portraits (`assets/sprites/portraits/`), and the owner's own sprite art replacing the built-in reference art.
 
