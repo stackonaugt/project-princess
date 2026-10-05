@@ -10,6 +10,7 @@
 // Anyone in npcs.js without an entry here still has hearts, with generic tastes.
 
 import { PEOPLE } from './dialogue.js';
+import { SH_FRIENDS } from './summerhill.js';
 
 export const FRIEND_POINTS = { talk: 10, love: 40, like: 20, neutral: 8, dislike: -10 };
 export const ASSIST_HEARTS = 4;
@@ -120,6 +121,7 @@ export const FRIENDS = {
     loves: ['crown', 'pumpkin'], likes: ['snag', 'tennis', 'xxxx'], dislikes: ['chilli'],
     assist: { foeDef: 1, selfAtk: 1 },
   },
+  ...SH_FRIENDS,
 };
 
 

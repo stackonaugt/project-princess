@@ -18,6 +18,9 @@
 //  Rules of thumb: Australian spelling, no em dashes, lines under about 140 characters
 //  (dialogue boxes are small on phones). Use \' for an apostrophe inside 'quotes'.
 //  Signs and the text when you inspect things are in the map files and flavour.js.
+//  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
+
+import { SH_PEOPLE, SH_FOE_TEXT, SH_PLACES } from './summerhill.js';
 
 export const PEOPLE = {
   trish: {
@@ -851,6 +854,7 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Ed slides over a free sample from the counter jar. "Shh."',
   },
+  ...SH_PEOPLE,
 };
 
 export const PET_TEXT = {
@@ -1114,6 +1118,7 @@ export const FOE_TEXT = {
   ice: {
     leave: 'wears off. He crashes hard, exhausted and shaking.',
   },
+  ...SH_FOE_TEXT,
 };
 
 export const PLACES = {
@@ -1150,4 +1155,5 @@ export const PLACES = {
   bookshop: 'Brunswick Bound. Classics up the back, new releases on the tables.',
   vapeshop: 'Plenty Road Convenience. American lollies, cold drinks and a sign that says VAPES.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
+  ...SH_PLACES,
 };
