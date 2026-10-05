@@ -235,6 +235,8 @@ export const EAST_PLACES = {
   fleming: 'A big oval, a pavilion and dogs off the lead down the bottom end.',
   bowls: 'Two greens, the bocce courts and the hall on Victoria St.',
   lygon: 'A deli, a record shop and more coffee than one street needs.',
+  eastdeli: 'Salami on hooks, cheese wheels and a slicer older than Enzo.',
+  records: 'Crates of vinyl, gig posters and a turntable you get one go on.',
 };
 
 // ------------------------------------------------------------ friends

@@ -9,7 +9,7 @@ import { MapBuilder } from '../MapBuilder.js';
 
 export function buildEbMilkBar() {
   const b = new MapBuilder({ id: 'ebmilkbar', w: 18, h: 14, fill: 'W', seed: 621 });
-  b.fill(1, 2, 16, 11, 'n');
+  b.fill(1, 2, 16, 11, 'T');
   b.set(8, 13, 'D');
 
   // Behind the counter: the spells, and the crystal ball on the end
