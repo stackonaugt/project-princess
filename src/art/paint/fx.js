@@ -1,4 +1,5 @@
 // Small effect textures: speech bubbles, hearts, glows, rain, ducks and vehicles.
+import { carSide, carTop, truckSide } from './cars.js';
 export const FX = {
   // Speech bubbles shown over things you can interact with.
   'fx-bubble-talk': [12, 13, p => bubble(p, b => { b.r('#c0473a', 5, 2, 2, 4); b.r('#c0473a', 5, 7, 2, 1); })],
@@ -48,19 +49,13 @@ export const VEHICLES = {
   'veh-train-h': [184, 24, p => metroTrain(p, false)],
   'veh-train-v': [24, 184, p => metroTrain(p, true)],
   'veh-tram-h': [76, 20, p => { p.ctx.save(); p.ctx.translate(0, 20); p.ctx.rotate(-Math.PI / 2); VEHICLES['veh-tram'][2](p); p.ctx.restore(); }],
-  'veh-car-h-red': [28, 16, p => carH(p, '#c8443a', '#9a3028')],
-  'veh-car-h-blue': [28, 16, p => carH(p, '#3a6aa8', '#2a5080')],
-  'veh-car-h-white': [28, 16, p => carH(p, '#f0f0ec', '#c9c9c4')],
-  'veh-ute-h': [30, 16, p => { carH(p, '#e8e4d8', '#b8b4a8'); p.r('#5d616a', 2, 4, 10, 7); p.r('#c8823a', 3, 5, 4, 3); }],
-  'veh-truck-h': [56, 22, p => {
-    p.r('rgba(0,0,0,.25)', 1, 19, 55, 3);
-    p.r('#e8e4dc', 1, 1, 40, 16); p.r('#ffffff', 1, 1, 40, 1); p.r('#b8b4ac', 1, 15, 40, 2);   // trailer
-    p.r('#2f6aa3', 4, 6, 30, 4); p.r('#f4f4f0', 6, 7, 2, 2); p.r('#f4f4f0', 10, 7, 6, 2);
-    p.r('#c8443a', 42, 4, 13, 13); p.r('#e8705f', 42, 4, 13, 1); p.r('#7fb4d2', 49, 6, 5, 5); p.r('#9a3028', 42, 15, 13, 2);
-    for (const x of [5, 13, 31, 46]) { p.r('#1e1e1e', x, 16, 6, 4); p.r('#6a6a70', x + 2, 17, 2, 2); }
-  }],
-  'veh-car-v-yellow': [16, 28, p => carV(p, '#e8c030', '#b8961e')],
-  'veh-car-v-silver': [16, 28, p => carV(p, '#b8bcc4', '#8e939b')],
+  'veh-car-h-red': [48, 26, p => carSide(p, '#c8443a')],
+  'veh-car-h-blue': [48, 26, p => carSide(p, '#3a6aa8')],
+  'veh-car-h-white': [48, 26, p => carSide(p, '#eeeeea')],
+  'veh-ute-h': [48, 26, p => carSide(p, '#e8e4d8', { ute: true })],
+  'veh-truck-h': [80, 32, p => truckSide(p, '#c8443a')],
+  'veh-car-v-yellow': [24, 44, p => carTop(p, '#e8c030')],
+  'veh-car-v-silver': [24, 44, p => carTop(p, '#b8bcc4')],
   'veh-bike-v': [8, 14, p => { p.r('#1e1e1e', 3, 0, 2, 4); p.r('#1e1e1e', 3, 10, 2, 4); p.r('#c8443a', 3, 4, 2, 6); p.r('#f2c79a', 2, 5, 4, 3); p.r('#2a5a8a', 2, 4, 4, 2); }],
 };
 
@@ -82,19 +77,6 @@ function metroTrain(p, vertical) {
   const c = document.createElement('canvas'); c.width = 184; c.height = 24;
   draw({ r(col, x, y, w, h) { const g = c.getContext('2d'); g.fillStyle = col; g.fillRect(x, y, w, h); } });
   p.ctx.save(); p.ctx.translate(24, 0); p.ctx.rotate(Math.PI / 2); p.ctx.drawImage(c, 0, 0); p.ctx.restore();
-}
-
-function carH(p, a, b) {
-  p.r('rgba(0,0,0,.25)', 1, 13, 27, 3);
-  p.r('#1e1e1e', 4, 12, 5, 3); p.r('#1e1e1e', 19, 12, 5, 3);
-  p.r(a, 1, 5, 26, 8); p.r(b, 1, 11, 26, 2); p.r(a, 7, 1, 14, 6); p.r('#7fb4d2', 8, 2, 5, 4); p.r('#7fb4d2', 15, 2, 5, 4);
-  p.r('#f5e66b', 26, 7, 2, 2); p.r('#d83c3c', 0, 7, 1, 2);
-}
-function carV(p, a, b) {
-  p.r('rgba(0,0,0,.25)', 2, 3, 14, 25);
-  p.r(a, 1, 1, 14, 26); p.r(b, 1, 1, 1, 26); p.r(b, 14, 1, 1, 26);
-  p.r('#7fb4d2', 3, 17, 10, 5); p.r('#7fb4d2', 3, 6, 10, 3); p.r(b, 3, 10, 10, 6);
-  p.r('#f5e66b', 2, 26, 3, 1); p.r('#f5e66b', 11, 26, 3, 1);
 }
 
 function bubble(p, inner) {

@@ -23,7 +23,7 @@ export function openGarden(panel, close) {
   panel.replaceChildren(
     h('div', { class: 'm-head' }, h('h2', {}, 'Garden'), h('button', { class: 'wood-btn small', onclick: close }, 'Back')),
     h('div', { class: 'm-scroll' },
-      groups.length ? null : h('div', { class: 'note' }, h('p', {}, 'No garden yet. Wen at the Edgars Creek community garden in Reservoir is handing out plots. Gaz at Laverton Station sells a backyard veggie patch.')),
+      groups.length ? null : h('div', { class: 'note' }, h('p', {}, 'No garden yet. Wen at the Edgars Creek community garden in Reservoir is handing out plots. Olly at Bunnings in Altona North sells a backyard veggie patch.')),
       ...groups.map(([title, plots]) => h('div', { class: 'note' }, h('h4', {}, title), h('ul', { class: 'plots' }, ...plots.map(plotRow)))),
       h('div', { class: 'note' }, h('h4', {}, 'Seeds'), seeds.length
         ? h('div', { class: 'gear-row' }, ...seeds.map(([c, n]) => h('span', { class: 'pref' }, h('img', { src: itemIcon(`seed-${c}`, 24), alt: '' }), `${CROPS[c].name} ×${n}`)))

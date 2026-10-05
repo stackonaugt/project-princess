@@ -15,7 +15,7 @@ import { NPCS } from '../data/npcs.js';
 import { effectiveness, typeList, typeName } from '../data/types.js';
 import { form, canEvolve, evolve, petTex } from '../systems/forms.js';
 import { friendInfo, ASSIST_HEARTS } from '../data/friends.js';
-import { npcIcon } from '../ui/images.js';
+import { ZONES, npcZone } from '../data/regions.js';
 import { state } from '../systems/state.js';
 import { sfx } from '../systems/sfx.js';
 import { isNight } from '../systems/clock.js';
@@ -27,6 +27,8 @@ import * as R from '../systems/battle.js';
 
 const hex = c => parseInt(c.slice(1), 16);
 const MAX_TEAM = 3;
+// Chance each turn (from the second) that a nearby friend turns up, and when your pet is low on energy.
+const FRIEND_CHANCE = 0.15, FRIEND_CHANCE_LOW = 0.3;
 
 // Backdrops per suburb: sky, distant stuff, ground, and the pads they stand on.
 const SCENERY = {
@@ -336,6 +338,8 @@ export class BattleScene extends Phaser.Scene {
   async run() {
     await this.intro();
     while (!this.over) {
+      await this.maybeFriend();
+      if (this.over) break;
       const action = await this.chooseAction();
       await this.turn(action);
       if (!this.over) await this.endOfTurn();
@@ -414,12 +418,11 @@ export class BattleScene extends Phaser.Scene {
     for (;;) {
       B.prompt(`What will ${this.mine.name} do?`);
       const others = this.team.filter(f => f !== this.mine && f.hp > 0);
-      const bag = state.bagItems();
+      const bag = state.treatItems();
       const pick = await B.menu([
         { label: 'Fight', value: 'fight' },
         { label: 'Treat', value: 'treat', note: bag.length ? `${bag.reduce((a, id) => a + state.count(id), 0)} in bag` : 'bag empty', disabled: !bag.length },
         { label: 'Swap', value: 'swap', disabled: !others.length },
-        ...(this.callable().length && !this.calledFriend ? [{ label: 'Call', value: 'call', note: 'a friend' }] : []),
         { label: this.trainer ? 'Give up' : 'Run', value: 'run', back: true },
       ]);
       if (pick === 'fight') {
@@ -438,10 +441,6 @@ export class BattleScene extends Phaser.Scene {
         B.prompt('Who should go in?');
         const f = await B.menu([...others.map(o => ({ label: o.name, value: o, icon: petIcon(o.petId, 32), note: `Lv ${o.level} · ${o.hp}/${o.maxHp} HP` })), { label: '◀ Back', value: null, back: true }], { layout: 'list' });
         if (f) return { kind: 'swap', f };
-      } else if (pick === 'call') {
-        B.prompt('Who will you call? (once per battle)');
-        const who = await B.menu([...this.callable().map(id => ({ label: NPCS[id].name, value: id, icon: npcIcon(id), note: `${state.friendHearts(id)} hearts` })), { label: '◀ Back', value: null, back: true }], { layout: 'list' });
-        if (who) return { kind: 'call', who };
       } else if (pick === 'run') return { kind: 'run' };
     }
   }
@@ -473,7 +472,6 @@ export class BattleScene extends Phaser.Scene {
       return this.act(this.foe, foeMove);
     }
     if (action.kind === 'treat') { await this.giveTreat(action.item); return this.act(this.foe, foeMove); }
-    if (action.kind === 'call') { await this.callFriend(action.who); await this.checkOuts(); return this.act(this.foe, foeMove); }
     if (action.kind === 'swap') { await this.swapTo(action.f); return this.act(this.foe, foeMove); }
     // Both use a move. Dodges go first, then the faster one.
     const prio = id => (MOVES[id].effect?.evade ? 1 : 0);
@@ -591,13 +589,28 @@ export class BattleScene extends Phaser.Scene {
     if (e.charge) { user.charged = true; await this.say(`${user.name} is ready to strike hard!`); }
   }
 
-  // Friends with enough hearts can be called in once per battle.
-  callable() { return Object.keys(NPCS).filter(id => friendInfo(id).assist && state.friendHearts(id) >= ASSIST_HEARTS); }
-  async callFriend(id) {
-    this.calledFriend = true;
+  // Friends with enough hearts who live in this suburb sometimes turn up and
+  // help, at random, at most once a battle. You can't call them: they find you.
+  nearbyFriends() {
+    return Object.keys(NPCS).filter(id => friendInfo(id).assist && id !== this.opts.trainer && state.friendHearts(id) >= ASSIST_HEARTS
+      && ZONES[npcZone(id)]?.suburb === this.opts.suburb);
+  }
+  async maybeFriend() {
+    this.turnNo = (this.turnNo || 0) + 1;
+    if (this.friendCame || this.turnNo < 2 || !this.mine || this.mine.hp <= 0) return;
+    // More likely when your pet is struggling.
+    const low = this.mine.hp < this.mine.maxHp * 0.4;
+    if (Math.random() > (low ? FRIEND_CHANCE_LOW : FRIEND_CHANCE)) return;
+    const who = this.nearbyFriends();
+    if (!who.length) return;
+    this.friendCame = true;
+    await this.friendHelps(who[Math.floor(Math.random() * who.length)]);
+    await this.checkOuts();
+  }
+  async friendHelps(id) {
     const a = friendInfo(id).assist, me = this.mine, foe = this.foe;
     sfx.myki();
-    await this.say(`You call ${NPCS[id].name}...`);
+    await this.say(`${NPCS[id].name} spots you from down the street and runs over!`);
     await this.say(a.line);
     if (a.heal) { await this.play('heal', me, foe, typeList(me.type)[0], false); me.hp = Math.min(me.maxHp, me.hp + Math.ceil(me.maxHp * a.heal)); B.hp(me); }
     if (a.damage) { this.cameras.main.shake(200, 0.01); foe.hp = Math.max(0, foe.hp - Math.ceil(foe.maxHp * a.damage)); B.hp(foe); await this.hurt(foe, 1); }

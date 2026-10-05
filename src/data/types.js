@@ -1,22 +1,28 @@
-// The eleven pet types and how they match up in battle.
+// The fifteen pet types and how they match up in battle.
 //
 //   strong  this type's attacks do DOUBLE damage to these types
 //   resist  this type's attacks do HALF damage to these types
 //
-// Rock is weak only to Fairy and Leather; Ghost is weak only to Fairy.
+// Rock was too strong (it hit four types hard and almost nothing hurt it), so
+// it lost Fire from its strong list, and Water and Park now hit it hard too.
+// Ghost is weak only to Fairy.
 
 export const TYPES = {
-  rock:    { name: 'Rock',    colour: '#9a7a4c', blurb: 'Solid. Dense. Mostly dense.',                 strong: ['fairy', 'smelly', 'old', 'fire'],  resist: ['steel', 'leather'] },
+  rock:    { name: 'Rock',    colour: '#9a7a4c', blurb: 'Solid. Dense. Mostly dense.',                 strong: ['fairy', 'smelly', 'old'],          resist: ['steel', 'leather'] },
   fairy:   { name: 'Fairy',   colour: '#e77fb8', blurb: 'Sass, sparkle and surprising violence.',      strong: ['rock', 'ghost', 'street'],         resist: ['steel', 'fire'] },
-  fire:    { name: 'Fire',    colour: '#e0602a', blurb: 'Hot under the collar. Hot everywhere else too.', strong: ['plastic', 'leather', 'old'],     resist: ['rock', 'fire'] },
+  fire:    { name: 'Fire',    colour: '#e0602a', blurb: 'Hot under the collar. Hot everywhere else too.', strong: ['plastic', 'leather', 'park'],    resist: ['rock', 'fire', 'water'] },
   street:  { name: 'Street',  colour: '#d0802e', blurb: 'Raised on milk crates and nerve.',             strong: ['psychic', 'plastic'],              resist: ['steel', 'rock'] },
   ghost:   { name: 'Ghost',   colour: '#5b4a8c', blurb: 'Here one minute, behind you the next.',       strong: ['psychic', 'old'],                  resist: ['street'] },
   psychic: { name: 'Psychic', colour: '#a24fc9', blurb: 'Knows what you did. Is disappointed.',        strong: ['street', 'smelly'],                resist: ['steel', 'psychic'] },
   smelly:  { name: 'Smelly',  colour: '#7a8a3a', blurb: 'You smell it before you see it.',             strong: ['psychic', 'fairy', 'leather'],     resist: ['plastic', 'steel'] },
   old:     { name: 'Old',     colour: '#8a7a6a', blurb: 'Has seen it all. Was not impressed.',         strong: ['street', 'plastic'],               resist: ['rock', 'steel'] },
-  plastic: { name: 'Plastic', colour: '#4ab8c8', blurb: 'Lightweight, flexible, will outlive us all.', strong: ['smelly', 'steel'],                 resist: ['fire', 'plastic'] },
+  plastic: { name: 'Plastic', colour: '#4ab8c8', blurb: 'Lightweight, flexible, will outlive us all.', strong: ['smelly', 'steel', 'water'],        resist: ['fire', 'plastic'] },
   steel:   { name: 'Steel',   colour: '#7a8698', blurb: 'Cold, hard and hard to bend.',                strong: ['fire', 'leather'],                 resist: ['steel', 'rock'] },
   leather: { name: 'Leather', colour: '#8a4a2a', blurb: 'Tough, worn in, smells faintly of shoes.',    strong: ['rock', 'steel'],                   resist: ['fire', 'ghost'] },
+  water:   { name: 'Water',   colour: '#3a8ad8', blurb: 'Puddles, sprinklers and the Merri Creek.',    strong: ['fire', 'rock', 'caffeine'],        resist: ['water', 'park', 'plastic'] },
+  park:    { name: 'Park',    colour: '#5aa83a', blurb: 'Gum nuts, magpies and wet grass.',            strong: ['water', 'rock', 'booze'],          resist: ['fire', 'plastic', 'park', 'steel'] },
+  caffeine:{ name: 'Caffeine',colour: '#8a5a32', blurb: 'Fast, jittery, and talks too much.',          strong: ['old', 'psychic', 'booze'],         resist: ['caffeine', 'steel'] },
+  booze:   { name: 'Booze',   colour: '#c89a2a', blurb: 'Loud, brave and wobbly. Sorry tomorrow.',     strong: ['street', 'psychic', 'fairy'],      resist: ['old', 'booze', 'rock'] },
 };
 
 // A pet can have one type or two (e.g. Floppy is ['plastic', 'rock']).

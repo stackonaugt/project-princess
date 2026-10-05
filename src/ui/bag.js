@@ -17,7 +17,7 @@ export function openBag(panel, close) {
       return h('div', { class: 'note' },
         h('h4', {}, ITEMS[selected].name),
         h('p', {}, ITEMS[selected].desc),
-        h('p', { class: 'small' }, fans.length ? `Loved by ${fans.join(' and ')}.` : 'Give it to a pet to see how they feel about it.'));
+        h('p', { class: 'small' }, fans.length ? `Loved by ${fans.join(' and ')}.` : ITEMS[selected].drink || ITEMS[selected].gift ? 'A present for a friend. Not for pets.' : ITEMS[selected].farm ? 'For the garden. Use it when you water a bed.' : 'Give it to a pet to see how they feel about it.'));
     })() : h('div', { class: 'note' }, h('p', {}, items.length ? 'Tap a treat to look at it.' : 'Your bag is empty. Look for treats around town, and chat to people. Some of them are very generous.'));
     panel.replaceChildren(
       h('div', { class: 'm-head' }, h('h2', {}, 'Bag'), h('button', { class: 'wood-btn small', onclick: close }, 'Close')),
@@ -27,7 +27,7 @@ export function openBag(panel, close) {
           onclick: () => { selected = id; sfx.select(); render(); },
         }, h('img', { class: 'pix', src: itemIcon(id, 48), alt: '' }), h('b', {}, state.count(id))))),
         detail,
-        h('p', { class: 'small center' }, 'To give a treat, talk to a pet you have already met.'),
+        h('p', { class: 'small center' }, 'Treats go to pets: talk to one you have met. Drinks and presents are for your friends around town.'),
         gearNote(render)));
   };
   render();
@@ -38,7 +38,7 @@ function gearNote(render) {
   const owned = GEAR_ORDER.filter(id => state.gearCount(id));
   const pets = state.foundIds();
   const wearing = pets.filter(id => state.pet(id).gear);
-  if (!owned.length && !wearing.length) return h('div', { class: 'note' }, h('h4', {}, 'Gear'), h('p', { class: 'small' }, 'No gear yet. The pet shop on Hope St, Brunswick sells leads, collars and more.'));
+  if (!owned.length && !wearing.length) return h('div', { class: 'note' }, h('h4', {}, 'Gear'), h('p', { class: 'small' }, 'No gear yet. Ed\'s pet shop on Hope St, Brunswick sells leads, collars and more.'));
   return h('div', { class: 'note' }, h('h4', {}, 'Gear'),
     ...owned.map(g => h('div', {},
       h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: itemIcon(`gear-${g}`, 32), alt: '', width: 24, height: 24 }), h('b', {}, `${GEAR[g].name} ×${state.gearCount(g)}`), h('span', { class: 'small' }, GEAR[g].desc)),

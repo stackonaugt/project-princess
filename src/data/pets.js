@@ -105,7 +105,7 @@ export const PETS = [
     funFact: 'Has tried to race every jogger at Edwardes Lake. Win record: zero. Enthusiasm: infinite.',
     favouriteSpot: 'The middle of the shared driveway, where every delivery driver has to say hello.',
     loves: ['tennis', 'snag', 'pumpkin', 'potato'], likes: ['chicken', 'cheese', 'croissant', 'sardine', 'carrot', 'lemon', 'zucchini', 'tomato', 'strawberry'], dislikes: [],
-    stats: { hp: 85, attack: 80, defence: 90, speed: 50, special: 20 },
+    stats: { hp: 85, attack: 80, defence: 80, speed: 50, special: 20 },
     lines: {
       0: ['Poppy charges at you and bounces off. She is thrilled about it.', 'Poppy snorts loudly. Possibly a thought. Probably not.', 'Poppy tries to squeeze through a gap that is clearly too small.'],
       3: ['Poppy leans her whole weight against your legs. It is like being hugged by a bag of cement.'],

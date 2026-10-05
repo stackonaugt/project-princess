@@ -23,6 +23,8 @@ import { buildFlemington } from '../world/maps/flemington.js';
 import { buildCoburg } from '../world/maps/coburg.js';
 import { buildPreston } from '../world/maps/preston.js';
 import { buildPetShop } from '../world/maps/petshop.js';
+import { buildAlbion } from '../world/maps/albion.js';
+import { buildBottleShop } from '../world/maps/bottleshop.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
@@ -56,6 +58,8 @@ export const ZONES = {
   station: { name: 'Laverton Station', suburb: 'laverton', build: buildStation, grass: LAVERTON_GRASS, tagline: 'Werribee line. Trains roughly as advertised.' },
   brunswick: { name: 'Brunswick Station', suburb: 'brunswick', build: buildBrunswick, grass: BRUNSWICK_GRASS, tagline: 'Upfield line. Mind the gap, and the cyclists.' },
   sydney: { name: 'Sydney Rd', suburb: 'brunswick', build: buildSydney, grass: BRUNSWICK_GRASS, tagline: 'Trams, bakeries and somebody\'s band.' },
+  albion: { name: 'Sydney Rd at Albion St', suburb: 'brunswick', build: buildAlbion, grass: BRUNSWICK_GRASS, tagline: 'The Edinburgh Castle, the 19 tram and a lot of For Lease signs.' },
+  bottleshop: { name: 'Edinburgh Castle Bottleshop', suburb: 'brunswick', build: buildBottleShop, grass: LAWN, indoor: true, tagline: 'Cold cans, warm Macca, and a wall of coasters.' },
   donald: { name: 'Donald St', suburb: 'brunswick', build: buildDonald, grass: BRUNSWICK_GRASS, tagline: 'Rose\'s street. Salami\'s street, really.' },
   hope: { name: 'Hope St', suburb: 'brunswick', build: buildHope, grass: BRUNSWICK_GRASS, tagline: 'Mem and Corni\'s place, and a lot of balcony plants.' },
   reservoir: { name: 'Reservoir Station', suburb: 'reservoir', build: buildResStation, grass: RES_GRASS, tagline: 'Mernda line, up on the skyrail.' },
@@ -73,7 +77,7 @@ export const ZONES = {
 };
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'station', 'altona', 'footscray', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'donald', 'coburg', 'preston', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'station', 'altona', 'footscray', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;
@@ -86,3 +90,13 @@ export function getMap(id) {
 }
 // Rebuild a map next time it's needed (house upgrades change home and yard).
 export function invalidateMap(id) { delete cache[id]; revs[id] = (revs[id] || 0) + 1; }
+
+// Which zone each townsperson stands in (from the maps), built once on demand.
+let npcZones = null;
+export function npcZone(id) {
+  if (!npcZones) {
+    npcZones = {};
+    for (const z of Object.keys(ZONES)) for (const n of getMap(z).npcs || []) npcZones[n.id] = npcZones[n.id] || z;
+  }
+  return npcZones[id];
+}

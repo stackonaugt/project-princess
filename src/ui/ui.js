@@ -187,7 +187,7 @@ export const ui = {
   },
 
   // The pet shop. Resolves when you close it.
-  shop(id = 'olly') { return new Promise(resolve => { this._shopResolve = resolve; this._shopId = id; this.openModal('shop'); }); },
+  shop(id = 'petshop') { return new Promise(resolve => { this._shopResolve = resolve; this._shopId = id; this.openModal('shop'); }); },
 
   // Resolves with a hero id (or null if cancelled, when allowed).
   chooseHero(canCancel = false) {

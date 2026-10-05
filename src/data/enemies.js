@@ -62,12 +62,12 @@ export const ENEMIES = {
   },
   duck: {
     leave: 'waddles off, still furious about the bread.',
-    name: 'Rogue Duck', type: 'fire', stats: { hp: 45, attack: 60, defence: 45, speed: 65, special: 55 },
-    moves: ['quack', 'jab', 'flutter'], appear: 'A rogue duck waddles up. It wants your bread. You have no bread.', drop: ['croissant', 0.3],
+    name: 'Rogue Duck', type: 'water', stats: { hp: 45, attack: 60, defence: 45, speed: 65, special: 55 },
+    moves: ['quack', 'jab', 'splash'], appear: 'A rogue duck waddles up. It wants your bread. You have no bread.', drop: ['croissant', 0.3],
   },
   magpie: {
     leave: 'flies off to swoop someone else.',
-    name: 'Swooping Magpie', type: 'old', stats: { hp: 45, attack: 70, defence: 40, speed: 85, special: 50 },
+    name: 'Swooping Magpie', type: ['park', 'old'], stats: { hp: 45, attack: 70, defence: 40, speed: 85, special: 50 },
     moves: ['swoop', 'jab', 'warble'], appear: 'A magpie has remembered your face!', drop: ['feather', 0.5],
   },
   recycling: {
@@ -106,7 +106,7 @@ export const ENEMIES = {
   },
   ristretto: {
     faces: 'front', leave: 'goes cold.',
-    name: 'Ristretto', type: 'fire', stats: { hp: 45, attack: 66, defence: 45, speed: 85, special: 55 },
+    name: 'Ristretto', type: 'caffeine', stats: { hp: 45, attack: 66, defence: 45, speed: 85, special: 55 },
     moves: ['shot', 'jitters', 'latteart'], appear: 'A ristretto. Single origin. Ethically sourced. Angry.',
   },
   sourdough: {
@@ -119,7 +119,27 @@ export const ENEMIES = {
     name: 'Record Player', type: 'old', stats: { hp: 55, attack: 50, defence: 55, speed: 50, special: 68 },
     moves: ['bside', 'scratchvinyl', 'actually'], appear: 'The record player starts spinning. It only plays first pressings.',
   },
+  flatwhitefoe: {
+    faces: 'front', leave: 'goes lukewarm and gives up.',
+    name: 'Flat White', type: 'caffeine', stats: { hp: 50, attack: 58, defence: 48, speed: 80, special: 55 },
+    moves: ['doubleshot', 'milkfroth', 'extrashot'], appear: 'A flat white slides off a cafe table. Oat, extra hot, and furious.',
+  },
+  goonbag: {
+    faces: 'front', leave: 'deflates with a sad little wheeze.',
+    name: 'Goon Bag', type: 'booze', stats: { hp: 60, attack: 52, defence: 55, speed: 40, special: 50 },
+    moves: ['hiccup', 'slosh', 'silverpillow', 'beergoggles'], appear: 'A goon bag rolls out of a share house bin! It is half full. Of confidence.',
+  },
   // ---- Reservoir
+  sprinkler: {
+    faces: 'front', leave: 'runs out of water pressure.',
+    name: 'Rogue Sprinkler', type: 'water', stats: { hp: 52, attack: 55, defence: 55, speed: 55, special: 60 },
+    moves: ['splash', 'hosedown', 'puddle', 'sprinkle'], appear: 'Tick tick tick. A sprinkler swings round to face you. Water restrictions mean nothing to it.',
+  },
+  possum: {
+    leave: 'scrambles up a gum tree and glares.',
+    name: 'Brushtail Possum', type: 'park', stats: { hp: 55, attack: 62, defence: 48, speed: 72, special: 45 },
+    moves: ['scurry', 'gumnut', 'hissp', 'rosebush'], appear: 'A possum drops out of a tree! It has been in your roof. You knew it.', drop: ['tomato', 0.3],
+  },
   bulldog: {
     leave: 'waddles back next door for a nap.',
     name: 'Bulldog Next Door', type: 'rock', stats: { hp: 70, attack: 62, defence: 68, speed: 30, special: 30 },
@@ -185,6 +205,8 @@ export const ENCOUNTERS = {
     { id: 'alleycat', lv: [5, 8], weight: 3 },
     { id: 'nonna', lv: [6, 9], weight: 2, day: true },
     { id: 'cavoodle', lv: [5, 8], weight: 2, day: true },
+    { id: 'flatwhitefoe', lv: [5, 7], weight: 2, day: true },
+    { id: 'goonbag', lv: [5, 7], weight: 2, night: 3 },
   ],
   reservoir: [
     { id: 'duck', lv: [7, 10], weight: 6, zones: ['track', 'lake', 'lakepark', 'wetlands'] },
@@ -194,13 +216,15 @@ export const ENCOUNTERS = {
     { id: 'balls', lv: [7, 10], weight: 1 },
     { id: 'boy', lv: [7, 9], weight: 1, day: true },
     { id: 'bag', lv: [7, 9], weight: 1 },
+    { id: 'sprinkler', lv: [7, 10], weight: 2, day: true, zones: ['loddon', 'glasgow', 'lakepark', 'wetlands'] },
+    { id: 'possum', lv: [8, 11], weight: 2, night: 4 },
   ],
   // The long walks between suburbs
-  altona: [{ id: 'bag', lv: [3, 5], weight: 3 }, { id: 'rat', lv: [3, 6], weight: 2 }, { id: 'dog', lv: [4, 6], weight: 2 }, { id: 'commuter', lv: [4, 6], weight: 1, day: true }],
-  footscray: [{ id: 'rat', lv: [4, 6], weight: 2 }, { id: 'ibis', lv: [4, 7], weight: 3 }, { id: 'streetcat', lv: [4, 6], weight: 2 }, { id: 'boy', lv: [4, 6], weight: 1, day: true }],
+  altona: [{ id: 'sprinkler', lv: [3, 5], weight: 1, day: true }, { id: 'bag', lv: [3, 5], weight: 3 }, { id: 'rat', lv: [3, 6], weight: 2 }, { id: 'dog', lv: [4, 6], weight: 2 }, { id: 'commuter', lv: [4, 6], weight: 1, day: true }],
+  footscray: [{ id: 'goonbag', lv: [4, 6], weight: 1, night: 2 }, { id: 'rat', lv: [4, 6], weight: 2 }, { id: 'ibis', lv: [4, 7], weight: 3 }, { id: 'streetcat', lv: [4, 6], weight: 2 }, { id: 'boy', lv: [4, 6], weight: 1, day: true }],
   flemington: [{ id: 'ibis', lv: [5, 7], weight: 2 }, { id: 'scooter', lv: [5, 7], weight: 2 }, { id: 'magpie', lv: [5, 7], weight: 2, day: true }, { id: 'bag', lv: [5, 7], weight: 1 }],
-  coburg: [{ id: 'scooter', lv: [6, 9], weight: 2 }, { id: 'nonna', lv: [7, 9], weight: 2, day: true }, { id: 'alleycat', lv: [6, 9], weight: 2 }, { id: 'rat', lv: [6, 9], weight: 1 }],
-  preston: [{ id: 'nonna', lv: [7, 10], weight: 2, day: true }, { id: 'magpie', lv: [7, 10], weight: 2, day: true }, { id: 'dog', lv: [7, 10], weight: 2 }, { id: 'cavoodle', lv: [7, 9], weight: 1 }],
+  coburg: [{ id: 'flatwhitefoe', lv: [6, 9], weight: 1, day: true }, { id: 'scooter', lv: [6, 9], weight: 2 }, { id: 'nonna', lv: [7, 9], weight: 2, day: true }, { id: 'alleycat', lv: [6, 9], weight: 2 }, { id: 'rat', lv: [6, 9], weight: 1 }],
+  preston: [{ id: 'possum', lv: [7, 10], weight: 2, night: 3 }, { id: 'nonna', lv: [7, 10], weight: 2, day: true }, { id: 'magpie', lv: [7, 10], weight: 2, day: true }, { id: 'dog', lv: [7, 10], weight: 2 }, { id: 'cavoodle', lv: [7, 9], weight: 1 }],
 };
 
 // Trainers: talk to them to battle. `prize` is the pet you win (pets with
@@ -230,7 +254,7 @@ export const TRAINERS = {
     lose: ['She phased out. You were punching air. Come back after dark, maybe. Or with snacks.'],
   },
   sinead: {
-    name: 'Sinead', prize: 'poppy', team: [['balls', 9], ['pet:poppy', 11]],
+    name: 'Sinead', prize: 'poppy', team: [['pet:poppy', 12]],
     challenge: ['Hi! Poppy loves a play-fight. Like, LOVES one. Are you sure?', 'She is basically a bowling ball with ears. Brace yourself.'],
     ask: 'Play-fight Poppy?', yes: 'Bring it on', no: 'Let me stretch first',
     win: ['She is so happy. She has never had this much fun losing. She has never won, to be fair.', 'Poppy can come stay at your place. She will eat anything. Hide the good snacks.'],

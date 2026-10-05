@@ -34,7 +34,7 @@ export function buildHope() {
   b.fenceV(25, 0, 5, 'paling');
   b.put('graffiti', 26, 4, { v: 'paste' });
   b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 30, 6, { v: 'yellow' }); b.put('bin', 31, 6, { v: 'red' });
-  // THE LEASH YOU CAN DO, the pet shop, run by Olly (inside: src/world/maps/petshop.js)
+  // THE LEASH YOU CAN DO, the pet shop, run by Ed (inside: src/world/maps/petshop.js)
   b.put('petshop', 28, 8);
   b.put('doormat', 30, 11); b.put('doormat', 31, 11);
   b.exit(30, 11, 2, 1, 'petshop', 'door', 'The Leash You Can Do');

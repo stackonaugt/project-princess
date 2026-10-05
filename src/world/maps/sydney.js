@@ -2,7 +2,8 @@
 // blue wavy parapet and outdoor tables under the verandah (Spooky haunts
 // the footpath out the front), a row of shops with very Brunswick names,
 // the 19 tram, and bluestone back lanes full of roller doors, factories and
-// street art. West to the station, south down Donald St, east to Reservoir.
+// street art. West to Hope St, south down Donald St, east up Sydney Rd to
+// Albion St and the Edinburgh Castle.
 import { MapBuilder } from '../MapBuilder.js';
 
 export function buildSydney() {
@@ -68,7 +69,7 @@ export function buildSydney() {
   b.put('bikehoop', 26, 13); b.put('bikehoop', 27, 13);
 
   b.exit(0, 12, 1, 8, 'hope', 'east', 'Hope St');
-  b.exit(43, 12, 1, 8, null, null, 'Coburg', ['Sydney Rd crawls north to Coburg behind a tram.', 'Quicker to cut down Donald St and head east.']);
+  b.exit(43, 12, 1, 8, 'albion', 'west', 'Albion St');
   b.exit(27, 25, 2, 1, 'donald', 'north', 'Donald St');
   b.entry('west', 1, 13, 'right').entry('east', 42, 13, 'left').entry('donald', 27, 23, 'up');
 

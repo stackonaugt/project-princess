@@ -4,6 +4,7 @@
 // gardens on the south side.
 //
 //   y2-8 Pentridge and shops   y9 footpath   y10-13 Bell St   y14 footpath   y15-24 houses and gardens
+//   x26-28 a path south (bottom edge) to Sydney Rd at Albion St, Brunswick
 import { MapBuilder } from '../MapBuilder.js';
 import { street, furnish } from './citykit.js';
 
@@ -31,6 +32,9 @@ export function buildCoburg() {
   b.put('house', 20, 16, { v: 'red' });
   b.put('ute', 27, 17, { v: 'silver' });
   b.fill(26, 15, 3, 6, 'h');
+  // A footpath south, back down Sydney Rd to Albion St, Brunswick
+  b.fill(26, 21, 3, 5, 'f');
+  b.sign(29, 21, ['Sydney Rd, south.', 'Back down to Albion St and the Edinburgh Castle, Brunswick.']);
   b.put('brickhouse', 30, 16, { v: 'red' }); b.put('weatherboard', 35, 16, { v: 'lemon' });
   b.put('tall', 40, 16, { v: 'cypress' }); b.put('tall', 42, 16, { v: 'cypress' });
   b.fenceH(29, 47, 19, 'brickwall', [32, 37, 44]);
@@ -44,7 +48,8 @@ export function buildCoburg() {
 
   b.exit(0, 9, 1, 1, 'donald', 'east', 'Donald St, Brunswick');
   b.exit(47, 14, 1, 1, 'preston', 'west', 'Preston');
-  b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left');
+  b.exit(26, 25, 3, 1, 'albion', 'east', 'Sydney Rd, Brunswick');
+  b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('south', 27, 24, 'up');
   // Lived-in touches: pot plants and bikes outside shops (walk-through)
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();

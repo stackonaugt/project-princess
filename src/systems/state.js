@@ -5,7 +5,7 @@
 import { SAVE_KEY, LEGACY_SAVE_KEYS, POINTS_PER_HEART, MAX_HEARTS, RAIN_CHANCE, DAY_START } from '../config.js';
 const DAY_START_MIN = DAY_START;
 import { PETS, PET_BY_ID } from '../data/pets.js';
-import { ITEMS } from '../data/items.js';
+import { ITEMS, isTreat } from '../data/items.js';
 import { GEAR } from '../data/gear.js';
 import { bus } from '../bus.js';
 import { rng } from '../util.js';
@@ -180,6 +180,8 @@ export const state = {
     bus.emit('bag:changed');
   },
   bagItems() { return Object.keys(ITEMS).filter(k => this.count(k) > 0); },
+  // What a pet will eat (no drinks, presents or fertiliser).
+  treatItems() { return this.bagItems().filter(isTreat); },
 
   // Money and gear
   addMoney(n) { this.data.money = Math.max(0, this.data.money + Math.round(n)); bus.emit('money:changed'); },
@@ -223,9 +225,12 @@ export const state = {
       const c = CROPS[plot.crop];
       if (!c || plot.growth >= c.days) continue;
       if (plot.watered === ended || rained) plot.growth = Math.min(c.days, plot.growth + 1 + (plot.boost ? 1 : 0));
-      plot.boost = false;
+      plot.boost = false; plot.fed = false;
     }
+    // The backyard sprinkler waters the home beds first thing.
+    if (this.hasUpgrade('sprinkler')) for (const [id, plot] of Object.entries(d.farm)) if (id.startsWith('yd')) plot.watered = ended + 1;
     if (rained && Object.keys(d.farm).length) news.push('It rained yesterday, so the garden got a free drink.');
+    if (this.hasUpgrade('sprinkler') && Object.keys(d.farm).some(id => id.startsWith('yd'))) news.push('The sprinkler ticks away in the backyard. The beds are watered.');
     d.day += 1; d.minutes = DAY_START_MIN; d.pos = null;
     this.healAll();
     const home = this.foundIds().filter(id => !this.inParty(id));
