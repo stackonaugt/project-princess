@@ -11,6 +11,7 @@
 //   vape: true    vapes from the same shop, adults only (also gift: true). Both use `art` like drinks:
 //                 art: { kind: packet | vape, body, label, cap }
 //   story: true   a story item (the fish pie). deco: true  party decorations. Neither is a treat or a present.
+//   record: true  vinyl from Wax Lyrical, Lygon St (also gift: true). art: { cover, band }
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 import { NORTH_ITEMS } from './north.js';
 import { SH_ITEMS } from './summerhill.js';
@@ -120,6 +121,9 @@ export const ITEMS = {
   watermelon: { name: 'Watermelon vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#e85a6a', label: '#5ab04a', cap: '#3a3a44' }, desc: 'Watermelon bubblegum flavour. Officially, vapes are pharmacy only now. Officially.' },
   ...SH_ITEMS,
 };
+
+import { EAST_ITEMS } from './east.js';
+Object.assign(ITEMS, EAST_ITEMS);   // Brunswick East
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
 export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;

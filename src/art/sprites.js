@@ -128,6 +128,26 @@ const whippet = [
   '..aa.....aa.....',
 ];
 
+// Chloe: a black and tan kelpie, prick ears, tan eyebrows, legs and chest.
+const kelpie = [
+  '................',
+  '.........a.a....',
+  '........aaaaa...',
+  '........attaa...',
+  '.......atetaan..',
+  '........aaaata..',
+  '..a.....aaaa....',
+  '..aa...aaaa.....',
+  '..aaaaaaaaa.....',
+  '..taaaaaaata....',
+  '...taaaaatta....',
+  '...tt....tt.....',
+  '...tt....tt.....',
+  '...tt....tt.....',
+  '...tt....tt.....',
+  '..ttt....ttt....',
+];
+
 // Evolved forms
 const flamcess = [
   '..y.......y.y...',
@@ -256,6 +276,7 @@ export const PET_FRAMES = {
   frenchie:  [frenchie, stride(frenchie, 3)],
   schnauzer: [schnauzer, stride(schnauzer)],
   whippet:   [whippet, stride(whippet, 5)],
+  kelpie:    [kelpie, stride(kelpie, 5)],
 };
 
 // Colours shared by every pet unless the pet overrides them in pets.js.
