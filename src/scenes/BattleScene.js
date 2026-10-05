@@ -375,6 +375,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   sendText(f) {
+    if (ENEMIES[f.id]?.sendOut) return ENEMIES[f.id].sendOut;   // a foe with its own entrance (Alison turning into a slug)
     const t = this.trainer.sendOut;
     return t ? t.replace('{f}', f.name.toLowerCase()) : `${this.trainer.name} sends out ${this.trainer.prize ? '' : 'the '}${f.name}!`;
   }

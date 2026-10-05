@@ -19,6 +19,10 @@
 //  (dialogue boxes are small on phones). Use \' for an apostrophe inside 'quotes'.
 //  Signs and the text when you inspect things are in the map files and flavour.js.
 import { EAST_PEOPLE, EAST_FOE_TEXT, EAST_PLACES } from './east.js';
+import { NORTH_PEOPLE, NORTH_FOE_TEXT, NORTH_PLACES } from './north.js';
+//  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
+
+import { SH_PEOPLE, SH_FOE_TEXT, SH_PLACES } from './summerhill.js';
 
 export const PEOPLE = {
   trish: {
@@ -852,6 +856,7 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Ed slides over a free sample from the counter jar. "Shh."',
   },
+  ...SH_PEOPLE,
 };
 
 export const PET_TEXT = {
@@ -1140,6 +1145,7 @@ export const FOE_TEXT = {
   ice: {
     leave: 'wears off. He crashes hard, exhausted and shaking.',
   },
+  ...SH_FOE_TEXT,
 };
 
 export const PLACES = {
@@ -1168,7 +1174,7 @@ export const PLACES = {
   altona: 'Factories, trucks and Kororoit Creek. The long walk east begins.',
   footscray: 'Pho, the river and a lot of pigeons.',
   flemington: 'Racecourse Rd, the flats and the tram.',
-  coburg: 'Bell St, between Coburg and Preston. Six lanes and the old Pentridge wall.',
+  coburg: 'Bell St: six lanes, the old Pentridge wall and the Town Hall.',
   preston: 'Plenty Rd, Preston: a sage green pub, a convenience store and the 86 tram.',
   bunnings: 'Bunnings Warehouse. Aisles of everything, and a garden centre out the back.',
   cozzo: 'The Franco Cozzo showroom. Megalo couches as far as the eye can see.',
@@ -1176,9 +1182,14 @@ export const PLACES = {
   bookshop: 'Brunswick Bound. Classics up the back, new releases on the tables.',
   vapeshop: 'Plenty Road Convenience. American lollies, cold drinks and a sign that says VAPES.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
+  ...SH_PLACES,
 };
 
 // Brunswick East keeps its words in east.js.
 Object.assign(PEOPLE, EAST_PEOPLE);
 Object.assign(FOE_TEXT, EAST_FOE_TEXT);
 Object.assign(PLACES, EAST_PLACES);
+// Coburg and Preston keep their words in north.js.
+Object.assign(PEOPLE, NORTH_PEOPLE);
+Object.assign(FOE_TEXT, NORTH_FOE_TEXT);
+Object.assign(PLACES, NORTH_PLACES);

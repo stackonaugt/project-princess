@@ -7,6 +7,8 @@
 
 import { PEOPLE } from './dialogue.js';
 import { EAST_NPCS } from './east.js';
+import { NORTH_NPCS } from './north.js';
+import { SH_NPCS } from './summerhill.js';
 
 export const NPCS = {
   trish: {
@@ -141,10 +143,11 @@ export const NPCS = {
   ed: {
     name: 'Ed', shop: 'petshop', look: { hair: '#e0a880', hairStyle: 'bald', skin: '#e8b890', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', glasses: '#2a2a2a' },
   },
-
+  ...SH_NPCS,
 };
 
 Object.assign(NPCS, EAST_NPCS);   // Brunswick East
+Object.assign(NPCS, NORTH_NPCS);   // Coburg and Preston
 
 // What everyone says lives in dialogue.js.
 for (const [id, t] of Object.entries(PEOPLE)) {

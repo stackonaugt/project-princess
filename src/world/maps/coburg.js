@@ -1,10 +1,12 @@
-// BELL ST, Coburg: the walk from Brunswick towards Reservoir. Six lanes of
-// Bell St traffic, the old Pentridge Prison bluestone wall and watchtower
-// (apartments inside now, of course), shops, and brick houses with nonna
-// gardens on the south side.
+// BELL ST, Coburg: the crossroads of the north. Six lanes of Bell St
+// traffic, with Sydney Rd crossing it (the 19 tram tracks) north to Coburg's
+// shops and south back to Brunswick. The old Pentridge Prison bluestone wall
+// and watchtower (apartments inside now, of course) on the north-west
+// corner, Coburg Town Hall on the north-east, a bluestone lane up to Preston
+// Market, and brick houses with nonna gardens on the south side.
 //
-//   y2-8 Pentridge and shops   y9 footpath   y10-13 Bell St   y14 footpath   y15-24 houses and gardens
-//   x26-28 a path south (bottom edge) to Sydney Rd at Albion St, Brunswick
+//   y2-8 Pentridge | Sydney Rd x25-30 | Town Hall, lane x39-40, shops
+//   y9 footpath   y10-13 Bell St   y14 footpath   y15-25 houses and gardens
 import { MapBuilder } from '../MapBuilder.js';
 import { street, furnish } from './citykit.js';
 
@@ -12,44 +14,67 @@ export function buildCoburg() {
   const b = new MapBuilder({ id: 'coburg', w: 48, h: 26, fill: 'c', seed: 304 });
   street(b, 9, { rows: 4, trucks: true, speed: 62 });
 
-  // North: the Pentridge wall and its watchtower, new apartments behind it
-  b.fill(0, 0, 30, 8, 'g');
-  b.put('aptblock', 2, 3, { v: 'grey' }); b.put('aptblock', 17, 3, { v: 'grey' });
-  b.fenceH(0, 29, 8, 'bluestone', [13, 14]);
-  b.put('watchtower', 13, 7);
+  // Sydney Rd crosses Bell St: footpath, road, tram tracks, road, footpath
+  for (const [x, c] of [[25, 'f'], [26, '#'], [27, '+'], [28, '+'], [29, '#'], [30, 'f']]) {
+    b.vline(x, 0, 8, c); b.vline(x, 15, 25, c);
+    if (c !== 'f') { b.set(x, 9, c); b.set(x, 14, c); }
+  }
+  b.fill(26, 9, 4, 1, 'z'); b.fill(26, 14, 4, 1, 'z');
+
+  // North-west: the Pentridge wall and its watchtower, new apartments behind it
+  b.fill(0, 0, 25, 8, 'g');
+  b.put('aptblock', 1, 3, { v: 'grey' }); b.put('aptblock', 14, 3, { v: 'grey' });
+  b.fenceH(0, 24, 8, 'bluestone', [11, 12]);
+  b.put('watchtower', 11, 7);
   b.sign(16, 9, ['HM Prison Pentridge, 1850 to 1997.', 'Now it is apartments and a cafe. The bluestone walls stayed. The vibe is "heritage".']);
-  b.put('bshop', 30, 6, { v: 'yoga' }); b.put('cafe', 34, 6, { v: 'green' }); b.put('redshop', 38, 6, { v: 'cream' });
-  b.put('terrace', 42, 6, { v: 'brick' }); b.put('terrace', 45, 6, { v: 'sand' });
-  furnish(b, 9, { skip: [13, 14, 16], seed: 5 });
-  furnish(b, 14, { skip: [46], seed: 1, step: 8 });
+  b.npc('merv', 14, 9, { face: 'down' });
+
+  // North-east: Coburg Town Hall, the lane up to the market, a cafe and a terrace
+  b.put('townhall', 31, 6, { v: 'merribek' });
+  b.sign(38, 9, ['Coburg Town Hall.', 'Moreland City Council became Merri-bek in 2022. The bins have not noticed.']);
+  b.fill(39, 0, 2, 9, 'b');
+  b.sign(41, 9, ['Bluestone lane.', 'A shortcut through to Preston Market. Mind the trolleys.']);
+  b.put('cafe', 41, 6, { v: 'green' });
+  b.put('terrace', 45, 6, { v: 'sand' });
+  furnish(b, 9, { skip: [11, 12, 13, 14, 16, 25, 26, 27, 28, 29, 30, 31, 34, 37, 38, 39, 40, 41], seed: 5 });
+  furnish(b, 14, { skip: [25, 26, 27, 28, 29, 30, 36, 37, 38, 39, 46], seed: 1, step: 8 });
 
   // South: brick veneers, a nonna's veggie garden and lemon tree
-  b.fill(0, 15, 48, 11, '.');
+  b.fill(0, 15, 25, 11, '.'); b.fill(31, 15, 17, 11, '.');
   b.put('brickhouse', 1, 16, { v: 'tan' }); b.put('weatherboard', 6, 16, { v: 'mint' });
   b.fenceH(0, 10, 19, 'brickwall', [3, 8]);
   b.put('veggie', 12, 16); b.put('veggie', 12, 19); b.put('tree', 16, 17, { v: 'lemon' }); b.put('tree', 17, 21, { v: 'lemon' });
   b.fenceH(11, 18, 15, 'picket', [14]);
-  b.put('house', 20, 16, { v: 'red' });
-  b.put('ute', 27, 17, { v: 'silver' });
-  b.fill(26, 15, 3, 6, 'h');
-  // A footpath south, back down Sydney Rd to Albion St, Brunswick
-  b.fill(26, 21, 3, 5, 'f');
-  b.sign(29, 21, ['Sydney Rd, south.', 'Back down to Albion St and the Edinburgh Castle, Brunswick.']);
-  b.put('brickhouse', 30, 16, { v: 'red' }); b.put('weatherboard', 35, 16, { v: 'lemon' });
-  b.put('tall', 40, 16, { v: 'cypress' }); b.put('tall', 42, 16, { v: 'cypress' });
-  b.fenceH(29, 47, 19, 'brickwall', [32, 37, 44]);
-  b.wildGrass(8, 23, 4, 1.6); b.wildGrass(37, 23, 4, 1.6);
-  b.put('billboard', 22, 21, { v: 'pies' });
-  b.sign(45, 15, ['Bell St, Coburg.', 'Halfway to Reservoir. Bell St traffic is a national treasure. Of noise.']);
+  b.put('brickhouse', 19, 16, { v: 'red' });
+  b.put('ute', 21, 20, { v: 'silver' });
+  b.fill(20, 19, 3, 1, 'h');
+  b.sign(24, 21, ['Sydney Rd, south.', 'Back down to Albion St and the Edinburgh Castle, Brunswick.']);
+  b.put('brickhouse', 32, 16, { v: 'red' });
+  // Lygon St, south to Moreland Rd
+  b.vline(36, 15, 25, 'f').fill(37, 14, 2, 12, '#').vline(39, 15, 25, 'f');
+  b.sign(35, 21, ['Lygon St, south.', 'Down to Moreland Rd. Betty and Ed live on the corner. Bring an appetite.']);
+  b.put('weatherboard', 40, 16, { v: 'lemon' });
+  b.put('tall', 44, 16, { v: 'cypress' }); b.put('tall', 46, 16, { v: 'cypress' });
+  b.fenceH(31, 35, 19, 'brickwall', [34]); b.fenceH(40, 47, 19, 'brickwall', [42]);
+  b.wildGrass(8, 23, 4, 1.6); b.wildGrass(33, 23, 2.4, 1.6);
+  b.put('billboard', 41, 21, { v: 'pies' });
+  b.sign(45, 15, ['Bell St, Coburg.', 'Brunswick people think the world ends at Bell St. It does not. It gets better pide.']);
 
   b.forage(14, 23, ['lemon', 'carrot']);
-  b.forage(44, 22, ['cheese', 'croissant']);
-  b.magpies([[24, 23], [33, 22]]);
+  b.forage(45, 23, ['cheese', 'pide']);
+  b.magpies([[5, 23], [34, 22]]);
+
+  b.lane({ axis: 'y', pos: 26.5, dir: 1, from: -3, to: 29, every: [9, 18], speed: 56, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
+  b.lane({ axis: 'y', pos: 29.5, dir: -1, from: -3, to: 29, every: [10, 20], speed: 56, kinds: ['veh-car-v-yellow', 'veh-car-v-silver'] });
 
   b.exit(0, 9, 1, 1, 'donald', 'east', 'Donald St, Brunswick');
-  b.exit(47, 14, 1, 1, 'preston', 'west', 'Preston');
-  b.exit(26, 25, 3, 1, 'albion', 'east', 'Sydney Rd, Brunswick');
-  b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('south', 27, 24, 'up');
+  b.exit(47, 14, 1, 1, 'preston', 'west', 'Plenty Rd, Preston');
+  b.exit(25, 25, 6, 1, 'albion', 'east', 'Sydney Rd, Brunswick');
+  b.exit(25, 0, 6, 1, 'coburgsyd', 'south', 'Sydney Rd, Coburg');
+  b.exit(39, 0, 2, 1, 'prestonmkt', 'south', 'Preston Market');
+  b.exit(36, 25, 4, 1, 'moreland', 'north', 'Moreland Rd');
+  b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('south', 25, 24, 'up')
+    .entry('north', 25, 1, 'down').entry('market', 39, 1, 'down').entry('lygon', 36, 24, 'up');
   // Lived-in touches: pot plants and bikes outside shops (walk-through)
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();

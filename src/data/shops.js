@@ -16,6 +16,9 @@
 //   fish     sell the fish you catch (Spiro pays 50% more than anyone else)
 //   party    party decorations (items with deco: true), for the Chapter 4 party
 //   sell     sell crops and treats from your bag (crops at their price, treats at half)
+import { NORTH_SHOPS } from './north.js';
+import { SH_SHOPS } from './summerhill.js';
+
 export const SHOPS = {
   petshop: { name: 'The Leash You Can Do', where: 'Hope St, Brunswick', tabs: ['treats', 'gear'] },
   bunnings: { name: 'Bunnings Warehouse', where: 'Kororoit Creek Rd, Altona North', tabs: ['seeds', 'tools', 'upgrades', 'party', 'gifts'], gifts: ['seedling', 'olive', 'gloves', 'fertiliser'] },
@@ -26,7 +29,9 @@ export const SHOPS = {
   fishvan: { name: 'Spiro\'s Fish Van', where: 'Kororoit Creek Rd, Altona North', tabs: ['fish'] },
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
+  ...SH_SHOPS,
 };
 
 import { EAST_SHOPS } from './east.js';
 Object.assign(SHOPS, EAST_SHOPS);   // Brunswick East
+Object.assign(SHOPS, NORTH_SHOPS);   // Coburg and Preston

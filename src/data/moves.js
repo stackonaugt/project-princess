@@ -15,6 +15,9 @@
 //              recoil: the user loses this fraction of its own max HP (recoilText explains)
 //   anim     the battle animation ('lunge', 'bite', 'claw', 'beam', 'shout', 'heal', 'fade', 'hop', 'dig', 'gust', 'stink', 'flame')
 //   text     the line shown when it's used ({u} = user, {t} = target)
+import { NORTH_MOVES } from './north.js';
+
+import { SH_MOVES } from './summerhill.js';
 
 export const MOVES = {
   // Princess (fairy)
@@ -167,6 +170,7 @@ export const MOVES = {
   silverpillow:{ name: 'Silver Pillow', type: 'booze', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} lies down. It is very comfy. It is a pillow, technically.' },
   beergoggles:{ name: 'Beer Goggles', type: 'booze', power: 0, effect: { foeDef: 1 }, anim: 'beam', text: '{u} looks at {t} through beer goggles. {t} gets all self-conscious.' },
   binlid:     { name: 'Bin Dive', type: 'smelly', power: 50, anim: 'dig', text: '{u} dives into a bin and comes up swinging.' },
+  ...SH_MOVES,
 };
 
 // The four moves each pet knows, by pet id.
@@ -185,3 +189,5 @@ export const PET_MOVES = {
   rusty: ['shakeleaf', 'jumponyou', 'clawrusty', 'runaway', 'barkrusty'],
   chloe: ['herd', 'kelpiestare', 'heelnip', 'pubnap'],
 };
+
+Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston
