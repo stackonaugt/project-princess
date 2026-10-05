@@ -21,6 +21,10 @@ export const ENEMIES = {
     name: 'Plastic Bag', type: 'plastic', stats: { hp: 38, attack: 45, defence: 35, speed: 90, special: 50 },
     moves: ['flutter', 'suffocate', 'blowaway'], float: true, faces: 'front',
   },
+  dlcard: {
+    name: 'Sorry I Missed You Card', type: 'plastic', stats: { hp: 34, attack: 30, defence: 28, speed: 30, special: 30 },
+    moves: ['papercut', 'guilttrip', 'flapinwind'], faces: 'front', float: true,
+  },
   streetcat: {
     name: 'Street Cat', type: 'street', stats: { hp: 45, attack: 60, defence: 40, speed: 80, special: 45 },
     moves: ['hiss', 'pounce', 'scratch'], drop: ['sardine', 0.3],
@@ -221,6 +225,11 @@ export const TRAINERS = {
     name: 'Bin Man', team: [['recycling', 3], ['garbage', 4], ['compost', 4]],
     
     reward: { snag: 2, chicken: 1 },
+  },
+  // The tutorial on Allen St, straight after you find Princess. Once only.
+  julie: {
+    name: 'Julie Jana', once: true, team: [['dlcard', 3]], money: 0,
+    intro: 'Julie Jana wants a friendly play-fight!', sendOut: 'She slips a {f} under the door. It flutters out at you.',
   },
   rose: {
     name: 'Rose', prize: 'salami', team: [['alleycat', 6], ['pet:salami', 8]],

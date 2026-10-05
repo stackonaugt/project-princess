@@ -166,7 +166,88 @@ const floppy = [
   '...gg....gg.....',
 ];
 
+// Sopressa: Salami, aged. Flat cap, grey whiskers, more of her to love.
+const sopressa = [
+  '................',
+  '.........fffff..',
+  '.ss.....ffffffff',
+  '.sa......aaaaa..',
+  '..sa.....asaasa.',
+  '..as.....aaaeaa.',
+  '...a.....agggap.',
+  '...as...gagggag.',
+  '...asaaasaaaaa..',
+  '..aasasasasaacc.',
+  '..aaaaaaaaaaccc.',
+  '...ccccccccccc..',
+  '....as....as....',
+  '....as....as....',
+  '....as....as....',
+  '....ss....ss....',
+];
+// Poltergeist Spooky: no feet, just a wisp. Little sparks of something.
+const poltergeist = [
+  '.x.......aa.....',
+  '........apa.aa..',
+  '....x...apaapa..',
+  '........apaapa..',
+  '.........aaaa..x',
+  '........aaaaab..',
+  '.......aaaeaab..',
+  '.......aaaaaaap.',
+  '...aaaaaaaaaab..',
+  '..aaaaaaaaaaab..',
+  '.wwaaaaaaaaaab..',
+  '.wwaaaaaaaaaab..',
+  '..gaaaaaaaaab...',
+  '...ggggggggg....',
+  '.....ggg.ggg....',
+  '......g...g..x..',
+];
+// Centurionely: Stanley in a Roman helmet with a red crest, red cape, armour and sandals.
+const centurionely = [
+  '.......rrrrr....',
+  '......rrrrrrr...',
+  '..a.....hhhh....',
+  '..a....hhhhhhl..',
+  '..aa...hwwwal...',
+  '...a...haeaaaa..',
+  '...a....aaaaaan.',
+  '.cccmmmmmawwww..',
+  '.cccmgmgmmwwwww.',
+  '.cccmmmmmmaww...',
+  '..cclllllll.....',
+  '...wwlllllww....',
+  '...ww.....ww....',
+  '...ww.....ww....',
+  '...gg.....gg....',
+  '...gg.....gg....',
+];
+// Even Rustier: Rusty, but made of metal. Rivets, rust patches, glowing eye.
+const evenrustier = [
+  '................',
+  '...........kk...',
+  '..........kaaa..',
+  '..........aeaaa.',
+  '...........aaaan',
+  '...........wa...',
+  '...aaroaaraww...',
+  '..aaaaaaoaaww...',
+  '.a.abaraaaww....',
+  'a...b...aww.....',
+  'a...b....b......',
+  '....a....a......',
+  '...a.....a......',
+  '...a.....a......',
+  '...a.....a......',
+  '..kk.....kk.....',
+];
+
 export const PET_FRAMES = {
+  sopressa:  [sopressa, stride(sopressa)],
+  poltergeist: [poltergeist, stride(poltergeist, 3)],
+  centurionely: [centurionely, stride(centurionely)],
+  evenrustier: [evenrustier, stride(evenrustier, 5)],
   flamcess:  [flamcess, stride(flamcess)],
   floppy:    [floppy, stride(floppy, 3)],
   poodle:    [poodle, stride(poodle)],
