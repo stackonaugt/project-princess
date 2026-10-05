@@ -10,6 +10,8 @@
 //   lolly: true   American lollies from the Plenty Rd convenience store (also gift: true).
 //   vape: true    vapes from the same shop, adults only (also gift: true). Both use `art` like drinks:
 //                 art: { kind: packet | vape, body, label, cap }
+//   local: true   a treat only sold where a shop lists it (shops.js `treats`), not in every treats tab
+//   record: true  a vinyl record from Wax Lyrical, Lygon St (also gift: true). art: { cover, band }
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
@@ -69,6 +71,20 @@ export const ITEMS = {
   oldboot:    { name: 'Old boot', sell: 1, junk: true, desc: 'Size 11. Full of pond water. Someone, somewhere, is limping.' },
   thermos:    { name: 'Thermos', price: 24, gift: true, desc: 'Keeps tea hot for twelve hours. Keeps soup hot for a whole council meeting.' },
   headtorch:  { name: 'Head torch', price: 20, gift: true, desc: 'For night runs, possum spotting and finding the car keys.' },
+
+  // Brunswick East: the Lygon St deli, the enviro park market and chooks, and
+  // the record shop (record: true, presents; art: { cover, band } for the sleeve).
+  cannoli:    { name: 'Cannoli', price: 6, local: true,          desc: 'From the Lygon St deli. Ricotta, pistachio and icing sugar on your nose.' },
+  prosciutto: { name: 'Prosciutto', price: 8, local: true,       desc: 'Sliced so thin you can read through it. Every dog in Brunswick East knows the deli door.' },
+  egg:        { name: 'Free-range egg', price: 3, local: true,   desc: 'From the enviro park chooks. Still warm. The chooks would like it back.' },
+  parmigiano: { name: 'Wedge of parmigiano', price: 12, gift: true, desc: 'Aged two years. Enzo says anything younger is "for children".' },
+  beans:      { name: 'Bag of coffee beans', price: 16, gift: true, desc: 'Single origin, roasted on Lygon St, tasting notes of "stone fruit and rent".' },
+  honey:      { name: 'Merri Creek honey', price: 10, gift: true, desc: 'From the hives at the enviro park. The bees commute about three kilometres.' },
+  kombucha:   { name: 'Kombucha', price: 7, gift: true, desc: 'Homebrewed ginger kombucha. Fizzy, sour and very good for you, apparently.' },
+  gossip:     { name: 'Paul Kelly: Gossip', price: 30, gift: true, record: true, art: { cover: '#e8d8b0', band: '#c8302a' }, desc: 'On vinyl. Melbourne songs about Melbourne things. Darling it hurts.' },
+  eastlp:     { name: 'Cold Chisel: East', price: 30, gift: true, record: true, art: { cover: '#c8302a', band: '#f4efe0' }, desc: 'On vinyl. Pub rock for the drive home from the pub.' },
+  sitandthink: { name: 'Courtney Barnett: Sometimes I Sit and Think', price: 34, gift: true, record: true, art: { cover: '#7ab0d8', band: '#e8c040' }, desc: 'On vinyl. Recorded just up the road. Very Brunswick East.' },
+  sinceileft: { name: 'The Avalanches: Since I Left You', price: 36, gift: true, record: true, art: { cover: '#3fa38f', band: '#f0a0c0' }, desc: 'On vinyl. Melbourne\'s greatest party record. Nine hundred samples and a parrot.' },
 
   // The bottle shop at the Edinburgh Castle (drink: true). Presents for friends. Never for pets.
   vb:          { name: 'VB', price: 4, drink: true, art: { kind: 'stubby', body: '#4a2a12', label: '#2a7a3a', cap: '#c8443a' }, desc: 'A hard-earned thirst needs a big cold beer. Apparently.' },

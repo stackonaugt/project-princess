@@ -1,6 +1,6 @@
 // The shops. An NPC with `shop: '<id>'` in npcs.js opens one of these when
 // you talk to them (see ui/shop.js). Tabs:
-//   treats   pet treats from items.js (with a price, not crops, drinks or presents)
+//   treats   pet treats from items.js (with a price, not crops, drinks or presents; list `treats` to pick them)
 //   gear     pet gear from gear.js
 //   seeds    seed packets for crops.js (list `seeds` to limit which)
 //   tools    garden tools from upgrades.js (tool: true)
@@ -22,4 +22,8 @@ export const SHOPS = {
   cozzo: { name: 'Franco Cozzo', where: 'Barkly St, Footscray', tabs: ['furniture'] },
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
+  // Brunswick East
+  deli: { name: 'Pasta La Vista', where: 'Lygon St, Brunswick East', tabs: ['treats', 'gifts'], treats: ['cannoli', 'prosciutto', 'cheese'], gifts: ['parmigiano', 'beans', 'olive'] },
+  records: { name: 'Wax Lyrical', where: 'Lygon St, Brunswick East', tabs: ['gifts'], gifts: ['gossip', 'eastlp', 'sitandthink', 'sinceileft'] },
+  market: { name: 'Enviro Park Market', where: 'Merri Creek, Brunswick East', tabs: ['seeds', 'gifts'], seeds: ['basil', 'carrot', 'zucchini', 'strawberry'], gifts: ['honey', 'kombucha', 'seedling', 'flowers'] },
 };

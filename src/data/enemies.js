@@ -124,6 +124,20 @@ export const ENEMIES = {
     name: 'Brushtail Possum', type: 'park', stats: { hp: 55, attack: 62, defence: 48, speed: 72, special: 45 },
     moves: ['scurry', 'gumnut', 'hissp', 'rosebush'], drop: ['tomato', 0.3],
   },
+  // Brunswick East
+  scoby: {
+    faces: 'front',
+    name: 'Kombucha SCOBY', type: 'smelly', stats: { hp: 58, attack: 50, defence: 58, speed: 40, special: 58 },
+    moves: ['stench', 'rot', 'plague'], drop: ['kombucha', 0.1],
+  },
+  rakali: {
+    name: 'Rakali', type: 'water', stats: { hp: 54, attack: 60, defence: 48, speed: 75, special: 45 },
+    moves: ['splash', 'gnaw', 'hide'], drop: ['sardine', 0.3],
+  },
+  cargobike: {
+    name: 'Cargo Bike', type: 'steel', stats: { hp: 64, attack: 60, defence: 62, speed: 50, special: 35 },
+    moves: ['runover', 'beep', 'scoot2'], drop: ['carrot', 0.3],
+  },
   bulldog: {
     name: 'Bulldog Next Door', type: 'rock', stats: { hp: 70, attack: 62, defence: 68, speed: 30, special: 30 },
     moves: ['headbutt', 'slobber', 'snore'], drop: ['snag', 0.35],
@@ -208,6 +222,17 @@ export const ENCOUNTERS = {
   footscray: [{ id: 'goonbag', lv: [4, 6], weight: 1, night: 2 }, { id: 'rat', lv: [4, 6], weight: 2 }, { id: 'ibis', lv: [4, 7], weight: 3 }, { id: 'streetcat', lv: [4, 6], weight: 2 }, { id: 'boy', lv: [4, 6], weight: 1, day: true }],
   flemington: [{ id: 'ibis', lv: [5, 7], weight: 2 }, { id: 'scooter', lv: [5, 7], weight: 2 }, { id: 'magpie', lv: [5, 7], weight: 2, day: true }, { id: 'bag', lv: [5, 7], weight: 1 }],
   coburg: [{ id: 'flatwhitefoe', lv: [6, 9], weight: 1, day: true }, { id: 'scooter', lv: [6, 9], weight: 2 }, { id: 'nonna', lv: [7, 9], weight: 2, day: true }, { id: 'alleycat', lv: [6, 9], weight: 2 }, { id: 'rat', lv: [6, 9], weight: 1 }],
+  brunswickeast: [
+    { id: 'scoby', lv: [6, 9], weight: 2 },
+    { id: 'cargobike', lv: [6, 9], weight: 2, day: true },
+    { id: 'rakali', lv: [6, 9], weight: 5, zones: ['merri'] },
+    { id: 'flatwhitefoe', lv: [6, 8], weight: 2, day: true, zones: ['lygon'] },
+    { id: 'scooter', lv: [6, 9], weight: 2 },
+    { id: 'ibis', lv: [6, 8], weight: 2 },
+    { id: 'sourdough', lv: [6, 9], weight: 1, zones: ['lygon'] },
+    { id: 'possum', lv: [7, 9], weight: 2, night: 3 },
+    { id: 'rat', lv: [6, 8], weight: 1, night: 2 },
+  ],
   preston: [{ id: 'possum', lv: [7, 10], weight: 2, night: 3 }, { id: 'nonna', lv: [7, 10], weight: 2, day: true }, { id: 'magpie', lv: [7, 10], weight: 2, day: true }, { id: 'dog', lv: [7, 10], weight: 2 }, { id: 'cavoodle', lv: [7, 9], weight: 1 }],
 };
 
@@ -242,6 +267,18 @@ export const TRAINERS = {
     name: 'Hipster', team: [['ristretto', 9], ['sourdough', 9], ['recordplayer', 10]],
     
     reward: { croissant: 1 }, money: 40,
+  },
+  kev: {
+    name: 'Kev', team: [['cargobike', 9], ['scooter', 10]],
+    reward: { carrot: 2 }, money: 40,
+  },
+  tash: {
+    name: 'Tash', team: [['flatwhitefoe', 9], ['ristretto', 10], ['scoby', 10]],
+    reward: { cannoli: 1 }, money: 40,
+  },
+  inspector: {
+    name: 'Myki Inspector', team: [['commuter', 10], ['scooter', 10], ['commuter', 11]],
+    money: 60,
   },
   golfer: {
     name: 'Golfer Next Door', team: [['golfball', 11], ['fiveiron', 12], ['buggy', 12]],
