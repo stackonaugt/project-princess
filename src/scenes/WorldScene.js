@@ -192,6 +192,15 @@ export class WorldScene extends Phaser.Scene {
       tex.refresh();
     }
     this.add.image(0, 0, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1000);
+    // The camera can scroll past the top and bottom edges (see onResize), so
+    // repeat the edge rows outwards rather than showing the page background.
+    const { w, h } = this.map, rowH = T * GROUND_SCALE;
+    for (let i = 1; i <= 16; i++) {
+      this.add.image(0, i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
+        .setCrop(0, (h - 1) * rowH, w * rowH, rowH);
+      if (i <= 6) this.add.image(0, -i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
+        .setCrop(0, 0, w * rowH, rowH);
+    }
     // Water sparkles
     for (let y = 0; y < this.map.h; y++) for (let x = 0; x < this.map.w; x++) {
       if (this.map.ground[y][x] !== '~' || hash(x, y, 5) > 0.3) continue;
@@ -402,9 +411,10 @@ export class WorldScene extends Phaser.Scene {
 
   // ------------------------------------------------------------ lighting & weather
   setupLighting() {
-    const W = this.map.w * T, H = this.map.h * T;
-    this.night = this.add.rectangle(0, 0, W, H, 0x0b1436).setOrigin(0).setDepth(9000).setAlpha(0);
-    this.dusk = this.add.rectangle(0, 0, W, H, 0xff8a3a).setOrigin(0).setDepth(8999).setAlpha(0);
+    // Cover the repeated edge rows past the top and bottom of the map too.
+    const W = this.map.w * T, H = this.map.h * T + 22 * T;
+    this.night = this.add.rectangle(0, -6 * T, W, H, 0x0b1436).setOrigin(0).setDepth(9000).setAlpha(0);
+    this.dusk = this.add.rectangle(0, -6 * T, W, H, 0xff8a3a).setOrigin(0).setDepth(8999).setAlpha(0);
   }
   updateLighting() {
     const m = state.data.minutes, indoor = this.region.indoor;
