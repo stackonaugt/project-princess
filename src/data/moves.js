@@ -16,6 +16,7 @@
 //   anim     the battle animation ('lunge', 'bite', 'claw', 'beam', 'shout', 'heal', 'fade', 'hop', 'dig', 'gust', 'stink', 'flame')
 //   text     the line shown when it's used ({u} = user, {t} = target)
 import { NORTH_MOVES } from './north.js';
+import { EAST_MOVES } from './east.js';
 
 import { SH_MOVES } from './summerhill.js';
 
@@ -196,6 +197,12 @@ export const MOVES = {
 };
 
 // The four moves each pet knows, by pet id.
+// Chloe's moves (Brunswick East).
+MOVES.herd = { name: 'Herd', type: 'park', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'lunge', text: '{u} circles {t} and moves it exactly where she wants it.' };
+MOVES.kelpiestare = { name: 'Kelpie Stare', type: 'psychic', power: 60, anim: 'beam', text: '{u} fixes {t} with the stare. Nothing moves for a moment.' };
+MOVES.heelnip = { name: 'Heel Nip', type: 'street', power: 50, anim: 'bite', text: '{u} nips at {t}\'s heels. Keep moving.' };
+MOVES.pubnap = { name: 'Pub Nap', type: 'old', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} climbs onto the bench seat and has a nap. Pub rules.' };
+
 export const PET_MOVES = {
   princess: ['growl', 'clawattack', 'humpbed', 'bite'],
   poppy: ['charge', 'scoot', 'dig', 'chew'],
@@ -204,6 +211,8 @@ export const PET_MOVES = {
   salami: ['extendclaws', 'scratch', 'bluestring', 'hide'],
   girlie: ['fetch', 'fountaindive', 'puppyeyes', 'benchsnack'],
   rusty: ['shakeleaf', 'jumponyou', 'clawrusty', 'runaway', 'barkrusty'],
+  chloe: ['herd', 'kelpiestare', 'heelnip', 'pubnap'],
 };
 
 Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston
+Object.assign(MOVES, EAST_MOVES);    // Brunswick East

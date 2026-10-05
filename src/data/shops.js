@@ -2,6 +2,7 @@
 // you talk to them (see ui/shop.js). Tabs:
 //   treats   pet treats from items.js (with a price, not crops, drinks or presents) (list `treats` to limit which;
 //            local: true treats are left out unless listed)
+//   spells   the milk bar sorceress's protection spells (data/east.js). Prices move every day
 //   gear     pet gear from gear.js
 //   seeds    seed packets for crops.js (list `seeds` to limit which)
 //   tools    garden tools from upgrades.js (tool: true)
@@ -29,7 +30,7 @@ export const SHOPS = {
   fishvan: { name: 'Spiro\'s Fish Van', where: 'Kororoit Creek Rd, Altona North', tabs: ['fish'] },
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
   // Carlton and the city
-  gelateria: { name: 'Gelateria', where: 'Lygon St, Carlton', tabs: ['treats', 'gifts'], treats: ['gelato'], gifts: ['gelatocone', 'cannoli'] },
+  gelateria: { name: 'Gelateria', where: 'Lygon St, Carlton', tabs: ['treats', 'gifts'], treats: ['gelato', 'cannoli'], gifts: ['gelatocone'] },
   donuts: { name: 'Hot Jam Donut Van', where: 'Queen Victoria Market', tabs: ['treats'], treats: ['jamdonut', 'hotchips'] },
   qvdeli: { name: 'Yianni\'s Deli', where: 'Queen Victoria Market', tabs: ['treats', 'gifts'], treats: ['prosciutto', 'cheese', 'sardine'], gifts: ['olivejar', 'borek'] },
   fruit: { name: 'Carmel\'s Fruit and Veg', where: 'Queen Victoria Market', tabs: ['sell', 'seeds'], seeds: ['strawberry', 'tomato', 'zucchini', 'pumpkin'] },
@@ -39,4 +40,6 @@ export const SHOPS = {
   ...SH_SHOPS,
 };
 
+import { EAST_SHOPS } from './east.js';
+Object.assign(SHOPS, EAST_SHOPS);   // Brunswick East
 Object.assign(SHOPS, NORTH_SHOPS);   // Coburg and Preston

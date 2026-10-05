@@ -25,6 +25,7 @@ import { PLENTY } from './plenty.js';
 import { carSide } from './cars.js';
 import { RESERVOIR } from './reservoir.js';
 import { MELBOURNE } from './melbourne.js';
+import { BRUNSEAST } from './brunseast.js';
 import { NORTH } from './north.js';
 import { SUMMERHILL } from './summerhill.js';
 
@@ -617,11 +618,11 @@ const BASE = {
   },
 
   tramstop: {
-    foot: [1, 1], tex: [16, 32], variants: ['19'],
-    paint(p) {
+    foot: [1, 1], tex: [16, 32], variants: ['19', '1', '6'],
+    paint(p, v) {
       p.shadow(8, 31, 8);
       p.r('#3c4148', 7, 8, 2, 24); p.r('#3a8a5a', 3, 1, 10, 11); p.r('#f5d63a', 3, 1, 10, 3);
-      p.text('19', 5, 5, '#f4efe0');
+      p.text(v, 8 - Math.ceil(textWidth(v) / 2), 5, '#f4efe0');
     },
   },
 
@@ -638,7 +639,7 @@ const BASE = {
   },
 };
 
-export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...ALBION, ...CIVIC, ...SHOPS2, ...PLENTY, ...RESERVOIR, ...NORTH, ...SUMMERHILL, ...CITY, ...MELBOURNE, ...PROPS };
+export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...ALBION, ...CIVIC, ...SHOPS2, ...PLENTY, ...RESERVOIR, ...NORTH, ...SUMMERHILL, ...BRUNSEAST, ...CITY, ...MELBOURNE, ...PROPS };
 
 // Which object kinds give off light at night.
 export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 }, floorlamp: { x: 8, y: 5, r: 40 }, hphouse: { x: 86, y: 56, r: 30 } };

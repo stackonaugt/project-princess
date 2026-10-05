@@ -14,6 +14,7 @@
 //  TRAINERS  npc id -> { team: [[enemy id or 'pet:<id>', level], ...], prize?, lines... }
 
 import { PEOPLE, FOE_TEXT } from './dialogue.js';
+import { EAST_ENEMIES, EAST_TRAINERS, EAST_ENCOUNTERS } from './east.js';
 import { NORTH_ENEMIES, NORTH_TRAINERS } from './north.js';
 import { SH_ENEMIES, SH_ENCOUNTERS, SH_TRAINERS } from './summerhill.js';
 
@@ -360,6 +361,11 @@ Object.assign(TRAINERS, NORTH_TRAINERS);
 
 // Who owns which pet you have to win (Princess has no trainer: she is free).
 export const PRIZE_TRAINER = Object.fromEntries(Object.entries(TRAINERS).filter(([, t]) => t.prize).map(([id, t]) => [t.prize, id]));
+
+// Brunswick East
+Object.assign(ENEMIES, EAST_ENEMIES);
+Object.assign(TRAINERS, EAST_TRAINERS);
+ENCOUNTERS.brunswickeast = EAST_ENCOUNTERS;
 
 // Battle lines (wild things appearing and leaving, trainers' challenges) live in dialogue.js.
 for (const [id, e] of Object.entries(ENEMIES)) Object.assign(e, { appear: '' }, e.appear !== undefined ? { appear: e.appear } : {}, FOE_TEXT[id] || {});

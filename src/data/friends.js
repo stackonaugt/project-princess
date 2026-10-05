@@ -10,6 +10,7 @@
 // Anyone in npcs.js without an entry here still has hearts, with generic tastes.
 
 import { PEOPLE } from './dialogue.js';
+import { EAST_FRIENDS } from './east.js';
 import { NORTH_FRIENDS } from './north.js';
 import { SH_FRIENDS } from './summerhill.js';
 
@@ -185,6 +186,7 @@ export const FRIENDS = {
 };
 
 
+Object.assign(FRIENDS, EAST_FRIENDS);   // Brunswick East
 Object.assign(FRIENDS, NORTH_FRIENDS);   // Coburg and Preston
 
 // Heart scenes and battle-help lines live in dialogue.js.

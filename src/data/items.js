@@ -11,6 +11,7 @@
 //   vape: true    vapes from the same shop, adults only (also gift: true). Both use `art` like drinks:
 //                 art: { kind: packet | vape, body, label, cap }
 //   story: true   a story item (the fish pie). deco: true  party decorations. Neither is a treat or a present.
+//   record: true  vinyl from Wax Lyrical, Lygon St (also gift: true). art: { cover, band }
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 import { NORTH_ITEMS } from './north.js';
 import { SH_ITEMS } from './summerhill.js';
@@ -68,9 +69,7 @@ export const ITEMS = {
   gelato:     { name: 'Dog gelato', price: 6, local: true, art: { kind: 'cone', body: '#e8c870', label: '#d8a050', cap: '#8a5a32' }, desc: 'Gina\'s pup-safe gelato. Peanut butter and banana, no sugar. The dogs do not know.' },
   jamdonut:   { name: 'Hot jam donut', price: 4, local: true, art: { kind: 'donut', body: '#d8a050', label: '#c8302a', cap: '#f4f0e6' }, desc: 'From the van at Queen Vic. The jam is the temperature of the sun.' },
   hotchips:   { name: 'Hot chips', price: 5, local: true, art: { kind: 'chips', body: '#c8302a', label: '#f4d070', cap: '#f4f0e6' }, desc: 'Chicken salt, obviously. Guard them from seagulls with your life.' },
-  prosciutto: { name: 'Prosciutto', price: 8, local: true, art: { kind: 'packet', body: '#f4f0e6', label: '#e89090', cap: '#2a6a3a' }, desc: 'Paper thin, from Stavros\'s deli. Princess would sell you out for one slice.' },
   gelatocone: { name: 'Gelato cone', price: 6, gift: true, art: { kind: 'cone', body: '#8ad0a0', label: '#d8a050', cap: '#f0a0b8' }, desc: 'Pistachio and stracciatella. Eat it fast. It is not waiting for you.' },
-  cannoli:    { name: 'Cannoli', price: 6, gift: true, art: { kind: 'packet', body: '#f4f0e6', label: '#d8a050', cap: '#c8302a' }, desc: 'Crisp shell, sweet ricotta, a cherry on each end. Gina\'s cousin makes them.' },
   longblack:  { name: 'Long black', price: 5, gift: true, art: { kind: 'cup', body: '#f4f0e6', label: '#2a5a4a', cap: '#3a2a24' }, desc: 'From Remy\'s cart on Degraves St. Strong enough to fix a Monday.' },
   magic:      { name: 'A magic', price: 5, gift: true, art: { kind: 'cup', body: '#f4f0e6', label: '#c8a070', cap: '#e8d8b8' }, desc: 'Double ristretto, steamed milk, small glass. Melbourne\'s secret coffee.' },
   borek:      { name: 'Borek', price: 5, gift: true, art: { kind: 'packet', body: '#e8d8b0', label: '#3a8a3a', cap: '#f4f0e6' }, desc: 'Spinach and cheese, from the market. Everyone queues. Everyone is right.' },
@@ -136,6 +135,9 @@ export const ITEMS = {
   watermelon: { name: 'Watermelon vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#e85a6a', label: '#5ab04a', cap: '#3a3a44' }, desc: 'Watermelon bubblegum flavour. Officially, vapes are pharmacy only now. Officially.' },
   ...SH_ITEMS,
 };
+
+import { EAST_ITEMS } from './east.js';
+Object.assign(ITEMS, EAST_ITEMS);   // Brunswick East
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
 export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;

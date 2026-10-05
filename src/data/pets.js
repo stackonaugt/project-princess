@@ -121,6 +121,16 @@ export const PETS = [
     loves: ['chicken', 'jamdonut', 'hotchips', 'tennis'], likes: ['snag', 'cheese', 'sardine', 'croissant', 'carrot', 'pumpkin', 'potato', 'gelato', 'prosciutto', 'redfin'], dislikes: ['lemon'],
     stats: { hp: 82, attack: 76, defence: 66, speed: 62, special: 55 },
   },
+  {
+    id: 'chloe', name: 'Chloe', species: 'Kelpie', type: ['park', 'speed'], sprite: 'kelpie',
+    pal: { a: '#1e1a1c', t: '#b87a3a', w: '#e8dcc8', e: '#c8a040', n: '#1a1010' },
+    owner: 'Adam and Chelsea', region: 'brunswickeast', zone: 'holmes', home: [12, 7], range: 3,
+    homeSpot: { zone: 'yard', x: 7, y: 8 },
+    behaviour: 'patrol', patrol: [[12, 9], [13, 9], [13, 5], [11, 2], [13, 5], [13, 9]],
+    sleeps: [21 * 60, 26 * 60],
+    loves: ['prosciutto', 'chicken', 'tennis'], likes: ['cheese', 'snag', 'sardine', 'egg'], dislikes: ['lemon', 'basil', 'kombucha'],
+    stats: { hp: 68, attack: 82, defence: 58, speed: 104, special: 60 },
+  },
 ];
 
 

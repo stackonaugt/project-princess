@@ -43,6 +43,12 @@ import { buildBourke } from '../world/maps/bourke.js';
 import { buildLaneways } from '../world/maps/laneways.js';
 import { buildFlinders } from '../world/maps/flinders.js';
 import { buildQueenVic } from '../world/maps/queenvic.js';
+import { buildHolmes } from '../world/maps/holmes.js';
+import { buildEbNicholson } from '../world/maps/ebnicholson.js';
+import { buildEbMilkBar } from '../world/maps/ebmilkbar.js';
+import { buildFleming } from '../world/maps/fleming.js';
+import { buildBowls } from '../world/maps/bowls.js';
+import { buildEbLygon } from '../world/maps/eblygon.js';
 import { buildCoburgSyd } from '../world/maps/coburgsyd.js';
 import { buildPideBakery } from '../world/maps/pidebakery.js';
 import { buildCoburgMall } from '../world/maps/coburgmall.js';
@@ -69,6 +75,9 @@ import { PLACES } from './dialogue.js';
 export const SUBURBS = {
   laverton: { name: 'Laverton', tagline: 'Out west, where the sheds are big and the poodles are bigger.', station: 'station' },
   brunswick: { name: 'Brunswick', tagline: 'Trams, terraces and an oat milk surcharge.', station: 'brunswick' },
+  // Brunswick East: a full suburb, east of Brunswick. No train out here, so
+  // the myki reader is at the 96 tram stop on Nicholson St (content in data/east.js).
+  brunswickeast: { name: 'Brunswick East', tagline: 'Trams, bluestone, a milk bar sorceress and the biggest oval in the north.', station: 'ebnicholson' },
   reservoir: { name: 'Reservoir', tagline: 'Lemon trees, weatherboards and a lake full of opinions (ducks).', station: 'reservoir' },
   // In-between suburbs: walk through them, or skip them on the train (no station stop).
   civic: { name: 'Altona', tagline: 'Hobsons Bay City Council, on Civic Parade.', between: true },
@@ -82,7 +91,7 @@ export const SUBURBS = {
   carlton: { name: 'Carlton', tagline: 'Lygon St, gelato and the Exhibition Building.' },
   city: { name: 'Melbourne CBD', tagline: 'Trams, laneways and the clocks at Flinders St.', station: 'flinders', stationName: 'Flinders Street Station' },
 };
-export const SUBURB_ORDER = ['laverton', 'brunswick', 'coburg', 'preston', 'reservoir', 'carlton'];
+export const SUBURB_ORDER = ['laverton', 'brunswick', 'brunswickeast', 'coburg', 'preston', 'reservoir', 'carlton'];
 
 // home: true marks your place, where pets you've found hang out.
 export const ZONES = {
@@ -126,6 +135,12 @@ export const ZONES = {
   prestonmkt: { name: 'Preston Market', suburb: 'preston', build: buildPrestonMkt, grass: CITY_GRASS, },
   prestonhigh: { name: 'Preston Station', suburb: 'preston', build: buildPrestonHigh, grass: CITY_GRASS, },
   preston: { name: 'Plenty Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, },
+  holmes: { name: 'Holmes St', suburb: 'brunswickeast', build: buildHolmes, grass: BRUNSWICK_GRASS, },
+  ebnicholson: { name: 'Nicholson St', suburb: 'brunswickeast', build: buildEbNicholson, grass: BRUNSWICK_GRASS, },
+  ebmilkbar: { name: 'East Brunswick Milk Bar', suburb: 'brunswickeast', build: buildEbMilkBar, grass: LAWN, indoor: true },
+  fleming: { name: 'Fleming Park', suburb: 'brunswickeast', build: buildFleming, grass: LAWN, },
+  bowls: { name: 'Brunswick Bowls Club', suburb: 'brunswickeast', build: buildBowls, grass: LAWN, },
+  eblygon: { name: 'Lygon St', suburb: 'brunswickeast', build: buildEbLygon, grass: BRUNSWICK_GRASS, },
   wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, },
   summerhill: { name: 'Summerhill Shopping Centre', suburb: 'reservoir', build: buildSummerhill, grass: RES_GRASS, },
   summerhillmall: { name: 'Summerhill Shopping Centre', suburb: 'reservoir', build: buildSummerhillMall, grass: LAWN, indoor: true },
@@ -146,7 +161,7 @@ export const ZONES = {
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'queenvic', 'bourke', 'laneways', 'flinders'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'holmes', 'fleming', 'bowls', 'eblygon', 'ebnicholson', 'ebmilkbar', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'queenvic', 'bourke', 'laneways', 'flinders'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;
