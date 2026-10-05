@@ -115,6 +115,15 @@ export const NPCS = {
   deanna: {
     name: 'Cr Deanna Grimes', look: { hair: '#b8955a', hairStyle: 'wavy', skin: '#f2c8a8', shirt: '#5a3a8a', shirtPattern: 'plaid', shirtAccent: ['#c8b8e8', '#2a1a4a'], pants: '#2a2a30', shoes: '#1a1a1a' },
   },
+  wren: {
+    name: 'Wren', shop: 'bookshop', look: { hair: '#c8643a', hairStyle: 'bun', skin: '#f2c8a8', shirt: '#2a3a58', shirtPattern: 'stripes', shirtAccent: '#f4efe0', pants: '#3a3a44', shoes: '#c8a070', glasses: '#2a2a2a', holding: 'book' },
+  },
+  rusty: {
+    name: 'Rusty', shop: 'anaconda', look: { hair: '#8a4a22', hairStyle: 'cap', cap: '#e8643a', skin: '#e8b48a', shirt: '#e8643a', pants: '#5a5a48', shoes: '#4a3a2a', beard: true },
+  },
+  sal: {
+    name: 'Sal', shop: 'cozzo', look: { hair: '#1e1a18', hairStyle: 'short', skin: '#e0a882', shirt: '#f4f4f0', collar: true, blazer: '#2a2a34', pants: '#2a2a34', shoes: '#1a1a1a', moustache: true },
+  },
   macca: {
     name: 'Macca', shop: 'bottleshop', look: { hair: '#8a5a2a', hairStyle: 'short', skin: '#e8b48a', shirt: '#1e1e24', pants: '#3a4a6a', shoes: '#2a1a12', beard: true },
   },

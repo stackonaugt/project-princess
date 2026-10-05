@@ -12,12 +12,15 @@ export function buildFootscray() {
 
   // North: Barkly St shops
   b.fill(0, 0, 48, 3, 'b');
-  const row = [['shop', 'pho'], ['redshop', 'red'], ['bshop', 'laundro'], ['shop', 'curry'], ['shop', 'signs'], ['cafe', 'green'], ['redshop', 'cream'], ['bshop', 'opshop'], ['shop', 'bakery']];
-  row.forEach(([k, v], i) => b.put(k, 1 + i * 4, 6, { v }));
+  const row = [['shop', 'pho'], ['redshop', 'red'], ['bshop', 'laundro'], ['shop', 'curry'], null, null, null, ['bshop', 'opshop'], ['shop', 'bakery']];
+  row.forEach((s, i) => s && b.put(s[0], 1 + i * 4, 6, { v: s[1] }));
+  // Franco Cozzo: furniture for the house. Sal out the front does the selling.
+  b.put('francocozzo', 17, 6);
+  b.npc('sal', 22, 9, { face: 'down' });
   b.put('terrace', 38, 6, { v: 'sand' }); b.put('terrace', 41, 6, { v: 'brick' }); b.put('terrace', 44, 6, { v: 'cream' });
-  [[3, 9], [12, 9], [23, 9]].forEach(([x, y]) => b.put('table', x, y));
+  [[3, 9], [12, 9]].forEach(([x, y]) => b.put('table', x, y));
   b.put('busshelter', 30, 9);
-  furnish(b, 9, { skip: [3, 12, 23, 30, 31], seed: 1 });
+  furnish(b, 9, { skip: [3, 12, 22, 30, 31], seed: 1 });
 
   // South: the market stalls, its car park, a laneway and a pocket park
   b.put('canopy', 1, 14); b.put('canopy', 10, 14);

@@ -56,11 +56,27 @@ export const FURNITURE = {
       chair(10, 31, false); chair(30, 31, false);
     },
   },
+  // Couches: '<side>' or '<side>-<style>', side front/back, style from Franco Cozzo
+  // (banana: the famous yellow curve; leather: brown chesterfield).
   couch: {
-    foot: [3, 1], tex: [48, 28], variants: ['front', 'back'],
+    foot: [3, 1], tex: [48, 28], variants: ['front', 'back', 'back-banana', 'back-leather'],
     paint(p, v) {
-      const c = '#5a7a9a', d = shade(c, -0.22), l = shade(c, 0.18);
-      if (v === 'back') {
+      const [side, style] = String(v).split('-');
+      if (style === 'banana') {
+        // a curved yellow couch, darker at the ends like a banana
+        for (let x = 0; x < 48; x++) { const lift = Math.round(Math.pow((x - 24) / 24, 2) * 8); const c = x < 4 || x > 43 ? '#8a6a20' : x < 9 || x > 38 ? '#d8b020' : '#f0d040';
+          p.r(c, x, 6 + 8 - lift, 1, 14 + lift - 2); p.r(shade(c, 0.25), x, 6 + 8 - lift, 1, 1); }
+        p.r('#3a2a10', 0, 12, 2, 4); p.r('#3a2a10', 46, 12, 2, 4);
+        return;
+      }
+      const c = style === 'leather' ? '#6a3a1a' : '#5a7a9a', d = shade(c, -0.22), l = shade(c, 0.18);
+      if (style === 'leather') {
+        box(p, 0, 6, 48, 22, d); p.r(c, 2, 8, 44, 14); p.r(l, 3, 9, 42, 2);
+        for (let x = 6; x < 44; x += 6) for (let y = 12; y < 20; y += 4) p.r(shade(c, -0.35), x, y, 1, 1);   // buttons
+        p.r(d, 0, 6, 6, 20); p.r(d, 42, 6, 6, 20); p.r(l, 1, 6, 4, 2); p.r(l, 43, 6, 4, 2);
+        return;
+      }
+      if (side === 'back') {
         box(p, 0, 6, 48, 22, d); p.r(c, 2, 8, 44, 14); p.r(l, 3, 9, 42, 2);
         p.r(d, 0, 6, 5, 20); p.r(d, 43, 6, 5, 20);
         return;

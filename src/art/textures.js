@@ -13,7 +13,7 @@ import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
 import { drawPerson } from './paint/people.js';
 import { OBJECTS } from './paint/objects.js';
-import { ITEM_ART, GEAR_ART, paintSeedPacket, paintDrink } from './paint/items.js';
+import { ITEM_ART, GEAR_ART, paintSeedPacket, paintDrink, paintBook } from './paint/items.js';
 import { ITEMS } from '../data/items.js';
 import { CROPS } from '../data/crops.js';
 import { paintCrop } from './paint/crops.js';
@@ -106,6 +106,7 @@ export function buildTextures(scene) {
   // Items
   for (const [id, art] of Object.entries(ITEM_ART)) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   for (const [id, it] of Object.entries(ITEMS)) if (it.drink) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
+  for (const [id, it] of Object.entries(ITEMS)) if (it.book) canvasTexture(scene, `item-${id}`, 16, 16, p => paintBook(p, it.art));
   for (const [id, c] of Object.entries(CROPS)) canvasTexture(scene, `item-seed-${id}`, 16, 16, p => paintSeedPacket(p, c.colour));
   for (const [id, art] of Object.entries(GEAR_ART)) canvasTexture(scene, `item-gear-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   // Effects and vehicles
@@ -145,9 +146,9 @@ export function objectTexture(scene, o) {
 // Stardew-style 1px dark outline on standing objects. Skips flat things,
 // things that tile together (fences, rails, the viaduct), wall decorations
 // and art that draws its own outline. Soft ground shadows are ignored.
-const NO_OUTLINE = new Set(['bigscreen', 'ropebarrier', 'coasterwall', 'fence', 'viaduct', 'pier', 'trackoval', 'footbridge', 'iwindow', 'picture', 'shelf', 'verandah', 'canopy', 'carport', 'shade', 'archshelter', 'tank', 'crops', 'reeds']);
+const NO_OUTLINE = new Set(['birdmural', 'bigscreen', 'ropebarrier', 'coasterwall', 'fence', 'viaduct', 'pier', 'trackoval', 'footbridge', 'iwindow', 'picture', 'shelf', 'verandah', 'canopy', 'carport', 'shade', 'archshelter', 'tank', 'crops', 'reeds']);
 function needsOutline(kind, def) { return !def.flat && !def.deck && !def.lined && !NO_OUTLINE.has(kind) && !ALREADY_OUTLINED.has(kind); }
-const ALREADY_OUTLINED = new Set(['chamberdome', 'civiccentre', 'car', 'ute', 'edcastle', 'bottleshop', 'decoshop', 'bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
+const ALREADY_OUTLINED = new Set(['bbound', 'anaconda', 'francocozzo', 'chamberdome', 'civiccentre', 'car', 'ute', 'edcastle', 'bottleshop', 'decoshop', 'bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
 function objectOutline(ctx, w, h, colour = '#2a1810') {
   const img = ctx.getImageData(0, 0, w, h), d = img.data;
   const solid = i => d[i * 4 + 3] > 150;

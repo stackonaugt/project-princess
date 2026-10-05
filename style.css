@@ -355,3 +355,9 @@ body.touch .bt-btn { min-height: 52px; }
 .plot-name { font-weight: 600; min-width: 80px; }
 /* Cheats */
 .cheat-select { font: inherit; font-size: 15px; padding: 6px 8px; border: 2px solid var(--wood); border-radius: 6px; background: #fffaf0; color: var(--ink); max-width: 100%; }
+/* Fishing */
+.fish-water { background: linear-gradient(#7ab0d8, #3a7ab0); border-radius: 10px; padding: 16px; display: grid; gap: 16px; color: #fff; }
+.fish-status { font-size: 17px; font-weight: 600; min-height: 2.4em; display: flex; align-items: center; justify-content: center; gap: 8px; text-shadow: 0 1px 0 rgba(0,0,0,.4); }
+.fish-bar { position: relative; height: 28px; border-radius: 14px; background: #24486a; border: 3px solid #f4efe0; overflow: hidden; }
+.fish-zone { position: absolute; top: 0; bottom: 0; background: #6dbb58; }
+.fish-marker { position: absolute; top: 2px; width: 12px; height: 18px; border-radius: 50%; background: #f5d63a; border: 2px solid #1e1e24; left: 0; }

@@ -730,6 +730,33 @@ export const PEOPLE = {
     ],
     helpsInBattle: 'Deanna plants a tree right in front of the foe. It is very confused.',
   },
+  wren: {
+    role: 'Bookseller at Brunswick Bound, Sydney Rd',
+    lines: [
+      ['Welcome to Brunswick Bound! Classics up the back, new releases on the tables, picture books at toddler height.'],
+      ['Rose from Donald St comes in every Saturday and leaves with a stack taller than Salami.'],
+      ['I read a book a day. Mostly on the 19 tram. It is the only quiet place in Brunswick.'],
+      ['Buying a present? Monkey Grip for a Melbourne person. Cloudstreet for a crier. Fourth Wing for anyone who likes dragons.'],
+    ],
+  },
+  rusty: {
+    role: 'Runs the Anaconda in Preston. Fishing nut',
+    lines: [
+      ['G\'day! Hike, bike, camp, fish, kayak. Mostly fish, if you ask me.'],
+      ['Get yourself a rod. Edwardes Lake has redfin. Edgars Creek has yabbies. Kororoit Creek has... a lot of old boots.'],
+      ['Bait helps. Worms. The fish don\'t care about your feelings, they care about worms.'],
+      ['Eels have been in Melbourne creeks longer than Melbourne has. Show some respect.'],
+    ],
+  },
+  sal: {
+    role: 'Sells furniture at Franco Cozzo, Footscray',
+    lines: [
+      ['Footscray! Brunswick! Come on down! Megalo sale! Very cheap price! You will be very happy!'],
+      ['This couch? Imported. From the warehouse. Out the back. Still counts.'],
+      ['The banana couch. It is not a couch, it is a lifestyle. Your back will thank you. Your guests will stare.'],
+      ['Leather, my friend. Real leather. In summer it sticks to your legs. That is how you know it is real.'],
+    ],
+  },
   macca: {
     role: 'Runs the Edinburgh Castle bottle shop',
     lines: [

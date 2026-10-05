@@ -28,6 +28,7 @@ import { buildBottleShop } from '../world/maps/bottleshop.js';
 import { buildCivic } from '../world/maps/civic.js';
 import { buildCivicCentre } from '../world/maps/civiccentre.js';
 import { buildChamber } from '../world/maps/chamber.js';
+import { buildBookShop } from '../world/maps/bookshop.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
@@ -69,6 +70,7 @@ export const ZONES = {
   sydney: { name: 'Sydney Rd', suburb: 'brunswick', build: buildSydney, grass: BRUNSWICK_GRASS, },
   albion: { name: 'Sydney Rd at Albion St', suburb: 'brunswick', build: buildAlbion, grass: BRUNSWICK_GRASS, },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', suburb: 'brunswick', build: buildBottleShop, grass: LAWN, indoor: true, },
+  bookshop: { name: 'Brunswick Bound', suburb: 'brunswick', build: buildBookShop, grass: LAWN, indoor: true },
   donald: { name: 'Donald St', suburb: 'brunswick', build: buildDonald, grass: BRUNSWICK_GRASS, },
   hope: { name: 'Hope St', suburb: 'brunswick', build: buildHope, grass: BRUNSWICK_GRASS, },
   reservoir: { name: 'Reservoir Station', suburb: 'reservoir', build: buildResStation, grass: RES_GRASS, },
@@ -89,7 +91,7 @@ export const ZONES = {
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'footscray', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'footscray', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;

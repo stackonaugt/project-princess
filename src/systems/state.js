@@ -44,7 +44,7 @@ function fresh() {
     npcDay: {},        // npc id -> last day they gave a gift
     council: { given: {}, passed: [], lost: {} },   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
-    furniture: { couch: 'leather' },                // what's in the house (Franco Cozzo, data/furniture.js)
+    furniture: { couch: 'old', owned: ['old'] },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
     settings: { sound: true },
     seenIntro: false,
@@ -82,7 +82,7 @@ function sanitise(raw) {
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {} };
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
-  if (raw.furniture && typeof raw.furniture === 'object') Object.assign(d.furniture, raw.furniture);
+  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = ['old']; }
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;

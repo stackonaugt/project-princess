@@ -43,7 +43,9 @@ export function buildSydney() {
   b.put('bshop', 14, 9, { v: 'oatmilk' });
   b.put('table', 15, 12); b.put('table', 17, 12);
   b.put('bshop', 18, 9, { v: 'opshop' });
-  b.put('bshop', 22, 9, { v: 'vinyl' });
+  b.put('bbound', 22, 9);   // Brunswick Bound (inside: maps/bookshop.js)
+  b.exit(25, 12, 1, 1, 'bookshop', 'door', 'Brunswick Bound');
+  b.entry('bookshop', 25, 13, 'down');
   b.put('bshop', 26, 9, { v: 'origin' });
   b.put('garagecafe', 30, 9);
   b.put('table', 31, 12); b.put('table', 34, 12);

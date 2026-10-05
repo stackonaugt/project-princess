@@ -19,6 +19,7 @@ import { openPhone } from './phone.js';
 import { openCouncil } from './council.js';
 import { openRequests } from './requests.js';
 import { openCheats } from './cheats.js';
+import { openFishing } from './fishing.js';
 import { openFriends } from './friends.js';
 import { openMap } from './map.js';
 import { openGarden } from './garden.js';
@@ -39,7 +40,7 @@ export const ui = {
     bus.on('input:action', () => {
       if (battleUI.active && !this.dialog) return battleUI.action();
       if (this.dialog) return this.advance();
-      if (this.modalOpen) return;
+      if (this.modalOpen) return this.modalAction?.();
       this.worldAction && this.worldAction();
     });
     bus.on('input:cancel', () => {
@@ -189,6 +190,9 @@ export const ui = {
     });
   },
 
+  // Fishing. Resolves with the item caught, or null.
+  fish(fish, zone) { return new Promise(resolve => { this._fishOpts = { fish, zone, done: resolve }; this.openModal('fishing'); }); },
+
   // The pet shop. Resolves when you close it.
   shop(id = 'petshop') { return new Promise(resolve => { this._shopResolve = resolve; this._shopId = id; this.openModal('shop'); }); },
 
@@ -202,7 +206,7 @@ export const ui = {
 
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || battleUI.active || ['team', 'hero', 'shop'].includes(this.modalOpen)) return;
+    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing'].includes(this.modalOpen)) return;
     if (this.modalOpen === which) return this.closeModal();
     this._fromPhone = false;
     this.openModal(which);
@@ -223,6 +227,7 @@ export const ui = {
     if (which === 'council') openCouncil(panel, close);
     if (which === 'requests') openRequests(panel, close);
     if (which === 'cheats') openCheats(panel, close);
+    if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
     $('modal').hidden = false;
@@ -235,6 +240,8 @@ export const ui = {
     // Apps opened from the phone go back to the phone.
     if (this._fromPhone && this.modalOpen !== 'phone') { this._fromPhone = false; sfx.close(); this.openModal('phone'); return; }
     this._fromPhone = false;
+    this.modalAction = null;
+    if (this._fishCleanup) { const c = this._fishCleanup; this._fishCleanup = null; c(); }
     $('modal').hidden = true;
     this.modalOpen = false;
     sfx.close();

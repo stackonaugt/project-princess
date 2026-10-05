@@ -8,6 +8,16 @@ import { NPCS } from '../data/npcs.js';
 import { isAt, inMeeting } from '../data/routines.js';
 import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 import { REQUEST_BONUS } from '../data/requests.js';
+
+// What you can catch where: [item, weight, junk?]. Bait halves the junk.
+const FISH_TABLES = {
+  lake: [['redfin', 40], ['carp', 35], ['eel', 10], ['oldboot', 15, true]],
+  wetlands: [['yabby', 40], ['eel', 25], ['carp', 20], ['oldboot', 15, true]],
+  altona: [['carp', 35], ['eel', 15], ['yabby', 10], ['oldboot', 40, true]],
+  default: [['carp', 50], ['yabby', 20], ['oldboot', 30, true]],
+};
+// How wide the green zone is (0 to 1): smaller is trickier.
+const FISH_ZONE = { redfin: 0.18, carp: 0.3, eel: 0.12, yabby: 0.24, oldboot: 0.4 };
 import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
@@ -470,6 +480,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   async interact(t = this.findTarget()) {
+    if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.goFishing();
     if (!t || ui.blocking() || this.leaving) return;
     this.player.target = null; this.pending = null;
     this.player.setVelocity(0, 0);
@@ -483,6 +494,26 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'look') return ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
     if (t.kind === 'plot') return this.usePlot(t);
+  }
+
+  // ------------------------------------------------------------ fishing
+  // Water in front of you (or one tile further)?
+  waterAhead() {
+    const v = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[this.player.dir] || [0, 1];
+    const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 1) / T);
+    return [1, 2].some(k => this.map.ground[ty + v[1] * k]?.[tx + v[0] * k] === '~');
+  }
+  async goFishing() {
+    if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Rusty at Anaconda in Preston sells them.']);
+    const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
+    const bait = state.count('bait') > 0;
+    if (bait) state.removeItem('bait');
+    let r = Math.random() * table.reduce((a, [, w, j]) => a + (bait && j ? w / 2 : w), 0), fish = table[0][0];
+    for (const [id, w, j] of table) { r -= bait && j ? w / 2 : w; if (r <= 0) { fish = id; break; } }
+    state.data.minutes += 10;
+    const got = await ui.fish(fish, FISH_ZONE[fish] + (bait ? 0.06 : 0));
+    if (got) { state.addItem(got); state.data.stats.fish = (state.data.stats.fish || 0) + 1; ui.toast(`+1 ${ITEMS[got].name}`, itemIcon(got, 32)); }
+    this.save();
   }
 
   // ------------------------------------------------------------ pets

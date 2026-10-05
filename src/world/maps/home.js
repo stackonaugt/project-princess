@@ -54,7 +54,8 @@ export function buildHome() {
   // Lounge
   b.put('rug', 13, 11, { v: 'red' });
   b.put('tv', 14, 10);
-  b.put('couch', 14, 14, { v: 'back' });
+  const couch = state.data.furniture?.couch;   // from Franco Cozzo (data/furniture.js)
+  b.put('couch', 14, 14, { v: couch && couch !== 'old' ? `back-${couch}` : 'back' });
   b.put('armchair', 19, 12);
   b.put('floorlamp', 12, 10);
   b.put('sidetable', 17, 14);

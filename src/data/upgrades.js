@@ -12,6 +12,8 @@ export const UPGRADES = {
   pool:        { name: 'Paddling pool', price: 100, desc: 'A splash pool in the backyard. Pets at home get happier every day you visit.' },
   hose:        { name: 'Long garden hose', price: 45, tool: true, desc: 'Water one bed and you water every bed in that garden.' },
   sprinkler:   { name: 'Backyard sprinkler', price: 90, tool: true, desc: 'Your backyard beds water themselves every morning.' },
+  rod:         { name: 'Fishing rod', price: 60, tool: true, fishing: true, desc: 'Cast off at Edwardes Lake, Edgars Creek or Kororoit Creek. Face the water and press A.' },
 };
 export const UPGRADE_ORDER = Object.keys(UPGRADES).filter(id => !UPGRADES[id].tool);
-export const TOOL_ORDER = Object.keys(UPGRADES).filter(id => UPGRADES[id].tool);
+export const TOOL_ORDER = Object.keys(UPGRADES).filter(id => UPGRADES[id].tool && !UPGRADES[id].fishing);
+export const FISHING_ORDER = Object.keys(UPGRADES).filter(id => UPGRADES[id].fishing);

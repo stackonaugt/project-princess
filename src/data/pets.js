@@ -43,7 +43,7 @@ export const PETS = [
     owner: 'Rose', region: 'brunswick', zone: 'donald', home: [11, 7], range: 3,
     homeSpot: { zone: 'home', x: 18, y: 3 },
     behaviour: 'stalk', sleeps: [13 * 60, 15 * 60],
-    loves: ['sardine', 'feather'], likes: ['snag', 'chicken', 'cheese', 'tomato'], dislikes: ['carrot', 'lemon', 'basil'],
+    loves: ['redfin', 'sardine', 'feather'], likes: ['snag', 'chicken', 'cheese', 'tomato'], dislikes: ['carrot', 'lemon', 'basil'],
     stats: { hp: 60, attack: 88, defence: 50, speed: 85, special: 60 },
   },
   {
