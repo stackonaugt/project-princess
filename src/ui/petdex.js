@@ -34,7 +34,7 @@ function renderList(panel, close) {
   const found = state.foundCount(), total = PETS.length;
   const totalHearts = PETS.reduce((s, p) => s + (state.isFound(p.id) ? state.hearts(p.id) : 0), 0);
   const tabs = h('div', { class: 'tabs', role: 'tablist' },
-    ...['all', ...REGION_ORDER].map(id => h('button', {
+    ...['all', ...REGION_ORDER.filter(r => PETS.some(p => p.region === r))].map(id => h('button', {
       class: 'tab' + (tab === id ? ' on' : ''), role: 'tab', 'aria-selected': tab === id,
       onclick: () => { tab = id; sfx.select(); renderList(panel, close); },
     }, id === 'all' ? 'All' : REGIONS[id].name)));

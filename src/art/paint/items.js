@@ -1,4 +1,5 @@
 // Built-in item icons, 12x12 strings centred in a 16x16 texture.
+import { NORTH_ITEM_ART } from './north.js';
 import { SH_ITEM_ART } from './summerhill.js';
 
 export const ITEM_ART = {
@@ -194,3 +195,4 @@ export const GEAR_ART = {
     '............', '............', '............', 'kk........kk', 'kak..kk..kak', 'kabkkaakkbak',
     'kawakaakawak', 'kak..kk..kak', 'kk........kk', '............', '............', '............'] },
 };
+Object.assign(ITEM_ART, NORTH_ITEM_ART);   // Coburg and Preston items

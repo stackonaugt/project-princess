@@ -12,6 +12,7 @@
 //                 art: { kind: packet | vape, body, label, cap }
 //   story: true   a story item (the fish pie). deco: true  party decorations. Neither is a treat or a present.
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
+import { NORTH_ITEMS } from './north.js';
 import { SH_ITEMS } from './summerhill.js';
 
 export const ITEMS = {
@@ -122,3 +123,5 @@ export const ITEMS = {
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
 export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;
+
+Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston

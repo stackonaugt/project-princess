@@ -10,6 +10,7 @@
 // Anyone in npcs.js without an entry here still has hearts, with generic tastes.
 
 import { PEOPLE } from './dialogue.js';
+import { NORTH_FRIENDS } from './north.js';
 import { SH_FRIENDS } from './summerhill.js';
 
 export const FRIEND_POINTS = { talk: 10, love: 40, like: 20, neutral: 8, dislike: -10 };
@@ -124,6 +125,8 @@ export const FRIENDS = {
   ...SH_FRIENDS,
 };
 
+
+Object.assign(FRIENDS, NORTH_FRIENDS);   // Coburg and Preston
 
 // Heart scenes and battle-help lines live in dialogue.js.
 for (const [id, f] of Object.entries(FRIENDS)) {

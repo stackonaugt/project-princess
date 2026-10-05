@@ -18,6 +18,7 @@
 //  Rules of thumb: Australian spelling, no em dashes, lines under about 140 characters
 //  (dialogue boxes are small on phones). Use \' for an apostrophe inside 'quotes'.
 //  Signs and the text when you inspect things are in the map files and flavour.js.
+import { NORTH_PEOPLE, NORTH_FOE_TEXT, NORTH_PLACES } from './north.js';
 //  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
 
 import { SH_PEOPLE, SH_FOE_TEXT, SH_PLACES } from './summerhill.js';
@@ -1147,7 +1148,7 @@ export const PLACES = {
   altona: 'Factories, trucks and Kororoit Creek. The long walk east begins.',
   footscray: 'Pho, the river and a lot of pigeons.',
   flemington: 'Racecourse Rd, the flats and the tram.',
-  coburg: 'Bell St, between Coburg and Preston. Six lanes and the old Pentridge wall.',
+  coburg: 'Bell St: six lanes, the old Pentridge wall and the Town Hall.',
   preston: 'Plenty Rd, Preston: a sage green pub, a convenience store and the 86 tram.',
   bunnings: 'Bunnings Warehouse. Aisles of everything, and a garden centre out the back.',
   cozzo: 'The Franco Cozzo showroom. Megalo couches as far as the eye can see.',
@@ -1157,3 +1158,8 @@ export const PLACES = {
   wetlands: 'Reeds, frogs and paths that all look the same.',
   ...SH_PLACES,
 };
+
+// Coburg and Preston keep their words in north.js.
+Object.assign(PEOPLE, NORTH_PEOPLE);
+Object.assign(FOE_TEXT, NORTH_FOE_TEXT);
+Object.assign(PLACES, NORTH_PLACES);

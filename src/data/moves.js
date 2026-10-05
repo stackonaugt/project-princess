@@ -15,6 +15,7 @@
 //              recoil: the user loses this fraction of its own max HP (recoilText explains)
 //   anim     the battle animation ('lunge', 'bite', 'claw', 'beam', 'shout', 'heal', 'fade', 'hop', 'dig', 'gust', 'stink', 'flame')
 //   text     the line shown when it's used ({u} = user, {t} = target)
+import { NORTH_MOVES } from './north.js';
 
 import { SH_MOVES } from './summerhill.js';
 
@@ -181,3 +182,5 @@ export const PET_MOVES = {
   salami: ['extendclaws', 'scratch', 'bluestring', 'hide'],
   rusty: ['shakeleaf', 'jumponyou', 'clawrusty', 'runaway', 'barkrusty'],
 };
+
+Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston

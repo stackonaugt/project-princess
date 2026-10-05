@@ -808,11 +808,13 @@ export class WorldScene extends Phaser.Scene {
       if (r.after > r.before) { sfx.heart(); this.heartsFx(npc, 3); ui.toast(`${info.name}: ${r.after} ${r.after === 1 ? 'heart' : 'hearts'}`); }
     }
     if (info.gift && state.data.npcDay[npc.id] !== day) {
+      // A list of gifts takes turns, one a day (Betty's cooking).
+      const gift = Array.isArray(info.gift) ? info.gift[day % info.gift.length] : info.gift;
       state.data.npcDay[npc.id] = day;
-      state.addItem(info.gift); state.data.stats.treats++;
+      state.addItem(gift); state.data.stats.treats++;
       sfx.pickup();
-      ui.toast(`+1 ${ITEMS[info.gift].name}`, itemIcon(info.gift, 32));
-      await ui.say([info.giftLine, `You got: ${ITEMS[info.gift].name}.`], opts);
+      ui.toast(`+1 ${ITEMS[gift].name}`, itemIcon(gift, 32));
+      await ui.say([info.giftLine, `You got: ${ITEMS[gift].name}.`], opts);
     }
   }
 
@@ -842,11 +844,12 @@ export class WorldScene extends Phaser.Scene {
   async giveFriendGift(npc, item, opts) {
     const f = state.friend(npc.id), fi = friendInfo(npc.id), name = ITEMS[item].name.toLowerCase();
     // Handing someone back the thing they give you every day doesn't count.
-    if (npc.info.gift === item) {
+    if ([].concat(npc.info.gift).includes(item)) {
       sfx.bump();
       return ui.say([`${npc.info.name} squints at the ${name}. "Hang on. That's mine. I gave you that."`, `"Keep it. Re-gifting to the person who gifted it is a bold move, though."`], opts);
     }
-    const reaction = fi.loves.includes(item) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
+    // Some things (Betty's cooking) everyone loves, unless they've said otherwise.
+    const reaction = fi.loves.includes(item) || (ITEMS[item].loved && !fi.dislikes.includes(item)) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
     state.removeItem(item);
     f.giftedDay = state.data.day; f.reactions[item] = reaction;
     const r = state.addFriendPoints(npc.id, FRIEND_POINTS[reaction]);

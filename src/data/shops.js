@@ -1,6 +1,6 @@
 // The shops. An NPC with `shop: '<id>'` in npcs.js opens one of these when
 // you talk to them (see ui/shop.js). Tabs:
-//   treats   pet treats from items.js (with a price, not crops, drinks or presents)
+//   treats   pet treats from items.js (with a price, not crops, drinks or presents) (list `treats` to limit which)
 //   gear     pet gear from gear.js
 //   seeds    seed packets for crops.js (list `seeds` to limit which)
 //   tools    garden tools from upgrades.js (tool: true)
@@ -15,6 +15,7 @@
 //   fish     sell the fish you catch (Spiro pays 50% more than anyone else)
 //   party    party decorations (items with deco: true), for the Chapter 4 party
 //   sell     sell crops and treats from your bag (crops at their price, treats at half)
+import { NORTH_SHOPS } from './north.js';
 import { SH_SHOPS } from './summerhill.js';
 
 export const SHOPS = {
@@ -29,3 +30,5 @@ export const SHOPS = {
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
   ...SH_SHOPS,
 };
+
+Object.assign(SHOPS, NORTH_SHOPS);   // Coburg and Preston
