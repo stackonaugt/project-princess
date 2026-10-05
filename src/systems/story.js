@@ -1,0 +1,84 @@
+// The story chapters (words in data/story.js). Saved as state.data.story:
+//   chapter   0 = not started, 1..4 = the current chapter, 5 = the end
+//   done      chapter -> the day it finished
+//   ch2       { start, deadline, swapped, sickUntil, deposed, pie }
+//   pranks    friend ids pranked in Chapter 3
+//   invited   friend ids invited to the party in Chapter 4
+//   party     { score, attendees, votes, won } once the party is over
+//   heroBefore  who you were before Chapter 3 (Helen is away)
+// WorldScene starts chapters (startChapter), plays the scenes, and calls
+// checkStory() whenever something might have finished one.
+
+import { state } from './state.js';
+import { PETS } from '../data/pets.js';
+import { ITEMS } from '../data/items.js';
+import { CH1, CH3_PRANKS, CH4 } from '../data/story.js';
+import { petLevel } from './battle.js';
+import { isEvolved } from './forms.js';
+import { isMeetingDay, weekday } from '../data/routines.js';
+
+export const story = () => state.data.story;
+export const chapterNow = () => state.data.story.chapter;
+// Is this chapter the one being played right now (started, not finished)?
+export const inChapter = n => state.data.story.chapter === n && !state.data.story.done[n];
+
+// The spill vote: the second Tuesday after Paddy tells you about it.
+export function spillDeadline(start) {
+  let day = start + 1;
+  while (!isMeetingDay(day)) day++;
+  return day + 7;
+}
+
+const count = (n, of) => ` (${Math.min(n, of)}/${of})`;
+export const drinkCount = () => Object.keys(ITEMS).filter(id => ITEMS[id].drink).reduce((a, id) => a + state.count(id), 0);
+export const decoCount = () => Object.keys(ITEMS).filter(id => ITEMS[id].deco).reduce((a, id) => a + state.count(id), 0);
+export const attendees = () => story().invited.filter(id => state.friendHearts(id) >= CH4.rsvpHearts);
+
+// The objectives for a chapter: [{ text, done }].
+export function objectives(n = chapterNow()) {
+  const s = story(), d = state.data;
+  if (n === 1) {
+    const found = state.foundCount(), trained = PETS.filter(p => state.isFound(p.id) && petLevel(p.id) >= CH1.level).length;
+    const evolved = PETS.some(p => isEvolved(p.id));
+    return [
+      { text: `Find all your friends' pets${count(found, PETS.length)}`, done: found >= PETS.length },
+      { text: `Train ${CH1.trained} pets to level ${CH1.level}${count(trained, CH1.trained)}`, done: trained >= CH1.trained },
+      { text: 'Evolve a pet (level and friendship both high enough)', done: evolved },
+    ];
+  }
+  if (n === 2) {
+    const c = s.ch2;
+    return [
+      { text: 'Build the kitchen (Olly, Bunnings Warehouse, Altona North)', done: state.hasUpgrade('kitchen') },
+      { text: 'Cook a very dodgy fish pie (any fish and a lemon, at the stove)', done: !!c.pie || state.count('fishpie') > 0 || !!c.swapped },
+      { text: `Swap it for Cr Bentleigh's lunch in the civic centre foyer before the spill vote on ${weekday(c.deadline || 1)}, day ${c.deadline || '?'}`, done: !!c.swapped },
+    ];
+  }
+  if (n === 3) return [{ text: `Prank ${CH3_PRANKS} of Helen's friends: Paddy, Corni, Mem, Rose, Slinks, Tim or Nicholas${count(s.pranks.length, CH3_PRANKS)}`, done: s.pranks.length >= CH3_PRANKS }];
+  if (n === 4) {
+    const rooms = CH4.rooms.filter(id => state.hasUpgrade(id)).length;
+    return [
+      { text: `Finish the renovations: kitchen, twins' room, study (Bunnings)${count(rooms, CH4.rooms.length)}`, done: rooms >= CH4.rooms.length },
+      { text: `Party drinks from the bottle shop${count(drinkCount(), CH4.drinks)}`, done: drinkCount() >= CH4.drinks },
+      { text: `Decorations from Bunnings${count(decoCount(), CH4.decos)}`, done: decoCount() >= CH4.decos },
+      { text: `Invite friends (talk to them). Those with ${CH4.rsvpHearts}+ hearts will come${count(s.invited.length, CH4.invites)}`, done: s.invited.length >= CH4.invites },
+      { text: 'Throw the party! (Story app on the Pawphone)', done: !!s.party },
+    ];
+  }
+  return [];
+}
+
+// Chapter 4: everything ready except the party itself?
+export const partyReady = () => inChapter(4) && objectives(4).slice(0, 4).every(o => o.done);
+
+// Chapter 1 and 3 finish on their own; 2 finishes with the lunch swap (or the
+// spill), 4 with the party.
+export const chapterFinished = n => inChapter(n) && (n === 1 || n === 3) && objectives(n).every(o => o.done);
+
+// How Paddy goes at the election: a base, plus party guests, plus how well the
+// party games went, plus being the sitting mayor. 50 or more wins.
+export function electionVotes(score, guests) {
+  const s = story();
+  const v = 24 + Math.min(30, guests * 3) + score * 2.5 + (s.ch2.deposed ? 0 : 10) + Math.min(6, state.data.council.passed.length * 2);
+  return Math.max(18, Math.min(78, Math.round(v)));
+}

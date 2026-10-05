@@ -48,6 +48,9 @@ export function buildAltona() {
   b.put('tall', 45, 15, { v: 'biggum' });
   b.sign(17, 12, ['Kororoit Creek Rd, Altona North.', 'Brunswick is three suburbs east. Long walk. The train is quicker, but you knew that.']);
   b.put('infosign', 27, 13);
+  // Spiro's fish and chip van, right by the creek
+  b.put('fishvan', 31, 13);
+  b.npc('spiro', 32, 16, { face: 'up' });
 
   b.forage(30, 23, ['tennis', 'feather']);
   b.forage(5, 23, ['chicken', 'snag']);

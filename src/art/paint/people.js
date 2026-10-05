@@ -11,6 +11,7 @@
 //   scarf      a scarf hanging down the front (colour)
 //   sunglasses lens colour; shades 'rect' | 'wrap' | 'round'; frame colour (default dark)
 //   hoops      hoop earrings (colour)
+//   logo       a slogan printed across the chest (colour), e.g. Julie's Labor tee
 //   lips       lipstick (colour)
 //   shirtPattern / pantsPattern  'leopard' | 'plaid' | 'stripes' | 'gingham'
 //   shirtAccent / pantsAccent    pattern colour, or [colour, colour] for plaid
@@ -196,6 +197,8 @@ function torso(p, L, x, w, bob, back, side) {
   if (L.jersey && back && !side) { p.r('#f4f4f0', 6, 19 + bob, 3, 1); p.r('#f4f4f0', 8, 20 + bob, 1, 3); } // number 7
   if (L.blazer) blazer(p, L, x, w, bob, back, side);
   if (L.pinafore) pinafore(p, L, bob, back, side);
+  // A slogan across the chest (colour), a few pixels of "lettering".
+  if (L.logo && !back && !side) [0, 1, 3, 4, 5, 7].forEach(i => p.r(L.logo, x + 2 + i * (w - 5) / 8, 20 + bob, 1, 2));
   if (L.hivis) { p.r('#f0d040', x, 20 + bob, w, 1); p.r('#e8e4d8', x, 22 + bob, w, 1); }
   if (L.apron) { p.r(L.apron, x + 2, 19 + bob, w - 4, 7); p.r(shade(L.apron, -0.15), x + 2, 19 + bob, w - 4, 1); }
   if (L.collar && !back && !L.blazer) { p.r(shade(s, 0.35), x + 2, 17 + bob, 2, 1); p.r(shade(s, 0.35), x + w - 4, 17 + bob, 2, 1); }

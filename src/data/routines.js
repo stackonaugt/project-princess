@@ -33,10 +33,20 @@ export const ROUTINES = {
     return 'home';
   },
 };
+// The story (systems/story.js) moves some people around:
+//   Chapter 2: Rayna is away walking the Camino; Lesley eats lunch in the foyer
+//   every weekday, 11am to 3pm, until the fish pie sends her home for a week.
+//   Chapter 3: Trish and Gordon are in bed with gastro (Helen is looking after them).
+const st = d => d.story || {};
+const ch = (d, n) => st(d).chapter === n && !st(d).done?.[n];
 for (const id of COUNCILLORS) {
-  ROUTINES[id] = d => inMeeting(d) ? 'chamber'
+  ROUTINES[id] = d => (id === 'rayna' && ch(d, 2)) || (id === 'lesley' && st(d).ch2?.sickUntil >= d.day) ? null
+    : id === 'lesley' && ch(d, 2) && !isWeekend(d.day) && d.minutes >= 11 * 60 && d.minutes < 15 * 60 && !inMeeting(d) ? 'foyer'
+    : inMeeting(d) ? 'chamber'
     : FOYER_DAYS[id].includes(weekday(d.day)) && d.minutes >= 10 * 60 && d.minutes < 16 * 60 ? 'foyer' : null;
 }
+
+ROUTINES.trish = ROUTINES.gordon = d => (ch(d, 3) ? null : 'woods');
 
 // Is this person at this place right now? People without a routine always are.
 export function isAt(id, place, d) {

@@ -18,6 +18,8 @@ import { openShop } from './shop.js';
 import { openPhone } from './phone.js';
 import { openCouncil } from './council.js';
 import { openRequests } from './requests.js';
+import { openCalendar } from './calendar.js';
+import { openStoryApp, openCard, openNews, openParty } from './story.js';
 import { openCheats } from './cheats.js';
 import { openFishing } from './fishing.js';
 import { openFriends } from './friends.js';
@@ -46,7 +48,7 @@ export const ui = {
     bus.on('input:cancel', () => {
       if (battleUI.active && !this.dialog) return battleUI.cancel();
       if (this.dialog) return this.cancelDialog();
-      if (this.modalOpen) return this.closeModal();
+      if (this.modalOpen && this.modalOpen !== 'party') return this.closeModal();
     });
     bus.on('input:dir', (dx, dy) => { if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); });
     bus.on('input:dex', () => this.toggle('dex'));
@@ -56,7 +58,7 @@ export const ui = {
     $('btnBag').addEventListener('click', () => this.toggle('bag'));
     $('btnMenu').addEventListener('click', () => this.toggle('phone'));
     $('dialog').addEventListener('click', e => { if (!e.target.closest('.d-choices')) this.advance(); });
-    $('modal').addEventListener('click', e => { if (e.target.id === 'modal') this.closeModal(); });
+    $('modal').addEventListener('click', e => { if (e.target.id === 'modal' && this.modalOpen !== 'party') this.closeModal(); });
     bus.on('petdex:changed', () => this.updateDexCount());
     bus.on('bag:changed', () => this.updateBagCount());
     bus.on('money:changed', () => this.updateMoney());
@@ -193,6 +195,12 @@ export const ui = {
   // Fishing. Resolves with the item caught, or null.
   fish(fish, zone) { return new Promise(resolve => { this._fishOpts = { fish, zone, done: resolve }; this.openModal('fishing'); }); },
 
+  // Story screens (ui/story.js). Each resolves when it's closed.
+  card(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('card'); }); },
+  news(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('news'); }); },
+  // The party games. Resolves with the score.
+  party(guests) { return new Promise(resolve => { this._storyOpts = { guests, done: resolve }; this.openModal('party'); }); },
+
   // The pet shop. Resolves when you close it.
   shop(id = 'petshop') { return new Promise(resolve => { this._shopResolve = resolve; this._shopId = id; this.openModal('shop'); }); },
 
@@ -206,7 +214,7 @@ export const ui = {
 
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing'].includes(this.modalOpen)) return;
+    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing', 'card', 'news', 'party'].includes(this.modalOpen)) return;
     if (this.modalOpen === which) return this.closeModal();
     this._fromPhone = false;
     this.openModal(which);
@@ -226,7 +234,12 @@ export const ui = {
     if (which === 'garden') openGarden(panel, close);
     if (which === 'council') openCouncil(panel, close);
     if (which === 'requests') openRequests(panel, close);
+    if (which === 'calendar') openCalendar(panel, close);
     if (which === 'cheats') openCheats(panel, close);
+    if (which === 'story') openStoryApp(panel, close);
+    if (which === 'card') this.modalAction = openCard(panel, close, this._storyOpts).action;
+    if (which === 'news') this.modalAction = openNews(panel, close, this._storyOpts).action;
+    if (which === 'party') { const f = openParty(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
@@ -248,6 +261,7 @@ export const ui = {
     bus.emit('ui:modal', null);
     // Closing the team picker without choosing means "not leaving yet".
     if (this._shopResolve) { const r = this._shopResolve; this._shopResolve = null; r(); }
+    if (this._storyResolve) { const r = this._storyResolve; this._storyResolve = null; r(); }
     if (this._teamResolve) { const r = this._teamResolve; this._teamResolve = null; r(null); }
     if (this._heroResolve) { if (!this._heroCancel) { this.openModal('hero'); return; } const r = this._heroResolve; this._heroResolve = null; r(null); }
   },

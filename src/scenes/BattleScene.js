@@ -525,7 +525,8 @@ export class BattleScene extends Phaser.Scene {
       const r = R.damage(user, target, m);
       await this.play(m.anim, user, target, m.type, true);
       let dmg = r.dmg, refused = false;
-      if (dmg >= target.hp && R.refusesToLose(target)) { dmg = target.hp - 1; refused = true; }
+      // In Julie's tutorial your pet always hangs on: you can't lose your first fight.
+      if (dmg >= target.hp && (R.refusesToLose(target) || (this.trainer?.tutorial && target.side === 'mine'))) { dmg = target.hp - 1; refused = true; }
       target.hp = Math.max(0, target.hp - dmg);
       B.hp(target);
       await this.hurt(target, r.eff);
