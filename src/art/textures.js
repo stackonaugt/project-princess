@@ -8,7 +8,7 @@
 import { ART_PATH } from '../config.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
-import { painter, outline } from './paint/painter.js';
+import { painter, outline, textWidth } from './paint/painter.js';
 import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
 import { drawPerson } from './paint/people.js';
@@ -118,6 +118,31 @@ export function buildTextures(scene) {
 }
 
 // Crop sprites are made the first time a plot needs them.
+// A green way sign beside an exit: the place name and an arrow pointing off the map.
+export function exitSignTexture(scene, label, dir) {
+  const words = label.toUpperCase().split(' ');
+  const lines = [];
+  for (const w of words) {
+    const last = lines[lines.length - 1];
+    if (last && textWidth(`${last} ${w}`) <= 40) lines[lines.length - 1] = `${last} ${w}`; else lines.push(w);
+  }
+  const tw = Math.max(...lines.map(textWidth)), w = tw + 16, ph = lines.length * 6 + 5, h = ph + 12;
+  const key = `exitsign-${label}-${dir}`;
+  canvasTexture(scene, key, w, h, p => {
+    p.shadow(w / 2, h - 1, 6);
+    p.r('#8a8e96', w / 2 - 1, ph, 2, h - ph - 1);
+    p.r('#1e6a3a', 1, 1, w - 2, ph); p.r('#2e8a4e', 1, 1, w - 2, 1); p.r('#f4f4f0', 2, 2, w - 4, 1); p.r('#f4f4f0', 2, ph - 1, w - 4, 1);
+    lines.forEach((l, i) => p.text(l, 3, 4 + i * 6, '#f4f4f0'));
+    const ax = w - 7, ay = Math.floor(ph / 2) + 1, c = '#f4f4f0';
+    if (dir === 'up') { p.r(c, ax, ay - 3, 1, 7); p.r(c, ax - 1, ay - 2, 3, 1); p.r(c, ax - 2, ay - 1, 5, 1); }
+    else if (dir === 'down') { p.r(c, ax, ay - 3, 1, 7); p.r(c, ax - 1, ay + 2, 3, 1); p.r(c, ax - 2, ay + 1, 5, 1); }
+    else if (dir === 'left') { p.r(c, ax - 3, ay, 7, 1); p.r(c, ax - 2, ay - 1, 1, 3); p.r(c, ax - 1, ay - 2, 1, 5); }
+    else { p.r(c, ax - 3, ay, 7, 1); p.r(c, ax + 2, ay - 1, 1, 3); p.r(c, ax + 1, ay - 2, 1, 5); }
+    outline(p.ctx, 0, 0, w, h);
+  });
+  return key;
+}
+
 export function cropTexture(scene, id, stage) {
   const key = `crop-${id}-${stage}`;
   canvasTexture(scene, key, 16, 16, p => { paintCrop(p, id, stage); if (stage > 0) outline(p.ctx, 0, 0, 16, 16); });

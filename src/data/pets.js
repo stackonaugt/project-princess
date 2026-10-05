@@ -29,11 +29,11 @@ export const PETS = [
     behaviour: 'patrol', patrol: [[17, 9], [24, 10], [25, 14], [20, 16], [15, 14]],
     sleeps: [22 * 60, 26 * 60],
     loves: ['ribbon', 'chicken', 'strawberry'], likes: ['cheese', 'croissant', 'chilli'], dislikes: ['lemon', 'tennis', 'zucchini'],
-    stats: { hp: 55, attack: 72, defence: 45, speed: 80, special: 95 },
+    stats: { hp: 66, attack: 84, defence: 52, speed: 80, special: 100 },
     evolution: {
       name: 'Flamcess', species: 'Toy poodle (on fire)', type: 'fire', level: 14, hearts: 5, sprite: 'flamcess',
       pal: { a: '#ffe0b0', b: '#f0b070', w: '#fff0a0', c: '#c8501a', p: '#e83a2a', y: '#ffd030', o: '#f08020', r: '#d8301a', n: '#5a2010', e: '#2a1a10' },
-      stats: { hp: 70, attack: 88, defence: 55, speed: 92, special: 112 },
+      stats: { hp: 82, attack: 98, defence: 62, speed: 92, special: 116 },
       moves: ['blazeclaws', 'hotbite', 'scorchbed', 'pompom'],
     },
   },
@@ -45,6 +45,12 @@ export const PETS = [
     behaviour: 'stalk', sleeps: [13 * 60, 15 * 60],
     loves: ['redfin', 'sardine', 'feather'], likes: ['snag', 'chicken', 'cheese', 'tomato'], dislikes: ['carrot', 'lemon', 'basil'],
     stats: { hp: 60, attack: 88, defence: 50, speed: 85, special: 60 },
+    evolution: {
+      name: 'Sopressa', species: 'Tabby cat (aged, like a fine salami)', type: ['street', 'old'], level: 15, hearts: 5, sprite: 'sopressa',
+      pal: { a: '#7a5e3c', s: '#3a2a18', c: '#c8a070', w: '#e8d8b8', g: '#c8c8c0', f: '#4a5a3a', e: '#8ab83a', p: '#d89a9a' },
+      stats: { hp: 78, attack: 104, defence: 68, speed: 80, special: 78 },
+      moves: ['agedclaws', 'grumble', 'cured', 'backinmyday'],
+    },
   },
   {
     id: 'spooky', name: 'Spooky', species: 'Bunny', type: 'ghost', sprite: 'bunny',
@@ -54,6 +60,12 @@ export const PETS = [
     behaviour: 'phase', sleeps: [9 * 60, 12 * 60],
     loves: ['carrot', 'lemon', 'basil'], likes: ['feather', 'croissant', 'strawberry', 'zucchini'], dislikes: ['snag', 'chicken', 'chilli'],
     stats: { hp: 50, attack: 55, defence: 60, speed: 95, special: 90 },
+    evolution: {
+      name: 'Poltergeist Spooky', species: 'Bunny (haunted)', type: ['ghost', 'psychic'], level: 15, hearts: 5, sprite: 'poltergeist',
+      pal: { a: '#3e3450', b: '#2a2238', w: '#7a68a0', e: '#ff6ae0', p: '#c890e8', g: '#9fe8ff', x: '#e8f8ff' },
+      stats: { hp: 66, attack: 62, defence: 72, speed: 112, special: 112 },
+      moves: ['possess', 'rattlechains', 'flicker', 'hauntedcarrot'],
+    },
   },
   {
     id: 'poppy', name: 'Poppy', species: 'French bulldog', type: 'rock', sprite: 'frenchie',
@@ -78,6 +90,12 @@ export const PETS = [
     behaviour: 'zoomies', sleeps: [20 * 60, 26 * 60],
     loves: ['chicken', 'redfin', 'cheese'], likes: ['snag', 'sardine', 'tennis', 'carrot'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 66, attack: 78, defence: 50, speed: 115, special: 48 },
+    evolution: {
+      name: 'Even Rustier', species: 'Whippet (sheet metal)', type: ['steel', 'speed'], level: 16, hearts: 5, sprite: 'evenrustier',
+      pal: { a: '#9aa2ac', b: '#6a727c', k: '#b8642a', w: '#e8eef4', r: '#4a4e56', o: '#c87a3a', e: '#e83a2a', n: '#1a1010' },
+      stats: { hp: 86, attack: 108, defence: 82, speed: 130, special: 56 },
+      moves: ['sliceanddice', 'turbozoom', 'rustcloud', 'oilchange'],
+    },
   },
   {
     id: 'stanley', name: 'Stanley', species: 'Mini schnauzer', type: 'psychic', sprite: 'schnauzer',
@@ -87,6 +105,12 @@ export const PETS = [
     behaviour: 'aloof', sleeps: [23 * 60, 26 * 60],
     loves: ['cheese', 'croissant'], likes: ['chicken', 'sardine', 'basil', 'pumpkin'], dislikes: ['tennis', 'lemon', 'chilli'],
     stats: { hp: 60, attack: 50, defence: 70, speed: 55, special: 98 },
+    evolution: {
+      name: 'Centurionely', species: 'Mini schnauzer (Roman centurion)', type: 'steel', level: 16, hearts: 5, sprite: 'centurionely',
+      pal: { a: '#55585f', l: '#9a9ea6', w: '#e8e6e0', d: '#3a3c42', h: '#b8bec8', r: '#c8302a', c: '#a8202a', m: '#8a929e', g: '#c89a3a', e: '#2a1a10', n: '#1a1a1a' },
+      stats: { hp: 82, attack: 88, defence: 108, speed: 58, special: 100 },
+      moves: ['pilum', 'testudo', 'venividivici', 'staredown'],
+    },
   },
   {
     id: 'girlie', name: 'Girlie', species: 'Black labrador', type: ['water', 'park'], sprite: 'lab',

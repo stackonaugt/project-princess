@@ -326,6 +326,23 @@ const BASE = {
     },
   },
 
+  // Spiro's fish and chip van on Kororoit Creek Rd: he buys your catch.
+  fishvan: {
+    foot: [3, 2], tex: [48, 40], variants: ['spiro'],
+    paint(p) {
+      const body = '#f4f4f0', blue = '#2f6aa3';
+      p.r('rgba(30,50,20,.22)', 3, 36, 44, 4);
+      p.r(body, 2, 8, 44, 26); p.r('#d8dce0', 2, 30, 44, 4); p.r('#ffffff', 3, 8, 42, 1);
+      p.r(blue, 2, 24, 44, 3);
+      p.r('#2a2e33', 8, 13, 30, 10); p.r('#3a2a1a', 9, 14, 28, 8);           // the serving hatch
+      p.r('#f0c040', 11, 19, 6, 2); p.r('#e8a030', 19, 19, 5, 2); p.r('#c8823a', 27, 18, 7, 3);  // chips, a potato cake, flake
+      for (let i = 0; i < 11; i++) p.r(i % 2 ? '#f4f4f0' : blue, 6 + i * 3.4, 10, 3.4, 3);       // the awning
+      p.r(blue, 4, 0, 40, 8); p.r(shade(blue, 0.25), 4, 0, 40, 1);
+      p.text('FISH N CHIPS', 24 - Math.round(textWidth('FISH N CHIPS') / 2), 2, '#ffffff');
+      p.r('#2a2a2a', 8, 33, 6, 5); p.r('#5a5a5a', 9, 34, 4, 3); p.r('#2a2a2a', 34, 33, 6, 5); p.r('#5a5a5a', 35, 34, 4, 3);  // wheels
+      p.r('#8a8e96', 44, 26, 4, 2);                                            // tow bar
+    },
+  },
   shop: {
     foot: [4, 3], tex: [64, 56], variants: ['milk bar', 'records', 'bakery', 'pho', 'books', 'curry', 'pizza', 'signs'],
     paint(p, v) {
