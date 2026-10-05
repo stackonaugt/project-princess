@@ -5,7 +5,7 @@
 import { OBJECTS } from '../art/paint/objects.js';
 import { hash, rng } from '../util.js';
 
-const SOLID_GROUND = '~rWV';
+const SOLID_GROUND = '~rWVRY';
 const GRASSY = '.,"L';
 
 const DRESS_KINDS = new Set(['house', 'brickhouse', 'weatherboard', 'terrace', 'loddonunit', 'glasgowhouse', 'timunit', 'unit', 'hphouse']);

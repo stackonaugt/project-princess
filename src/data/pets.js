@@ -113,6 +113,15 @@ export const PETS = [
     },
   },
   {
+    id: 'girlie', name: 'Girlie', species: 'Black labrador', type: ['water', 'park'], sprite: 'lab',
+    pal: { a: '#26252a', b: '#141418', l: '#3a3940', e: '#6a4a2a', n: '#0a0a0a', p: '#e8708a' },
+    owner: 'Dell', region: 'carlton', zone: 'gardens', home: [12, 23], range: 3,
+    homeSpot: { zone: 'yard', x: 23, y: 9 },
+    behaviour: 'wander', sleeps: [14 * 60, 16 * 60],
+    loves: ['chicken', 'jamdonut', 'hotchips', 'tennis'], likes: ['snag', 'cheese', 'sardine', 'croissant', 'carrot', 'pumpkin', 'potato', 'gelato', 'prosciutto', 'redfin'], dislikes: ['lemon'],
+    stats: { hp: 82, attack: 76, defence: 66, speed: 62, special: 55 },
+  },
+  {
     id: 'chloe', name: 'Chloe', species: 'Kelpie', type: ['park', 'speed'], sprite: 'kelpie',
     pal: { a: '#1e1a1c', t: '#b87a3a', w: '#e8dcc8', e: '#c8a040', n: '#1a1010' },
     owner: 'Adam and Chelsea', region: 'brunswickeast', zone: 'holmes', home: [12, 7], range: 3,

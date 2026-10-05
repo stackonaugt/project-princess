@@ -13,6 +13,7 @@
 //   o  timber floor T  bathroom tiles K  carpet        n  lino (laundry)
 //   Q  terrazzo (civic centre foyer)   U  patterned blue carpet (council chamber, brick walls)
 import { hash } from '../../util.js';
+import { shade } from './painter.js';
 
 export const TILE_NAMES = {
   '.': 'grass', ',': 'flowers', '"': 'tallgrass', '=': 'path', '#': 'road', '+': 'tram', 'x': 'crossing',
@@ -20,6 +21,7 @@ export const TILE_NAMES = {
   'w': 'bridge', 's': 'sand', 'd': 'soil', 'g': 'gravel', 'm': 'mulch',
   'A': 'track', 'k': 'pavers', 'L': 'lawn', 'u': 'parkgravel', 'z': 'zebra', 'P': 'carpark', 'h': 'driveway',
   'B': 'rail', 'W': 'wall', 'V': 'void', 'D': 'doorway', 'o': 'timber', 'T': 'bathtile', 'K': 'carpet', 'n': 'lino', 'Q': 'terrazzo', 'U': 'chambercarpet',
+  'R': 'rooftop', 'Y': 'houseroof',
 };
 const WALLISH = 'WV';
 const FLOORS = 'oTKnDQU';
@@ -252,6 +254,8 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       kerbs(p, sx, sy, get, tx, ty);
       return;
     }
+    case 'R': { roofTile(p, tx, ty, sx, sy, get); return; }
+    case 'Y': { houseRoofTile(p, tx, ty, sx, sy, get); return; }
     case 'c': {
       p.r('#bab7af', sx, sy, T, T); p.r('#a5a29a', sx, sy + 15, T, 1); p.r('#a5a29a', sx + 15, sy, 1, T);
       speckle(p, tx, ty, sx, sy, ['#b0ada5', '#c4c1b9'], 5);
@@ -326,6 +330,94 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
 
 // A 16x16 tuft drawn over feet when standing in tall grass.
 // ---- ground detail helpers (deterministic, from hash())
+// CITY ROOFTOPS (R): a dense block of flat roofs seen from above. Buildings
+// are irregular bands of tiles, each with its own membrane colour, parapet
+// seams between them, and AC units, skylights, vents and water tanks on top.
+// Where the roofs meet the street below, a sliver of facade with windows.
+const ROOF_COLS = ['#8f8f8a', '#a39c8f', '#7b8087', '#9b8b78', '#6d7177', '#b1a998', '#887868', '#94989a'];
+const WALL_COLS = ['#c9b79a', '#a8644a', '#d8d0c0', '#8a8e94', '#b98a5a', '#e0d6c2', '#7a5a48', '#9aa4a8'];
+function roofBand(ty) { return Math.floor(ty / 4); }
+function roofId(tx, ty) {
+  const band = roofBand(ty), w = 3 + Math.floor(hash(band, 3) * 5), off = Math.floor(hash(band, 9) * 7);
+  return band * 1000 + Math.floor((tx + off) / w);
+}
+function roofTile(p, tx, ty, sx, sy, get) {
+  const id = roofId(tx, ty), rr = hash(id, 17), col = ROOF_COLS[Math.floor(rr * ROOF_COLS.length)];
+  const isR = (x, y) => { const c = get(x, y); return c === null || c === 'R'; };
+  p.r(col, sx, sy, T, T);
+  speckle(p, tx, ty, sx, sy, [shade(col, 0.08), shade(col, -0.08)], 6);
+  if (hash(id, 23) > 0.6) for (let y = 3; y < T; y += 5) p.r(shade(col, -0.05), sx, sy + y, T, 1);   // membrane seams
+  const sameR = (x, y) => isR(x, y) && (get(x, y) === null || roofId(x, y) === id);
+  const up = sameR(tx, ty - 1), down = sameR(tx, ty + 1), left = sameR(tx - 1, ty), right = sameR(tx + 1, ty);
+  // Parapets: a light lip and a shadow inside it on every building edge.
+  if (!up) { p.r(shade(col, 0.28), sx, sy, T, 2); p.r(shade(col, -0.18), sx, sy + 2, T, 1); }
+  if (!left) { p.r(shade(col, 0.22), sx, sy, 2, T); p.r(shade(col, -0.12), sx + 2, sy, 1, T); }
+  if (!right) { p.r(shade(col, -0.3), sx + 14, sy, 2, T); }
+  const front = !isR(tx, ty + 1);
+  if (!down && !front) { p.r(shade(col, -0.32), sx, sy + 14, T, 2); }
+  // Rooftop clutter, kept off the edges.
+  const q = hash(tx * 7 + 1, ty * 5 + 2), q2 = hash(ty * 3 + 4, tx * 9 + 1);
+  if (up && down && left && right && !front) {
+    if (q > 0.9) {   // an air-conditioning unit with a fan
+      p.r('#3a3c40', sx + 3, sy + 4, 10, 9); p.r('#c4c8cc', sx + 3, sy + 3, 10, 9); p.r('#e2e6ea', sx + 3, sy + 3, 10, 1);
+      p.r('#6a6e74', sx + 5, sy + 5, 6, 6); p.r('#9aa0a6', sx + 6, sy + 6, 4, 4); p.r('#4a4e54', sx + 7, sy + 7, 2, 2);
+    } else if (q > 0.84) {   // a glass skylight
+      p.r('#3a4a5a', sx + 2, sy + 3, 12, 9); p.r('#7aa4c4', sx + 3, sy + 4, 10, 7); p.r('#b4d4ea', sx + 3, sy + 4, 4, 2); p.r('#3a4a5a', sx + 8, sy + 4, 1, 7);
+    } else if (q > 0.8) {   // a round water tank
+      p.r('#5a5e62', sx + 3, sy + 12, 10, 2); p.r('#b8bcc0', sx + 3, sy + 3, 10, 10); p.r('#d4d8dc', sx + 4, sy + 3, 8, 2); p.r('#8a8e92', sx + 12, sy + 4, 1, 8);
+    } else if (q > 0.76) {   // vents
+      p.r('#5a5c60', sx + 4, sy + 6, 3, 4); p.r('#9a9ca0', sx + 4, sy + 5, 3, 2); p.r('#5a5c60', sx + 10, sy + 9, 3, 4); p.r('#9a9ca0', sx + 10, sy + 8, 3, 2);
+    } else if (q > 0.72 && hash(id, 41) > 0.5) {   // solar panels
+      for (let i = 0; i < 2; i++) { p.r('#1e2a44', sx + 2, sy + 2 + i * 7, 12, 5); p.r('#34508a', sx + 3, sy + 3 + i * 7, 10, 3); p.r('#5a7ab4', sx + 3, sy + 3 + i * 7, 10, 1); }
+    }
+    if (q2 > 0.93) { p.r(shade(col, -0.25), sx + 6, sy + 7, 2, 2); }   // a drain
+  }
+  // The street face of the building: a strip of wall with windows.
+  if (front) {
+    const wall = WALL_COLS[Math.floor(hash(id, 29) * WALL_COLS.length)];
+    p.r(shade(col, 0.25), sx, sy + 7, T, 1);
+    p.r(wall, sx, sy + 8, T, 8); p.r(shade(wall, 0.15), sx, sy + 8, T, 1); p.r(shade(wall, -0.25), sx, sy + 15, T, 1);
+    const glass = hash(id, 31) > 0.5 ? '#4a6278' : '#5a7a94';
+    for (let x = 2; x < 14; x += 6) { p.r(shade(wall, -0.35), sx + x, sy + 10, 4, 4); p.r(glass, sx + x + 1, sy + 11, 2, 3); p.r(shade(glass, 0.4), sx + x + 1, sy + 11, 1, 1); }
+    if (!right) p.r(shade(wall, -0.3), sx + 15, sy + 8, 1, 8);
+    if (!left) p.r(shade(wall, 0.2), sx, sy + 8, 1, 8);
+  }
+}
+
+// HOUSE ROOFS (Y): terrace roofs packed side by side, three tiles a house.
+// Corrugated iron, terracotta and slate, with a ridge, brick party walls
+// poking up between houses, chimneys, and a gutter on the street side.
+const HOUSE_ROOFS = [['#a8b0b4', 'iron'], ['#b8543a', 'tile'], ['#5a6068', 'slate'], ['#c0c4c0', 'iron'], ['#a04a34', 'tile'], ['#8a5a44', 'tile'], ['#6a8a8a', 'iron']];
+function houseId(tx, ty) {
+  const band = Math.floor(ty / 3), off = Math.floor(hash(band, 5) * 3);
+  return band * 1000 + Math.floor((tx + off) / 3);
+}
+function houseRoofTile(p, tx, ty, sx, sy, get) {
+  const id = houseId(tx, ty), [col, kind] = HOUSE_ROOFS[Math.floor(hash(id, 13) * HOUSE_ROOFS.length)];
+  const isY = (x, y) => { const c = get(x, y); return c === null || c === 'Y'; };
+  const row = ty % 3;   // 0: back slope, 1: ridge and front slope, 2: front slope and gutter
+  const base = row === 0 ? shade(col, -0.22) : col;
+  p.r(base, sx, sy, T, T);
+  if (kind === 'iron') for (let x = 1; x < T; x += 3) { p.r(shade(base, 0.18), sx + x, sy, 1, T); p.r(shade(base, -0.12), sx + x + 1, sy, 1, T); }
+  else if (kind === 'tile') for (let y = 2; y < T; y += 4) { p.r(shade(base, -0.2), sx, sy + y, T, 1); for (let x = (y % 8 ? 0 : 2); x < T; x += 4) p.r(shade(base, 0.12), sx + x, sy + y - 2, 2, 1); }
+  else for (let y = 3; y < T; y += 4) { p.r(shade(base, 0.12), sx, sy + y, T, 1); for (let x = (y % 8 === 3 ? 1 : 4); x < T; x += 6) p.r(shade(base, -0.18), sx + x, sy + y - 3, 1, 3); }
+  if (row === 1) { p.r(shade(col, -0.35), sx, sy, T, 1); p.r(shade(col, 0.3), sx, sy + 1, T, 2); }   // the ridge
+  if (row === 2) { p.r('#7a7e80', sx, sy + 14, T, 2); p.r('#b8bcbe', sx, sy + 14, T, 1); }   // gutter
+  if (row === 0 && !isY(tx, ty - 1)) p.r(shade(col, -0.4), sx, sy, T, 1);
+  // Party walls between houses: a brick firewall on the left edge of each house.
+  if (houseId(tx - 1, ty) !== id && isY(tx - 1, ty)) {
+    p.r('#8a4a34', sx, sy, 3, T); p.r('#b06a4a', sx, sy, 1, T); p.r('#5a2e20', sx + 2, sy, 1, T);
+    for (let y = 2; y < T; y += 4) p.r('#6e3a28', sx, sy + y, 3, 1);
+  }
+  // A chimney on some houses, on the back slope.
+  if (row === 0 && hash(id, 19) > 0.55 && houseId(tx + 1, ty) !== id) {
+    p.r('#3a2a22', sx + 7, sy + 6, 6, 9); p.r('#a85a40', sx + 7, sy + 4, 6, 9); p.r('#c87a5a', sx + 7, sy + 4, 6, 1);
+    p.r('#5a5a5a', sx + 8, sy + 2, 2, 3); p.r('#5a5a5a', sx + 11, sy + 2, 1, 3);
+  }
+  if (!isY(tx + 1, ty)) p.r(shade(col, -0.4), sx + 15, sy, 1, T);
+  if (!isY(tx - 1, ty)) p.r(shade(col, 0.3), sx, sy, 1, T);
+}
+
 function speckle(p, tx, ty, sx, sy, cols, n) {
   for (let i = 0; i < n; i++) {
     const q = hash(tx * 13 + i, ty * 7 - i), q2 = hash(ty * 11 + i, tx * 5 + i);

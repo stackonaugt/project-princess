@@ -51,8 +51,9 @@ export function buildEbLygon() {
 
   b.exit(0, 7, 1, 8, 'ebnicholson', 'west', 'Nicholson St');
   b.exit(0, 22, 1, 3, 'bowls', 'west', 'Brunswick Bowls Club');
+  b.exit(43, 7, 1, 8, 'lygon', 'east', 'Lygon St, Carlton');
   b.exit(30, 0, 4, 1, null, null, 'Moreland Rd, Coburg', ['Lygon St carries on north towards Moreland Rd.', 'Not today. Bring Betty back some coffee beans when you do.']);
-  b.entry('east', 1, 8, 'right').entry('bowls', 2, 23, 'right').entry('north', 31, 2, 'down');
+  b.entry('east', 1, 8, 'right').entry('bowls', 2, 23, 'right').entry('north', 31, 2, 'down').entry('carlton', 42, 10, 'left');
 
   b.npc('mrwilkinson', 9, 7, { face: 'down' });
   b.npc('abbysaunt', 20, 14, { face: 'up' });

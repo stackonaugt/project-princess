@@ -2,7 +2,8 @@
 // blue Metro signs, the level crossing on Dawson St, the little weatherboard
 // signal hut and the Upfield shared path. Around it: a commuter car park,
 // sawtooth-roof factories, roller doors and a weedy lot or two.
-// West along Dawson St to Laverton, east to Sydney Rd, north up the path to Hope St.
+// West along Dawson St to Laverton, east to Sydney Rd, north up the path to Hope St,
+// south down the bluestone lane to Lygon St, Carlton.
 import { MapBuilder } from '../MapBuilder.js';
 import { state } from '../../systems/state.js';
 
@@ -66,7 +67,8 @@ export function buildBrunswick() {
   b.exit(0, 19, 1, 2, 'flemington', 'east', 'Flemington');
   b.exit(39, 19, 1, 2, 'sydney', 'west', 'Sydney Rd, via Dawson St');
   b.exit(26, 0, 1, 1, 'hope', 'south', 'Hope St');
-  b.entry('station', 15, 11, 'down').entry('west', 1, 20, 'right').entry('east', 38, 20, 'left').entry('north', 26, 2, 'down');
+  b.exit(9, 25, 2, 1, 'lygon', 'north', 'Lygon St, Carlton');
+  b.entry('station', 15, 11, 'down').entry('west', 1, 20, 'right').entry('east', 38, 20, 'left').entry('north', 26, 2, 'down').entry('south', 9, 23, 'up');
 
   b.npc('abby', 26, 4, { path: [[26, 4], [26, 16], [30, 17], [26, 16]] });
 

@@ -137,6 +137,82 @@ export const NPCS = {
   sal: {
     name: 'Sal', shop: 'cozzo', look: { hair: '#1e1a18', hairStyle: 'short', skin: '#e0a882', shirt: '#f4f4f0', collar: true, blazer: '#2a2a34', pants: '#2a2a34', shoes: '#1a1a1a', moustache: true },
   },
+  // ---- Carlton and the city
+  dell: {
+    name: 'Dell', look: { hair: '#ecebe6', hairStyle: 'pixie', skin: '#f2c8a8', shirt: '#c8c8c0', blazer: '#4a6a9a', blazerTrim: '#3a5a88', pants: '#b8c040', shoes: '#2a2a30', glasses: '#e83a8a', hoops: '#3a3a44' },
+    gift: 'tennis',
+  },
+  // ---- Carlton and the city
+  gina: {
+    name: 'Gina', shop: 'gelateria', look: { hair: '#2a1e1a', hairStyle: 'bun', streak: '#d8d4cc', skin: '#e0b088', shirt: '#f4f0e6', pants: '#2a2a30', shoes: '#1a1a1a', apron: '#f0a0b8', hoops: '#e8c040', lips: '#c0505a' },
+    gift: 'gelato',
+  },
+  spruiker: {
+    name: 'Tony', look: { hair: '#1e1a18', hairStyle: 'short', skin: '#e0a882', shirt: '#f4f4f0', collar: true, blazer: '#1e1e24', pants: '#1e1e24', shoes: '#1a1a1a', moustache: true },
+  },
+  enzo: {
+    name: 'Nonno Enzo', look: { hair: '#e8e4dc', hairStyle: 'cap', cap: '#5a5a60', skin: '#e8b48a', shirt: '#c8b898', blazer: '#6a5a4a', pants: '#4a4a52', shoes: '#3a2a1e', glasses: true },
+    gift: 'lemon',
+  },
+  vince: {
+    name: 'Nonno Vince', look: { hair: '#c8c4bc', hairStyle: 'bald', skin: '#d8a070', shirt: '#f4f4f0', collar: true, pants: '#6a4a2a', shoes: '#3a2a1e', moustache: true },
+  },
+  mia: {
+    name: 'Mia', look: { hair: '#3a2416', hairStyle: 'messybun', skin: '#f2c8a8', shirt: '#e8823a', pants: '#4a6a9a', shoes: '#f4f4f0', glasses: '#2a2a2a', holding: 'book' },
+  },
+  ana: {
+    name: 'Ana', look: { hair: '#c8c4bc', hairStyle: 'bob', skin: '#c88a5a', shirt: '#f4f0e6', blazer: '#2a3a58', pants: '#2a3a58', shoes: '#1a1a1a', glasses: '#6a4a2a', scarf: '#c8443a' },
+  },
+  jun: {
+    name: 'Jun', look: { hair: '#141012', hairStyle: 'wavyshort', skin: '#e8c8a0', shirt: '#1e1e24', pants: '#1e1e24', shoes: '#1a1a1a', glasses: '#2a2a2a' },
+  },
+  possumpat: {
+    name: 'Possum Pat', look: { hair: '#a8a8a8', hairStyle: 'cap', cap: '#3a6a3a', skin: '#f0c8a8', shirt: '#7a7a5a', pants: '#5a5a48', shoes: '#4a3a2a', beard: true },
+    gift: 'feather',
+  },
+  chesskev: {
+    name: 'Chess Kev', look: { hair: '#8a8d94', hairStyle: 'bald', skin: '#e8b498', shirt: '#3a5a8a', shirtPattern: 'plaid', shirtAccent: ['#c8443a', '#1e2a48'], pants: '#4a4a40', shoes: '#4a3a2a', longBeard: '#c8c4bc' },
+  },
+  luca: {
+    name: 'Luca', look: { hair: '#6a3a1a', hairStyle: 'curly', skin: '#f0c8a0', shirt: '#c8302a', pants: '#2a2a30', shoes: '#1a1a1a', stubble: true, holding: 'bass' },
+  },
+  margaret: {
+    name: 'Margaret', look: { hair: '#d8d4cc', hairStyle: 'bun', skin: '#f2d0b8', shirt: '#f4f0e6', blazer: '#6a3a5a', pants: '#3a3a44', shoes: '#4a3a2a', glasses: '#8a6a4a', scarf: '#3a8a6a', holding: 'book' },
+    gift: 'paperback',
+  },
+  mai: {
+    name: 'Mai', shop: 'souvenirs', look: { hair: '#141012', hairStyle: 'long', skin: '#e8c090', shirt: '#e8c040', pants: '#2a2a30', shoes: '#f4f4f0', apron: '#3a6aa8' },
+  },
+  raelene: {
+    name: 'Raelene', look: { hair: '#c8643a', hairStyle: 'messybun', skin: '#f2c8a8', shirt: '#5ab0b0', pants: '#5ab0b0', shoes: '#f4f4f0', lips: '#c0505a' },
+  },
+  officer: {
+    name: 'Authorised Officer', look: { hair: '#4a3a2a', hairStyle: 'cap', cap: '#1e2a48', skin: '#e8b48a', shirt: '#2a3a5a', collar: true, blazer: '#1e2a48', pants: '#1e2a48', shoes: '#1a1a1a', moustache: true },
+  },
+  remy: {
+    name: 'Remy', shop: 'coffeecart', look: { hair: '#3a2416', hairStyle: 'mullet', skin: '#f0c8a8', shirt: '#1e1e24', pants: '#3a3a44', shoes: '#f4f4f0', apron: '#6a4a2a', beard: true },
+  },
+  spray: {
+    name: 'Spray', look: { hair: '#1e1a18', hairStyle: 'spiky', streak: '#f07ab0', skin: '#c8906a', shirt: '#5a3a8a', pants: '#2a2a30', shoes: '#e8c040', gloves: '#3a9a5a' },
+  },
+  dev: {
+    name: 'Dev', look: { hair: '#1e1a18', hairStyle: 'wavyshort', skin: '#a8704a', shirt: '#f4f0e6', collar: true, blazer: '#5a3a2a', pants: '#2a2a30', shoes: '#4a2a1a' },
+  },
+  marj: {
+    name: 'Marj', look: { hair: '#e8d890', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#2a8ad0', pants: '#2a2a30', shoes: '#1a1a1a', hivis: true },
+  },
+  dot: {
+    name: 'Dot', shop: 'donuts', look: { hair: '#c8c4bc', hairStyle: 'curly', skin: '#f0c8a8', shirt: '#f4f0e6', pants: '#3a3a48', shoes: '#4a3a2a', apron: '#c8302a' },
+    gift: 'jamdonut',
+  },
+  yianni: {
+    name: 'Yianni', shop: 'qvdeli', look: { hair: '#8a8d94', hairStyle: 'bald', skin: '#d8a070', shirt: '#2a5aa8', pants: '#2a2a30', shoes: '#1a1a1a', apron: '#f4f4f0', moustache: true },
+    gift: 'cheese',
+  },
+  carmel: {
+    name: 'Carmel', shop: 'fruit', look: { hair: '#5a3a1a', hairStyle: 'cap', cap: '#c8302a', skin: '#e8b48a', shirt: '#3a8a4a', pants: '#3a3a44', shoes: '#4a3a2a', bumbag: '#1e1e24' },
+    gift: 'strawberry',
+  },
   macca: {
     name: 'Macca', shop: 'bottleshop', look: { hair: '#8a5a2a', hairStyle: 'short', skin: '#e8b48a', shirt: '#1e1e24', pants: '#3a4a6a', shoes: '#2a1a12', beard: true },
   },

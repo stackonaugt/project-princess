@@ -1,6 +1,7 @@
 // The shops. An NPC with `shop: '<id>'` in npcs.js opens one of these when
 // you talk to them (see ui/shop.js). Tabs:
-//   treats   pet treats from items.js (with a price, not crops, drinks or presents) (list `treats` to limit which)
+//   treats   pet treats from items.js (with a price, not crops, drinks or presents) (list `treats` to limit which;
+//            local: true treats are left out unless listed)
 //   spells   the milk bar sorceress's protection spells (data/east.js). Prices move every day
 //   gear     pet gear from gear.js
 //   seeds    seed packets for crops.js (list `seeds` to limit which)
@@ -28,6 +29,13 @@ export const SHOPS = {
   cozzo: { name: 'Franco Cozzo', where: 'Barkly St, Footscray', tabs: ['furniture'] },
   fishvan: { name: 'Spiro\'s Fish Van', where: 'Kororoit Creek Rd, Altona North', tabs: ['fish'] },
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
+  // Carlton and the city
+  gelateria: { name: 'Gelateria', where: 'Lygon St, Carlton', tabs: ['treats', 'gifts'], treats: ['gelato', 'cannoli'], gifts: ['gelatocone'] },
+  donuts: { name: 'Hot Jam Donut Van', where: 'Fed Square', tabs: ['treats'], treats: ['jamdonut', 'hotchips'] },
+  qvdeli: { name: 'Yianni\'s Deli', where: 'Fed Square', tabs: ['treats', 'gifts'], treats: ['prosciutto', 'cheese', 'sardine'], gifts: ['olivejar', 'borek'] },
+  fruit: { name: 'Carmel\'s Fruit and Veg', where: 'Fed Square', tabs: ['sell', 'seeds'], seeds: ['strawberry', 'tomato', 'zucchini', 'pumpkin'] },
+  souvenirs: { name: 'Melbourne Souvenirs', where: 'Fed Square', tabs: ['gifts'], gifts: ['snowglobe', 'koala', 'umbrella', 'mykicase'] },
+  coffeecart: { name: 'Remy\'s Coffee Cart', where: 'Degraves St', tabs: ['gifts'], gifts: ['longblack', 'magic'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
   ...SH_SHOPS,
 };

@@ -128,6 +128,25 @@ const whippet = [
   '..aa.....aa.....',
 ];
 
+// Girlie: Dell's black labrador. Big, soft ears, a thick otter tail, tongue out.
+const lab = [
+  '................',
+  '................',
+  '..........aaa...',
+  '.........aaaaa..',
+  '.........aeaaal.',
+  '........baaaaaan',
+  '........baaaaaa.',
+  '.a......aaaaap..',
+  '..a.aaaaaaaaa...',
+  '...aaaaaaaaaa...',
+  '..laaaaaaaaaa...',
+  '...aaaaaaaaaa...',
+  '...bbbbbbbbbb...',
+  '...aa.....aa....',
+  '...aa.....aa....',
+  '...aa.....aa....',
+];
 // Chloe: a black and tan kelpie, prick ears, tan eyebrows, legs and chest.
 const kelpie = [
   '................',
@@ -276,6 +295,7 @@ export const PET_FRAMES = {
   frenchie:  [frenchie, stride(frenchie, 3)],
   schnauzer: [schnauzer, stride(schnauzer)],
   whippet:   [whippet, stride(whippet, 5)],
+  lab:       [lab, stride(lab, 3)],
   kelpie:    [kelpie, stride(kelpie, 5)],
 };
 

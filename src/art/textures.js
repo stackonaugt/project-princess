@@ -106,7 +106,7 @@ export function buildTextures(scene) {
   for (const [id, [w, h, draw]] of Object.entries({ ...FOE_ART, ...EAST_FOE_ART })) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
   // Items
   for (const [id, art] of Object.entries({ ...ITEM_ART, ...EAST_ITEM_ART })) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
-  for (const [id, it] of Object.entries(ITEMS)) if (it.drink || it.lolly || it.vape) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
+  for (const [id, it] of Object.entries(ITEMS)) if (it.drink || it.lolly || it.vape || it.art?.kind) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
   for (const [id, it] of Object.entries(ITEMS)) if (it.book) canvasTexture(scene, `item-${id}`, 16, 16, p => paintBook(p, it.art));
   for (const [id, c] of Object.entries(CROPS)) canvasTexture(scene, `item-seed-${id}`, 16, 16, p => paintSeedPacket(p, c.colour));
   for (const [id, art] of Object.entries(GEAR_ART)) canvasTexture(scene, `item-gear-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));

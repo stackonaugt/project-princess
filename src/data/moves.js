@@ -170,7 +170,29 @@ export const MOVES = {
   slosh:      { name: 'Slosh', type: 'booze', power: 60, effect: { recoil: 0.1 }, anim: 'lunge', text: '{u} sloshes all over {t}.', recoilText: '{u} is a bit wobbly now.' },
   silverpillow:{ name: 'Silver Pillow', type: 'booze', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} lies down. It is very comfy. It is a pillow, technically.' },
   beergoggles:{ name: 'Beer Goggles', type: 'booze', power: 0, effect: { foeDef: 1 }, anim: 'beam', text: '{u} looks at {t} through beer goggles. {t} gets all self-conscious.' },
+  // Carlton and the city
+  mine:       { name: 'Mine! Mine!', type: 'water', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} screams MINE MINE MINE. {t} drops everything.' },
+  coo:        { name: 'Coo', type: 'psychic', power: 0, effect: { foeDef: 1 }, anim: 'shout', text: '{u} coos and bobs its head. {t} cannot look away.' },
+  bigmap:     { name: 'Unfold Map', type: 'old', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} unfolds an enormous paper map. Nobody can see anything.' },
+  selfiestick:{ name: 'Selfie Stick', type: 'steel', power: 50, anim: 'lunge', text: '{u} swings a selfie stick round for the perfect angle. Bonk.' },
+  directions: { name: 'Ask Directions', type: 'psychic', power: 45, anim: 'beam', text: '{u} asks {t} the way to "the famous laneway". Twice. {t} is exhausted.' },
+  gateslam:   { name: 'Gate Slam', type: 'steel', power: 55, anim: 'bite', text: 'The gates snap shut on {t}. Touch on next time.' },
+  invalidcard:{ name: 'Card Invalid', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '"Please touch card again." {t} touches. "Card invalid." {t} loses the will to live.' },
+  redtape:    { name: 'Red Tape', type: 'plastic', power: 45, anim: 'claw', text: '{u} wraps {t} in red tape. Form 7B, in triplicate. Unbearable.' },
+  triplicate: { name: 'File in Triplicate', type: 'old', power: 0, effect: { heal: 0.3, selfDef: 1 }, anim: 'heal', text: '{u} files itself in triplicate. It feels very official.' },
+  napoletana: { name: 'Napoletana', type: 'fire', power: 55, anim: 'flame', text: '{u} splashes hot napoletana sauce all over {t}.' },
+  meatroll:   { name: 'Off the Plate', type: 'rock', power: 50, anim: 'lunge', text: '{u} rolls off the plate, across the table and into {t}.' },
+  garlicbreath:{ name: 'Garlic Breath', type: 'smelly', power: 55, anim: 'stink', text: '{u} breathes on {t}. Nobody will kiss {t} for a week.' },
+  extrabutter:{ name: 'Extra Butter', type: 'smelly', power: 0, effect: { heal: 0.2, selfDef: 1 }, anim: 'heal', text: '{u} gets another coat of butter. Glistening.' },
+  tag:        { name: 'Tag', type: 'street', power: 55, anim: 'beam', text: '{u} tags {t}. It is a pretty good tag, honestly.' },
+  fumes:      { name: 'Fumes', type: 'smelly', power: 40, effect: { foeDef: 1 }, anim: 'stink', text: '{u} sprays. The fumes make {t}\'s eyes water.' },
+  rattle:     { name: 'Rattle', type: 'plastic', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: 'Clack clack clack. {u} shakes itself up.' },
   binlid:     { name: 'Bin Dive', type: 'smelly', power: 50, anim: 'dig', text: '{u} dives into a bin and comes up swinging.' },
+  // Girlie (water/park)
+  fetch:      { name: 'Fetch', type: 'park', power: 55, anim: 'lunge', text: '{u} bolts after a stick nobody threw and brings back {t} instead.' },
+  fountaindive:{ name: 'Fountain Dive', type: 'water', power: 60, anim: 'gust', text: '{u} leaps into the fountain, climbs out and shakes off all over {t}.' },
+  puppyeyes:  { name: 'Puppy Eyes', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'beam', text: '{u} does the eyes. {t} cannot bring itself to hit hard.' },
+  benchsnack: { name: 'Bench Snack', type: 'park', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} finds half a sandwich under a bench and eats it in one go. She feels amazing.' },
   ...SH_MOVES,
 };
 
@@ -187,6 +209,7 @@ export const PET_MOVES = {
   spooky: ['fadeout', 'nibble', 'hop', 'stretch'],
   stanley: ['bark', 'bitestan', 'claw', 'staredown'],
   salami: ['extendclaws', 'scratch', 'bluestring', 'hide'],
+  girlie: ['fetch', 'fountaindive', 'puppyeyes', 'benchsnack'],
   rusty: ['shakeleaf', 'jumponyou', 'clawrusty', 'runaway', 'barkrusty'],
   chloe: ['herd', 'kelpiestare', 'heelnip', 'pubnap'],
 };
