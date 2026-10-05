@@ -1,4 +1,5 @@
 // Built-in item icons, 12x12 strings centred in a 16x16 texture.
+import { NORTH_ITEM_ART } from './north.js';
 export const ITEM_ART = {
   chicken: { pal: { a: '#c8823a', b: '#e8b060', w: '#f4efe0', k: '#5e3a1a' }, rows: [
     '............', '.........ww.', '........wwww', '.......kaaw.', '......kaab..', '.....kaab...',
@@ -176,3 +177,4 @@ export const GEAR_ART = {
     '............', '............', '............', 'kk........kk', 'kak..kk..kak', 'kabkkaakkbak',
     'kawakaakawak', 'kak..kk..kak', 'kk........kk', '............', '............', '............'] },
 };
+Object.assign(ITEM_ART, NORTH_ITEM_ART);   // Coburg and Preston items

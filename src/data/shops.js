@@ -1,6 +1,6 @@
 // The shops. An NPC with `shop: '<id>'` in npcs.js opens one of these when
 // you talk to them (see ui/shop.js). Tabs:
-//   treats   pet treats from items.js (with a price, not crops, drinks or presents)
+//   treats   pet treats from items.js (with a price, not crops, drinks or presents) (list `treats` to limit which)
 //   gear     pet gear from gear.js
 //   seeds    seed packets for crops.js (list `seeds` to limit which)
 //   tools    garden tools from upgrades.js (tool: true)
@@ -13,6 +13,7 @@
 //   fishing  the fishing rod (a tool in upgrades.js) and bait
 //   furniture couches for the house (data/furniture.js)
 //   sell     sell crops and treats from your bag (crops at their price, treats at half)
+import { NORTH_SHOPS } from './north.js';
 export const SHOPS = {
   petshop: { name: 'The Leash You Can Do', where: 'Hope St, Brunswick', tabs: ['treats', 'gear'] },
   bunnings: { name: 'Bunnings Warehouse', where: 'Kororoit Creek Rd, Altona North', tabs: ['seeds', 'tools', 'upgrades', 'gifts'], gifts: ['seedling', 'olive', 'gloves', 'fertiliser'] },
@@ -23,3 +24,5 @@ export const SHOPS = {
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
 };
+
+Object.assign(SHOPS, NORTH_SHOPS);   // Coburg and Preston

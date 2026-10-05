@@ -8,6 +8,7 @@
 import { shade } from './painter.js';
 import { drawPerson, drawBaby } from './people.js';
 import { PET_FRAMES, BASE_PALETTE } from '../sprites.js';
+import { NORTH_FOE_ART } from './north.js';
 
 const pet = (frame, pal) => p => p.sprite(PET_FRAMES[frame][0], { ...BASE_PALETTE, ...pal }, 0, 0);
 
@@ -203,3 +204,4 @@ export const FOE_ART = {
     face(p, 5, 11, { gap: 4 });
   }],
 };
+Object.assign(FOE_ART, NORTH_FOE_ART);   // Coburg and Preston foes

@@ -11,6 +11,7 @@
 //   vape: true    vapes from the same shop, adults only (also gift: true). Both use `art` like drinks:
 //                 art: { kind: packet | vape, body, label, cap }
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
+import { NORTH_ITEMS } from './north.js';
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
   sardine:   { name: 'Sardine', price: 6,            desc: 'One whole sardine. Oily, shiny, beloved.' },
@@ -111,3 +112,5 @@ export const ITEMS = {
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
 export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk;
+
+Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston

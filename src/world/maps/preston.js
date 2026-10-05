@@ -4,7 +4,8 @@
 // smokes, American lollies and vapes), and Anaconda (door into the camping
 // store). Across the road: the big grey building with the "meeting place"
 // mural over its car park, The Secondhand Man, the printers and Preston
-// Wheels & Tyres. The tram runs down the middle.
+// Wheels & Tyres. The tram runs down the middle. High St heads north to
+// Preston Station and the market.
 //
 //   y2-8 north side   y9 footpath   y10-13 Plenty Rd (tram 11-12)   y14 footpath
 //   y15-17 south side   y18-24 houses, lemon trees and a weedy lot
@@ -28,9 +29,12 @@ export function buildPreston() {
   b.put('car', 25, 4, { v: 'white' }); b.put('ute', 25, 7, { v: 'silver' });
   b.put('anaconda', 29, 6);
   b.exit(30, 9, 2, 1, 'anaconda', 'door', 'Anaconda');
-  b.put('weatherboard', 42, 6, { v: 'cream' });
+  b.put('weatherboard', 44, 6, { v: 'cream' });
+  // High St heads north to Preston Station and the market
+  b.vline(41, 0, 8, 'f').vline(42, 0, 9, '#').vline(43, 0, 8, 'f');
+  b.sign(40, 9, ['High St.', 'North to Preston Station, the skyrail and Preston Market.']);
   b.sign(14, 9, ['The Stolberg Hotel.', 'Corner of Bell St and Plenty Rd. Happy hour, a beer garden and a very good parma.']);
-  furnish(b, 9, { skip: [14, 15, 18, 23, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40], seed: 0 });
+  furnish(b, 9, { skip: [14, 15, 18, 23, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43], seed: 0 });
 
   // South side
   b.put('muralbuilding', 1, 15);
@@ -57,7 +61,8 @@ export function buildPreston() {
 
   b.exit(0, 9, 1, 1, 'coburg', 'east', 'Bell St');
   b.exit(47, 14, 1, 1, 'loddon', 'west', 'Loddon Ave, Reservoir');
-  b.entry('vapeshop', 22, 9, 'down').entry('anaconda', 32, 9, 'down').entry('west', 1, 9, 'right').entry('east', 46, 14, 'left');
+  b.exit(41, 0, 3, 1, 'prestonhigh', 'south', 'Preston Station');
+  b.entry('vapeshop', 22, 9, 'down').entry('anaconda', 32, 9, 'down').entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('north', 41, 1, 'down');
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
 }
