@@ -17,6 +17,8 @@
 //   text     the line shown when it's used ({u} = user, {t} = target)
 import { NORTH_MOVES } from './north.js';
 
+import { SH_MOVES } from './summerhill.js';
+
 export const MOVES = {
   // Princess (fairy)
   growl:      { name: 'Growl', type: 'fairy', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} growls. It is tiny. It is terrifying.' },
@@ -168,6 +170,7 @@ export const MOVES = {
   silverpillow:{ name: 'Silver Pillow', type: 'booze', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} lies down. It is very comfy. It is a pillow, technically.' },
   beergoggles:{ name: 'Beer Goggles', type: 'booze', power: 0, effect: { foeDef: 1 }, anim: 'beam', text: '{u} looks at {t} through beer goggles. {t} gets all self-conscious.' },
   binlid:     { name: 'Bin Dive', type: 'smelly', power: 50, anim: 'dig', text: '{u} dives into a bin and comes up swinging.' },
+  ...SH_MOVES,
 };
 
 // The four moves each pet knows, by pet id.

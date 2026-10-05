@@ -41,11 +41,16 @@ export function buildLoddon() {
   b.put('powerpole', 12, 20); b.put('powerpole', 26, 23); b.put('lamp', 32, 19);
   b.sign(3, 24, ['Glasgow Ave this way.', 'Tim and Nick live down here. So does a very judgemental schnauzer.']);
 
+  // Across Plenty Rd: Summerhill Shopping Centre
+  b.fill(42, 7, 2, 4, 'f');
+  b.sign(42, 6, ['Summerhill Shopping Centre.', 'Just across Plenty Rd. Supermarket, hot bread, a $2 shop and a car park the size of a suburb.']);
+  b.exit(43, 7, 1, 4, 'summerhill', 'west', 'Summerhill Shopping Centre');
+
   b.exit(0, 21, 1, 2, 'preston', 'east', 'Preston');
   b.exit(4, 29, 2, 1, 'track', 'south', 'Edwardes Lake Park');
   b.exit(34, 0, 7, 1, 'reservoir', 'east', 'Reservoir Station');
   b.exit(34, 29, 7, 1, null, null, 'Plenty Rd', ['Plenty Rd south heads towards Preston. Not today.']);
-  b.entry('west', 1, 22, 'right').entry('south', 4, 27, 'up').entry('north', 34, 2, 'down').entry('home', 18, 17, 'up');
+  b.entry('west', 1, 22, 'right').entry('south', 4, 27, 'up').entry('north', 34, 2, 'down').entry('home', 18, 17, 'up').entry('summerhill', 42, 8, 'left');
 
   b.lane({ axis: 'y', pos: 34.5, dir: 1, from: -3, to: 33, every: [4, 9], speed: 70, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
   b.lane({ axis: 'y', pos: 35.5, dir: 1, from: -3, to: 33, every: [5, 10], speed: 66, kinds: ['veh-car-v-silver'] });

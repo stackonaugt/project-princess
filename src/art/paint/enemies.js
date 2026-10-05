@@ -9,6 +9,7 @@ import { shade } from './painter.js';
 import { drawPerson, drawBaby } from './people.js';
 import { PET_FRAMES, BASE_PALETTE } from '../sprites.js';
 import { NORTH_FOE_ART } from './north.js';
+import { SH_FOE_ART } from './summerhill.js';
 
 const pet = (frame, pal) => p => p.sprite(PET_FRAMES[frame][0], { ...BASE_PALETTE, ...pal }, 0, 0);
 
@@ -211,5 +212,6 @@ export const FOE_ART = {
     p.r('#9ad0f0', 2, 4, 1, 2); p.r('#9ad0f0', 13, 3, 1, 2); p.r('#c8c8c0', 7, 3, 1, 2);  // steam
     face(p, 5, 11, { gap: 4 });
   }],
+  ...SH_FOE_ART,
 };
 Object.assign(FOE_ART, NORTH_FOE_ART);   // Coburg and Preston foes

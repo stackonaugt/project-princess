@@ -15,6 +15,7 @@
 
 import { PEOPLE, FOE_TEXT } from './dialogue.js';
 import { NORTH_ENEMIES, NORTH_TRAINERS } from './north.js';
+import { SH_ENEMIES, SH_ENCOUNTERS, SH_TRAINERS } from './summerhill.js';
 
 export const ENEMIES = {
   bag: {
@@ -170,6 +171,7 @@ export const ENEMIES = {
       'He is going to hospital. He is alive.',
     ],
   },
+  ...SH_ENEMIES,
 };
 
 // Who you can meet in each suburb's tall grass. Weights are relative.
@@ -206,6 +208,7 @@ export const ENCOUNTERS = {
     { id: 'bag', lv: [7, 9], weight: 1 },
     { id: 'sprinkler', lv: [7, 10], weight: 2, day: true, zones: ['loddon', 'glasgow', 'lakepark', 'wetlands'] },
     { id: 'possum', lv: [8, 11], weight: 2, night: 4 },
+    ...SH_ENCOUNTERS,
   ],
   civic: [{ id: 'magpie', lv: [3, 5], weight: 3, day: true }, { id: 'sprinkler', lv: [3, 5], weight: 2, day: true }, { id: 'bag', lv: [2, 4], weight: 2 }, { id: 'rat', lv: [3, 5], weight: 2, night: 3 }],
   // The long walks between suburbs
@@ -276,6 +279,7 @@ export const TRAINERS = {
     win: ['Fentanyl is so strong that a speck can stop someone breathing.', 'If you or someone you love uses drugs, DirectLine is free and confidential, any time: 1800 888 236.'],
     lose: ['He wanders off down the bike path, still talking to himself. You hope he is okay.'],
   },
+  ...SH_TRAINERS,
 };
 
 // Coburg and Preston

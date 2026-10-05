@@ -41,6 +41,8 @@ import { buildPrestonHigh } from '../world/maps/prestonhigh.js';
 import { buildPrestonMkt } from '../world/maps/prestonmkt.js';
 import { buildMoreland } from '../world/maps/moreland.js';
 import { buildMurray } from '../world/maps/murray.js';
+import { buildSummerhill } from '../world/maps/summerhill.js';
+import { buildSummerhillMall } from '../world/maps/summerhillmall.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
@@ -110,13 +112,15 @@ export const ZONES = {
   prestonhigh: { name: 'Preston Station', suburb: 'preston', build: buildPrestonHigh, grass: CITY_GRASS, },
   preston: { name: 'Plenty Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, },
   wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, },
+  summerhill: { name: 'Summerhill Shopping Centre', suburb: 'reservoir', build: buildSummerhill, grass: RES_GRASS, },
+  summerhillmall: { name: 'Summerhill Shopping Centre', suburb: 'reservoir', build: buildSummerhillMall, grass: LAWN, indoor: true },
 };
 
 
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;
