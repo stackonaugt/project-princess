@@ -1,81 +1,58 @@
-// HOSIER LANE and DEGRAVES ST: the laneways. A bluestone lane runs down from
-// Bourke St between walls painted top to bottom (and painted over again by
-// Tuesday), then turns into Degraves St: tiny cafes, umbrellas and tables
-// down the middle, a coffee cart, and Flinders St Station at the far end.
+// HOSIER LANE and DEGRAVES ST: the laneways, dense as the real thing. The
+// city here is rooftop after rooftop with only narrow bluestone alleys
+// between. Hosier Lane runs across the top, painted wall to wall; two alleys
+// drop down from it, joined by Centre Place and a tiny courtyard garden; at
+// the bottom, Degraves St with its cafes and tables down the middle.
+// Up the alley to Swanston St, down the alley to Flinders St.
 //
-//   y0-19  Hosier Lane (x18-21), painted walls and old warehouses, a weedy lot (x29-38)
-//   y20-24 Degraves St, cafes both sides   y25-29 the cafes' south side
+//   x20-22 y0-7 the alley from Swanston St   y8-10 Hosier Lane (art on y8)
+//   x6-7, x40-41 alleys down   y18-19 Centre Place   x14-19 y20-23 the courtyard
+//   y26-28 Degraves St cafes   y29-33 Degraves St   x22-24 y34-39 the alley to Flinders St
 import { MapBuilder } from '../MapBuilder.js';
 import { tables, liven } from './melbkit.js';
 
 export function buildLaneways() {
-  const b = new MapBuilder({ id: 'laneways', w: 40, h: 30, fill: 'c', seed: 905 });
+  const b = new MapBuilder({ id: 'laneways', w: 48, h: 40, fill: 'R', seed: 905 });
 
-  // The lane and Degraves St
-  b.fill(18, 0, 4, 20, 'b');
-  b.fill(0, 20, 40, 5, 'b');
+  // The alleys
+  b.fill(20, 0, 3, 8, 'b');
+  b.fill(3, 8, 42, 3, 'b');
+  b.fill(6, 11, 2, 18, 'b').fill(40, 11, 2, 18, 'b');
+  b.fill(6, 18, 36, 2, 'b');
+  b.fill(14, 20, 6, 4, '.');
+  b.fill(2, 29, 44, 5, 'k');
+  b.fill(22, 34, 3, 6, 'b');
 
-  // West wall: a warehouse, then painted walls and roller doors stepping down the lane
-  b.put('factory', 2, 3, { v: 'brick' });
-  b.put('laneart', 14, 2, { v: 'melb' });
-  b.put('rollerdoor', 15, 5, { v: 'tagged' });
-  b.put('graffiti', 14, 8, { v: 'tags' });
-  b.put('mural', 14, 11, { v: 'a' });
-  b.put('graffiti', 14, 14, { v: 'paste' });
-  b.fill(2, 7, 10, 9, 'b');
-  b.put('skip', 3, 9); b.put('bin', 7, 9, { v: 'garbage' }); b.put('bin', 8, 9, { v: 'yellow' }); b.put('crate', 10, 12, { v: 'blue' });
-  b.put('graffiti', 4, 13, { v: 'tags' });
+  // Hosier Lane: painted from end to end
+  for (const [x, v] of [[4, 'melb'], [8, 'koala'], [12, 'tram'], [16, 'melb'], [24, 'tram'], [28, 'koala'], [32, 'melb'], [36, 'tram']]) b.put('laneart', x, 8, { v });
+  b.put('graffiti', 40, 8, { v: 'piece' });
+  b.put('skip', 43, 10); b.put('bin', 3, 10, { v: 'garbage' });
+  b.sign(23, 9, ['Hosier Lane.', 'Paint is allowed here. So every wall has been painted about four hundred times.']);
+  b.put('bin', 7, 14, { v: 'yellow' }); b.put('crate', 41, 22, { v: 'blue' }); b.put('crate', 40, 13, { v: 'red' });
 
-  // East wall
-  b.put('graffiti', 22, 2, { v: 'tags' });
-  b.put('laneart', 22, 5, { v: 'koala' });
-  b.put('rollerdoor', 22, 8, { v: 'green' });
-  b.put('laneart', 22, 11, { v: 'tram' });
-  b.put('graffiti', 22, 14, { v: 'paste' });
-  b.sign(17, 1, ['Hosier Lane.', 'Paint is allowed here. So every wall has been painted about four hundred times.']);
+  // Centre Place and the courtyard garden
+  b.wildGrass(16.5, 21.5, 2.6, 1.6);
+  b.put('espressocart', 26, 18);
+  b.sign(20, 20, ['A courtyard garden.', 'Somebody planted tomatoes in a shopping trolley. The rats are very grateful.']);
 
-  // A weedy lot behind a wire fence
-  b.fill(28, 6, 11, 11, '.');
-  b.wildGrass(33, 11, 4, 3);
-  b.fenceH(27, 39, 5, 'metal').fenceV(27, 6, 16, 'metal', [10, 11]).fenceH(27, 39, 17, 'metal');
-  b.put('trolley', 36, 8); b.put('tall', 30, 7, { v: 'poplar' }); b.put('tree', 38, 15, { v: 'gum' });
-  b.sign(26, 9, ['Vacant lot.', 'Approved: 58 storeys of "boutique living". Currently: weeds, a trolley and a fox.']);
-  b.fill(22, 10, 5, 3, 'b');
+  // Degraves St: cafes along the north side, tables down the middle
+  for (const [x, k, v] of [[2, 'bshop', 'vegan'], [8, 'cafe', 'green'], [12, 'shop', 'bakery'], [16, 'bshop', 'origin'], [20, 'shop', 'books'], [24, 'redshop', 'cream'],
+    [28, 'bshop', 'oatmilk'], [32, 'cafe', 'green'], [36, 'shop', 'records'], [42, 'redshop', 'red']]) b.put(k, x, 26, { v });
+  tables(b, 31, 4, 44, { step: 5, skip: [6, 7, 23, 40, 41] });
+  b.put('lamp', 9, 33); b.put('lamp', 30, 33);
+  b.sign(26, 33, ['Degraves St.', 'Twelve cafes in fifty metres. Every one of them will tell you the others are fine.']);
 
-  // Degraves St: cafes along the north side...
-  b.put('bshop', 2, 17, { v: 'vegan' });
-  b.put('cafe', 6, 17);
-  b.put('trattoria', 10, 17, { v: 'espresso' });
-  b.put('shop', 14, 17, { v: 'bakery' });
-  b.put('bshop', 22, 17, { v: 'origin' });
-  b.put('cafe', 26, 17);
-  b.put('shop', 30, 17, { v: 'books' });
-  b.put('redshop', 34, 17, { v: 'cream' });
-  // ...tables down the middle...
-  tables(b, 22, 3, 36, { step: 5, skip: [19, 20] });
-  // ...and the south side
-  b.put('trattoria', 1, 25, { v: 'cannoli' });
-  b.put('bshop', 5, 25, { v: 'oatmilk' });
-  b.put('redshop', 9, 25, { v: 'red' });
-  b.put('espressocart', 14, 25);
-  b.put('shop', 17, 25, { v: 'signs' });
-  b.put('trattoria', 21, 25, { v: 'pasta' });
-  b.put('bshop', 25, 25, { v: 'yoga' });
-  b.put('cafe', 29, 25);
-  b.put('terrace', 33, 25, { v: 'brick' });
-  b.fill(0, 28, 40, 2, 'c');
-  b.put('lamp', 13, 20); b.put('lamp', 27, 20);
+  b.npc('remy', 28, 18, { face: 'left' });
+  b.npc('spray', 19, 10, { face: 'up' });
 
-  b.npc('remy', 15, 24, { face: 'down' });
-  b.npc('spray', 19, 9, { face: 'left' });
+  b.forage(15, 23, ['croissant', 'feather']);
+  b.forage(44, 9, ['sardine', 'cheese']);
+  b.magpies([[17, 21]]);
 
-  b.forage(37, 13, ['croissant', 'feather']);
-  b.forage(5, 11, ['sardine', 'cheese']);
-
-  b.exit(18, 0, 4, 1, 'bourke', 'south', 'Bourke St');
-  b.exit(39, 20, 1, 5, 'flinders', 'west', 'Flinders St');
-  b.exit(0, 20, 1, 5, null, null, 'Centre Place', ['Centre Place, and more laneways after that.', 'You have had three coffees already. Maybe another day.']);
-  b.entry('north', 19, 2, 'down').entry('east', 38, 21, 'left');
-  liven(b, 0.012);
+  b.exit(20, 0, 3, 1, 'swanston', 'south', 'Swanston St');
+  b.exit(22, 39, 3, 1, 'flinders', 'laneways', 'Flinders St');
+  b.entry('north', 21, 1, 'down').entry('south', 23, 38, 'up');
+  liven(b, 0.01);
+  b.noDress = true;
   return b.finish();
 }

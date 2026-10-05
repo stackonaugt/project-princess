@@ -42,7 +42,6 @@ import { buildReading } from '../world/maps/reading.js';
 import { buildBourke } from '../world/maps/bourke.js';
 import { buildLaneways } from '../world/maps/laneways.js';
 import { buildFlinders } from '../world/maps/flinders.js';
-import { buildQueenVic } from '../world/maps/queenvic.js';
 import { buildHolmes } from '../world/maps/holmes.js';
 import { buildEbNicholson } from '../world/maps/ebnicholson.js';
 import { buildEbMilkBar } from '../world/maps/ebmilkbar.js';
@@ -151,7 +150,6 @@ export const ZONES = {
   nicholson: { name: 'Nicholson St', suburb: 'carlton', build: buildNicholson, grass: MELB_GRASS },
   swanston: { name: 'Swanston St', suburb: 'city', build: buildSwanston, grass: MELB_GRASS },
   reading: { name: 'The Reading Room', suburb: 'city', build: buildReading, grass: LAWN, indoor: true },
-  queenvic: { name: 'Queen Vic Market', suburb: 'city', build: buildQueenVic, grass: MELB_GRASS },
   bourke: { name: 'Bourke St', suburb: 'city', build: buildBourke, grass: MELB_GRASS },
   laneways: { name: 'Hosier Lane', suburb: 'city', build: buildLaneways, grass: CITY_GRASS },
   flinders: { name: 'Flinders Street Station', suburb: 'city', build: buildFlinders, grass: MELB_GRASS },
@@ -161,7 +159,7 @@ export const ZONES = {
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'holmes', 'fleming', 'bowls', 'eblygon', 'ebnicholson', 'ebmilkbar', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'queenvic', 'bourke', 'laneways', 'flinders'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'holmes', 'fleming', 'bowls', 'eblygon', 'ebnicholson', 'ebmilkbar', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'bourke', 'laneways', 'flinders'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;

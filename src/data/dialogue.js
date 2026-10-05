@@ -880,7 +880,7 @@ export const PEOPLE = {
     },
   },
   enzo: {
-    role: 'Plays bocce at Piazza Italia. Has done since 1971',
+    role: 'Plays bocce on Sundays, argues about it the rest of the week. Since 1971',
     lines: [
       ['That ball was touching. I do not care what Vince says. Vince needs new glasses.'],
       ['I came on a ship in 1961. Ten days of seasick, then Carlton. Best decision of my life. Second best was my wife.'],
@@ -893,7 +893,7 @@ export const PEOPLE = {
     helpsInBattle: 'Nonno Enzo rolls a bocce ball across the ground. Perfect line. It clips the foe right on the ankle.',
   },
   vince: {
-    role: 'Plays bocce with Enzo. Wins, mostly',
+    role: 'Plays bocce with Enzo. Wins, mostly. Shares his table on Lygon St',
     lines: [
       ['Enzo has been cheating since 1971. I let him. It makes him happy. Do not tell him.'],
       ['When I was a boy, a coffee on Lygon St was twenty cents. Now it is six dollars and they draw a leaf on it.'],
@@ -975,7 +975,7 @@ export const PEOPLE = {
     helpsInBattle: 'Margaret appears from nowhere. "SHHH." The foe is so startled it forgets what it was doing.',
   },
   mai: {
-    role: 'Runs the souvenir kiosk in the Bourke St Mall',
+    role: 'Runs the souvenir kiosk at Fed Square',
     lines: [
       ['Koalas, snow globes, boomerangs, tram magnets! Everything says Melbourne on it. Some of it was made in Melbourne.'],
       ['The four seasons umbrella is my best seller. Tourists buy it at 9am in the sun. By 11am they understand.'],
@@ -997,7 +997,7 @@ export const PEOPLE = {
     helpsInBattle: 'Raelene checks your pet\'s pulse, gives a thumbs up and patches it up. "Twelve hour shift. This is nothing."',
   },
   officer: {
-    role: 'Authorised officer. Patrols the Bourke St Mall',
+    role: 'Authorised officer. Patrols Flinders Street Station',
     lines: [
       ['Afternoon. Just checking everyone has touched on. You touched on, yeah? Course you did.'],
       ['I am not the bad guy. The bad guy is the bloke who designed the myki top up machine.'],
@@ -1062,7 +1062,7 @@ export const PEOPLE = {
     ],
   },
   dot: {
-    role: 'Runs the hot jam donut van at Queen Vic Market',
+    role: 'Runs the hot jam donut van, down at Fed Square for the season',
     lines: [
       ['Hot jam donuts! Careful, the jam is the temperature of the sun. Every year someone forgets. Every year it is my brother-in-law.'],
       ['This van has been here since 1950. Dad ran it, then me. Same recipe. Same van. New tyres, once.'],
@@ -1075,7 +1075,7 @@ export const PEOPLE = {
     helpsInBattle: 'Dot leans out of the van and lobs a hot jam donut. Your pet catches it. The foe gets the jam.',
   },
   yianni: {
-    role: 'Runs a deli in the Queen Vic Market deli hall',
+    role: 'Runs a Queen Vic deli stall, at Fed Square for the season',
     lines: [
       ['Try the feta. Try the olives. Try the dolmades. Trying is free. Buying is how I put my kids through uni.'],
       ['Sixty cheeses in this cabinet. My wife can name them all with her eyes closed. I can name forty. On a good day.'],
@@ -1088,7 +1088,7 @@ export const PEOPLE = {
     helpsInBattle: 'Yianni throws an olive with deadly accuracy. Pit and all.',
   },
   carmel: {
-    role: 'Sells fruit and veg at Queen Vic Market. Buys crops too',
+    role: 'Sells fruit and veg at the Fed Square market stalls. Buys crops too',
     lines: [
       ['Two dollar a bag! Two dollar! Strawberries, two dollar! Come on, darl, two dollar!'],
       ['Grow your own? Bring it here. I will buy it, and I will not even tell the customers it came from a toddler.'],
@@ -1509,13 +1509,12 @@ export const PLACES = {
   lygon: 'Melbourne\'s little Italy. Trattorias, gelato and a spruiker every ten metres.',
   gelateria: 'Twenty flavours in a glass case, and one for dogs.',
   gardens: 'The Exhibition Building, a fountain and possums in every tree.',
-  nicholson: 'Terraces, big gums, the 96 tram and the corner where Seb grew up.',
-  swanston: 'The State Library, giant chess and a tram every minute.',
+  nicholson: 'Terraces back to back, the 96 tram and the corner where Seb grew up.',
+  swanston: 'The State Library, really big, and a lawn full of people eating lunch.',
   reading: 'A domed hall of desks and green lamps. Shhh.',
-  queenvic: 'Market sheds, hot jam donuts and "two dollar a bag".',
-  bourke: 'The Mall, the Public Purse and Parliament at the top of the hill.',
+  bourke: 'Parliament, the Princess Theatre and a pub on the corner for after.',
   laneways: 'Painted walls, tiny cafes and a lot of people photographing both.',
-  flinders: 'Meet you under the clocks.',
+  flinders: 'Meet you under the clocks. Bring a donut.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
   ...SH_PLACES,
 };

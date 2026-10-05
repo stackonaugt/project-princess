@@ -1,85 +1,58 @@
-// BOURKE ST: the Mall at the west end (trams only, buskers, the giant bronze
-// Public Purse, the department store's Christmas windows and the old GPO),
-// then Bourke St proper up the hill to Parliament House, where there is
-// nearly always a rally on the steps. North up Spring St to Carlton Gardens,
-// south down a bluestone laneway to Hosier Lane, west back to Swanston St.
+// BOURKE ST at Spring St, the top of the city: Parliament House, huge, its
+// steps and colonnade looking down Bourke St; the gardens beside it; across
+// the road the Princess Theatre and the Imperial Hotel on the corner, with
+// rooftops packed in all around. Spring St comes down from Nicholson St, and
+// Bourke St's trams turn down the hill towards Swanston St.
 //
-//   y0-9   the department store, the GPO, shops, Spring St north (x29-32), Parliament (x34-47)
-//   y10-11 footpath   y12-15 the Mall (x0-25, trams only) then the road   y16-17 footpath
-//   y18-20 south shops, laneway south (x20-22)   y21-29 back lanes and Parliament Gardens
+//   x0-33 y0-16 the gardens   x34-39 Spring St north   x40-73 y7-16 Parliament
+//   y17-18 footpath   y19-22 Bourke St (tram 20-21)   y23-24 footpath
+//   y25-45 rooftops, the Princess Theatre (x6-17) and the Imperial (x55-63)
+//   x64-69 Bourke St down the hill (tram 66-67) to Swanston St
 import { MapBuilder } from '../MapBuilder.js';
-import { CARS, vstreet, furniture, liven } from './melbkit.js';
+import { hstreet, vstreet, liven } from './melbkit.js';
 
 export function buildBourke() {
-  const b = new MapBuilder({ id: 'bourke', w: 50, h: 30, fill: 'c', seed: 904 });
+  const b = new MapBuilder({ id: 'bourke', w: 76, h: 46, fill: 'R', seed: 904 });
+  b.fill(0, 0, 34, 17, '.');
+  vstreet(b, 34, 0, 18, { rows: 4, tram: true });
+  hstreet(b, 17, { rows: 4, tram: true });
+  vstreet(b, 64, 23, 45, { rows: 4, tram: true });
+  b.fill(35, 17, 4, 2, '#').fill(36, 17, 2, 2, '+');   // Spring St meets Bourke St
+  b.fill(65, 23, 4, 2, '#').fill(66, 23, 2, 2, '+');   // and Bourke St turns down the hill
 
-  // The street: the Mall's pavers and tram tracks, then cars from x26 east
-  b.hline(0, 49, 10, 'f').hline(0, 49, 11, 'f').hline(0, 49, 16, 'f').hline(0, 49, 17, 'f');
-  b.hline(0, 25, 12, 'k').hline(0, 25, 15, 'k').hline(26, 49, 12, '#').hline(26, 49, 15, '#');
-  b.hline(0, 49, 13, '+').hline(0, 49, 14, '+');
-  b.lane({ axis: 'x', pos: 13.5, dir: -1, from: -6, to: 56, every: [26, 44], speed: 40, kinds: ['veh-tram-h'], tram: true });
-  b.lane({ axis: 'x', pos: 14.5, dir: 1, from: -6, to: 56, every: [28, 46], speed: 40, kinds: ['veh-tram-h'], tram: true });
-  b.lane({ axis: 'x', pos: 12.5, dir: -1, from: 26, to: 54, every: [8, 16], speed: 48, kinds: CARS });
-  b.lane({ axis: 'x', pos: 15.5, dir: 1, from: 26, to: 54, every: [8, 16], speed: 48, kinds: CARS });
-  vstreet(b, 29, 0, 9);
+  // Parliament House, with its gardens and footpath
+  b.put('parliament', 40, 7);
+  b.sign(41, 17, ['Parliament House, Spring St.', 'If you stand on the steps long enough, someone will hand you a placard.']);
+  for (const x of [44, 52, 62, 70]) b.put('lamp', x, 17);
 
-  // North side: the department store, the GPO, a few shops, then Parliament
-  b.put('deptstore', 1, 7);
-  b.put('gpo', 11, 7);
-  b.put('shop', 19, 7, { v: 'signs' });
-  b.put('cafe', 23, 7);
-  b.put('souvenir', 21, 12);
-  b.fill(33, 0, 17, 10, 'k');
-  b.put('parliament', 34, 6);
-  b.put('flagpole', 33, 8, { v: 'aboriginal' }); b.put('flagpole', 48, 8, { v: 'aus' });
-  b.sign(47, 11, ['Parliament House, Spring St.', 'If you stand on the steps long enough, someone will hand you a placard.']);
+  // The gardens beside Parliament
+  b.fill(0, 8, 34, 2, 'u').fill(15, 0, 2, 17, 'u');
+  for (let i = 0; i < 8; i++) b.fill(24 + i, 9 + i, 2, 1, 'u');
+  for (const [x, y, v] of [[3, 3, 'elm'], [9, 4, 'elm'], [22, 3, 'plane'], [28, 4, 'elm'], [5, 13, 'plane'], [11, 14, 'elm'], [21, 13, 'elm'], [30, 12, 'fig']]) b.put('bigelm', x, y, { v });
+  b.put('bench', 18, 7); b.put('bench', 6, 10); b.put('bench', 26, 7);
+  b.put('fountain', 13, 10, { v: 'carlton' });
+  b.wildGrass(4, 6, 2.6, 1.4); b.wildGrass(26, 14, 3, 1.4); b.wildGrass(9, 1.5, 2.4, 1);
+  b.sign(17, 16, ['The Parliament Gardens.', 'Lunch for half the public servants in Victoria, and the night shift for every possum in the city.']);
 
-  // In the Mall: the Public Purse, a busker's spot, benches
-  b.put('purse', 8, 16);
-  b.put('bench', 15, 16); b.put('bench', 3, 11);
-  b.put('tramstop', 18, 11); b.put('tramstop', 30, 16);
-  b.sign(11, 16, ['"The Public Purse", 1994.', 'A giant bronze handbag. People lean on it, sit on it and, on Saturday nights, get stuck in it.']);
-  furniture(b, 11, 8, 32, { step: 6, skip: [18, 29, 30, 31, 32] });
-  furniture(b, 17, 2, 46, { step: 6, skip: [8, 15, 20, 21, 22, 30], seed: 2 });
+  // South side: the Princess Theatre, the Imperial on the corner, rooftops all round
+  b.put('princess', 6, 30);
+  b.put('imperial', 55, 28);
+  b.sign(13, 23, ['The Princess Theatre, 1886.', 'There is a ghost, they say: Federici, the baritone. He still has the best seat in the house.']);
+  b.sign(60, 23, ['The Imperial Hotel.', 'Pots downstairs, a rooftop up top, and a politician in the corner pretending not to be one.']);
+  for (const x of [4, 24, 34, 46]) b.put('streettree', x, 24);
+  b.put('tramstop', 28, 23, { v: '86' }); b.put('bikehoop', 40, 24); b.put('bikehoop', 41, 24);
 
-  // South side
-  b.put('shop', 0, 18, { v: 'pho' });
-  b.put('bshop', 4, 18, { v: 'laundro' });
-  b.put('redshop', 8, 18, { v: 'cream' });
-  b.put('shop', 12, 18, { v: 'records' });
-  b.put('cafe', 16, 18);
-  b.fill(20, 18, 3, 12, 'b');                                  // the laneway down to Hosier Lane
-  b.put('bshop', 23, 18, { v: 'vinyl' });
-  b.put('shop', 27, 18, { v: 'bakery' });
-  b.put('terrace', 31, 18, { v: 'cream' });
-  b.put('trattoria', 34, 18, { v: 'espresso' });
+  b.npc('raelene', 56, 18, { face: 'down' });
 
-  // Back lanes behind the south shops
-  b.fill(0, 21, 20, 9, 'b').fill(23, 21, 13, 9, 'b');
-  b.put('rollerdoor', 2, 23, { v: 'tagged' }); b.put('laneart', 7, 23, { v: 'koala' }); b.put('skip', 13, 24); b.put('bin', 16, 24, { v: 'garbage' });
-  b.put('mural', 24, 22, { v: 'a' }); b.put('rollerdoor', 30, 24, { v: 'grey' }); b.put('crate', 28, 27, { v: 'red' });
-  b.sign(19, 21, ['A laneway, heading south.', 'Every wall from here to Flinders St is painted. Some of it twice a week.']);
+  b.forage(20, 12, ['feather', 'lemon']);
+  b.forage(31, 2, ['sardine', 'croissant']);
+  b.magpies([[8, 7], [27, 11]]);
 
-  // Parliament Gardens: a patch of lawn and big old trees
-  b.fill(38, 18, 12, 12, '.');
-  b.put('tall', 39, 19, { v: 'biggum' }); b.put('tall', 47, 21, { v: 'biggum' }); b.put('tree', 43, 27, { v: 'oak' }); b.put('tree', 48, 28, { v: 'palm' });
-  b.put('bench', 42, 19); b.put('fountain', 44, 23);
-  b.wildGrass(41, 26, 2.6, 1.6); b.wildGrass(47, 25, 1.6, 2);
-  b.fenceV(37, 18, 29, 'metal', [20, 21]);
-
-  b.npc('raelene', 40, 10, { face: 'down' });
-  b.npc('mai', 24, 12, { face: 'left' });
-  b.npc('officer', 6, 12, { path: [[3, 12], [19, 12]] });
-
-  b.forage(46, 29, ['feather', 'lemon']);
-  b.forage(10, 27, ['sardine', 'croissant']);
-  b.magpies([[44, 20]]);
-
-  b.exit(0, 13, 1, 1, 'swanston', 'east', 'Swanston St');
-  b.exit(29, 0, 4, 1, 'gardens', 'south', 'Carlton Gardens');
-  b.exit(20, 29, 3, 1, 'laneways', 'north', 'Hosier Lane');
-  b.exit(49, 13, 1, 1, null, null, 'Collingwood', ['Bourke St runs out at Spring St. Collingwood is that way.', 'Another day. The pies are not going anywhere.']);
-  b.entry('west', 1, 14, 'right').entry('north', 30, 2, 'down').entry('south', 21, 27, 'up');
-  liven(b);
+  b.exit(34, 0, 6, 1, 'nicholson', 'south', 'Nicholson St');
+  b.exit(64, 45, 6, 1, 'swanston', 'bourke', 'Swanston St');
+  b.exit(0, 17, 1, 8, null, null, 'Bourke St Mall', ['Bourke St runs on down to the Mall.', 'The trams take it from here. Swanston St is down the hill.']);
+  b.entry('north', 36, 1, 'down').entry('south', 66, 44, 'up');
+  liven(b, 0.006);
+  b.noDress = true;
   return b.finish();
 }

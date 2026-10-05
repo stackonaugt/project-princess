@@ -55,7 +55,9 @@ export function buildEbNicholson() {
   b.put('tramstop', 20, 17, { v: '96' });
   b.put('myki', 21, 17, { travel: true });
   b.sign(19, 23, ['Nicholson St tram stop. Route 96.', 'No train out here. Tap your myki at the reader and the 96 will take you anywhere you have already been.']);
-  b.put('bikehoop', 32, 17); b.put('bikehoop', 33, 17);
+  b.put('bikehoop', 41, 17); b.put('bikehoop', 42, 17);
+  // Nicholson St carries on south to Carlton
+  b.fill(32, 18, 3, 8, 'f');
   b.put('bungalow', 36, 20, { v: 'red' });
   b.fenceH(35, 45, 23, 'brickwall', [39]);
   b.fill(35, 23, 11, 1, '.');
@@ -66,8 +68,9 @@ export function buildEbNicholson() {
   b.exit(0, 9, 1, 9, 'holmes', 'east', 'Holmes St');
   b.exit(45, 9, 1, 9, 'eblygon', 'east', 'Lygon St');
   b.exit(14, 25, 3, 1, 'fleming', 'nicholson', 'Fleming Park');
+  b.exit(32, 25, 3, 1, 'nicholson', 'north', 'Nicholson St, Carlton');
   b.entry('east', 1, 10, 'right').entry('west', 44, 10, 'left').entry('station', 21, 16, 'down')
-    .entry('park', 15, 23, 'up').entry('milkbar', 9, 24, 'down');
+    .entry('park', 15, 23, 'up').entry('carlton', 33, 24, 'up').entry('milkbar', 9, 24, 'down');
 
   b.npc('concetta', 36, 7, { face: 'down' });
   b.npc('hatman', 13, 24, { face: 'up' });

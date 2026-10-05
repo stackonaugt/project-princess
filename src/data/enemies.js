@@ -256,7 +256,7 @@ export const ENCOUNTERS = {
     { id: 'tourist', lv: [9, 11], weight: 1, day: true },
   ],
   city: [
-    { id: 'seagull', lv: [9, 12], weight: 4, zones: ['flinders', 'queenvic'] },
+    { id: 'seagull', lv: [9, 12], weight: 4, zones: ['flinders'] },
     { id: 'pigeon', lv: [9, 12], weight: 3 },
     { id: 'tourist', lv: [10, 12], weight: 2, day: true },
     { id: 'commuter', lv: [10, 12], weight: 2, day: true },

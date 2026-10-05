@@ -25,6 +25,7 @@ import { PLENTY } from './plenty.js';
 import { carSide } from './cars.js';
 import { RESERVOIR } from './reservoir.js';
 import { MELBOURNE } from './melbourne.js';
+import { CBD } from './cbd.js';
 import { BRUNSEAST } from './brunseast.js';
 import { NORTH } from './north.js';
 import { SUMMERHILL } from './summerhill.js';
@@ -639,7 +640,7 @@ const BASE = {
   },
 };
 
-export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...ALBION, ...CIVIC, ...SHOPS2, ...PLENTY, ...RESERVOIR, ...NORTH, ...SUMMERHILL, ...BRUNSEAST, ...CITY, ...MELBOURNE, ...PROPS };
+export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...ALBION, ...CIVIC, ...SHOPS2, ...PLENTY, ...RESERVOIR, ...NORTH, ...SUMMERHILL, ...BRUNSEAST, ...CITY, ...MELBOURNE, ...CBD, ...PROPS };
 
 // Which object kinds give off light at night.
 export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 }, floorlamp: { x: 8, y: 5, r: 40 }, hphouse: { x: 86, y: 56, r: 30 } };

@@ -146,6 +146,7 @@ const lab = [
   '...aa.....aa....',
   '...aa.....aa....',
   '...aa.....aa....',
+];
 // Chloe: a black and tan kelpie, prick ears, tan eyebrows, legs and chest.
 const kelpie = [
   '................',
