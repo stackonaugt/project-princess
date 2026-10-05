@@ -2,7 +2,7 @@
 //   Brunswick Bound (Sydney Rd): a cream Victorian two-storey with a balustrade
 //     parapet and tags upstairs, a black fascia, a window of books and a warm
 //     "Books" sign. Inside: tall bookcases, display tables, a bird mural.
-//   Anaconda (Gilbert Rd, Preston): grey cladding, an orange portico, the
+//   Anaconda (Plenty Rd, Preston): grey cladding, an orange portico, the
 //     HIKE BIKE CAMP FISH KAYAK band and PLAY MORE PAY LESS posters.
 //   Franco Cozzo (Barkly St, Footscray): the white building with the big black
 //     FRANCO COZZO letters, an Italian flag at one end, an Australian flag on

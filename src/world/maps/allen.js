@@ -1,6 +1,7 @@
 // ALLEN ST: the cul-de-sac out the front of Helen and Paddy's new place.
 // Princess's turf. Brick veneers, a keep-left island, utes in driveways.
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildAllen() {
   const b = new MapBuilder({ id: 'allen', w: 40, h: 30, seed: 61 });
@@ -9,6 +10,8 @@ export function buildAllen() {
   b.ellipse(20, 12, 8.2, 6.8, 'f');
   b.ellipse(20, 12, 6.2, 5.0, '#');
   b.fill(17, 15, 6, 15, '.').fill(17, 15, 1, 15, 'f').fill(22, 15, 1, 15, 'f').fill(18, 15, 4, 15, '#');
+  // ...and west, a short cut straight to Laverton Station
+  b.fill(0, 11, 14, 2, '#').hline(0, 13, 10, 'f').hline(0, 13, 13, 'f');
 
   // Helen and Paddy's place
   b.put('hphouse', 5, 4);
@@ -20,9 +23,9 @@ export function buildAllen() {
   b.fenceH(4, 12, 3, 'colorbond').fenceH(16, 18, 2, 'colorbond');
   b.put('tall', 4, 9, { v: 'cypress' });
   ['purple', 'purple', 'white'].forEach((v, i) => b.put('agapanthus', 5 + i, 7, { v }));
-  b.put('letterbox', 12, 10, { v: 'brick' });
+  b.put('letterbox', 12, 9, { v: 'brick' });
   b.put('bin', 16, 9, { v: 'red' }); b.put('bin', 16, 10, { v: 'yellow' });
-  b.sign(9, 10, ['16 Allen St.', 'Home. Or it will be, once the renovation is finished. Any day now. Any year now.']);
+  b.sign(8, 9, ['16 Allen St.', 'Home. Or it will be, once the renovation is finished. Any day now. Any year now.']);
 
   // Neighbours around the court
   const nb = (kind, x, y, v, dx) => { b.put(kind, x, y, { v }); b.fill(x + dx, y + 3, 2, 3, 'h'); };
@@ -45,12 +48,19 @@ export function buildAllen() {
   b.put('tall', 29, 11, { v: 'biggum' });
   b.put('tall', 23, 17, { v: 'pear' }); b.put('tall', 16, 18, { v: 'pear' });
   b.put('tall', 12, 15, { v: 'cypress' });
-  b.sign(23, 27, ['Allen St.', 'South to Woods St, the reserve and the station.']);
+  b.sign(23, 27, ['Allen St.', 'South to Woods St and the reserve. West, the short cut to Laverton Station.']);
+  b.put('waysign', 3, 14, { v: 'station-left' });
 
-  b.exit(18, 29, 4, 1, 'woods', 'east', 'Woods St');
+  // Street trees, once council passes the motion (data/council.js)
+  if (state.motionPassed('trees')) {
+    [[2, 9], [7, 14], [11, 14], [16, 22], [23, 23], [16, 13]].forEach(([x, y]) => b.put('tall', x, y, { v: 'pear' }));
+    [[2, 10], [9, 13]].forEach(([x, y]) => b.put('flowerbed', x, y, { v: 'natives' }));
+  }
+  b.exit(18, 29, 4, 1, 'woods', 'west', 'Woods St');
+  b.exit(0, 11, 1, 2, 'station', 'allen', 'Laverton Station');
   b.exit(13, 1, 3, 1, 'yard', 'gate', 'Backyard');
   b.exit(10, 7, 1, 1, 'home', 'front', 'Home');
-  b.entry('house', 10, 9, 'down').entry('driveway', 14, 3, 'down').entry('south', 19, 28, 'up');
+  b.entry('west', 1, 13, 'right').entry('house', 10, 9, 'down').entry('driveway', 14, 3, 'down').entry('south', 19, 28, 'up');
   b.reserve(20, 12, 4);
 
   b.magpies([[8, 27], [33, 19], [13, 12]]);

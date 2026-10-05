@@ -29,6 +29,10 @@ import { buildCivic } from '../world/maps/civic.js';
 import { buildCivicCentre } from '../world/maps/civiccentre.js';
 import { buildChamber } from '../world/maps/chamber.js';
 import { buildBookShop } from '../world/maps/bookshop.js';
+import { buildBunnings } from '../world/maps/bunnings.js';
+import { buildCozzo } from '../world/maps/cozzo.js';
+import { buildAnaconda } from '../world/maps/anaconda.js';
+import { buildVapeShop } from '../world/maps/vapeshop.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
@@ -49,7 +53,7 @@ export const SUBURBS = {
   altona: { name: 'Altona North', tagline: 'Sheds, trucks and the Westgate on the horizon.', between: true },
   footscray: { name: 'Footscray', tagline: 'Halfway to Brunswick. Pho, the river and a lot of pigeons.', between: true },
   flemington: { name: 'Flemington', tagline: 'Racecourse Rd. Nearly at Brunswick now.', between: true },
-  coburg: { name: 'Coburg', tagline: 'Bell St traffic and bluestone walls.', between: true },
+  coburg: { name: 'Coburg/Preston', tagline: 'Bell St traffic and bluestone walls.', between: true },
   preston: { name: 'Preston', tagline: 'Nearly at Reservoir. You can smell the lemon trees.', between: true },
 };
 export const SUBURB_ORDER = ['laverton', 'brunswick', 'reservoir'];
@@ -79,11 +83,15 @@ export const ZONES = {
   track: { name: 'Athletics Track', suburb: 'reservoir', build: buildTrack, grass: RES_GRASS, },
   lake: { name: 'Edwardes Lake', suburb: 'reservoir', build: buildLake, grass: RES_GRASS, },
   lakepark: { name: 'Lake Park', suburb: 'reservoir', build: buildLakePark, grass: RES_GRASS, },
+  bunnings: { name: 'Bunnings Warehouse', suburb: 'altona', build: buildBunnings, grass: LAWN, indoor: true },
+  cozzo: { name: 'Franco Cozzo', suburb: 'footscray', build: buildCozzo, grass: LAWN, indoor: true },
+  anaconda: { name: 'Anaconda', suburb: 'preston', build: buildAnaconda, grass: LAWN, indoor: true },
+  vapeshop: { name: 'Plenty Road Convenience', suburb: 'preston', build: buildVapeShop, grass: LAWN, indoor: true },
   altona: { name: 'Kororoit Creek Rd', suburb: 'altona', build: buildAltona, grass: CITY_GRASS, },
   footscray: { name: 'Barkly St', suburb: 'footscray', build: buildFootscray, grass: CITY_GRASS, },
   flemington: { name: 'Racecourse Rd', suburb: 'flemington', build: buildFlemington, grass: CITY_GRASS, },
   coburg: { name: 'Bell St', suburb: 'coburg', build: buildCoburg, grass: CITY_GRASS, },
-  preston: { name: 'Gilbert Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, },
+  preston: { name: 'Plenty Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, },
   wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, },
 };
 
@@ -91,7 +99,7 @@ export const ZONES = {
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'footscray', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'vapeshop', 'anaconda', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;

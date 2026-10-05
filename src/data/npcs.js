@@ -121,6 +121,9 @@ export const NPCS = {
   bazza: {
     name: 'Bazza', shop: 'anaconda', look: { hair: '#8a4a22', hairStyle: 'cap', cap: '#e8643a', skin: '#e8b48a', shirt: '#e8643a', pants: '#5a5a48', shoes: '#4a3a2a', beard: true },
   },
+  sam: {
+    name: 'Sam', shop: 'vapeshop', look: { hair: '#1e1a18', hairStyle: 'cap', cap: '#2a2a30', skin: '#c8906a', shirt: '#3a3a44', shirtPattern: 'stripes', shirtAccent: '#e8c040', pants: '#2a2a30', shoes: '#f4f4f0', beard: true },
+  },
   sal: {
     name: 'Sal', shop: 'cozzo', look: { hair: '#1e1a18', hairStyle: 'short', skin: '#e0a882', shirt: '#f4f4f0', collar: true, blazer: '#2a2a34', pants: '#2a2a34', shoes: '#1a1a1a', moustache: true },
   },

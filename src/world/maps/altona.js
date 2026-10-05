@@ -14,16 +14,19 @@ export function buildAltona() {
   // North side: factories and the container yard
   b.fill(0, 0, 48, 2, 'g');
   b.put('factory', 1, 6, { v: 'tin' });
-  // Bunnings Warehouse. Olly runs the garden centre and stands out the front.
-  b.put('warehouse', 10, 5, { v: 'bunnings' });
-  b.npc('olly', 14, 9, { face: 'down' });
+  // Bunnings Warehouse: doors into the store (Olly is inside), and Gaz's
+  // sausage sizzle out the front.
+  b.put('warehouse', 10, 4, { v: 'bunnings' });
+  b.exit(13, 8, 2, 1, 'bunnings', 'door', 'Bunnings Warehouse');
+  b.put('sizzle', 10, 8);
+  b.npc('gaz', 12, 9, { face: 'up' });
   b.put('shed', 19, 6, { v: 'grey' });
   b.fill(26, 2, 12, 7, 'g');
   b.fenceH(26, 37, 2, 'metal'); b.fenceV(26, 3, 8, 'metal', [7]); b.fenceV(37, 3, 8, 'metal', [7]);
   [[27, 3, 'red'], [31, 3, 'blue'], [27, 5, 'green'], [33, 5, 'orange'], [29, 7, 'blue']].forEach(([x, y, v]) => b.put('container', x, y, { v }));
   b.put('trolley', 35, 7);
   b.put('shed', 40, 6, { v: 'blue' });
-  furnish(b, 9, { skip: [1, 14, 26, 37], seed: 3 });
+  furnish(b, 9, { skip: [1, 9, 12, 14, 26, 37], seed: 3 });
 
   // South: truck parking, the creek, a weedy lot with billboards
   b.fill(0, 13, 18, 5, 'P');
@@ -51,8 +54,10 @@ export function buildAltona() {
   b.magpies([[34, 16], [11, 18]]);
   b.ducks(21.5, 20, 0.6, 3, 2);
 
+  b.fill(9, 0, 1, 9, 'f');                         // a lane north, up to the council in Altona
+  b.exit(9, 0, 1, 1, 'civic', 'south', 'Civic Parade, Altona');
   b.exit(0, 9, 1, 1, 'station', 'east', 'Laverton Station');
   b.exit(47, 12, 1, 1, 'footscray', 'west', 'Footscray');
-  b.entry('west', 1, 9, 'right').entry('east', 46, 12, 'left');
+  b.entry('bunnings', 14, 9, 'up').entry('north', 9, 2, 'down').entry('west', 1, 9, 'right').entry('east', 46, 12, 'left');
   return b.finish();
 }

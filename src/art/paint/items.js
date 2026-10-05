@@ -131,6 +131,12 @@ export function paintDrink(p, a) {
     p.r(k, 6, 0, 4, 6); p.r(a.cap, 7, 0, 2, 3); p.r(a.body, 7, 3, 2, 3);
     p.r(k, 4, 5, 8, 11); p.r(a.body, 5, 6, 6, 9);
     p.r(a.label, 5, 9, 6, 4); p.r(k, 6, 10, 4, 1); p.r(glint, 6, 6, 1, 3);
+  } else if (a.kind === 'packet') {
+    p.r(k, 2, 2, 12, 13); p.r(a.body, 3, 3, 10, 11); p.r(shadeHex(a.body), 3, 12, 10, 2);
+    p.r(a.cap, 3, 3, 10, 1); p.r(a.label, 4, 6, 8, 4); p.r(a.body, 5, 7, 2, 2); p.r(glint, 4, 4, 1, 7);
+  } else if (a.kind === 'vape') {
+    p.r(k, 5, 1, 6, 14); p.r(a.cap, 6, 2, 4, 3); p.r(a.body, 6, 5, 4, 9); p.r(shadeHex(a.body), 9, 5, 1, 9);
+    p.r(a.label, 6, 8, 3, 3); p.r(glint, 6, 5, 1, 4);
   } else {
     p.r(k, 2, 3, 12, 12); p.r(a.body, 3, 4, 10, 10); p.r(shadeHex(a.body), 3, 12, 10, 2);
     p.r(a.label, 4, 6, 8, 4); p.r(a.body, 5, 7, 6, 2); p.r(a.cap, 10, 14, 2, 2); p.r(k, 6, 2, 4, 2);

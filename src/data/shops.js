@@ -8,6 +8,8 @@
 //   gifts    presents for friends (list `gifts`: item ids)
 //   drinks   the bottle shop's beers and wines (items with drink: true)
 //   books    the bookshop's novels (items with book: true)
+//   lollies  the convenience store's American lollies (lolly: true)
+//   vapes    vapes (vape: true). List it in `adultTabs` and toddlers are turned away from that tab
 //   fishing  the fishing rod (a tool in upgrades.js) and bait
 //   furniture couches for the house (data/furniture.js)
 //   sell     sell crops and treats from your bag (crops at their price, treats at half)
@@ -16,7 +18,8 @@ export const SHOPS = {
   bunnings: { name: 'Bunnings Warehouse', where: 'Kororoit Creek Rd, Altona North', tabs: ['seeds', 'tools', 'upgrades', 'gifts'], gifts: ['seedling', 'olive', 'gloves', 'fertiliser'] },
   milkbar: { name: 'James\'s Milk Bar', where: 'Reservoir Station', tabs: ['sell', 'seeds', 'treats', 'gifts'], seeds: ['tomato', 'strawberry', 'chilli', 'basil'], gifts: ['gaytime', 'icedcoffee', 'flowers', 'paperback', 'byzbook', 'modeltrain'] },
   bookshop: { name: 'Brunswick Bound', where: 'Sydney Rd, Brunswick', tabs: ['books'] },
-  anaconda: { name: 'Anaconda', where: 'Gilbert Rd, Preston', tabs: ['fishing', 'gifts'], gifts: ['thermos', 'headtorch'] },
+  anaconda: { name: 'Anaconda', where: 'Plenty Rd, Preston', tabs: ['fishing', 'gifts'], gifts: ['thermos', 'headtorch'] },
   cozzo: { name: 'Franco Cozzo', where: 'Barkly St, Footscray', tabs: ['furniture'] },
+  vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
 };

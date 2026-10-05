@@ -50,8 +50,8 @@ export function buildLohse() {
   b.put('powerpole', 3, 6); b.put('powerpole', 30, 23);
   b.sign(21, 23, ['Maher Rd.', 'Cross here for Laverton Station.']);
 
-  b.exit(0, 0, 3, 1, 'woods', 'lohse', 'Woods St');
-  b.exit(24, 0, 2, 1, 'woods', 'path', 'Woods St');
+  b.exit(0, 0, 3, 1, 'woods', 'east', 'Woods St');
+  b.exit(24, 0, 2, 1, 'woods', 'east', 'Woods St');
   b.exit(18, 27, 2, 1, 'station', 'north', 'Laverton Station');
   b.exit(39, 24, 1, 2, 'civic', 'west', 'Civic Parade, Altona');
   b.put('waysign', 36, 22, { v: 'civic-right' }); b.put('waysign', 21, 22, { v: 'station-down' });

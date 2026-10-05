@@ -49,12 +49,12 @@ export const MOTIONS = {
     debate: ['Mayor Paddy: "A little box of free books. Take one, leave one. That is the whole motion."', 'Cr Dismay: "Who will police the books?"'],
     effect: 'A free book appears in the street library at Lohse St Reserve every day.',
   },
-  dawson: {
-    title: 'Finish the Dawson St level crossing works',
-    needs: { money: 120, snag: 4 },
-    sponsor: 'paddy',
-    debate: ['Mayor Paddy: "We lobby the state, we get the works finished, we open Dawson St. And there will be a sausage sizzle."', 'Cr Bentleigh: "NOT IN MY MUNICIPALITY! ...Wait, which council is Brunswick in?"'],
-    effect: 'Dawson St is open: a shortcut from Brunswick Station straight to Sydney Rd.',
+  trees: {
+    title: 'Plant street trees along Allen St',
+    needs: { seedling: 4, olive: 1, money: 40 },
+    sponsor: 'deanna',
+    debate: ['Cr Grimes: "Shade, birds, cooler footpaths. Trees are infrastructure."', 'Cr Bentleigh: "LEAVES! IN MY GUTTERS!"'],
+    effect: 'New street trees and native garden beds along Allen St.',
   },
 };
 export const MOTION_ORDER = Object.keys(MOTIONS);

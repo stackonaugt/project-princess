@@ -55,7 +55,7 @@ export const FRIENDS = {
     assist: { damage: 0.18, foeDef: 1 },
   },
   sinead: {
-    loves: ['moscato', 'strawberry', 'icedcoffee', 'fourthwing'], likes: ['flowers', 'tennis', 'gaytime', 'yellowtail'], dislikes: ['sardine'],
+    loves: ['moscato', 'strawberry', 'icedcoffee', 'fourthwing', 'mangoice'], likes: ['flowers', 'tennis', 'gaytime', 'yellowtail'], dislikes: ['sardine'],
     rewards: { 4: { item: 'tennis', n: 2 } },
     assist: { foeAtk: 1, selfDef: 1 },
   },
@@ -90,6 +90,7 @@ export const FRIENDS = {
   rayna: { loves: ['gaytime', 'strawberry'], likes: ['croissant', 'flowers'], dislikes: ['sardine'], assist: { selfAtk: 1, foeAtk: 1 } },
   deanna: { loves: ['seedling', 'olive'], likes: ['tomato', 'basil', 'flowers'], dislikes: ['crown'], assist: { heal: 0.2, selfDef: 1 } },
   wren: { loves: ['monkeygrip', 'intermezzo', 'icedcoffee'], likes: ['croissant', 'flowers', 'paperback'], dislikes: ['vb'] },
+  sam: { loves: ['takis', 'drpepper', 'snag'], likes: ['reeses', 'icedcoffee', 'vb'], dislikes: ['orangewine'] },
   bazza: { loves: ['redfin', 'eel', 'thermos'], likes: ['snag', 'vb', 'yabby'], dislikes: ['orangewine'] },
   sal: { loves: ['chianti', 'croissant'], likes: ['coopers', 'cheese', 'flowers'], dislikes: ['goon'] },
   macca: {

@@ -96,8 +96,8 @@ export function buildAlbion() {
   b.exit(0, 12, 1, 8, 'sydney', 'east', 'Sydney Rd');
   b.exit(47, 12, 1, 8, 'coburg', 'south', 'Bell St, Coburg');
   b.exit(28, 0, 6, 1, null, null, 'Brunswick West', ['Albion St heads off to Brunswick West.', 'Nothing to see there yet. The sign says "coming soon". Sydney Rd is right here.']);
-  b.exit(28, 25, 6, 1, null, null, 'Brunswick East', ['Albion St, towards Brunswick East.', 'One day. Bring a keep cup. For now, Sydney Rd.']);
-  b.entry('west', 1, 13, 'right').entry('east', 46, 13, 'left');
+  b.exit(28, 25, 6, 1, 'donald', 'albion', 'Donald St');
+  b.entry('south', 30, 24, 'up').entry('west', 1, 13, 'right').entry('east', 46, 13, 'left');
 
   b.lane({ axis: 'x', pos: 15.5, dir: 1, from: -6, to: 54, every: [25, 45], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 16.5, dir: -1, from: -6, to: 54, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });

@@ -124,7 +124,7 @@ export const CIVIC = {
 
   // A green fingerpost sign: v is '<place>-<direction>' (up, down, left, right).
   waysign: {
-    foot: [1, 1], tex: [48, 44], variants: ['lohse-up', 'civic-right', 'lohse-left', 'station-down'],
+    foot: [1, 1], tex: [48, 44], variants: ['lohse-up', 'civic-right', 'lohse-left', 'station-down', 'station-left'],
     paint(p, v) {
       const [place, dir] = String(v).split('-');
       const words = { lohse: ['LOHSE ST', 'RESERVE'], civic: ['CIVIC', 'CENTRE'], station: ['LAVERTON', 'STATION'] }[place] || [place.toUpperCase()];

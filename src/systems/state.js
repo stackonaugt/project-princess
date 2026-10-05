@@ -306,7 +306,7 @@ export const state = {
   passMotion(id) {
     if (this.motionPassed(id)) return;
     this.data.council.passed.push(id);
-    for (const z of { gardenplus: ['wetlands'], bookswap: ['lohse'], dawson: ['brunswick'] }[id] || []) invalidateMap(z);
+    for (const z of { gardenplus: ['wetlands'], bookswap: ['lohse'], trees: ['allen'] }[id] || []) invalidateMap(z);
     bus.emit('council:passed', id);
   },
 

@@ -105,7 +105,7 @@ export function buildTextures(scene) {
   for (const [id, [w, h, draw]] of Object.entries(FOE_ART)) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
   // Items
   for (const [id, art] of Object.entries(ITEM_ART)) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
-  for (const [id, it] of Object.entries(ITEMS)) if (it.drink) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
+  for (const [id, it] of Object.entries(ITEMS)) if (it.drink || it.lolly || it.vape) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
   for (const [id, it] of Object.entries(ITEMS)) if (it.book) canvasTexture(scene, `item-${id}`, 16, 16, p => paintBook(p, it.art));
   for (const [id, c] of Object.entries(CROPS)) canvasTexture(scene, `item-seed-${id}`, 16, 16, p => paintSeedPacket(p, c.colour));
   for (const [id, art] of Object.entries(GEAR_ART)) canvasTexture(scene, `item-gear-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
@@ -148,7 +148,7 @@ export function objectTexture(scene, o) {
 // and art that draws its own outline. Soft ground shadows are ignored.
 const NO_OUTLINE = new Set(['birdmural', 'bigscreen', 'ropebarrier', 'coasterwall', 'fence', 'viaduct', 'pier', 'trackoval', 'footbridge', 'iwindow', 'picture', 'shelf', 'verandah', 'canopy', 'carport', 'shade', 'archshelter', 'tank', 'crops', 'reeds']);
 function needsOutline(kind, def) { return !def.flat && !def.deck && !def.lined && !NO_OUTLINE.has(kind) && !ALREADY_OUTLINED.has(kind); }
-const ALREADY_OUTLINED = new Set(['bbound', 'anaconda', 'francocozzo', 'chamberdome', 'civiccentre', 'car', 'ute', 'edcastle', 'bottleshop', 'decoshop', 'bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
+const ALREADY_OUTLINED = new Set(['stolberg', 'convenience', 'plentycafe', 'muralbuilding', 'secondhandman', 'printers', 'wheelstyres', 'bbound', 'anaconda', 'francocozzo', 'chamberdome', 'civiccentre', 'car', 'ute', 'edcastle', 'bottleshop', 'decoshop', 'bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
 function objectOutline(ctx, w, h, colour = '#2a1810') {
   const img = ctx.getImageData(0, 0, w, h), d = img.data;
   const solid = i => d[i * 4 + 3] > 150;

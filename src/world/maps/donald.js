@@ -65,7 +65,9 @@ export function buildDonald() {
 
   b.exit(27, 0, 2, 1, 'sydney', 'donald', 'Sydney Rd');
   b.exit(39, 16, 1, 2, 'coburg', 'west', 'Bell St, Coburg');
-  b.entry('north', 27, 2, 'down').entry('east', 38, 16, 'left');
+  b.exit(39, 0, 1, 2, 'albion', 'south', 'Albion St');
+  b.exit(39, 21, 1, 3, null, null, 'Brunswick East', ['The lane heads off towards Brunswick East.', 'One day. Bring a keep cup.']);
+  b.entry('albion', 39, 3, 'down').entry('north', 27, 2, 'down').entry('east', 38, 16, 'left');
 
   b.npc('rose', 10, 11, { face: 'up' });
 

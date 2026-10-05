@@ -7,6 +7,9 @@
 //   gift: true    a present for friends (books, plants...). Not a pet treat.
 //   farm: true    used on garden beds (fertiliser) or for fishing (bait). Not a pet treat.
 //   book: true    a novel from Brunswick Bound (also gift: true). art: { cover, band }
+//   lolly: true   American lollies from the Plenty Rd convenience store (also gift: true).
+//   vape: true    vapes from the same shop, adults only (also gift: true). Both use `art` like drinks:
+//                 art: { kind: packet | vape, body, label, cap }
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
@@ -94,6 +97,16 @@ export const ITEMS = {
   chianti:     { name: 'Chianti', price: 14, drink: true, art: { kind: 'wine', body: '#3a0e1a', label: '#c8443a', cap: '#f4efe0' }, desc: 'In a straw basket. All roads lead to it.' },
   orangewine:  { name: 'Natural orange wine', price: 26, drink: true, art: { kind: 'wine', body: '#e8902a', label: '#f4efe0', cap: '#2a2a2a' }, desc: 'Cloudy, funky, from a small Yarra Valley producer. The hipster approves.' },
   goon:        { name: 'Cask of goon', price: 12, drink: true, art: { kind: 'cask', body: '#e8e0d0', label: '#8a1a2a', cap: '#c8443a' }, desc: 'Four litres of fruity lexia. The silver pillow of uni days.' },
+
+  // Plenty Road Convenience, Preston (SMOKES AMERICAN CONFECTIONARY VAPES). Presents for friends, not pets.
+  reeses:     { name: 'Reese\'s Cups', price: 4, gift: true, lolly: true, art: { kind: 'packet', body: '#e8823a', label: '#f4e040', cap: '#7a3a1a' }, desc: 'Peanut butter in chocolate. America\'s one good idea.' },
+  drpepper:   { name: 'Dr Pepper', price: 4, gift: true, lolly: true, art: { kind: 'can', body: '#6a1a24', label: '#f4efe0', cap: '#b8b8c0' }, desc: 'Tastes like 23 flavours arguing. Imported, so it costs a fortune.' },
+  takis:      { name: 'Takis Fuego', price: 6, gift: true, lolly: true, art: { kind: 'packet', body: '#6a2a8a', label: '#e8302a', cap: '#f4e040' }, desc: 'Rolled chilli lime chips. Your fingers will be red for a week.' },
+  twinkie:    { name: 'Twinkie', price: 5, gift: true, lolly: true, art: { kind: 'packet', body: '#f4f4f0', label: '#2a6ad0', cap: '#e8302a' }, desc: 'A golden sponge cake that will outlive us all.' },
+  poptarts:   { name: 'Pop-Tarts', price: 6, gift: true, lolly: true, art: { kind: 'packet', body: '#2a8ad0', label: '#f07ab0', cap: '#f4efe0' }, desc: 'Frosted strawberry. Toast them or don\'t. Nobody can stop you.' },
+  mangoice:   { name: 'Mango Ice vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#f0a030', label: '#f4efe0', cap: '#3a3a44' }, desc: 'Sinead\'s flavour. Smells like a tropical holiday in a bus shelter.' },
+  grapeice:   { name: 'Grape Ice vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#7a3ab0', label: '#f4efe0', cap: '#3a3a44' }, desc: 'Purple. Very purple. Leaves a cloud like a nightclub smoke machine.' },
+  watermelon: { name: 'Watermelon vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#e85a6a', label: '#5ab04a', cap: '#3a3a44' }, desc: 'Watermelon bubblegum flavour. Officially, vapes are pharmacy only now. Officially.' },
 };
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.

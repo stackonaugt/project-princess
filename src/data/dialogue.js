@@ -87,7 +87,7 @@ export const PEOPLE = {
     helpsInBattle: 'Gordon starts explaining the Hagia Sophia dome. The foe sits down to listen.',
   },
   gaz: {
-    role: 'Sausage sizzle volunteer, Laverton Station',
+    role: 'Runs the sausage sizzle outside Bunnings, Altona North',
     lines: [
       ['Snag? Onions go on the bottom, mate. Stops them falling out. It is science.'],
       [
@@ -97,13 +97,13 @@ export const PEOPLE = {
         'People ask why I do it. Free sausages, community, and nobody can make me use a vegetarian tong. Wait, yes they can. Fair enough.',
       ],
       [
-        'Seeds and garden gear? Olly at the Bunnings in Altona North. Walk east from the station. He knows where every hinge lives.',
+        'Seeds and garden gear? Olly is just inside. He knows where every hinge lives.',
       ],
     ],
     hints: {
       princess: 'Little white poodle on Allen St barks at my ute every morning. Fair dinkum security guard, that one.',
     },
-    giftLine: 'Here, have a snag in bread. On the house. Do not tell Olly at Bunnings.',
+    giftLine: 'Here, have a snag in bread. On the house. Do not tell Olly. He counts them.',
     heartScenes: {
       2: ['Gaz lets you work the tongs for five minutes. Onions on the bottom. You are a natural.'],
       4: [
@@ -755,6 +755,16 @@ export const PEOPLE = {
       ['Eels have been in Melbourne creeks longer than Melbourne has. Show some respect.'],
     ],
   },
+  sam: {
+    role: 'Runs Plenty Road Convenience, Preston. Smokes, American confectionary, vapes',
+    lines: [
+      ['Welcome! Reese\'s, Takis, Twinkies, Pop-Tarts. Everything an American kid eats and an Australian kid wants.'],
+      ['Dr Pepper is seven dollars because it came on a boat. The boat is expensive. Not my fault.'],
+      ['The Stolberg crowd come in after the pub. Takis. Every time. Their fingers glow red on the tram home.'],
+      ['Vapes? Officially pharmacy only now. The sign says VAPES because nobody will pay for a new sign.'],
+      ['Your mate from the units on Plenty Rd? Mango Ice. I know everyone by flavour. It is a gift and a curse.'],
+    ],
+  },
   sal: {
     role: 'Sells furniture at Franco Cozzo, Footscray',
     lines: [
@@ -1088,7 +1098,12 @@ export const PLACES = {
   altona: 'Factories, trucks and Kororoit Creek. The long walk east begins.',
   footscray: 'Pho, the river and a lot of pigeons.',
   flemington: 'Racecourse Rd, the flats and the tram.',
-  coburg: 'Six lanes of Bell St and the old Pentridge wall.',
-  preston: 'Gilbert Rd: shops, a tram and nonna gardens.',
+  coburg: 'Bell St, between Coburg and Preston. Six lanes and the old Pentridge wall.',
+  preston: 'Plenty Rd, Preston: a sage green pub, a convenience store and the 86 tram.',
+  bunnings: 'Bunnings Warehouse. Aisles of everything, and a garden centre out the back.',
+  cozzo: 'The Franco Cozzo showroom. Megalo couches as far as the eye can see.',
+  anaconda: 'Anaconda: tents, kayaks and a whole wall of fishing rods.',
+  bookshop: 'Brunswick Bound. Classics up the back, new releases on the tables.',
+  vapeshop: 'Plenty Road Convenience. American lollies, cold drinks and a sign that says VAPES.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
 };

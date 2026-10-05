@@ -52,12 +52,14 @@ export function buildCivic() {
   b.put('waysign', 3, 19, { v: 'lohse-left' });
 
   b.forage(36, 18, ['tennis', 'snag']);
+  b.fill(36, 24, 2, 2, 'f');                       // the path south to Kororoit Creek Rd
+  b.exit(36, 25, 2, 1, 'altona', 'north', 'Kororoit Creek Rd');
   b.border(['gum', 'oak']);
   b.magpies([[16, 17], [33, 14]]);
 
   b.exit(0, 20, 1, 4, 'lohse', 'east', 'Lohse St Reserve');
   b.exit(39, 20, 1, 4, null, null, 'Pier St', ['Civic Parade carries on to Pier St and the beach.', 'Another day. Bring a towel.']);
-  b.entry('west', 1, 20, 'right');
+  b.entry('west', 1, 20, 'right').entry('south', 36, 23, 'up');
   b.lane({ axis: 'x', pos: 21.5, dir: -1, from: -4, to: 44, every: [8, 16], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 22.5, dir: 1, from: -4, to: 44, every: [8, 16], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });
   return b.finish();

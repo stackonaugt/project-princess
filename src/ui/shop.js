@@ -15,7 +15,7 @@ import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell' };
+const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -35,11 +35,15 @@ export function openShop(panel, close, shopId = 'petshop') {
     msg.textContent = `Bought: ${name}.`;
     render();
   };
+  // Toddlers can shop, but not on a shop's adultTabs (the vapes).
+  const baby = !!HEROES[state.data.hero]?.look.baby, refused = t => baby && (shop.adultTabs || []).includes(t);
   const rowsFor = tab => {
     const itemRow = id => { const it = ITEMS[id]; return { name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }; };
     if (tab === 'treats') return Object.keys(ITEMS).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
     if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
     if (tab === 'drinks') return Object.keys(ITEMS).filter(id => ITEMS[id].drink).map(itemRow);
+    if (tab === 'lollies') return Object.keys(ITEMS).filter(id => ITEMS[id].lolly).map(itemRow);
+    if (tab === 'vapes') return refused(tab) ? [] : Object.keys(ITEMS).filter(id => ITEMS[id].vape).map(itemRow);
     if (tab === 'books') return Object.keys(ITEMS).filter(id => ITEMS[id].book).map(itemRow);
     if (tab === 'fishing') return [...upgradeRows(FISHING_ORDER), itemRow('bait')];
     if (tab === 'furniture') return COUCH_ORDER.map(id => {
@@ -89,7 +93,9 @@ export function openShop(panel, close, shopId = 'petshop') {
         h('button', { class: 'tab' + (tab === id ? ' on' : ''), role: 'tab', 'aria-selected': tab === id, onclick: () => { tabFor[shopId] = id; sfx.select(); render(); } }, TAB_NAMES[id]))) : null,
       h('div', { class: 'm-scroll' },
         tab === 'gear' ? h('p', { class: 'small' }, 'Gear goes on a pet from your bag. One piece each. It helps in battles.') : null,
-        tab === 'drinks' || tab === 'gifts' || tab === 'books' ? h('p', { class: 'small' }, 'Presents for your friends around town. Not for pets. Everyone has favourites: check the Friends app.') : null,
+        refused(tab) ? h('div', { class: 'note' }, h('p', {}, 'Sam leans right over the counter. "Absolutely not, little one. Lollies are that way."')) : null,
+        tab === 'vapes' && !refused(tab) ? h('p', { class: 'small' }, 'Presents for adult friends who already vape. Sam says the law changed and these are "basically pharmacy only". There is a sign. It says VAPES.') : null,
+        tab === 'drinks' || tab === 'gifts' || tab === 'books' || tab === 'lollies' ? h('p', { class: 'small' }, 'Presents for your friends around town. Not for pets. Everyone has favourites: check the Friends app.') : null,
         tab === 'tools' ? h('p', { class: 'small' }, 'Garden tools work as soon as you buy them.') : null,
         tab === 'books' ? h('p', { class: 'small' }, 'Classics and the latest hits. Books make lovely presents. Some friends are big readers.') : null,
         tab === 'fishing' ? h('p', { class: 'small' }, 'With a rod, face the water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A.') : null,
