@@ -1,5 +1,5 @@
 // Inside SUMMERHILL SHOPPING CENTRE: a terrazzo concourse lined with shops,
-// each with its shopkeeper out the front. Summerhill Fresh (Deb), the chemist
+// each with its shopkeeper out the front. Coles (Deb), the chemist
 // (Mei), the newsagency (Kostas), hot bread (Thuy), Everything $2 (Raj) and
 // Curl Up & Dye (Shaz, chat only). The food court stalls sit in the middle
 // with Bill at his usual table, and Connie walks her laps.

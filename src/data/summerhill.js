@@ -46,7 +46,7 @@ export const SH_NPCS = {
 
 export const SH_PEOPLE = {
   deb: {
-    role: 'Checkout at Summerhill Fresh. Knows everyone in Reservoir by their shopping',
+    role: 'Checkout at Coles. Knows everyone in Reservoir by their shopping',
     lines: [
       ['Hiya love. Bags? Five cents. I know. Blame the council. Not your Paddy, the other ones.'],
       ['Tuesday is pension day. The whole of Reservoir is in here by 9am buying one tin of tomatoes each.'],
@@ -213,7 +213,7 @@ export const SH_ITEMS = {
 };
 
 export const SH_SHOPS = {
-  summerfresh: { name: 'Summerhill Fresh', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['treats', 'seeds', 'gifts'], seeds: ['carrot', 'potato', 'zucchini', 'pumpkin'], gifts: ['timtams', 'icedcoffee', 'gaytime', 'flowers'] },
+  summerfresh: { name: 'Coles', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['treats', 'seeds', 'gifts'], seeds: ['carrot', 'potato', 'zucchini', 'pumpkin'], gifts: ['timtams', 'icedcoffee', 'gaytime', 'flowers'] },
   chemist: { name: 'Summerhill Discount Chemist', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['handcream', 'sunscreen'] },
   newsagent: { name: 'Summerhill Newsagency', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['puzzlebook', 'bdaycard', 'paperback'] },
   hotbread: { name: 'Summerhill Hot Bread', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['sausageroll', 'vanillaslice', 'fingerbun'] },

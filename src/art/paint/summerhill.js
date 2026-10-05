@@ -47,7 +47,7 @@ export const SUMMERHILL = {
     foot: [26, 5], tex: [420, 132], variants: ['front'], lined: true,
     paint(p) {
       const H = 132, base = H - 1, eave = 70, roofTop = 34;
-      const wings = [[2, 150, [['POST', '#d8202a', '#f4efe0'], ['GIFTS', '#f4f4f0', '#3a3a44'], ['CAFE', '#2a2a30', '#e8c040']]],
+      const wings = [[2, 150, [['AUSTRALIA POST', '#d8202a', '#f4efe0'], ['GIFTS', '#f4f4f0', '#3a3a44'], ['CAFE', '#2a2a30', '#e8c040']]],
         [270, 418, [['CHEMIST', '#3a9a5a', '#f4efe0'], ['NEWS', '#2f6aa3', '#f4efe0'], ['$2 SHOP', '#d8202a', '#f8d050']]]];
       for (const [x0, x1, signs] of wings) {
         // shopfronts in the shade of the eaves
@@ -58,7 +58,8 @@ export const SUMMERHILL = {
           glass(p, bx + 6, eave + 22, Math.round(bay) - 12, base - eave - 26, '#26262a', '#8aa4b0');
           stock(p, bx + 9, eave + 26, Math.round(bay) - 18, 3, 50 + i + x0, 8);
           const [t, bg, fg] = signs[i];
-          box(p, bx + bay / 2 - 18, eave + 8, 36, 9, bg); centred(p, t, bx + bay / 2, eave + 10, fg);
+          if (t === 'AUSTRALIA POST') { box(p, bx + bay / 2 - 20, eave + 5, 40, 15, bg); centred(p, 'AUSTRALIA', bx + bay / 2, eave + 7, fg); centred(p, 'POST', bx + bay / 2, eave + 13, fg); }
+          else { box(p, bx + bay / 2 - 18, eave + 8, 36, 9, bg); centred(p, t, bx + bay / 2, eave + 10, fg); }
           p.r('#1e1e22', bx, eave, 3, base - eave);   // dark posts
         }
         // the folded zigzag roof
@@ -80,8 +81,8 @@ export const SUMMERHILL = {
       p.r('#e4e0d8', cx0, 22, cx1 - cx0, base - 22); p.r('#c8c4bc', cx1 - 4, 22, 4, base - 22);
       p.r('#7a6a5a', cx0 - 8, 8, cx1 - cx0 + 16, 14); p.r('#9a8a78', cx0 - 8, 8, cx1 - cx0 + 16, 2); p.r('#4a3e34', cx0 - 8, 22, cx1 - cx0 + 16, 2);
       centred(p, 'SUMMERHILL SHOPPING CENTRE', mid, 13, '#f4efe0');
-      box(p, mid - 34, 32, 68, 26, '#d8202a'); big(p, 'FRESH', mid, 37, 2, '#f4f4f0');
-      centred(p, 'SUPERMARKET', mid, 50, '#f8d8d8');
+      box(p, mid - 34, 32, 68, 26, '#d8202a'); big(p, 'COLES', mid, 37, 2, '#f4f4f0');
+      centred(p, 'SUPERMARKETS', mid, 50, '#f8d8d8');
       // the entrance: canopy, sliding doors, glass either side
       p.r('#3a3e44', mid - 40, 78, 80, 5); p.r('#5a5e66', mid - 40, 78, 80, 1);
       glass(p, mid - 18, 86, 36, base - 87, '#2a2e33', '#a8d0e0');
@@ -111,7 +112,7 @@ export const SUMMERHILL = {
       p.r('#6a6e76', 8, 70, 4, 29); p.r('#6a6e76', 24, 70, 4, 29);
       box(p, 2, 2, 32, 30, TERRA); sun(p, 18, 15, 5);
       centred(p, 'SUMMER', 18, 18, '#f4efe0'); centred(p, 'HILL', 18, 24, '#f4efe0');
-      [['FRESH', '#2f8a4a', '#f4efe0'], ['CHEMIST', '#f4f4f0', '#3a9a5a'], ['NEWS', '#2f6aa3', '#f4efe0'], ['BREAD', '#e8c040', '#8a3a1a'], ['$2', '#c8302a', '#f8d050']].forEach(([s, bg, fg], i) => {
+      [['COLES', '#d8202a', '#f4efe0'], ['POST', '#d8202a', '#f4efe0'], ['CHEMIST', '#f4f4f0', '#3a9a5a'], ['NEWS', '#2f6aa3', '#f4efe0'], ['BREAD', '#e8c040', '#8a3a1a'], ['$2', '#c8302a', '#f8d050']].forEach(([s, bg, fg], i) => {
         box(p, 2, 33 + i * 7, 32, 7, bg); centred(p, s, 18, 34 + i * 7, fg);
       });
       outline(p.ctx, 0, 0, 36, 100);
@@ -141,8 +142,8 @@ export const SUMMERHILL = {
     paint(p) {
       const sx = 2, W = 144, top = 4, base = 75;
       p.r(CREAM, sx, top, W, base - top);
-      box(p, sx, top, W, 14, '#2f8a4a'); centred(p, 'SUMMERHILL FRESH', sx + W / 2, top + 5, '#f4efe0');
-      p.r('#e8c040', sx, top + 14, W, 2);
+      box(p, sx, top, W, 14, '#d8202a'); big(p, 'COLES', sx + W / 2, top + 2, 2, '#f4f4f0');
+      p.r('#f4f4f0', sx, top + 14, W, 2);
       glass(p, sx + 3, top + 20, W - 6, 30, '#3a3e44', '#c8dce4');
       stock(p, sx + 6, top + 23, W - 12, 4, 21, 7);
       // checkouts and the open doorway
