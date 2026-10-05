@@ -88,6 +88,15 @@ export const PETS = [
     loves: ['cheese', 'croissant'], likes: ['chicken', 'sardine', 'basil', 'pumpkin'], dislikes: ['tennis', 'lemon', 'chilli'],
     stats: { hp: 60, attack: 50, defence: 70, speed: 55, special: 98 },
   },
+  {
+    id: 'girlie', name: 'Girlie', species: 'Black labrador', type: ['water', 'park'], sprite: 'lab',
+    pal: { a: '#26252a', b: '#141418', l: '#3a3940', e: '#6a4a2a', n: '#0a0a0a', p: '#e8708a' },
+    owner: 'Dell', region: 'carlton', zone: 'gardens', home: [14, 20], range: 3,
+    homeSpot: { zone: 'yard', x: 23, y: 9 },
+    behaviour: 'wander', sleeps: [14 * 60, 16 * 60],
+    loves: ['chicken', 'jamdonut', 'hotchips', 'tennis'], likes: ['snag', 'cheese', 'sardine', 'croissant', 'carrot', 'pumpkin', 'potato', 'gelato', 'prosciutto', 'redfin'], dislikes: ['lemon'],
+    stats: { hp: 82, attack: 76, defence: 66, speed: 62, special: 55 },
+  },
 ];
 
 

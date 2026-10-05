@@ -25,6 +25,7 @@ export function buildYard() {
   b.put('picnic', 21, 11);
   b.put('kennel', 22, 8);
   b.put('petbed', 25, 12, { v: 'green' });
+  b.put('petbed', 23, 9, { v: 'blue' });   // Girlie's, by the kennel
   b.put('bin', 19, 18, { v: 'red' }); b.put('bin', 19, 17, { v: 'yellow' }); b.put('bin', 19, 16, { v: 'green' });
 
   // The shed in the far right corner

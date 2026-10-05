@@ -59,6 +59,23 @@ export const ITEMS = {
   intermezzo:     { name: 'Intermezzo', price: 28, gift: true, book: true, art: { cover: '#a8c890', band: '#1e1e24' }, desc: 'Sally Rooney. Brothers, chess and complicated feelings.' },
   fourthwing:     { name: 'Fourth Wing', price: 28, gift: true, book: true, art: { cover: '#1e1e24', band: '#e8a030' }, desc: 'Rebecca Yarros. Dragons. Romance. More dragons.' },
 
+  // Carlton and the city. Treats with local: true are only sold at their own shop
+  // (not Ed's pet shop). Their icons are drawn from art (kinds: cone, donut, cup, chips, packet).
+  gelato:     { name: 'Dog gelato', price: 6, local: true, art: { kind: 'cone', body: '#e8c870', label: '#d8a050', cap: '#8a5a32' }, desc: 'Gina\'s pup-safe gelato. Peanut butter and banana, no sugar. The dogs do not know.' },
+  jamdonut:   { name: 'Hot jam donut', price: 4, local: true, art: { kind: 'donut', body: '#d8a050', label: '#c8302a', cap: '#f4f0e6' }, desc: 'From the van at Queen Vic. The jam is the temperature of the sun.' },
+  hotchips:   { name: 'Hot chips', price: 5, local: true, art: { kind: 'chips', body: '#c8302a', label: '#f4d070', cap: '#f4f0e6' }, desc: 'Chicken salt, obviously. Guard them from seagulls with your life.' },
+  prosciutto: { name: 'Prosciutto', price: 8, local: true, art: { kind: 'packet', body: '#f4f0e6', label: '#e89090', cap: '#2a6a3a' }, desc: 'Paper thin, from Stavros\'s deli. Princess would sell you out for one slice.' },
+  gelatocone: { name: 'Gelato cone', price: 6, gift: true, art: { kind: 'cone', body: '#8ad0a0', label: '#d8a050', cap: '#f0a0b8' }, desc: 'Pistachio and stracciatella. Eat it fast. It is not waiting for you.' },
+  cannoli:    { name: 'Cannoli', price: 6, gift: true, art: { kind: 'packet', body: '#f4f0e6', label: '#d8a050', cap: '#c8302a' }, desc: 'Crisp shell, sweet ricotta, a cherry on each end. Gina\'s cousin makes them.' },
+  longblack:  { name: 'Long black', price: 5, gift: true, art: { kind: 'cup', body: '#f4f0e6', label: '#2a5a4a', cap: '#3a2a24' }, desc: 'From Remy\'s cart on Degraves St. Strong enough to fix a Monday.' },
+  magic:      { name: 'A magic', price: 5, gift: true, art: { kind: 'cup', body: '#f4f0e6', label: '#c8a070', cap: '#e8d8b8' }, desc: 'Double ristretto, steamed milk, small glass. Melbourne\'s secret coffee.' },
+  borek:      { name: 'Borek', price: 5, gift: true, art: { kind: 'packet', body: '#e8d8b0', label: '#3a8a3a', cap: '#f4f0e6' }, desc: 'Spinach and cheese, from the market. Everyone queues. Everyone is right.' },
+  olivejar:   { name: 'Jar of olives', price: 9, gift: true, art: { kind: 'jar', body: '#5a7a3a', label: '#f4f0e6', cap: '#c8a040' }, desc: 'Kalamatas from Stavros. His dad\'s recipe. The jar survived the trip this time.' },
+  snowglobe:  { name: 'Tram snow globe', price: 12, gift: true, art: { kind: 'globe', body: '#c8e0f0', label: '#3a8a4a', cap: '#3a6aa8' }, desc: 'A little green tram in a snowstorm. It has never snowed on Swanston St. Yet.' },
+  koala:      { name: 'Toy koala', price: 10, gift: true, art: { kind: 'koala', body: '#9a9aa2', label: '#f4f0e6', cap: '#2a2a30' }, desc: 'Soft, grey and made of recycled bottles. Clips onto a bag.' },
+  umbrella:   { name: 'Four seasons umbrella', price: 15, gift: true, art: { kind: 'brolly', body: '#3a6aa8', label: '#e8c040', cap: '#2a2a30' }, desc: 'For Melbourne\'s four seasons in one day. Mostly the wet one.' },
+  mykicase:   { name: 'Myki wallet', price: 8, gift: true, art: { kind: 'packet', body: '#7ab040', label: '#2a2a30', cap: '#f4f0e6' }, desc: 'A little green wallet for your myki. Touching on has never been so stylish.' },
+
   // Fishing (Anaconda, Preston): bait, and what you catch. Fish are treats; sell
   // them at James's (sell: price paid).
   bait:       { name: 'Bait', price: 2, farm: true, desc: 'A tub of wriggly worms. Better bites while you have some.' },

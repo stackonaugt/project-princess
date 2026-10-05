@@ -114,6 +114,44 @@ export const ENEMIES = {
     name: 'Goon Bag', type: 'booze', stats: { hp: 60, attack: 52, defence: 55, speed: 40, special: 50 },
     moves: ['hiccup', 'slosh', 'silverpillow', 'beergoggles'],
   },
+  // ---- Carlton and the city
+  seagull: {
+    name: 'Hot Chip Seagull', type: ['water', 'street'], stats: { hp: 48, attack: 66, defence: 42, speed: 88, special: 50 },
+    moves: ['chipsteal', 'mine', 'swoop'], drop: ['hotchips', 0.4],
+  },
+  pigeon: {
+    name: 'City Pigeon', type: 'street', stats: { hp: 50, attack: 55, defence: 50, speed: 70, special: 55 },
+    moves: ['jab', 'coo', 'flutter'], drop: ['croissant', 0.25],
+  },
+  tourist: {
+    name: 'Lost Tourist', tall: true, faces: 'left', type: 'old', stats: { hp: 58, attack: 55, defence: 52, speed: 45, special: 62 },
+    moves: ['bigmap', 'selfiestick', 'directions'], drop: ['gelatocone', 0.3],
+  },
+  ticketgate: {
+    faces: 'front',
+    name: 'Ticket Gate', type: 'steel', stats: { hp: 60, attack: 60, defence: 68, speed: 40, special: 50 },
+    moves: ['gateslam', 'beep', 'invalidcard'],
+  },
+  finenotice: {
+    faces: 'front', float: true,
+    name: 'Fine Notice', type: ['old', 'plastic'], stats: { hp: 52, attack: 50, defence: 50, speed: 70, special: 70 },
+    moves: ['fine', 'papercut', 'triplicate'],
+  },
+  meatball: {
+    faces: 'front',
+    name: 'Angry Meatball', type: 'fire', stats: { hp: 56, attack: 64, defence: 54, speed: 50, special: 50 },
+    moves: ['napoletana', 'meatroll', 'mangia'],
+  },
+  garlicbread: {
+    faces: 'front',
+    name: 'Free Garlic Bread', type: 'smelly', stats: { hp: 58, attack: 52, defence: 56, speed: 50, special: 60 },
+    moves: ['garlicbreath', 'extrabutter', 'crust'],
+  },
+  spraycan: {
+    faces: 'front',
+    name: 'Spray Can', type: ['plastic', 'street'], stats: { hp: 50, attack: 66, defence: 48, speed: 75, special: 55 },
+    moves: ['tag', 'fumes', 'rattle'],
+  },
   // ---- Reservoir
   sprinkler: {
     faces: 'front',
@@ -202,6 +240,28 @@ export const ENCOUNTERS = {
     { id: 'sprinkler', lv: [7, 10], weight: 2, day: true, zones: ['loddon', 'glasgow', 'lakepark', 'wetlands'] },
     { id: 'possum', lv: [8, 11], weight: 2, night: 4 },
   ],
+  // Carlton and the city, off Brunswick to the south
+  carlton: [
+    { id: 'pigeon', lv: [8, 11], weight: 3 },
+    { id: 'possum', lv: [9, 11], weight: 3, night: 4 },
+    { id: 'magpie', lv: [8, 11], weight: 2, day: true },
+    { id: 'duck', lv: [8, 10], weight: 4, zones: ['gardens'] },
+    { id: 'nonna', lv: [9, 11], weight: 3, day: true, zones: ['lygon'] },
+    { id: 'cavoodle', lv: [8, 10], weight: 2, day: true },
+    { id: 'tourist', lv: [9, 11], weight: 1, day: true },
+  ],
+  city: [
+    { id: 'seagull', lv: [9, 12], weight: 4, zones: ['flinders', 'queenvic'] },
+    { id: 'pigeon', lv: [9, 12], weight: 3 },
+    { id: 'tourist', lv: [10, 12], weight: 2, day: true },
+    { id: 'commuter', lv: [10, 12], weight: 2, day: true },
+    { id: 'rat', lv: [9, 12], weight: 2, night: 4 },
+    { id: 'ibis', lv: [9, 12], weight: 2 },
+    { id: 'scooter', lv: [10, 12], weight: 2 },
+    { id: 'flatwhitefoe', lv: [9, 11], weight: 2, day: true, zones: ['laneways', 'swanston'] },
+    { id: 'goonbag', lv: [9, 11], weight: 2, night: 3 },
+    { id: 'possum', lv: [10, 12], weight: 2, night: 3 },
+  ],
   civic: [{ id: 'magpie', lv: [3, 5], weight: 3, day: true }, { id: 'sprinkler', lv: [3, 5], weight: 2, day: true }, { id: 'bag', lv: [2, 4], weight: 2 }, { id: 'rat', lv: [3, 5], weight: 2, night: 3 }],
   // The long walks between suburbs
   altona: [{ id: 'sprinkler', lv: [3, 5], weight: 1, day: true }, { id: 'bag', lv: [3, 5], weight: 3 }, { id: 'rat', lv: [3, 6], weight: 2 }, { id: 'dog', lv: [4, 6], weight: 2 }, { id: 'commuter', lv: [4, 6], weight: 1, day: true }],
@@ -247,6 +307,22 @@ export const TRAINERS = {
     name: 'Golfer Next Door', team: [['golfball', 11], ['fiveiron', 12], ['buggy', 12]],
     
     reward: { snag: 1 }, money: 50,
+  },
+  dell: {
+    name: 'Dell', prize: 'girlie', team: [['pet:girlie', 12]],
+  },
+  // Carlton and the city
+  spruiker: {
+    name: 'Tony the Spruiker', team: [['garlicbread', 11], ['meatball', 12]],
+    reward: { gelato: 1 }, money: 50,
+  },
+  spray: {
+    name: 'Spray', team: [['pigeon', 12], ['spraycan', 13]],
+    reward: { hotchips: 1 }, money: 45,
+  },
+  inspector: {
+    name: 'Myki Inspector', team: [['ticketgate', 13], ['finenotice', 14]],
+    reward: { jamdonut: 2 }, money: 70,
   },
   stranger: {
     name: 'Stranger', once: true, noXp: true, intro: 'He squares up, swaying on his feet.', team: [['weed', 8], ['ice', 9], ['fentanyl', 9]], sendOut: 'He pulls out {f}.',

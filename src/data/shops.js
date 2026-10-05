@@ -1,6 +1,7 @@
 // The shops. An NPC with `shop: '<id>'` in npcs.js opens one of these when
 // you talk to them (see ui/shop.js). Tabs:
 //   treats   pet treats from items.js (with a price, not crops, drinks or presents)
+//            (list `treats` to sell only those; local: true treats are left out otherwise)
 //   gear     pet gear from gear.js
 //   seeds    seed packets for crops.js (list `seeds` to limit which)
 //   tools    garden tools from upgrades.js (tool: true)
@@ -21,5 +22,12 @@ export const SHOPS = {
   anaconda: { name: 'Anaconda', where: 'Plenty Rd, Preston', tabs: ['fishing', 'gifts'], gifts: ['thermos', 'headtorch'] },
   cozzo: { name: 'Franco Cozzo', where: 'Barkly St, Footscray', tabs: ['furniture'] },
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
+  // Carlton and the city
+  gelateria: { name: 'Gelateria', where: 'Lygon St, Carlton', tabs: ['treats', 'gifts'], treats: ['gelato'], gifts: ['gelatocone', 'cannoli'] },
+  donuts: { name: 'Hot Jam Donut Van', where: 'Queen Victoria Market', tabs: ['treats'], treats: ['jamdonut', 'hotchips'] },
+  deli: { name: 'Stavros\'s Deli', where: 'Queen Victoria Market', tabs: ['treats', 'gifts'], treats: ['prosciutto', 'cheese', 'sardine'], gifts: ['olivejar', 'borek'] },
+  fruit: { name: 'Carmel\'s Fruit and Veg', where: 'Queen Victoria Market', tabs: ['sell', 'seeds'], seeds: ['strawberry', 'tomato', 'zucchini', 'pumpkin'] },
+  souvenirs: { name: 'Melbourne Souvenirs', where: 'Bourke St Mall', tabs: ['gifts'], gifts: ['snowglobe', 'koala', 'umbrella', 'mykicase'] },
+  coffeecart: { name: 'Remy\'s Coffee Cart', where: 'Degraves St', tabs: ['gifts'], gifts: ['longblack', 'magic'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
 };

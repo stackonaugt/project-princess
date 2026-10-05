@@ -137,6 +137,27 @@ export function paintDrink(p, a) {
   } else if (a.kind === 'vape') {
     p.r(k, 5, 1, 6, 14); p.r(a.cap, 6, 2, 4, 3); p.r(a.body, 6, 5, 4, 9); p.r(shadeHex(a.body), 9, 5, 1, 9);
     p.r(a.label, 6, 8, 3, 3); p.r(glint, 6, 5, 1, 4);
+  } else if (a.kind === 'cone') {
+    // a gelato cone: two scoops on a waffle cone
+    for (let j = 0; j < 7; j++) { p.r(k, 5 + Math.floor(j / 2), 8 + j, 7 - j, 1); p.r(a.label, 6 + Math.floor(j / 2), 8 + j, Math.max(1, 5 - j), 1); }
+    p.blob(8, 7, 3, k); p.blob(8, 7, 2, a.body); p.blob(7, 4, 2, k); p.blob(7, 4, 1, a.cap); p.r(glint, 6, 6, 1, 1);
+  } else if (a.kind === 'donut') {
+    p.blob(8, 9, 5, k); p.blob(8, 9, 4, a.body); p.blob(8, 9, 1, k); p.r(a.cap, 5, 6, 2, 1); p.r(a.cap, 10, 7, 2, 1); p.r(a.label, 11, 10, 2, 2); p.r(glint, 6, 7, 1, 1);
+  } else if (a.kind === 'cup') {
+    p.r(k, 4, 4, 9, 11); p.r(a.body, 5, 5, 7, 9); p.r(a.label, 5, 8, 7, 3); p.r(k, 3, 3, 11, 2); p.r(a.cap, 4, 3, 9, 1); p.r(glint, 6, 5, 1, 3);
+  } else if (a.kind === 'chips') {
+    for (let i = 0; i < 5; i++) p.r(a.label, 4 + i * 2, 2 + (i % 2), 1, 7);
+    p.r(k, 3, 7, 10, 8); p.r(a.body, 4, 8, 8, 6); p.r(a.cap, 6, 10, 4, 2);
+  } else if (a.kind === 'jar') {
+    p.r(k, 4, 3, 8, 12); p.r(a.body, 5, 5, 6, 9); p.r(a.cap, 5, 3, 6, 2); p.r(a.label, 5, 8, 6, 3); p.blob(7, 12, 1, shadeHex(a.body)); p.r(glint, 6, 5, 1, 3);
+  } else if (a.kind === 'globe') {
+    p.r(k, 4, 12, 8, 3); p.r(a.cap, 5, 12, 6, 2); p.blob(8, 7, 5, k); p.blob(8, 7, 4, a.body); p.r(a.label, 6, 8, 5, 2); p.r('#f4f4f0', 6, 4, 1, 1); p.r('#f4f4f0', 10, 6, 1, 1); p.r(glint, 6, 5, 1, 1);
+  } else if (a.kind === 'koala') {
+    p.blob(8, 9, 5, k); p.blob(8, 9, 4, a.body); p.blob(4, 5, 2, k); p.blob(12, 5, 2, k); p.blob(4, 5, 1, a.label); p.blob(12, 5, 1, a.label);
+    p.r(a.cap, 7, 9, 2, 3); p.r(a.cap, 6, 7, 1, 1); p.r(a.cap, 10, 7, 1, 1);
+  } else if (a.kind === 'brolly') {
+    for (let j = 0; j < 5; j++) p.r(j % 2 ? a.label : a.body, 8 - (2 + j), 2 + j, (2 + j) * 2, 1);
+    p.r(k, 8, 7, 1, 7); p.r(k, 6, 13, 3, 1); p.r(k, 6, 12, 1, 1);
   } else {
     p.r(k, 2, 3, 12, 12); p.r(a.body, 3, 4, 10, 10); p.r(shadeHex(a.body), 3, 12, 10, 2);
     p.r(a.label, 4, 6, 8, 4); p.r(a.body, 5, 7, 6, 2); p.r(a.cap, 10, 14, 2, 2); p.r(k, 6, 2, 4, 2);

@@ -128,6 +128,26 @@ const whippet = [
   '..aa.....aa.....',
 ];
 
+// Girlie: Dell's black labrador. Big, soft ears, a thick otter tail, tongue out.
+const lab = [
+  '................',
+  '................',
+  '..........aaa...',
+  '.........aaaaa..',
+  '.........aeaaal.',
+  '........baaaaaan',
+  '........baaaaaa.',
+  '.a......aaaaap..',
+  '..a.aaaaaaaaa...',
+  '...aaaaaaaaaa...',
+  '..laaaaaaaaaa...',
+  '...aaaaaaaaaa...',
+  '...bbbbbbbbbb...',
+  '...aa.....aa....',
+  '...aa.....aa....',
+  '...aa.....aa....',
+];
+
 // Evolved forms
 const flamcess = [
   '..y.......y.y...',
@@ -175,6 +195,7 @@ export const PET_FRAMES = {
   frenchie:  [frenchie, stride(frenchie, 3)],
   schnauzer: [schnauzer, stride(schnauzer)],
   whippet:   [whippet, stride(whippet, 5)],
+  lab:       [lab, stride(lab, 3)],
 };
 
 // Colours shared by every pet unless the pet overrides them in pets.js.

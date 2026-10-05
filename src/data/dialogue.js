@@ -774,6 +774,286 @@ export const PEOPLE = {
       ['Leather, my friend. Real leather. In summer it sticks to your legs. That is how you know it is real.'],
     ],
   },
+  // ---- Carlton and the city
+  dell: {
+    role: 'Walks Girlie the black lab in Carlton Gardens',
+    lines: [
+      ['Morning! Girlie, leave it. LEAVE IT. That is somebody\'s croissant. Sorry. She is a lab. It is a lifestyle.'],
+      ['Two laps of the gardens every morning. Girlie does about six, mostly sideways, mostly towards picnics.'],
+      ['Carlton has changed so much. The trams are the same, though. The 96 still rattles up Nicholson St like it owns the place.'],
+      ['Like the glasses? Pink. Life is too short for beige frames.'],
+    ],
+    hints: {
+      girlie: 'Girlie is mine, love. If you want her on your team, you will have to win her fair and square. She will not mind. She likes everyone.',
+    },
+    heartScenes: {
+      3: ['Dell: "Girlie came from the lost dogs home. Skinny, nervous little thing. Look at her now. Built like a coffee table."'],
+      6: ['Dell squeezes your arm. "You look after her, won\'t you. She thinks she\'s a lap dog. Let her."'],
+    },
+    helpsInBattle: 'Dell strides over, pink glasses flashing. "Oi! Play nicely!" Everyone, including the foe, sits.',
+    battle: {
+      challenge: ['You want Girlie on your team? Ha! You will have to get past her first. Good luck. She is mostly tongue.'],
+      ask: 'Battle Dell?',
+      yes: 'Go, team',
+      no: 'Not yet',
+      win: ['Well! She likes you. Go on then, Girlie. Off you go. Do not eat their couch.', 'She will be at your place. Bring towels. She WILL find water.'],
+      lose: ['Ha! Told you. Come back with more treats. That is how you win a lab over.'],
+    },
+  },
+  // ---- Carlton and the city
+  gina: {
+    role: 'Runs the gelateria on Lygon St',
+    lines: [
+      ['Benvenuti! Pistachio is the real test of a gelateria. Ours is green because of pistachios, not because of food dye.'],
+      ['The dog gelato is peanut butter and banana. No sugar. The dogs do not know that. Please do not tell them.'],
+      ['My nonna made gelato in a bucket of ice and salt in 1956. I have a machine from Bologna. She still thinks hers was better.'],
+      ['Lygon St rent has gone up again. Every scoop is now four percent landlord.'],
+    ],
+    giftLine: 'Here, a cup of the dog gelato. Tell your pets it is from Gina.',
+    heartScenes: {
+      3: ['Gina hands you a tiny spoon of something new. "Fig and honey. You are the first to try it. Tell me the truth."'],
+      6: ['Gina: "When I opened, the bank said a girl cannot run a shop on Lygon St. Thirty years. I keep their letter on the fridge."'],
+    },
+    helpsInBattle: 'Gina sprints out of the gelateria with a cup of something cold. "Mangia! Then fight!"',
+  },
+  spruiker: {
+    role: 'Spruiker on Lygon St. Will find you a table',
+    lines: [
+      ['Table for two? Table for you and your little friend? Ten percent off, free garlic bread, I love you, come in.'],
+      ['My cousin\'s restaurant next door? Terrible. Same kitchen as ours, but terrible.'],
+      ['Thirty years on this footpath. I have seated three premiers and a man who said he was a Wiggle.'],
+    ],
+    heartScenes: {
+      3: ['Tony lowers his voice. "The secret? Make them feel like family. Then charge them like family. Which is a lot."'],
+    },
+    helpsInBattle: 'Tony steps in with a menu. "Signore, please, sit down, have the special." The foe sits down.',
+    battle: {
+      challenge: ['Ah! A pet person! Before you eat, a little contest. Win, and the garlic bread is on the house.'],
+      ask: 'Battle Tony?',
+      yes: 'Table for one',
+      no: 'Just looking',
+      win: ['Bravo! Bravissimo! You eat for free. Well. The garlic bread is free. Everything else is full price.'],
+      lose: ['Ha! Come back hungry. You fight better on a full stomach. Everyone knows this.'],
+      again: ['Back again? The meatballs have been resting. They are furious.'],
+    },
+  },
+  enzo: {
+    role: 'Plays bocce at Piazza Italia. Has done since 1971',
+    lines: [
+      ['That ball was touching. I do not care what Vince says. Vince needs new glasses.'],
+      ['I came on a ship in 1961. Ten days of seasick, then Carlton. Best decision of my life. Second best was my wife.'],
+      ['Lemons from my tree in Brunswick. Take one. Take two. Nobody in my family eats them any more.'],
+    ],
+    giftLine: 'A lemon from my tree. Grow up strong. Like the lemon.',
+    heartScenes: {
+      4: ['Nonno Enzo shows you a photo: a young man on a ship\'s deck, squinting. "Me. Nineteen. Not one word of English. Look at me now. Four words."'],
+    },
+    helpsInBattle: 'Nonno Enzo rolls a bocce ball across the ground. Perfect line. It clips the foe right on the ankle.',
+  },
+  vince: {
+    role: 'Plays bocce with Enzo. Wins, mostly',
+    lines: [
+      ['Enzo has been cheating since 1971. I let him. It makes him happy. Do not tell him.'],
+      ['When I was a boy, a coffee on Lygon St was twenty cents. Now it is six dollars and they draw a leaf on it.'],
+      ['My grandson is an engineer. Builds bridges. Joined the union first day. Smart boy. Smarter than me.'],
+    ],
+  },
+  mia: {
+    role: 'Melbourne Uni student. Arts and law. Tired',
+    lines: [
+      ['I have three essays due and I am at a gelateria. This is called balance.'],
+      ['My rent is more than my Youth Allowance. So I work at a cafe. To afford the cafe.'],
+      ['Did you know the Exhibition Building is where the first federal parliament sat? I learnt that for an exam. Then forgot. Then remembered.'],
+    ],
+    heartScenes: {
+      3: ['Mia: "I joined the student union to get free sausages. Now I am on the rent campaign. The sausages were a trap. A good trap."'],
+    },
+  },
+  ana: {
+    role: 'Volunteers at Melbourne Museum',
+    lines: [
+      ['Welcome! The dinosaurs are on the left, Phar Lap is in the middle, and the forest gallery is through the glass.'],
+      ['People ask if Phar Lap is real. Yes. People ask if he is happy. He is a horse in a glass box. He is at peace.'],
+      ['Kids love the bugs. Adults pretend not to. Then they spend an hour at the bugs.'],
+    ],
+    heartScenes: {
+      3: ['Ana: "I taught science for forty years. Now I volunteer. Same job, no marking, and the dinosaurs never talk back."'],
+    },
+    helpsInBattle: 'Ana arrives with a museum fact so interesting the foe stops to listen.',
+  },
+  jun: {
+    role: 'Wedding photographer. Works the fountain',
+    lines: [
+      ['Every Saturday, six weddings, one fountain. We have a roster. It is in a group chat.'],
+      ['Golden hour is at five today. Golden hour is my whole personality.'],
+      ['You and your pets want a photo? Stand there. Chin down. Now the dog chin down. No, the other dog.'],
+    ],
+  },
+  possumpat: {
+    role: 'Leads possum spotting walks in Carlton Gardens',
+    lines: [
+      ['Come back after dark. Brushtails in every tree. Ringtails if you are lucky. Pat if you are very lucky.'],
+      ['Do not feed the possums. They have enough bread. They have, frankly, too much bread.'],
+      ['A possum once lived in my roof for six years. I named him Kevin. He paid no rent. Neither did I, it was a share house.'],
+    ],
+    giftLine: 'Found a feather on my walk. Magpie, I think. Or a very small angel.',
+  },
+  chesskev: {
+    role: 'Plays giant chess at the State Library. Every day',
+    lines: [
+      ['Pawn to e4. I always open pawn to e4. Have done since 1983. People know it now. They still lose.'],
+      ['The trick with giant chess is your back. Lift with your legs. The king weighs four kilos.'],
+      ['Some bloke beat me in 2004. I think about it every day. He never came back.'],
+    ],
+    heartScenes: {
+      4: ['Chess Kev: "Thirty years a fitter at the railway workshops. Then they shut it.', 'So now I play chess. Still moving heavy things around."'],
+    },
+    helpsInBattle: 'Chess Kev appears, studies the board, and quietly moves your pet out of danger. "Check."',
+  },
+  luca: {
+    role: 'Busks on Swanston St',
+    lines: [
+      ['Request? I only know four songs. Three of them are the same song with a different hat.'],
+      ['Permit? Of course I have a permit. Council issued. Laminated. I laminate everything.'],
+      ['Best spot in the city is outside the library. Good acoustics, and the chess players clap for anything.'],
+    ],
+  },
+  margaret: {
+    role: 'Librarian in the State Library reading room',
+    lines: [
+      ['Welcome to the reading room. Membership is free. Wifi is free. Talking is, unfortunately, also free. Please keep it down.'],
+      ['People think libraries are quiet. Libraries are where you go to find out everything. That is very loud, actually.'],
+      ['Ned Kelly\'s armour is upstairs. He came in for the reading room once. Kidding. Shhh.'],
+    ],
+    giftLine: 'A book from the discard trolley. It deserves a second life. So do we all.',
+    heartScenes: {
+      3: ['Margaret: "When they wanted to cut our hours, we organised. Petitions, rallies, the lot. Librarians are terrifying when we have a cause."'],
+      6: ['Margaret slips a bookmark into your hand. It reads: "Knowledge is power. Libraries are free. Draw your own conclusions."'],
+    },
+    helpsInBattle: 'Margaret appears from nowhere. "SHHH." The foe is so startled it forgets what it was doing.',
+  },
+  linh: {
+    role: 'Runs the souvenir kiosk in the Bourke St Mall',
+    lines: [
+      ['Koalas, snow globes, boomerangs, tram magnets! Everything says Melbourne on it. Some of it was made in Melbourne.'],
+      ['The four seasons umbrella is my best seller. Tourists buy it at 9am in the sun. By 11am they understand.'],
+      ['My mum ran this kiosk for twenty years. Now me. Same spot, same koalas. The koalas are very loyal.'],
+    ],
+  },
+  shaz: {
+    role: 'Nurse. On the Parliament steps today',
+    lines: [
+      ['Safe staffing ratios save lives. One nurse, four patients. Not one nurse, twelve and a broken lift.'],
+      ['We did a twelve hour shift, then came here. My feet are a disaster. My spirit is excellent.'],
+      ['The pollies inside call us heroes. Lovely. Heroes would also like a pay rise and a lunch break.'],
+      ['Every right at work was won by people standing on steps like these. The weekend did not come from nowhere.'],
+    ],
+    heartScenes: {
+      3: ['Shaz hands you a sticker: "WHEN WE FIGHT, WE WIN." "Put it on the pram. The twins can start early."'],
+      6: ['Shaz grins. "We won the ratios! In writing. Took three years, a thousand nurses and a lot of thermoses of tea. Never give up, eh."'],
+    },
+    helpsInBattle: 'Shaz checks your pet\'s pulse, gives a thumbs up and patches it up. "Twelve hour shift. This is nothing."',
+  },
+  inspector: {
+    role: 'Authorised officer. Patrols the Bourke St Mall',
+    lines: [
+      ['Afternoon. Just checking everyone has touched on. You touched on, yeah? Course you did.'],
+      ['I am not the bad guy. The bad guy is the bloke who designed the myki top up machine.'],
+      ['Three hundred dollar fine for a two dollar fare. I do not make the rules. I just enforce them. Very slowly.'],
+    ],
+    battle: {
+      challenge: ['Excuse me. Can I see your myki? Your pets\' mykis? No? Right. Let\'s sort this out the old-fashioned way.'],
+      ask: 'Battle the Myki Inspector?',
+      yes: 'Show your myki',
+      no: 'Walk briskly away',
+      win: ['Fine. FINE. No fine. On your way. And touch on next time, yeah?'],
+      lose: ['That\'ll be a warning. This time. Have a nice day.'],
+      again: ['You again. I remember faces. And cards. Especially cards.'],
+    },
+  },
+  remy: {
+    role: 'Runs a coffee cart on Degraves St',
+    lines: [
+      ['Long black? Magic? Batch brew? Tell me how you feel and I will tell you what you are drinking.'],
+      ['A magic is a double ristretto with steamed milk in a small glass. Melbourne invented it. Nobody else knows. Keep it that way.'],
+      ['Twelve coffee places on this one laneway. We all buy beans from the same roaster. Please do not tell the tourists.'],
+    ],
+    heartScenes: {
+      3: ['Remy: "I was a chef for ten years. Fifteen hour days, cash in hand. The cart is small, but I am the boss. And I get Sundays."'],
+    },
+    helpsInBattle: 'Remy hands your pet a babyccino. Marshmallow and everything. It gets its second wind.',
+  },
+  spray: {
+    role: 'Street artist. Hosier Lane is the gallery',
+    lines: [
+      ['That wall? Mine. Was mine. Someone painted over it on Tuesday. That is the deal here. Nothing lasts.'],
+      ['Tourists photograph my work for their socials. I get no credit. I get a lot of selfies in front of me, though.'],
+      ['I did a mural of a magpie on Sydney Rd. A real magpie swooped it. Best review I have ever had.'],
+    ],
+    battle: {
+      challenge: ['You want to paint here, you earn a wall. That is how it works. Show me what your crew has got.'],
+      ask: 'Battle Spray?',
+      yes: 'Earn a wall',
+      no: 'Just looking',
+      win: ['Respect. Here, take a sticker. Put it somewhere weird.'],
+      lose: ['Not bad. Not a wall yet, though. Maybe a small bin.'],
+      again: ['Back for another go? The lane has been repainted twice since you left.'],
+    },
+  },
+  dev: {
+    role: 'Waiting under the clocks',
+    lines: [
+      ['I am meeting someone under the clocks. Our first date. I am twenty minutes early. I am fine. I am totally fine.'],
+      ['Which clock? There are nine clocks. I said "under the clocks". I should have said which clock.'],
+      ['They texted! They are on a train from Frankston. Signal fault at Mordialloc. So, another hour. I am fine.'],
+    ],
+    heartScenes: {
+      4: ['Dev, glowing: "Remember my date? We went to Hosier Lane, then dumplings, then talked till the last train. Second date Friday. Same clock."'],
+    },
+  },
+  bev: {
+    role: 'Station staff at Flinders Street',
+    lines: [
+      ['Next train to anywhere? Board on platform ten. Or it might be thirteen. Check the screen. Then check it again.'],
+      ['Twenty two years at Flinders St. I know every pigeon by name. Most of them are called Gary.'],
+      ['Under the clocks is the most famous meeting spot in Melbourne. Also the most famous place to get stood up.'],
+    ],
+  },
+  dot: {
+    role: 'Runs the hot jam donut van at Queen Vic Market',
+    lines: [
+      ['Hot jam donuts! Careful, the jam is the temperature of the sun. Every year someone forgets. Every year it is my brother-in-law.'],
+      ['This van has been here since 1950. Dad ran it, then me. Same recipe. Same van. New tyres, once.'],
+      ['Five for ten dollars. Or one for you and four for the walk home. There will be none left by the tram.'],
+    ],
+    giftLine: 'A hot jam donut for the road. Blow on it. Seriously, blow on it.',
+    heartScenes: {
+      4: ['Dot: "People ask for the recipe. It is flour, sugar, jam and seventy years of standing in a van. The last bit is hard to buy."'],
+    },
+    helpsInBattle: 'Dot leans out of the van and lobs a hot jam donut. Your pet catches it. The foe gets the jam.',
+  },
+  stavros: {
+    role: 'Runs a deli in the Queen Vic Market deli hall',
+    lines: [
+      ['Try the feta. Try the olives. Try the dolmades. Trying is free. Buying is how I put my kids through uni.'],
+      ['Sixty cheeses in this cabinet. My wife can name them all with her eyes closed. I can name forty. On a good day.'],
+      ['Saturday mornings, the queue goes past the meat hall. People wait an hour for my taramasalata. I would too.'],
+    ],
+    giftLine: 'Some cheese, for the pets. Not the good cheese. The good cheese is for people.',
+    heartScenes: {
+      3: ['Stavros: "My father came from Kalamata with one suitcase and a jar of olives. The jar did not survive the trip. The business did."'],
+    },
+    helpsInBattle: 'Stavros throws an olive with deadly accuracy. Pit and all.',
+  },
+  carmel: {
+    role: 'Sells fruit and veg at Queen Vic Market. Buys crops too',
+    lines: [
+      ['Two dollar a bag! Two dollar! Strawberries, two dollar! Come on, darl, two dollar!'],
+      ['Grow your own? Bring it here. I will buy it, and I will not even tell the customers it came from a toddler.'],
+      ['Up at three, at the wholesale market by four, here by six. My husband says I am mad. He is still asleep.'],
+    ],
+    giftLine: 'Strawberries, a bit squashed. Still sweet. Like me.',
+  },
   macca: {
     role: 'Runs the Edinburgh Castle bottle shop',
     lines: [
@@ -934,6 +1214,21 @@ export const PET_TEXT = {
     rain: ['Stanley stands under the verandah, looking at the rain as if it has personally disappointed him.'],
     asleep: ['Stanley is asleep. Even his snoring sounds disapproving.'],
   },
+  girlie: {
+    bio: 'Dell\'s black lab. Soft ears, a tail like a rudder, and a firm belief that every picnic is for her.',
+    clue: 'A big black dog has been seen in Carlton Gardens, nose deep in somebody\'s picnic. Her owner, Dell, has pink glasses.',
+    funFact: 'Girlie has never once walked past the Hochgurtel fountain without trying to get in.',
+    favouriteSpot: 'The fountain in Carlton Gardens. Or anywhere a sandwich has been dropped.',
+    lines: {
+      0: ['Girlie sniffs your pockets thoroughly. She finds nothing. She checks again, to be sure.', 'Girlie\'s whole back half is wagging.'],
+      3: ['Girlie leans her full weight on your legs and gazes up at you. You are her favourite person. For now.'],
+      6: ['Girlie brings you a stick. Then a better stick. Then half a tree branch.'],
+      9: ['Girlie flops down with her head on your feet and sighs a huge, happy dog sigh.'],
+    },
+    night: ['Girlie is curled up in a black heap. You can only find her by the snoring.'],
+    rain: ['Girlie is delighted by the rain. She has found a puddle. She is in the puddle.'],
+    asleep: ['Girlie is asleep, paws paddling. She is swimming in her dreams.'],
+  },
   rusty: {
     bio: 'A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.',
     clue: 'Something brown and very fast is doing laps of the athletics track. Its owner, Nathan, jogs behind it. Slowly.',
@@ -1064,6 +1359,39 @@ export const FOE_TEXT = {
     appear: 'The golf buggy he drives to the shops. Registered? Hard to say.',
     leave: 'runs out of charge on the nature strip.',
   },
+  // Carlton and the city
+  seagull: {
+    appear: 'A seagull lands right in front of you. It has seen your chips. It has seen everyone\'s chips.',
+    leave: 'flaps off to rob someone at Southbank.',
+  },
+  pigeon: {
+    appear: 'A city pigeon struts out of the grass. One foot. Total confidence.',
+    leave: 'waddles off to sit on a statue.',
+  },
+  tourist: {
+    appear: 'A lost tourist backs into you, map first. "Excuse me, which way is the famous laneway?"',
+    leave: 'heads off towards a laneway. Not the famous one.',
+  },
+  ticketgate: {
+    appear: 'The ticket gates at Flinders St snap shut. They only open for people who do not need them to.',
+    leave: 'flashes green and gives up.',
+  },
+  finenotice: {
+    appear: 'A fine notice flutters out of the inspector\'s book. $278. Payable within 28 days.',
+    leave: 'is waived on appeal.',
+  },
+  meatball: {
+    appear: 'A meatball rolls off a plate on Lygon St, steaming and angry.',
+    leave: 'rolls under a table and stays there.',
+  },
+  garlicbread: {
+    appear: 'Free garlic bread! It is free. It is also fighting you.',
+    leave: 'goes cold and floppy.',
+  },
+  spraycan: {
+    appear: 'Clack clack clack. A spray can rattles to life.',
+    leave: 'runs out of paint with a sad hiss.',
+  },
   weed: {
     leave: 'wears off. He sits on the kerb, wrung out.',
   },
@@ -1105,5 +1433,15 @@ export const PLACES = {
   anaconda: 'Anaconda: tents, kayaks and a whole wall of fishing rods.',
   bookshop: 'Brunswick Bound. Classics up the back, new releases on the tables.',
   vapeshop: 'Plenty Road Convenience. American lollies, cold drinks and a sign that says VAPES.',
+  lygon: 'Melbourne\'s little Italy. Trattorias, gelato and a spruiker every ten metres.',
+  gelateria: 'Twenty flavours in a glass case, and one for dogs.',
+  gardens: 'The Exhibition Building, a fountain and possums in every tree.',
+  nicholson: 'Terraces, big gums, the 96 tram and the corner where Seb grew up.',
+  swanston: 'The State Library, giant chess and a tram every minute.',
+  reading: 'A domed hall of desks and green lamps. Shhh.',
+  queenvic: 'Market sheds, hot jam donuts and "two dollar a bag".',
+  bourke: 'The Mall, the Public Purse and Parliament at the top of the hill.',
+  laneways: 'Painted walls, tiny cafes and a lot of people photographing both.',
+  flinders: 'Meet you under the clocks.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
 };

@@ -866,13 +866,13 @@ export class WorldScene extends Phaser.Scene {
 
   async travel() {
     sfx.myki();
-    const options = SUBURB_ORDER.filter(s => s !== this.region.suburb && state.suburbVisited(s));
+    const options = Object.keys(SUBURBS).filter(s => SUBURBS[s].station && s !== this.region.suburb && state.suburbVisited(s));
     if (!options.length) {
       return ui.say(['You tap your myki. Beep beep.', 'The screen only lists stations you have already visited. Walk to another suburb first, then you can catch the train back and forth.']);
     }
     const choice = await ui.say({
       text: 'You tap your myki. Beep beep. Where to?',
-      choices: [...options.map(s => ({ label: `${SUBURBS[s].name} Station`, value: s })), { label: 'Stay here', value: null }],
+      choices: [...options.map(s => ({ label: SUBURBS[s].stationName || `${SUBURBS[s].name} Station`, value: s })), { label: 'Stay here', value: null }],
     }, { cancelValue: null });
     if (choice) this.goTo(SUBURBS[choice].station, 'station', 25);
   }
