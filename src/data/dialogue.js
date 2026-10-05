@@ -813,6 +813,7 @@ export const PEOPLE = {
   // ---- Carlton and the city
   dell: {
     role: 'Walks Girlie the black lab in Carlton Gardens',
+    giftLine: 'Here, a spare tennis ball. Girlie has forty. She only loves the one she lost under the fountain.',
     lines: [
       ['Morning! Girlie, leave it. LEAVE IT. That is somebody\'s croissant. Sorry. She is a lab. It is a lifestyle.'],
       ['Two laps of the gardens every morning. Girlie does about six, mostly sideways, mostly towards picnics.'],
