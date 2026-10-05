@@ -79,6 +79,16 @@ export const FRIENDS = {
     rewards: { 4: { money: 25 } },
     assist: { heal: 0.35 },
   },
+  paddy: {
+    loves: ['coopers', 'byzbook'], likes: ['snag', 'croissant', 'icedcoffee', 'paperback'], dislikes: ['goon'],
+    assist: { heal: 0.3, selfDef: 1 },
+  },
+  lesley: { loves: ['penfolds'], likes: ['flowers'], dislikes: ['vb', 'goon', 'snag', 'paperback'] },
+  malcolm: { loves: ['crown'], likes: ['snag', 'vb'], dislikes: ['orangewine', 'seedling'] },
+  kirsty: { loves: ['flowers', 'moscato'], likes: ['croissant', 'jacobs', 'paperback'], dislikes: ['vb'] },
+  dahlia: { loves: ['seedling', 'icedcoffee'], likes: ['strawberry', 'flowers', 'paperback'], dislikes: ['goon'] },
+  rayna: { loves: ['gaytime', 'strawberry'], likes: ['croissant', 'flowers'], dislikes: ['sardine'], assist: { selfAtk: 1, foeAtk: 1 } },
+  deanna: { loves: ['seedling', 'olive'], likes: ['tomato', 'basil', 'flowers'], dislikes: ['crown'], assist: { heal: 0.2, selfDef: 1 } },
   macca: {
     loves: ['coburglager', 'mountaingoat'], likes: ['snag', 'croissant', 'potato'], dislikes: ['goon'],
     rewards: { 5: { item: 'coburglager', n: 1 } },

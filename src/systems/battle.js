@@ -144,11 +144,10 @@ export function gainXp(f, xp) {
     gained.push(rec.level);
   }
   if (gained.length) {
-    const before = f.maxHp;
     f.level = rec.level;
     f.stats = fighterStats(f);
     f.maxHp = f.stats.hp;
-    f.hp = Math.min(f.maxHp, f.hp + (f.maxHp - before));
+    f.hp = f.maxHp;   // levelling up restores all energy
   }
   return gained;
 }

@@ -2,6 +2,7 @@
 // 1st Reservoir Scout hall with its car park and log barriers, and the
 // community garden (farming will grow from here). Easy to get lost.
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildWetlands() {
   const b = new MapBuilder({ id: 'wetlands', w: 44, h: 30, seed: 191 });
@@ -40,6 +41,8 @@ export function buildWetlands() {
   });
   // Your plots (Wen hands them over the first time you chat): the two right-hand beds
   [[7, 23], [8, 23], [7, 24], [8, 24], [7, 26], [8, 26], [7, 27], [8, 27]].forEach(([x, y], i) => b.plot(`cg${i + 1}`, x, y, `Plot ${i + 1}`));
+  // Four more plots once council passes the garden expansion (data/council.js)
+  if (state.motionPassed('gardenplus')) [[3, 23], [4, 23], [3, 26], [4, 26]].forEach(([x, y], i) => b.plot(`cg${i + 9}`, x, y, `Plot ${i + 9}`));
   b.put('tank', 9, 22);
   b.sign(5, 20, ['Reservoir Community Garden.', 'Plots available: see Wen. Bring a hat and a good attitude about snails.']);
 

@@ -9,7 +9,6 @@ export function buildAllen() {
   b.ellipse(20, 12, 8.2, 6.8, 'f');
   b.ellipse(20, 12, 6.2, 5.0, '#');
   b.fill(17, 15, 6, 15, '.').fill(17, 15, 1, 15, 'f').fill(22, 15, 1, 15, 'f').fill(18, 15, 4, 15, '#');
-  b.put('keepleft', 19, 17);
 
   // Helen and Paddy's place
   b.put('hphouse', 5, 4);

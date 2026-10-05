@@ -202,6 +202,7 @@ export const ENCOUNTERS = {
     { id: 'sprinkler', lv: [7, 10], weight: 2, day: true, zones: ['loddon', 'glasgow', 'lakepark', 'wetlands'] },
     { id: 'possum', lv: [8, 11], weight: 2, night: 4 },
   ],
+  civic: [{ id: 'magpie', lv: [3, 5], weight: 3, day: true }, { id: 'sprinkler', lv: [3, 5], weight: 2, day: true }, { id: 'bag', lv: [2, 4], weight: 2 }, { id: 'rat', lv: [3, 5], weight: 2, night: 3 }],
   // The long walks between suburbs
   altona: [{ id: 'sprinkler', lv: [3, 5], weight: 1, day: true }, { id: 'bag', lv: [3, 5], weight: 3 }, { id: 'rat', lv: [3, 6], weight: 2 }, { id: 'dog', lv: [4, 6], weight: 2 }, { id: 'commuter', lv: [4, 6], weight: 1, day: true }],
   footscray: [{ id: 'goonbag', lv: [4, 6], weight: 1, night: 2 }, { id: 'rat', lv: [4, 6], weight: 2 }, { id: 'ibis', lv: [4, 7], weight: 3 }, { id: 'streetcat', lv: [4, 6], weight: 2 }, { id: 'boy', lv: [4, 6], weight: 1, day: true }],

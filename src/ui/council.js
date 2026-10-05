@@ -1,0 +1,51 @@
+// The council noticeboard in the civic centre foyer: every motion, what it
+// needs, what you've chipped in, and how the vote looks. See data/council.js.
+import { h } from './dom.js';
+import { state } from '../systems/state.js';
+import { MOTIONS, MOTION_ORDER, SWING } from '../data/council.js';
+import { ITEMS } from '../data/items.js';
+import { NPCS } from '../data/npcs.js';
+import { itemIcon, npcIcon } from './images.js';
+import { weekday } from '../data/routines.js';
+import { sfx } from '../systems/sfx.js';
+
+export function openCouncil(panel, close) {
+  const msg = h('p', { class: 'small center', role: 'status' });
+  const render = () => {
+    const v = state.councilVote();
+    const swing = Object.entries(SWING).map(([id, need]) => {
+      const hc = state.friendHearts(id), yes = hc >= need;
+      return h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: npcIcon(id), alt: '', width: 24, height: 24 }),
+        h('span', {}, `${NPCS[id].name}: ${yes ? 'voting yes' : `voting no (needs ${need} hearts, has ${hc})`}`));
+    });
+    panel.replaceChildren(
+      h('div', { class: 'm-head' }, h('h2', {}, 'Council motions'), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
+      h('p', { class: 'dex-sum' }, `Today is ${weekday(state.data.day)}. Council meets Tuesdays at 6:30pm.`),
+      h('div', { class: 'm-scroll' },
+        h('div', { class: 'note' },
+          h('h4', {}, `If council voted now: ${v.yes.length} yes, ${v.no.length} no. ${v.passed ? 'Motions would pass.' : 'Motions would fail.'}`),
+          h('p', { class: 'small' }, 'Paddy, Rayna and Deanna vote yes. Lesley and Malcolm vote no. The swing votes:'), ...swing),
+        ...MOTION_ORDER.map(id => {
+          const m = MOTIONS[id], given = state.motionGiven(id), passed = state.motionPassed(id), ready = state.motionReady(id);
+          const needs = Object.entries(m.needs).map(([k, n]) => {
+            const have = given[k] || 0, done = have >= n;
+            const label = k === 'money' ? `Money ($${n})` : `${n} × ${ITEMS[k].name}`;
+            const canGive = !done && !passed && (k === 'money' ? state.data.money >= n - have : state.count(k) > 0);
+            return h('div', { class: 'gear-row' },
+              k === 'money' ? h('span', { class: 'shop-glyph' }, '$') : h('img', { class: 'pix', src: itemIcon(k, 32), alt: '', width: 24, height: 24 }),
+              h('span', {}, `${label}: ${k === 'money' ? (done ? 'paid' : 'not yet') : `${have} of ${n}`}`),
+              done ? h('span', { class: 'meta' }, '✓') : h('button', { class: 'wood-btn small', disabled: !canGive, onclick: () => {
+                const got = state.chipIn(id, k);
+                if (got) { sfx.pickup(); state.save(); msg.textContent = `Chipped in ${k === 'money' ? `$${got}` : `${got} × ${ITEMS[k].name}`}.`; render(); }
+              } }, 'Chip in'));
+          });
+          return h('div', { class: 'note' },
+            h('h4', {}, m.title),
+            h('p', { class: 'small' }, `Moved by ${NPCS[m.sponsor].name}. ${m.effect}`),
+            passed ? h('p', { class: 'meta' }, 'Passed ✓') : ready ? h('p', { class: 'meta' }, 'Ready for Tuesday\'s meeting.') : null,
+            ...(passed ? [] : needs));
+        }),
+        msg));
+  };
+  render();
+}

@@ -196,6 +196,39 @@ export const FURNITURE = {
     foot: [1, 1], tex: [16, 12], variants: ['red'],
     paint(p) { box(p, 1, 4, 14, 8, '#c8443a'); p.r('#9a3028', 1, 7, 14, 1); p.r('#2a2a2a', 5, 1, 6, 1); p.r('#2a2a2a', 5, 1, 1, 3); p.r('#2a2a2a', 10, 1, 1, 3); },
   },
+  // Tradies' gear for the unbuilt kitchen
+  sawhorse: {
+    foot: [2, 1], tex: [32, 22], variants: ['timber'],
+    paint(p) {
+      box(p, 1, 6, 30, 4, '#c8a060');                                    // the beam, with a length of pine on it
+      for (const x of [3, 25]) { p.r('#a87a3a', x, 10, 2, 12); p.r('#a87a3a', x + 3, 10, 2, 12); }
+      box(p, 4, 2, 22, 4, '#e0c088'); p.r('#c8443a', 12, 3, 4, 1);     // pencil mark
+    },
+  },
+  bucket: {
+    foot: [1, 1], tex: [16, 16], variants: ['plaster'],
+    paint(p) { box(p, 3, 5, 10, 10, '#f4f4f0'); p.r('#c8ccd0', 3, 5, 10, 2); p.r('#d8d4cc', 4, 6, 8, 1); p.r('#3a3a3a', 3, 2, 10, 1); p.r('#3a3a3a', 3, 2, 1, 4); p.r('#3a3a3a', 12, 2, 1, 4); p.r('#2f6aa3', 5, 9, 6, 3); },
+  },
+  campstove: {
+    foot: [2, 1], tex: [32, 26], variants: ['trestle'],
+    paint(p) {
+      box(p, 0, 10, 32, 4, '#d8d4cc'); p.r('#8e939b', 2, 14, 2, 12); p.r('#8e939b', 28, 14, 2, 12);    // trestle table
+      box(p, 3, 5, 12, 5, '#2a2a30'); p.r('#5a5d64', 5, 6, 3, 2); p.r('#5a5d64', 10, 6, 3, 2);         // two-burner gas stove
+      p.r('#c8443a', 18, 3, 5, 7); p.r('#e2705f', 19, 4, 2, 1); p.r('#f4efe0', 25, 6, 5, 4); p.r('#6b4226', 26, 7, 2, 2);  // kettle, mug
+    },
+  },
+  esky: {
+    foot: [1, 1], tex: [16, 14], variants: ['blue'],
+    paint(p) { box(p, 1, 5, 14, 9, '#2f6aa3'); box(p, 1, 3, 14, 3, '#f4f4f0'); p.r('#c8ccd0', 6, 1, 4, 2); },
+  },
+  desk: {
+    foot: [2, 1], tex: [32, 28], variants: ['oak'],
+    paint(p) {
+      box(p, 0, 12, 32, 4, woodL); p.r(woodD, 1, 16, 2, 12); p.r(woodD, 29, 16, 2, 12); box(p, 20, 16, 10, 10, wood);
+      box(p, 5, 2, 14, 10, '#2a2a30'); p.r('#7ab0d8', 6, 3, 12, 7); p.r('#b8d8f0', 7, 4, 4, 2); p.r('#2a2a30', 11, 12, 2, 1);   // monitor
+      p.r('#f4efe0', 21, 9, 6, 3); p.r('#c8443a', 22, 8, 4, 1);                                                                   // papers
+    },
+  },
   dropsheet: {
     foot: [3, 2], tex: [48, 32], variants: ['splats'], solid: false, flat: true,
     paint(p) {

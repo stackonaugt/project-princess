@@ -5,6 +5,9 @@ import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_G
 import { ZONES, SUBURBS, SUBURB_ORDER, getMap } from '../data/regions.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
+import { isAt, inMeeting } from '../data/routines.js';
+import { MOTIONS, MOTION_ORDER } from '../data/council.js';
+import { REQUEST_BONUS } from '../data/requests.js';
 import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
@@ -50,7 +53,9 @@ export class WorldScene extends Phaser.Scene {
     state.data.region = this.regionId;
     const firstVisit = !state.data.visited.includes(this.regionId);
     state.visit(this.regionId);
-    if (region.home) state.healAll();   // a rest at home fixes everyone
+    // A rest at home fixes everyone.
+    const tired = region.home && Object.values(state.data.pets).some(r => r.hp !== null && r.hp !== undefined);
+    if (region.home) state.healAll();
     this.lastTile = null; this.stepsSinceBattle = 0; this.inBattle = false;
     setImageScene(this); ui.scene = this;
     this.tuftKey = tuftTexture(this, this.regionId, region.grass);
@@ -84,12 +89,9 @@ export class WorldScene extends Phaser.Scene {
       pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }); });
       this.pets.push(pet);
     }
-    this.npcs = this.map.npcs.filter(n => NPCS[n.id]).map(n => {
-      const npc = new Npc(this, n.id, NPCS[n.id], n);
-      npc.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'npc', ref: npc }); });
-      return npc;
-    });
-    this.physics.add.collider(this.player, this.npcs);
+    // People with a routine (routines.js) only appear while they are here.
+    this.npcs = this.map.npcs.filter(n => NPCS[n.id] && isAt(n.id, n.at, state.data)).map(n => this.spawnNpc(n));
+    this.routineTick = Math.floor(state.data.minutes / 10);
     this.traffic = new Traffic(this, this.map.lanes);
 
     this.setupLighting();
@@ -120,7 +122,14 @@ export class WorldScene extends Phaser.Scene {
       ui.banner(`Day ${state.data.day}`, rain ? `Forecast: showers around ${timeLabel(rain[0])}` : 'Forecast: clear skies');
     } else ui.banner(region.name, region.name === this.suburb.name ? region.tagline : `${this.suburb.name}. ${region.tagline}`);
     this.save();
-    this.intro(firstVisit).then(() => this.morningNews());
+    if (tired) this.time.delayedCall(900, () => ui.toast('Home sweet home. Your pets are full of energy again.'));
+    // The off-lead dog park at Lohse St Reserve (a council motion)
+    if (this.regionId === 'lohse' && state.motionPassed('dogpark') && state.data.party.length && state.data.flags.dogparkDay !== state.data.day) {
+      state.data.flags.dogparkDay = state.data.day;
+      state.data.party.forEach(id => state.addPoints(id, 5));
+      this.time.delayedCall(900, () => ui.toast('Off-lead dog park! Your team has a lovely run. +friendship'));
+    }
+    this.intro(firstVisit).then(() => this.morningNews()).then(() => this.maybeMeeting());
   }
 
   // Things that happened overnight (pet door presents, rain on the garden),
@@ -187,6 +196,7 @@ export class WorldScene extends Phaser.Scene {
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
       if (o.kind === 'sign' && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
       else if (this.region.home && ['bed', 'single', 'cot'].includes(o.kind)) this.interactables.push({ kind: 'sleep', x, y: y - 4, r: Math.max(18, o.w * 9), bubble: 'fx-bubble-zzz', cot: o.kind === 'cot' });
       else {
         const lines = flavourFor(o.kind, o.v);
@@ -396,7 +406,7 @@ export class WorldScene extends Phaser.Scene {
   candidates() {
     return [
       ...this.pets.map(p => ({ kind: 'pet', ref: p, x: p.x, y: p.y - 4 })),
-      ...this.npcs.map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4 })),
+      ...this.npcs.filter(n => !n.gone).map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4 })),
       ...this.forage,
       ...this.interactables,
     ];
@@ -422,7 +432,10 @@ export class WorldScene extends Phaser.Scene {
       if (rec.giftedDay !== state.data.day && state.treatItems().length) return 'fx-bubble-gift';
       return 'fx-bubble-heart';
     }
-    if (t.kind === 'npc') return t.ref.info.gift && state.data.npcDay[t.ref.id] !== state.data.day ? 'fx-bubble-gift' : 'fx-bubble-talk';
+    if (t.kind === 'npc') {
+      if (state.todaysRequests().some(q => q.who === t.ref.id && !q.done)) return 'fx-bubble-alert';
+      return t.ref.info.gift && state.data.npcDay[t.ref.id] !== state.data.day ? 'fx-bubble-gift' : 'fx-bubble-talk';
+    }
     return t.bubble;
   }
 
@@ -465,6 +478,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'npc') return this.talkToNpc(t.ref);
     if (t.kind === 'item') return this.pickUp(t);
     if (t.kind === 'travel') return this.travel();
+    if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
     if (t.kind === 'look') return ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
@@ -599,9 +613,14 @@ export class WorldScene extends Phaser.Scene {
       let lines;
       if (hints.length && Math.random() < 0.6) lines = [hints[0][1]];
       else {
-        const i = this.talkIndex[npc.id] = ((this.talkIndex[npc.id] ?? Math.floor(Math.random() * info.lines.length)) + 1) % info.lines.length;
-        lines = info.lines[i];
+        // Some people talk differently to Helen and to the twins.
+        const pool = [...(info.byHero?.[state.data.hero] || []), ...info.lines];
+        const i = this.talkIndex[npc.id] = ((this.talkIndex[npc.id] ?? Math.floor(Math.random() * pool.length)) + 1) % pool.length;
+        lines = pool[i];
       }
+      if (npc.spot.leave && info.leaving) lines = info.leaving;
+      // Paddy's advice once a day, before anything else.
+      if (npc.id === 'paddy' && f.talkedDay !== day && !npc.spot.leave) lines = [...lines, this.paddyAdvice()];
       await ui.say(lines, opts);
     }
     // First chat of the day: friendship
@@ -629,6 +648,17 @@ export class WorldScene extends Phaser.Scene {
     if (info.shop) { await ui.shop(info.shop); this.save(); }
   }
 
+  // What Paddy suggests depends on how far along you are.
+  paddyAdvice() {
+    const d = state.data, A = NPCS.paddy.advice;
+    if (!state.foundIds().length) return A.noPets;
+    if (!d.party.length) return A.oneTeam;
+    if (!d.flags.garden) return A.noGarden;
+    if (!Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
+    const rest = [A.swing, A.train, A.friends, A.types, A.rest];
+    return rest[d.day % rest.length];
+  }
+
   async heartEvent(npc, hearts, opts) {
     const f = state.friend(npc.id), fi = friendInfo(npc.id);
     f.events.push(hearts);
@@ -643,6 +673,11 @@ export class WorldScene extends Phaser.Scene {
 
   async giveFriendGift(npc, item, opts) {
     const f = state.friend(npc.id), fi = friendInfo(npc.id), name = ITEMS[item].name.toLowerCase();
+    // Handing someone back the thing they give you every day doesn't count.
+    if (npc.info.gift === item) {
+      sfx.bump();
+      return ui.say([`${npc.info.name} squints at the ${name}. "Hang on. That's mine. I gave you that."`, `"Keep it. Re-gifting to the person who gifted it is a bold move, though."`], opts);
+    }
     const reaction = fi.loves.includes(item) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
     state.removeItem(item);
     f.giftedDay = state.data.day; f.reactions[item] = reaction;
@@ -656,7 +691,15 @@ export class WorldScene extends Phaser.Scene {
     }[reaction];
     if (reaction === 'love' || reaction === 'like') { sfx.heart(); this.heartsFx(npc, reaction === 'love' ? 8 : 3); } else if (reaction === 'dislike') sfx.sad();
     const lines = [text];
-    if (r.after > r.before) lines.push(`You and ${n} are now ${r.after} ${r.after === 1 ? 'heart' : 'hearts'} close.`);
+    // A request from the board?
+    const req = state.todaysRequests().find(q => q.who === npc.id && q.item === item && !q.done);
+    if (req) {
+      state.completeRequest(req.id); state.addMoney(req.money); state.addFriendPoints(npc.id, REQUEST_BONUS.points);
+      sfx.found(); ui.toast(`Request done! +$${req.money}`);
+      lines.push(`"You remembered! Here, for your trouble." You got $${req.money}.`);
+    }
+    const after = state.friendHearts(npc.id);
+    if (after > r.before) lines.push(`You and ${n} are now ${after} ${after === 1 ? 'heart' : 'hearts'} close.`);
     await ui.say(lines, opts);
   }
 
@@ -855,8 +898,11 @@ export class WorldScene extends Phaser.Scene {
     state.save();
     this.leaving = true;
     this.cameras.main.fadeOut(700, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true, news }));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: this.bedEntry(), newDay: true, news }));
   }
+
+  // Helen wakes in her bed, the twins in their cots.
+  bedEntry() { return HEROES[state.data.hero]?.look.baby ? 'cot' : 'bed'; }
 
   async endDay() {
     if (this.endingDay) return;
@@ -866,7 +912,7 @@ export class WorldScene extends Phaser.Scene {
     state.save();
     this.leaving = true;
     this.cameras.main.fadeOut(600, 0, 0, 0);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: 'bed', newDay: true, news }));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region: 'home', entry: this.bedEntry(), newDay: true, news }));
   }
 
   checkExits() {
@@ -874,7 +920,8 @@ export class WorldScene extends Phaser.Scene {
     const ex = this.map.exits.find(e => tx >= e.x && tx < e.x + e.w && ty >= e.y && ty < e.y + e.h);
     if (!ex) { this.lockedExit = null; return; }
     if (ex.to && ex.team && state.foundIds().length) return this.chooseTeamThenGo(ex);
-    if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : 20);
+    // Walking into another suburb takes 20 minutes, 10 once the bike lane motion passes.
+    if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : state.motionPassed('bikelane') ? 10 : 20);
     if (this.lockedExit === ex) return;
     this.lockedExit = ex;
     sfx.bump();
@@ -935,6 +982,57 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ------------------------------------------------------------ main loop
+  spawnNpc(n) {
+    const npc = new Npc(this, n.id, NPCS[n.id], n);
+    npc.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'npc', ref: npc }); });
+    npc.collider = this.physics.add.collider(this.player, npc);
+    return npc;
+  }
+  // Someone walks off (end of their path, or their routine says they're elsewhere).
+  removeNpc(npc) {
+    if (npc.gone) return;
+    npc.gone = true;
+    npc.collider?.destroy();
+    this.tweens.add({ targets: npc, alpha: 0, duration: 500, onComplete: () => { this.npcs = this.npcs.filter(n => n !== npc); npc.destroy(); } });
+  }
+  npcLeft(npc) {
+    if (npc.id === 'paddy') state.data.flags.paddyLeft = state.data.day;
+    this.removeNpc(npc);
+  }
+  // Council meets in the chamber on Tuesday nights. Be there to watch.
+  async maybeMeeting() {
+    const d = state.data;
+    if (this.regionId !== 'chamber' || !inMeeting(d) || d.council.metDay === d.day || ui.blocking() || this.meetingNow) return;
+    this.meetingNow = true;
+    const say = (who, lines) => ui.say(lines, { name: NPCS[who].name, portrait: npcIcon(who) });
+    await say('paddy', ['Order, order. I declare this meeting of Hobsons Bay City Council open.', 'I acknowledge the Bunurong people, the Traditional Owners of this land.']);
+    const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id));
+    if (!ready.length) {
+      await say('lesley', ['POINT OF ORDER! The agenda is in the WRONG FONT!']);
+      await say('paddy', ['Noted, Councillor. Again. No motions are ready tonight. Chip in on the noticeboard in the foyer, everyone.', 'Meeting closed. Thank you all.']);
+    }
+    const results = state.holdMeeting(d.day);
+    for (const r of results) {
+      const m = MOTIONS[r.id];
+      await say(m.sponsor, [`I move: "${m.title}".`]);
+      await ui.say(m.debate);
+      await say('paddy', [`All those in favour?`, `${r.yes.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ')}. ${r.yes.length} for.`, `Against: ${r.no.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ')}. ${r.no.length} against.`]);
+      if (r.passed) { sfx.found(); await say('paddy', ['The motion is CARRIED!', m.effect]); }
+      else { sfx.sad(); await say('lesley', ['HA! DEFEATED!']); await say('paddy', ['The motion is lost. We go again next week. Maybe bring Kirsty or Dahlia some flowers.']); }
+    }
+    this.save();
+    this.meetingNow = false;
+  }
+
+  syncRoutines() {
+    for (const n of this.map.npcs) {
+      if (!n.at || !NPCS[n.id]) continue;
+      const here = isAt(n.id, n.at, state.data), live = this.npcs.find(x => x.spot === n && !x.gone);
+      if (here && !live) { const npc = this.spawnNpc(n); npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 500 }); this.npcs.push(npc); }
+      else if (!here && live && !n.leave) this.removeNpc(live);
+    }
+  }
+
   update(time, delta) {
     const dt = Math.min(0.05, delta / 1000);
     const blocked = ui.blocking() || this.leaving;
@@ -965,7 +1063,9 @@ export class WorldScene extends Phaser.Scene {
       else this.player.target = { x, y: y + 8 };
     }
     for (const p of this.pets) p.update(this.player, dt, blocked);
-    for (const n of this.npcs) n.update(this.player, dt, blocked);
+    for (const n of this.npcs) if (!n.gone) n.update(this.player, dt, blocked);
+    const tick = Math.floor(state.data.minutes / 10);
+    if (tick !== this.routineTick) { this.routineTick = tick; this.syncRoutines(); this.maybeMeeting(); }
     this.traffic.update(dt, this.player, blocked);
     this.updateDecor(dt, blocked);
     this.updateLighting();

@@ -9,7 +9,10 @@ import { ITEMS, isTreat } from '../data/items.js';
 import { GEAR } from '../data/gear.js';
 import { bus } from '../bus.js';
 import { rng } from '../util.js';
-import { ZONES } from '../data/regions.js';
+import { ZONES, invalidateMap } from '../data/regions.js';
+import { MOTIONS, MOTION_ORDER, motionReady, SWING, ALLIES, AGAINST } from '../data/council.js';
+import { isMeetingDay } from '../data/routines.js';
+import { requestsFor, REQUEST_BONUS } from '../data/requests.js';
 import { CROPS } from '../data/crops.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
@@ -39,6 +42,9 @@ function fresh() {
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
+    council: { given: {}, passed: [], lost: {} },   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
+    requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
+    furniture: { couch: 'leather' },                // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
     settings: { sound: true },
     seenIntro: false,
@@ -74,6 +80,9 @@ function sanitise(raw) {
   if (raw.farm && typeof raw.farm === 'object') for (const [k, f] of Object.entries(raw.farm)) if (f && CROPS[f.crop]) d.farm[k] = f;
   if (raw.upgrades && typeof raw.upgrades === 'object') for (const k of Object.keys(raw.upgrades)) if (UPGRADES[k]) d.upgrades[k] = true;
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
+  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {} };
+  if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
+  if (raw.furniture && typeof raw.furniture === 'object') Object.assign(d.furniture, raw.furniture);
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
@@ -231,6 +240,10 @@ export const state = {
     if (this.hasUpgrade('sprinkler')) for (const [id, plot] of Object.entries(d.farm)) if (id.startsWith('yd')) plot.watered = ended + 1;
     if (rained && Object.keys(d.farm).length) news.push('It rained yesterday, so the garden got a free drink.');
     if (this.hasUpgrade('sprinkler') && Object.keys(d.farm).some(id => id.startsWith('yd'))) news.push('The sprinkler ticks away in the backyard. The beds are watered.');
+    // Council met last night and you weren't in the chamber: read about it in the morning.
+    if (isMeetingDay(ended) && d.council.metDay !== ended) {
+      for (const r of this.holdMeeting(ended)) news.push(r.passed ? `Council news: "${MOTIONS[r.id].title}" passed ${r.yes.length} votes to ${r.no.length}! ${MOTIONS[r.id].effect}` : `Council news: "${MOTIONS[r.id].title}" lost ${r.yes.length} votes to ${r.no.length}. Win over Kirsty or Dahlia and try again next Tuesday.`);
+    }
     d.day += 1; d.minutes = DAY_START_MIN; d.pos = null;
     this.healAll();
     const home = this.foundIds().filter(id => !this.inParty(id));
@@ -241,6 +254,56 @@ export const state = {
       news.push(`${PET_BY_ID[who].name} came in through the pet door with a present: ${ITEMS[item].name.toLowerCase()}.`);
     }
     return news;
+  },
+
+  // The requests board (data/requests.js)
+  todaysRequests() {
+    const met = Object.entries(this.data.friends).filter(([, f]) => f.met).map(([id]) => id), key = `${this.data.day}:${met.length}`;
+    if (this._reqKey !== key) { this._reqKey = key; this._req = requestsFor(this.data.day, met); }   // cached: the bubbles ask every frame
+    return this._req.map(q => ({ ...q, done: this.data.requests.day === this.data.day && this.data.requests.done.includes(q.id) }));
+  },
+  completeRequest(id) {
+    if (this.data.requests.day !== this.data.day) this.data.requests = { day: this.data.day, done: [] };
+    this.data.requests.done.push(id);
+  },
+
+  // Council motions (data/council.js)
+  motionPassed(id) { return this.data.council.passed.includes(id); },
+  motionGiven(id) { return this.data.council.given[id] || (this.data.council.given[id] = {}); },
+  motionReady(id) { return motionReady(id, this.data.council.given[id]); },
+  // Chip in towards a motion: all of one item you have (up to what's needed), or the money.
+  chipIn(id, key) {
+    const need = MOTIONS[id].needs[key] || 0, given = this.motionGiven(id), left = need - (given[key] || 0);
+    if (left <= 0) return 0;
+    if (key === 'money') { if (!this.spend(left)) return 0; given.money = need; return left; }
+    const n = Math.min(left, this.count(key));
+    for (let i = 0; i < n; i++) this.removeItem(key);
+    given[key] = (given[key] || 0) + n;
+    return n;
+  },
+  // How each councillor votes on a motion right now.
+  councilVote() {
+    const yes = [...ALLIES], no = [...AGAINST];
+    for (const [id, h] of Object.entries(SWING)) (this.friendHearts(id) >= h ? yes : no).push(id);
+    return { yes, no, passed: yes.length >= 4 };
+  },
+  // Vote on every motion that has all it needs. Returns the results.
+  holdMeeting(day = this.data.day) {
+    const c = this.data.council, results = [];
+    c.metDay = day;
+    for (const id of MOTION_ORDER) {
+      if (c.passed.includes(id) || !this.motionReady(id)) continue;
+      const v = this.councilVote();
+      results.push({ id, ...v });
+      if (v.passed) this.passMotion(id); else c.lost[id] = day;
+    }
+    return results;
+  },
+  passMotion(id) {
+    if (this.motionPassed(id)) return;
+    this.data.council.passed.push(id);
+    for (const z of { gardenplus: ['wetlands'], bookswap: ['lohse'], dawson: ['brunswick'] }[id] || []) invalidateMap(z);
+    bus.emit('council:passed', id);
   },
 
   // World

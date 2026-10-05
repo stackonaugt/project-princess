@@ -92,6 +92,29 @@ export const NPCS = {
     name: 'Olly', shop: 'bunnings', look: { hair: '#6a4422', hairStyle: 'short', skin: '#f0c8a0', shirt: '#c8302a', pants: '#3a3a48', apron: '#2f7a3a', stubble: true },
     gift: 'seedling',
   },
+  // Hobsons Bay City Council (the civic centre in Altona). Near-names for the
+  // real councillors. Paddy is the mayor, Helen's husband and the twins' dad.
+  paddy: {
+    name: 'Paddy', look: { hair: '#4a3020', hairStyle: 'wavyshort', skin: '#f0c4a4', shirt: '#e8ecd8', collar: true, blazer: '#141416', blazerTrim: '#d8b440', pants: '#141416', shoes: '#1a1a1a', beard: '#3a2618' },
+  },
+  lesley: {
+    name: 'Cr Lesley Bentleigh', look: { hair: '#d89a58', hairStyle: 'bob', skin: '#e8907a', shirt: '#f4ecb0', blazer: '#18181c', blazerTrim: '#2a2a30', pants: '#18181c', shoes: '#1a1a1a', glasses: '#c8a070', hoops: '#e8e4dc', lips: '#c0505a' },
+  },
+  malcolm: {
+    name: 'Cr Malcolm Dismay', look: { hair: '#e8e4dc', hairStyle: 'short', skin: '#e8b498', shirt: '#c8d0dc', collar: true, blazer: '#2a2e3a', pants: '#2a2e3a', shoes: '#1a1a1a', glasses: '#8a8e96' },
+  },
+  kirsty: {
+    name: 'Cr Kirsty Bishopp', look: { hair: '#e0cfa0', hairStyle: 'long', skin: '#f2c8a8', shirt: '#7a2a3a', shirtPattern: 'gingham', shirtAccent: '#3a6a8a', blazer: '#1e2a48', pants: '#1e2a48', shoes: '#1a1a1a' },
+  },
+  dahlia: {
+    name: 'Cr Dahlia Kellandra', look: { hair: '#f0dca0', hairStyle: 'long', skin: '#f6d0b4', shirt: '#f4f4f0', blazer: '#2a4a8a', pants: '#2a2e3a', shoes: '#1a1a1a' },
+  },
+  rayna: {
+    name: 'Cr Rayna Hawley', look: { hair: '#1e1612', hairStyle: 'wavy', skin: '#d8a882', shirt: '#f4f4f0', blazer: '#e8509a', pants: '#f4f4f0', shoes: '#c8a070', lips: '#b04060' },
+  },
+  deanna: {
+    name: 'Cr Deanna Grimes', look: { hair: '#b8955a', hairStyle: 'wavy', skin: '#f2c8a8', shirt: '#5a3a8a', shirtPattern: 'plaid', shirtAccent: ['#c8b8e8', '#2a1a4a'], pants: '#2a2a30', shoes: '#1a1a1a' },
+  },
   macca: {
     name: 'Macca', shop: 'bottleshop', look: { hair: '#8a5a2a', hairStyle: 'short', skin: '#e8b48a', shirt: '#1e1e24', pants: '#3a4a6a', shoes: '#2a1a12', beard: true },
   },
@@ -105,5 +128,5 @@ export const NPCS = {
 for (const [id, t] of Object.entries(PEOPLE)) {
   const n = NPCS[id];
   if (!n) continue;
-  for (const k of ['role', 'lines', 'hints', 'giftLine']) if (t[k] !== undefined) n[k] = t[k];
+  for (const k of ['role', 'lines', 'hints', 'giftLine', 'byHero', 'advice', 'leaving']) if (t[k] !== undefined) n[k] = t[k];
 }

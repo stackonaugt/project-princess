@@ -145,9 +145,9 @@ export function objectTexture(scene, o) {
 // Stardew-style 1px dark outline on standing objects. Skips flat things,
 // things that tile together (fences, rails, the viaduct), wall decorations
 // and art that draws its own outline. Soft ground shadows are ignored.
-const NO_OUTLINE = new Set(['coasterwall', 'fence', 'viaduct', 'pier', 'trackoval', 'footbridge', 'iwindow', 'picture', 'shelf', 'verandah', 'canopy', 'carport', 'shade', 'archshelter', 'tank', 'crops', 'reeds']);
+const NO_OUTLINE = new Set(['bigscreen', 'ropebarrier', 'coasterwall', 'fence', 'viaduct', 'pier', 'trackoval', 'footbridge', 'iwindow', 'picture', 'shelf', 'verandah', 'canopy', 'carport', 'shade', 'archshelter', 'tank', 'crops', 'reeds']);
 function needsOutline(kind, def) { return !def.flat && !def.deck && !def.lined && !NO_OUTLINE.has(kind) && !ALREADY_OUTLINED.has(kind); }
-const ALREADY_OUTLINED = new Set(['car', 'ute', 'edcastle', 'bottleshop', 'decoshop', 'bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
+const ALREADY_OUTLINED = new Set(['chamberdome', 'civiccentre', 'car', 'ute', 'edcastle', 'bottleshop', 'decoshop', 'bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
 function objectOutline(ctx, w, h, colour = '#2a1810') {
   const img = ctx.getImageData(0, 0, w, h), d = img.data;
   const solid = i => d[i * 4 + 3] > 150;

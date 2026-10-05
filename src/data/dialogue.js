@@ -342,14 +342,14 @@ export const PEOPLE = {
     },
   },
   mem: {
-    role: 'Hope St. Biologist, doing her PhD',
+    role: 'Hope St. Biologist. PhD on muscle loss in bone recovery',
     lines: [
       ['Yes, sunglasses in winter. Melbourne could produce sun at any moment. I like to be ready.'],
       ['Corni and I live just here. Our apartment is small but the rent is enormous, so it evens out.'],
       [
-        'My PhD is on urban frogs. The Merri Creek has growling grass frogs. They really do growl. I have recordings.',
+        'My PhD is on muscle wastage while broken bones heal. Turns out lying in a cast is very bad for your quads.',
       ],
-      ['Corni and I run the creek trail most mornings. I count frogs. He counts the minutes until Guinness.'],
+      ['Corni and I run the creek trail most mornings. I think about muscle loss. He thinks about Guinness.'],
       ['Third year of the PhD. My supervisor says I am nearly done. My supervisor has said that for a year.'],
     ],
     hints: {
@@ -357,16 +357,16 @@ export const PEOPLE = {
     },
     heartScenes: {
       2: [
-        'Mem: "My PhD is on urban frogs. Brunswick has more frogs than you think. They hide in the drains and judge us."',
+        'Mem: "My lab mice have tiny casts on their legs. We give them little treadmills after. They are very brave."',
       ],
       4: [
-        'Mem takes you along on a frog survey at dusk. She can tell four species apart by their croak. You can tell none.',
+        'Mem shows you a muscle fibre under the microscope. It looks like spaghetti. "That is a mouse\'s whole recovery," she says, proudly.',
       ],
       6: [
         'Mem: "Corni and I are running the Merri Creek trail on Sunday. Come. He will cry at the end. He always cries at the end."',
       ],
     },
-    helpsInBattle: 'Mem identifies the foe\'s species out loud, with its Latin name. It feels very seen.',
+    helpsInBattle: 'Mem calmly explains how fast the foe\'s muscles will waste if it keeps sitting around. It panics.',
   },
   corni: {
     role: 'Hope St. German expat. Guinness enthusiast',
@@ -377,7 +377,7 @@ export const PEOPLE = {
       [
         'The mullet is a commitment. Business at the front, Sydney Rd at the back. In Germany they did not understand.',
       ],
-      ['Mem and I run along the Merri Creek. She looks at frogs. I look for the pub at the end.'],
+      ['Mem and I run along the Merri Creek. She talks about mouse muscles. I look for the pub at the end.'],
       [
         'In Germany the trams have timetables you can trust. Here the 19 is more of a suggestion. I love it anyway.',
       ],
@@ -639,6 +639,96 @@ export const PEOPLE = {
       ],
     },
     helpsInBattle: 'Olly turns up with the sausage sizzle tongs. One snag, perfectly cooked, onions on the bottom.',
+  },
+  // ---- Hobsons Bay City Council (Altona). Paddy talks differently to Helen and the twins,
+  //      and gives advice depending on what you have and haven't done yet (advice, below).
+  paddy: {
+    role: 'Mayor of Hobsons Bay. Helen\'s husband, the twins\' dad',
+    lines: [
+      ['Council is mostly meetings about meetings. And then, every so often, we fix a footpath. Glorious.'],
+      ['The robes are ceremonial. I am told they are also "a lot". I am told this by everyone.'],
+      ['People think being mayor is about power. It\'s mostly about bins. Bins, parking and the dog park.'],
+    ],
+    byHero: {
+      helen: [
+        ['Hey love. Have you eaten? Trish has been texting me. She thinks you haven\'t eaten.'],
+        ['If Lesley rings the house, I\'m in a meeting. I\'m always in a meeting.'],
+        ['Long day. Lesley yelled about the bike lane for forty minutes. Then about the font on the agenda.'],
+      ],
+      hadrian: [
+        ['Hey buddy! Did you run here? Of course you ran here. You always run.'],
+        ['No running in the chamber, mate. Actually, you know what. Run. Run past Lesley.'],
+      ],
+      aleksy: [
+        ['Hey little man. Is that a biscuit? Where did you find a biscuit? We are in a council building.'],
+        ['Aleksy, that is the mayoral chain, not a teething ring. Okay. Fine. Just for a minute.'],
+      ],
+    },
+    // Paddy's advice: the first one that applies is what he says (see WorldScene.paddyAdvice).
+    advice: {
+      noPets: 'Princess is out the front on Allen St, guarding the court. Say hi and she might join your team.',
+      oneTeam: 'When you head out the front door, you pick who comes with you. Up to three pets.',
+      noGarden: 'Wen runs the community garden at the Edgars Creek wetlands in Reservoir. Have a chat and she\'ll give you a plot.',
+      noMotion: 'See the noticeboard by reception? Those are motions for council. Chip in, and I\'ll try to get them through on Tuesday.',
+      swing: 'Kirsty and Dahlia are the swing votes. Be nice to them. Bring them something they love. It\'s called politics.',
+      train: 'Tap your myki at the green reader at a station. The train goes to any station you\'ve already visited.',
+      friends: 'Make friends around town. At four hearts they\'ll jump in to help if you battle near where they live.',
+      types: 'In a battle, pick moves that suit the foe. Water beats fire, park beats water. Look for "Strong!" on the button.',
+      rest: 'Pets get their energy back when you come home. Or have a nap. Naps are underrated. I am a mayor and I know this.',
+    },
+    helpsInBattle: 'Paddy sweeps in, robes flapping. "As mayor, I declare this play-fight in our favour."',
+    leaving: ['Paddy grabs his keys and the robes in a dry-cleaning bag.', 'Paddy: "Off to council. Big day of arguing about bins. Love you!"'],
+  },
+  lesley: {
+    role: 'Councillor. Opposes everything Paddy does. Loudly',
+    lines: [
+      ['WHAT? NO! I DID NOT VOTE FOR THIS CONVERSATION!'],
+      ['THE MAYOR IS RUINING THIS CITY! WITH BIKE LANES! AND TREES!'],
+      ['I HAVE CONCERNS! I ALWAYS HAVE CONCERNS! I\'LL BE RAISING THEM AT LENGTH!'],
+      ['Who let a child into the civic centre? Oh. It\'s HIS child. Of course it is.'],
+    ],
+  },
+  malcolm: {
+    role: 'Councillor. Votes with Lesley, every single time',
+    lines: [
+      ['Back in my day, a council fixed potholes and kept its opinions to itself.'],
+      ['Community garden? Sounds like a waste of perfectly good car parking.'],
+      ['I\'ll be seconding Councillor Bentleigh\'s motion. I haven\'t read it. I don\'t need to.'],
+    ],
+  },
+  kirsty: {
+    role: 'Councillor. A swing vote, leans towards Lesley',
+    lines: [
+      ['I like to keep an open mind. Then Lesley yells at me and it closes a bit.'],
+      ['Convince me. I mean it. Nobody ever actually tries to convince me.'],
+      ['I\'d vote for anything that came with a decent bunch of flowers. That was a joke. Mostly.'],
+    ],
+  },
+  dahlia: {
+    role: 'Councillor. A swing vote, leans towards Paddy',
+    lines: [
+      ['Paddy\'s heart is in the right place. His agendas are forty pages too long, but the heart is fine.'],
+      ['I usually vote with the mayor. Usually. Keep him honest, I say.'],
+      ['If the motion helps actual residents, I\'m in. If it\'s about the font on the agenda, I\'m going home.'],
+    ],
+  },
+  rayna: {
+    role: 'Councillor. Paddy\'s ally',
+    lines: [
+      ['Hi! Has the mayor fed you? He forgets to feed himself on meeting days.'],
+      ['Lesley called a point of order on my point of order. It was a long night.'],
+      ['We\'ve got the numbers on the community garden. Probably. Bring snacks on Tuesday.'],
+    ],
+    helpsInBattle: 'Rayna moves a motion that the foe calm down. Seconded. Carried.',
+  },
+  deanna: {
+    role: 'Councillor. Paddy\'s ally',
+    lines: [
+      ['Every motion is a little fight for the people who actually live here. I love it.'],
+      ['Do you know how many trees we planted last year? Ask me. Go on. Nobody ever asks.'],
+      ['The bike lane will pass. It has to. My calves are counting on it.'],
+    ],
+    helpsInBattle: 'Deanna plants a tree right in front of the foe. It is very confused.',
   },
   macca: {
     role: 'Runs the Edinburgh Castle bottle shop',
@@ -924,29 +1014,32 @@ export const FOE_TEXT = {
 };
 
 export const PLACES = {
-  home: 'Your new place. Mid-renovation.',
-  yard: 'Plenty of room for zoomies.',
-  allen: 'A quiet court. Mostly quiet. There is a poodle.',
-  petshop: 'Treats, leads and a very judgemental goldfish.',
-  woods: 'Trish and Gordon\'s street.',
+  home: 'A brick veneer on Allen St. Mid-renovation.',
+  yard: 'A big backyard with a Hills Hoist, a shed and a carport.',
+  allen: 'A quiet court of brick veneers and front lawns.',
+  petshop: 'Treats, leads, collars and a goldfish tank.',
+  woods: 'A long suburban street of brick houses and agapanthus.',
   lohse: 'Gum trees, a playground and a very clean toilet block.',
+  civic: 'Hobsons Bay City Council: a domed chamber, a field gun and a rainbow path.',
+  civiccentre: 'The council foyer. Terrazzo, couches and a noticeboard full of motions.',
+  chamber: 'Where council meets on Tuesday nights. Bring a snack. It runs long.',
   station: 'Werribee line. Trains roughly as advertised.',
   brunswick: 'Upfield line. Mind the gap, and the cyclists.',
-  sydney: 'Trams, bakeries and somebody\'s band.',
+  sydney: 'Trams, bakeries and shopfronts all the way along.',
   albion: 'The Edinburgh Castle, the 19 tram and a lot of For Lease signs.',
-  bottleshop: 'Cold cans, warm Macca, and a wall of coasters.',
-  donald: 'Rose\'s street. Salami\'s street, really.',
-  hope: 'Mem and Corni\'s place, and a lot of balcony plants.',
+  bottleshop: 'Fridges of cold cans and a wall of beer coasters.',
+  donald: 'Bluestone lanes, blue-grey flats and a weedy vacant lot.',
+  hope: 'Apartments, warehouses and a lot of balcony plants.',
   reservoir: 'Mernda line, up on the skyrail.',
-  loddon: 'Seb and Sinead\'s units. Poppy\'s kingdom.',
-  glasgow: 'Tim and Nick\'s street. Stanley approves. Barely.',
-  track: 'Edwardes Lake Park. Tiny humans running in circles.',
+  loddon: 'Brick units just off six lanes of Plenty Rd.',
+  glasgow: 'Weatherboards, lemon trees and a yarn-bombed roundabout.',
+  track: 'Edwardes Lake Park. An athletics track and the Little Athletics clubhouse.',
   lake: 'A lake full of opinions (ducks).',
-  lakepark: 'Steam engines, pink slides and an ice cream van, rumour has it.',
-  altona: 'The long walk east begins.',
-  footscray: 'Halfway there. Keep going.',
-  flemington: 'Brunswick is just up the road.',
-  coburg: 'Halfway to Reservoir.',
-  preston: 'Reservoir is the next suburb up.',
+  lakepark: 'A steam engine, a pink slide and a playground by Griffiths St.',
+  altona: 'Factories, trucks and Kororoit Creek. The long walk east begins.',
+  footscray: 'Pho, the river and a lot of pigeons.',
+  flemington: 'Racecourse Rd, the flats and the tram.',
+  coburg: 'Six lanes of Bell St and the old Pentridge wall.',
+  preston: 'Gilbert Rd: shops, a tram and nonna gardens.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
 };

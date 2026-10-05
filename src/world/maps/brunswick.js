@@ -4,6 +4,7 @@
 // sawtooth-roof factories, roller doors and a weedy lot or two.
 // West along Dawson St to Laverton, east to Sydney Rd, north up the path to Hope St.
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildBrunswick() {
   const b = new MapBuilder({ id: 'brunswick', w: 40, h: 26, fill: 'c', seed: 22 });
@@ -63,7 +64,9 @@ export function buildBrunswick() {
   b.put('powerpole', 8, 18); b.put('powerpole', 32, 18);
 
   b.exit(0, 19, 1, 2, 'flemington', 'east', 'Flemington');
-  b.exit(39, 19, 1, 2, null, null, 'Dawson St', ['Dawson St is dug up for the level crossing works. Again.', 'Head up to Hope St and cut through to Sydney Rd.']);
+  // Locked until council passes the Dawson St motion (data/council.js)
+  if (state.motionPassed('dawson')) b.exit(39, 19, 1, 2, 'sydney', 'west', 'Sydney Rd, via Dawson St');
+  else b.exit(39, 19, 1, 2, null, null, 'Dawson St', ['Dawson St is dug up for the level crossing works. Again.', 'Head up to Hope St and cut through to Sydney Rd.']);
   b.exit(26, 0, 1, 1, 'hope', 'south', 'Hope St');
   b.entry('station', 15, 11, 'down').entry('west', 1, 20, 'right').entry('east', 38, 20, 'left').entry('north', 26, 2, 'down');
 
