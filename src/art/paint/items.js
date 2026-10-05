@@ -51,6 +51,31 @@ export const ITEM_ART = {
   pumpkin: { pal: { a: '#e89030', b: '#f8b860', k: '#a85a1a', g: '#3f8a3e', s: '#6a4a2a' }, rows: [
     '............', '.....sg.....', '.....s.gg...', '..kkkkkkkk..', '.kbakbaakbk.', 'kbaakaaakaak',
     'kaaakaaakaak', 'kaaakaaakaak', '.kaakaaakak.', '..kkkkkkkk..', '............', '............'] },
+  // Fishing: bait, the catch, and camping presents
+  bait: { pal: { a: '#e8e4dc', b: '#c8443a', k: '#6a6a72', w: '#e8909a', d: '#6a4a2a' }, rows: [
+    '............', '............', '...kkkkkk...', '..kbbbbbbk..', '..kaaaaaak..', '..kadwddak..',
+    '..kawwdwak..', '..kaddwdak..', '..kaaaaaak..', '...kkkkkk...', '............', '............'] },
+  redfin: { pal: { a: '#7a8a3a', b: '#c8443a', k: '#3a4a1a', w: '#f4efe0', e: '#1e1e1e', s: '#3a4a2a' }, rows: [
+    '............', '............', '.....kkk....', '...kkaaakk.k', '..kaesasaakb', '.kawaasasabb',
+    '..kwwaasaakb', '...kkwwkkk.k', '.....bb.....', '............', '............', '............'] },
+  carp: { pal: { a: '#c8a050', b: '#e8c880', k: '#6a4a1a', e: '#1e1e1e' }, rows: [
+    '............', '............', '....kkkkk...', '..kkbbbbbk.k', '.kebaaaaaakk', 'kaaaaaaaaaak',
+    '.kaaaaaaaakk', '..kkaaaakk.k', '....kkkk....', '............', '............', '............'] },
+  eel: { pal: { a: '#4a5a3a', b: '#7a8a5a', k: '#1e2a1a', e: '#f4efe0' }, rows: [
+    '............', '............', '..........kk', '.........kak', '..kkk...kak.', '.kebakkkab..',
+    '.kaaabbbak..', '..kkkaaak...', '.....kkk....', '............', '............', '............'] },
+  yabby: { pal: { a: '#5a4a6a', b: '#8a7a9a', k: '#2a1a3a', e: '#1e1e1e' }, rows: [
+    '............', '.k......k...', 'kak....kak..', '.kak..kak...', '..kaaaak....', '..kebbek....',
+    '...kaak.....', '...kaak.....', '...kaak.....', '..kaaaak....', '..k.kk.k....', '............'] },
+  oldboot: { pal: { a: '#6a4a2a', b: '#8a6a42', k: '#2a1a0a', w: '#7ab0d8', l: '#c8a070' }, rows: [
+    '............', '...kkkkk....', '...kbaak....', '...kaalk....', '...kaaak....', '...kaalk....',
+    '...kaaakkkk.', '...kaaaaaabk', '..kaaaaaaaak', '..kkkkkkkkkk', '...w..w.....', '............'] },
+  thermos: { pal: { a: '#2a6a5a', b: '#3a8a7a', k: '#1a3a32', s: '#c8ccd0' }, rows: [
+    '....kkkk....', '....kssk....', '...kkkkkk...', '...kbaaak...', '...kbaaak...', '...kbaaak...',
+    '...kssssk...', '...kbaaak...', '...kbaaak...', '...kbaaak...', '...kkkkkk...', '............'] },
+  headtorch: { pal: { a: '#e8643a', b: '#2a2a30', k: '#1a1a1a', l: '#f8f0b0' }, rows: [
+    '............', '............', '..kkkkkkkk..', '.kaaaaaaaak.', 'kak......kak', 'ka...kk...ak',
+    'ka..kbbk..ak', 'kak.kllk.kak', '.kk.kllk.kk.', '.....kk.....', '............', '............'] },
   // Presents (gift: true) and fertiliser.
   paperback: { pal: { a: '#3a7ac8', b: '#6aa8e8', k: '#1a3a6a', w: '#f4efe0', y: '#e8c040' }, rows: [
     '............', '..kkkkkkkk..', '..kaaaaaawk.', '..kabbbbawk.', '..kayyyyawk.', '..kaaaaaawk.',
@@ -106,12 +131,26 @@ export function paintDrink(p, a) {
     p.r(k, 6, 0, 4, 6); p.r(a.cap, 7, 0, 2, 3); p.r(a.body, 7, 3, 2, 3);
     p.r(k, 4, 5, 8, 11); p.r(a.body, 5, 6, 6, 9);
     p.r(a.label, 5, 9, 6, 4); p.r(k, 6, 10, 4, 1); p.r(glint, 6, 6, 1, 3);
+  } else if (a.kind === 'packet') {
+    p.r(k, 2, 2, 12, 13); p.r(a.body, 3, 3, 10, 11); p.r(shadeHex(a.body), 3, 12, 10, 2);
+    p.r(a.cap, 3, 3, 10, 1); p.r(a.label, 4, 6, 8, 4); p.r(a.body, 5, 7, 2, 2); p.r(glint, 4, 4, 1, 7);
+  } else if (a.kind === 'vape') {
+    p.r(k, 5, 1, 6, 14); p.r(a.cap, 6, 2, 4, 3); p.r(a.body, 6, 5, 4, 9); p.r(shadeHex(a.body), 9, 5, 1, 9);
+    p.r(a.label, 6, 8, 3, 3); p.r(glint, 6, 5, 1, 4);
   } else {
     p.r(k, 2, 3, 12, 12); p.r(a.body, 3, 4, 10, 10); p.r(shadeHex(a.body), 3, 12, 10, 2);
     p.r(a.label, 4, 6, 8, 4); p.r(a.body, 5, 7, 6, 2); p.r(a.cap, 10, 14, 2, 2); p.r(k, 6, 2, 4, 2);
   }
 }
 const shadeHex = c => { const n = parseInt(c.slice(1), 16); const f = v => Math.round(v * 0.8); return '#' + ((1 << 24) | (f(n >> 16) << 16) | (f((n >> 8) & 255) << 8) | f(n & 255)).toString(16).slice(1); };
+
+// Novels from Brunswick Bound (items with book: true), drawn from their cover colours.
+export function paintBook(p, a) {
+  const k = '#1e1a18';
+  p.r(k, 3, 2, 10, 13); p.r(a.cover, 4, 3, 8, 11); p.r(shadeHex(a.cover), 4, 3, 1, 11);
+  p.r(a.band, 4, 6, 8, 3); p.r(a.cover, 6, 7, 4, 1);
+  p.r('#f4efe0', 12, 3, 1, 11); p.r(k, 13, 3, 1, 12);
+}
 
 // Gear icons (pet shop), same format. Texture keys: item-gear-<id>.
 export const GEAR_ART = {

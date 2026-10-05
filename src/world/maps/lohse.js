@@ -2,6 +2,7 @@
 // gums, a playground, the black toilet block with its shade roof, an arched
 // picnic shelter, and Maher Rd with the crossing to the station.
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildLohse() {
   const b = new MapBuilder({ id: 'lohse', w: 40, h: 28, seed: 81 });
@@ -49,11 +50,16 @@ export function buildLohse() {
   b.put('powerpole', 3, 6); b.put('powerpole', 30, 23);
   b.sign(21, 23, ['Maher Rd.', 'Cross here for Laverton Station.']);
 
-  b.exit(0, 0, 3, 1, 'woods', 'lohse', 'Woods St');
-  b.exit(24, 0, 2, 1, 'woods', 'path', 'Woods St');
+  b.exit(0, 0, 3, 1, 'woods', 'east', 'Woods St');
+  b.exit(24, 0, 2, 1, 'woods', 'east', 'Woods St');
   b.exit(18, 27, 2, 1, 'station', 'north', 'Laverton Station');
-  b.entry('north', 1, 2, 'down').entry('path', 24, 2, 'down').entry('south', 18, 26, 'up');
+  b.exit(39, 24, 1, 2, 'civic', 'west', 'Civic Parade, Altona');
+  b.put('waysign', 36, 22, { v: 'civic-right' }); b.put('waysign', 21, 22, { v: 'station-down' });
+  b.entry('east', 38, 26, 'left').entry('north', 1, 2, 'down').entry('path', 24, 2, 'down').entry('south', 18, 26, 'up');
 
+  // Council motions that change the reserve (data/council.js)
+  if (state.motionPassed('bookswap')) { b.put('streetlibrary', 9, 14); b.forage(8, 14, ['paperback']); }
+  if (state.motionPassed('dogpark')) b.sign(12, 16, ['Off-lead dog park.', 'Passed by council. Dogs welcome. Pets on your team love a run here.']);
   b.forage(33, 10, ['carrot', 'ribbon']);
   b.forage(10, 14, ['chicken', 'tennis']);
   b.magpies([[17, 8], [33, 16], [8, 22]]);

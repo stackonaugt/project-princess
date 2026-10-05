@@ -39,7 +39,7 @@ export function buildLakePark() {
   b.exit(39, 29, 2, 1, 'glasgow', 'west', 'Glasgow Ave');
   b.entry('west', 1, 13, 'right').entry('north', 19, 2, 'down').entry('south', 39, 27, 'up');
 
-  b.npc('dimitri', 30, 25, { face: 'up' });
+  b.npc('james', 30, 25, { face: 'up' });
 
   b.lane({ axis: 'y', pos: 39.5, dir: 1, from: -3, to: 33, every: [9, 18], speed: 56, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
   b.lane({ axis: 'y', pos: 40.5, dir: -1, from: -3, to: 33, every: [10, 19], speed: 56, kinds: ['veh-car-v-yellow'] });

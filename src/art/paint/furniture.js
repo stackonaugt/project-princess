@@ -56,11 +56,27 @@ export const FURNITURE = {
       chair(10, 31, false); chair(30, 31, false);
     },
   },
+  // Couches: '<side>' or '<side>-<style>', side front/back, style from Franco Cozzo
+  // (banana: the famous yellow curve; leather: brown chesterfield).
   couch: {
-    foot: [3, 1], tex: [48, 28], variants: ['front', 'back'],
+    foot: [3, 1], tex: [48, 28], variants: ['front', 'back', 'back-banana', 'back-leather'],
     paint(p, v) {
-      const c = '#5a7a9a', d = shade(c, -0.22), l = shade(c, 0.18);
-      if (v === 'back') {
+      const [side, style] = String(v).split('-');
+      if (style === 'banana') {
+        // a curved yellow couch, darker at the ends like a banana
+        for (let x = 0; x < 48; x++) { const lift = Math.round(Math.pow((x - 24) / 24, 2) * 8); const c = x < 4 || x > 43 ? '#8a6a20' : x < 9 || x > 38 ? '#d8b020' : '#f0d040';
+          p.r(c, x, 6 + 8 - lift, 1, 14 + lift - 2); p.r(shade(c, 0.25), x, 6 + 8 - lift, 1, 1); }
+        p.r('#3a2a10', 0, 12, 2, 4); p.r('#3a2a10', 46, 12, 2, 4);
+        return;
+      }
+      const c = style === 'leather' ? '#6a3a1a' : '#5a7a9a', d = shade(c, -0.22), l = shade(c, 0.18);
+      if (style === 'leather') {
+        box(p, 0, 6, 48, 22, d); p.r(c, 2, 8, 44, 14); p.r(l, 3, 9, 42, 2);
+        for (let x = 6; x < 44; x += 6) for (let y = 12; y < 20; y += 4) p.r(shade(c, -0.35), x, y, 1, 1);   // buttons
+        p.r(d, 0, 6, 6, 20); p.r(d, 42, 6, 6, 20); p.r(l, 1, 6, 4, 2); p.r(l, 43, 6, 4, 2);
+        return;
+      }
+      if (side === 'back') {
         box(p, 0, 6, 48, 22, d); p.r(c, 2, 8, 44, 14); p.r(l, 3, 9, 42, 2);
         p.r(d, 0, 6, 5, 20); p.r(d, 43, 6, 5, 20);
         return;
@@ -195,6 +211,39 @@ export const FURNITURE = {
   toolbox: {
     foot: [1, 1], tex: [16, 12], variants: ['red'],
     paint(p) { box(p, 1, 4, 14, 8, '#c8443a'); p.r('#9a3028', 1, 7, 14, 1); p.r('#2a2a2a', 5, 1, 6, 1); p.r('#2a2a2a', 5, 1, 1, 3); p.r('#2a2a2a', 10, 1, 1, 3); },
+  },
+  // Tradies' gear for the unbuilt kitchen
+  sawhorse: {
+    foot: [2, 1], tex: [32, 22], variants: ['timber'],
+    paint(p) {
+      box(p, 1, 6, 30, 4, '#c8a060');                                    // the beam, with a length of pine on it
+      for (const x of [3, 25]) { p.r('#a87a3a', x, 10, 2, 12); p.r('#a87a3a', x + 3, 10, 2, 12); }
+      box(p, 4, 2, 22, 4, '#e0c088'); p.r('#c8443a', 12, 3, 4, 1);     // pencil mark
+    },
+  },
+  bucket: {
+    foot: [1, 1], tex: [16, 16], variants: ['plaster'],
+    paint(p) { box(p, 3, 5, 10, 10, '#f4f4f0'); p.r('#c8ccd0', 3, 5, 10, 2); p.r('#d8d4cc', 4, 6, 8, 1); p.r('#3a3a3a', 3, 2, 10, 1); p.r('#3a3a3a', 3, 2, 1, 4); p.r('#3a3a3a', 12, 2, 1, 4); p.r('#2f6aa3', 5, 9, 6, 3); },
+  },
+  campstove: {
+    foot: [2, 1], tex: [32, 26], variants: ['trestle'],
+    paint(p) {
+      box(p, 0, 10, 32, 4, '#d8d4cc'); p.r('#8e939b', 2, 14, 2, 12); p.r('#8e939b', 28, 14, 2, 12);    // trestle table
+      box(p, 3, 5, 12, 5, '#2a2a30'); p.r('#5a5d64', 5, 6, 3, 2); p.r('#5a5d64', 10, 6, 3, 2);         // two-burner gas stove
+      p.r('#c8443a', 18, 3, 5, 7); p.r('#e2705f', 19, 4, 2, 1); p.r('#f4efe0', 25, 6, 5, 4); p.r('#6b4226', 26, 7, 2, 2);  // kettle, mug
+    },
+  },
+  esky: {
+    foot: [1, 1], tex: [16, 14], variants: ['blue'],
+    paint(p) { box(p, 1, 5, 14, 9, '#2f6aa3'); box(p, 1, 3, 14, 3, '#f4f4f0'); p.r('#c8ccd0', 6, 1, 4, 2); },
+  },
+  desk: {
+    foot: [2, 1], tex: [32, 28], variants: ['oak'],
+    paint(p) {
+      box(p, 0, 12, 32, 4, woodL); p.r(woodD, 1, 16, 2, 12); p.r(woodD, 29, 16, 2, 12); box(p, 20, 16, 10, 10, wood);
+      box(p, 5, 2, 14, 10, '#2a2a30'); p.r('#7ab0d8', 6, 3, 12, 7); p.r('#b8d8f0', 7, 4, 4, 2); p.r('#2a2a30', 11, 12, 2, 1);   // monitor
+      p.r('#f4efe0', 21, 9, 6, 3); p.r('#c8443a', 22, 8, 4, 1);                                                                   // papers
+    },
   },
   dropsheet: {
     foot: [3, 2], tex: [48, 32], variants: ['splats'], solid: false, flat: true,

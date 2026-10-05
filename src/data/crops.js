@@ -1,8 +1,8 @@
 // Crops for the community garden plots and the backyard veggie patch.
 //
 //   days     days of growth needed (a day counts if you watered it, or it rained)
-//   seed     price of a packet of seeds at Gaz's or Dimitri's
-//   sell     what Dimitri pays for one at the milk bar
+//   seed     price of a packet of seeds at Gaz's or James's
+//   sell     what James pays for one at the milk bar
 //   yield    how many you pick at harvest
 //   regrow   if set, the plant keeps producing: after picking it needs this many more days
 //   colour   the produce colour (crop sprites and seed packets)

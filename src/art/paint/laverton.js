@@ -133,6 +133,24 @@ export const LAVERTON = {
       p.r('#f4f0e6', sx + 30, top + 30, 1, 8);
     },
   },
+  // The house seen from the backyard, which is north of it: mostly roof, with
+  // the gutter, a strip of back wall and the laundry door along the top.
+  hproof: {
+    foot: [14, 3], tex: [232, 56], variants: ['yard'],
+    paint(p) {
+      const sx = 4, W = 224, H = 56;
+      // back wall along the top edge (you see just the top of it), with windows and the laundry door
+      bricks(p, sx, 0, W, 14, '#d4a86a', 7);
+      [[12, 26], [56, 14], [96, 26], [136, 26], [202, 12]].forEach(([x, w]) => { p.r('#5a6a7a', sx + x, 3, w, 8); p.r('#8aa4b8', sx + x + 1, 4, 4, 2); p.r('#f4f0e6', sx + x - 1, 11, w + 2, 1); });
+      p.r('#3a2a1a', sx + 177, 0, 15, 14); p.r('#e8e4d8', sx + 178, 1, 13, 13); p.r('#c8a040', sx + 188, 7, 2, 2);   // laundry back door
+      p.r('#d8dcdf', sx + 150, 4, 12, 8); p.r('#9a9ea6', sx + 151, 6, 10, 1);                                    // air con
+      // gutter, then the tiled roof sloping away from you
+      p.r('#e8e4dc', sx, 14, W, 2); p.r('#b8b4ac', sx, 16, W, 1);
+      tileRoof(p, sx, 17, W, H - 17, '#b4553a', { hipL: false, hipR: false });
+      p.r(shade('#b4553a', -0.35), sx, H - 2, W, 2);
+      p.r('#8a8a8a', sx + 40, 22, 10, 14); p.r('#a8a8a8', sx + 40, 22, 10, 2);                                   // chimney
+    },
+  },
   kennel: {
     foot: [2, 1], tex: [32, 30], variants: ['red'],
     paint(p) {

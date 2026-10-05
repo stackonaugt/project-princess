@@ -5,7 +5,12 @@
 //   drink: true   from the bottle shop. For friends only, never for pets.
 //                 art: { kind: can | stubby | longneck | wine | cask, body, label, cap }
 //   gift: true    a present for friends (books, plants...). Not a pet treat.
-//   farm: true    used on garden beds (fertiliser). Not a pet treat.
+//   farm: true    used on garden beds (fertiliser) or for fishing (bait). Not a pet treat.
+//   book: true    a novel from Brunswick Bound (also gift: true). art: { cover, band }
+//   lolly: true   American lollies from the Plenty Rd convenience store (also gift: true).
+//   vape: true    vapes from the same shop, adults only (also gift: true). Both use `art` like drinks:
+//                 art: { kind: packet | vape, body, label, cap }
+//   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
   sardine:   { name: 'Sardine', price: 6,            desc: 'One whole sardine. Oily, shiny, beloved.' },
@@ -17,7 +22,7 @@ export const ITEMS = {
   tennis:    { name: 'Tennis ball', price: 4,        desc: 'Slightly damp. Nobody knows why.' },
   ribbon:    { name: 'Pink ribbon', price: 8,        desc: 'Perfect for a pom-pom.' },
   feather:   { name: 'Magpie feather', price: 6,     desc: 'Dropped mid-swoop. A trophy of survival.' },
-  // Crops you grow (crop: true). Sold at Dimitri's; see data/crops.js. Carrot above is also a crop.
+  // Crops you grow (crop: true). Sold at James's; see data/crops.js. Carrot above is also a crop.
   basil:      { name: 'Basil', crop: true,      desc: 'A fragrant bunch. Smells like summer and Nonna.' },
   zucchini:   { name: 'Zucchini', crop: true,   desc: 'One of many. So, so many.' },
   potato:     { name: 'Potato', crop: true,     desc: 'Dirt still on it. Poppy dug it up with enthusiasm.' },
@@ -26,8 +31,8 @@ export const ITEMS = {
   chilli:     { name: 'Chilli', crop: true,     desc: 'Hot. Fire-type pets go wild for them.' },
   pumpkin:    { name: 'Pumpkin', crop: true,    desc: 'Enormous. A whole battle\'s worth of energy.' },
 
-  // Presents for friends (gift: true). Sold at Dimitri's (Reservoir) and Bunnings (Altona North).
-  paperback:  { name: 'Secondhand paperback', price: 5, gift: true, desc: 'From Dimitri\'s book swap shelf. Someone has underlined all the good bits.' },
+  // Presents for friends (gift: true). Sold at James's (Reservoir) and Bunnings (Altona North).
+  paperback:  { name: 'Secondhand paperback', price: 5, gift: true, desc: 'From James\'s book swap shelf. Someone has underlined all the good bits.' },
   byzbook:    { name: 'Byzantium: A History', price: 14, gift: true, desc: 'Nine hundred pages of emperors, mosaics and very complicated hats.' },
   modeltrain: { name: 'Model Comeng train', price: 16, gift: true, desc: 'A tiny silver Comeng. The doors open. Tim would lose his mind.' },
   flowers:    { name: 'Bunch of flowers', price: 6, gift: true, desc: 'Wrapped in newspaper. A bit of everything.' },
@@ -37,6 +42,33 @@ export const ITEMS = {
   olive:      { name: 'Potted olive tree', price: 15, gift: true, desc: 'Grey-green and ancient looking. Every nonna\'s favourite tree.' },
   gloves:     { name: 'Gardening gloves', price: 6, gift: true, desc: 'Sturdy, green, and already a bit muddy somehow.' },
   fertiliser: { name: 'Fertiliser', price: 5, farm: true, desc: 'Blood and bone. Use it when you water a bed: one extra day of growth.' },
+
+  // Brunswick Bound (book: true): classics and the latest hits. Presents for friends.
+  // art: { cover, band } colours for the icon.
+  prideprejudice: { name: 'Pride and Prejudice', price: 18, gift: true, book: true, art: { cover: '#e8d8b0', band: '#7a2a3a' }, desc: 'Jane Austen. Everyone is very polite and very cross.' },
+  middlemarch:    { name: 'Middlemarch', price: 22, gift: true, book: true, art: { cover: '#3a5a7a', band: '#e8c040' }, desc: 'George Eliot. Eight hundred pages of a small town having feelings.' },
+  janeeyre:       { name: 'Jane Eyre', price: 18, gift: true, book: true, art: { cover: '#2a2a30', band: '#c8443a' }, desc: 'Charlotte Bronte. Never trust a man with a locked attic.' },
+  nineteen84:     { name: 'Nineteen Eighty-Four', price: 18, gift: true, book: true, art: { cover: '#c8302a', band: '#f4f4f0' }, desc: 'George Orwell. Big Brother is watching. So is the council.' },
+  monkeygrip:     { name: 'Monkey Grip', price: 20, gift: true, book: true, art: { cover: '#e8823a', band: '#2a2a30' }, desc: 'Helen Garner. Carlton share houses, swimming pools, heartbreak. Very Melbourne.' },
+  cloudstreet:    { name: 'Cloudstreet', price: 22, gift: true, book: true, art: { cover: '#7ab0d8', band: '#f4efe0' }, desc: 'Tim Winton. Two families, one big house, a talking pig.' },
+  hangingrock:    { name: 'Picnic at Hanging Rock', price: 18, gift: true, book: true, art: { cover: '#d8c090', band: '#5a7a3a' }, desc: 'Joan Lindsay. A school picnic goes very, very wrong.' },
+  boyswallows:    { name: 'Boy Swallows Universe', price: 26, gift: true, book: true, art: { cover: '#2a8ad8', band: '#e8c040' }, desc: 'Trent Dalton. Brisbane, crime, a big heart.' },
+  thedry:         { name: 'The Dry', price: 24, gift: true, book: true, art: { cover: '#e8a050', band: '#5a2a1a' }, desc: 'Jane Harper. A drought, a small town and a murder.' },
+  lessonschem:    { name: 'Lessons in Chemistry', price: 26, gift: true, book: true, art: { cover: '#e8c040', band: '#c8302a' }, desc: 'Bonnie Garmus. A chemist hosts a cooking show. Science wins.' },
+  tomorrows:      { name: 'Tomorrow, and Tomorrow, and Tomorrow', price: 26, gift: true, book: true, art: { cover: '#f0a0b8', band: '#2a6ab8' }, desc: 'Gabrielle Zevin. Two friends, thirty years, a lot of video games.' },
+  intermezzo:     { name: 'Intermezzo', price: 28, gift: true, book: true, art: { cover: '#a8c890', band: '#1e1e24' }, desc: 'Sally Rooney. Brothers, chess and complicated feelings.' },
+  fourthwing:     { name: 'Fourth Wing', price: 28, gift: true, book: true, art: { cover: '#1e1e24', band: '#e8a030' }, desc: 'Rebecca Yarros. Dragons. Romance. More dragons.' },
+
+  // Fishing (Anaconda, Preston): bait, and what you catch. Fish are treats; sell
+  // them at James's (sell: price paid).
+  bait:       { name: 'Bait', price: 2, farm: true, desc: 'A tub of wriggly worms. Better bites while you have some.' },
+  redfin:     { name: 'Redfin', sell: 14, fish: true, desc: 'Stripy, spiky and good eating. Cats go feral for it.' },
+  carp:       { name: 'Carp', sell: 6, fish: true, desc: 'A pest, honestly. Still counts as a fish.' },
+  eel:        { name: 'Shortfin eel', sell: 18, fish: true, desc: 'Slippery and ancient. Eels have lived in Melbourne creeks forever.' },
+  yabby:      { name: 'Yabby', sell: 10, fish: true, desc: 'A little freshwater crayfish. Pinchy.' },
+  oldboot:    { name: 'Old boot', sell: 1, junk: true, desc: 'Size 11. Full of pond water. Someone, somewhere, is limping.' },
+  thermos:    { name: 'Thermos', price: 24, gift: true, desc: 'Keeps tea hot for twelve hours. Keeps soup hot for a whole council meeting.' },
+  headtorch:  { name: 'Head torch', price: 20, gift: true, desc: 'For night runs, possum spotting and finding the car keys.' },
 
   // The bottle shop at the Edinburgh Castle (drink: true). Presents for friends. Never for pets.
   vb:          { name: 'VB', price: 4, drink: true, art: { kind: 'stubby', body: '#4a2a12', label: '#2a7a3a', cap: '#c8443a' }, desc: 'A hard-earned thirst needs a big cold beer. Apparently.' },
@@ -65,7 +97,17 @@ export const ITEMS = {
   chianti:     { name: 'Chianti', price: 14, drink: true, art: { kind: 'wine', body: '#3a0e1a', label: '#c8443a', cap: '#f4efe0' }, desc: 'In a straw basket. All roads lead to it.' },
   orangewine:  { name: 'Natural orange wine', price: 26, drink: true, art: { kind: 'wine', body: '#e8902a', label: '#f4efe0', cap: '#2a2a2a' }, desc: 'Cloudy, funky, from a small Yarra Valley producer. The hipster approves.' },
   goon:        { name: 'Cask of goon', price: 12, drink: true, art: { kind: 'cask', body: '#e8e0d0', label: '#8a1a2a', cap: '#c8443a' }, desc: 'Four litres of fruity lexia. The silver pillow of uni days.' },
+
+  // Plenty Road Convenience, Preston (SMOKES AMERICAN CONFECTIONARY VAPES). Presents for friends, not pets.
+  reeses:     { name: 'Reese\'s Cups', price: 4, gift: true, lolly: true, art: { kind: 'packet', body: '#e8823a', label: '#f4e040', cap: '#7a3a1a' }, desc: 'Peanut butter in chocolate. America\'s one good idea.' },
+  drpepper:   { name: 'Dr Pepper', price: 4, gift: true, lolly: true, art: { kind: 'can', body: '#6a1a24', label: '#f4efe0', cap: '#b8b8c0' }, desc: 'Tastes like 23 flavours arguing. Imported, so it costs a fortune.' },
+  takis:      { name: 'Takis Fuego', price: 6, gift: true, lolly: true, art: { kind: 'packet', body: '#6a2a8a', label: '#e8302a', cap: '#f4e040' }, desc: 'Rolled chilli lime chips. Your fingers will be red for a week.' },
+  twinkie:    { name: 'Twinkie', price: 5, gift: true, lolly: true, art: { kind: 'packet', body: '#f4f4f0', label: '#2a6ad0', cap: '#e8302a' }, desc: 'A golden sponge cake that will outlive us all.' },
+  poptarts:   { name: 'Pop-Tarts', price: 6, gift: true, lolly: true, art: { kind: 'packet', body: '#2a8ad0', label: '#f07ab0', cap: '#f4efe0' }, desc: 'Frosted strawberry. Toast them or don\'t. Nobody can stop you.' },
+  mangoice:   { name: 'Mango Ice vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#f0a030', label: '#f4efe0', cap: '#3a3a44' }, desc: 'Sinead\'s flavour. Smells like a tropical holiday in a bus shelter.' },
+  grapeice:   { name: 'Grape Ice vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#7a3ab0', label: '#f4efe0', cap: '#3a3a44' }, desc: 'Purple. Very purple. Leaves a cloud like a nightclub smoke machine.' },
+  watermelon: { name: 'Watermelon vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#e85a6a', label: '#5ab04a', cap: '#3a3a44' }, desc: 'Watermelon bubblegum flavour. Officially, vapes are pharmacy only now. Officially.' },
 };
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
-export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm;
+export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk;

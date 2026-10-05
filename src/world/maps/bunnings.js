@@ -1,0 +1,22 @@
+// Inside BUNNINGS WAREHOUSE, Altona North: tall racks of tools, paint and
+// garden gear, tables of seedlings, and Olly at the checkout by the doors.
+// Gaz runs the sausage sizzle out the front (altona.js).
+import { MapBuilder } from '../MapBuilder.js';
+
+export function buildBunnings() {
+  const b = new MapBuilder({ id: 'bunnings', w: 24, h: 16, fill: 'W', seed: 851 });
+  b.fill(1, 2, 22, 13, 'Q');
+  b.set(12, 15, 'D');
+  b.put('bunshelf', 1, 3, { v: 'tools' }); b.put('bunshelf', 5, 3, { v: 'tools' }); b.put('bunshelf', 9, 3, { v: 'paint' });
+  b.put('bunshelf', 1, 7, { v: 'paint' }); b.put('bunshelf', 5, 7, { v: 'garden' }); b.put('bunshelf', 9, 7, { v: 'tools' });
+  b.put('planttable', 15, 3); b.put('planttable', 19, 3); b.put('planttable', 15, 7); b.put('planttable', 19, 7);
+  b.put('wheelbarrow', 16, 10); b.put('hosereel', 20, 10); b.put('trolley', 13, 12);
+  b.put('shopcounter', 2, 12);
+  b.sign(9, 11, ['Aisle 4: Hinges.', 'All of them. Every hinge ever made. Olly knows where each one is.']);
+  b.put('doormat', 12, 14);
+  b.npc('olly', 5, 12, { face: 'right' });
+  b.exit(12, 15, 1, 1, 'altona', 'bunnings', 'Kororoit Creek Rd');
+  b.entry('door', 12, 14, 'up');
+  b.noDress = true;
+  return b.finish();
+}

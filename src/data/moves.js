@@ -121,6 +121,12 @@ export const MOVES = {
   paranoia:   { name: 'Paranoia', type: 'psychic', power: 35, effect: { recoil: 0.25 }, anim: 'beam', text: 'He gets scared and suspicious, and it spills over onto {t}.', recoilText: 'He is shaking. The fear is hurting him most.' },
   binge:      { name: 'Wired', type: 'street', power: 50, effect: { recoil: 0.3 }, anim: 'lunge', text: 'He has not slept in days. He lashes out at {t}.', recoilText: 'His heart is pounding far too fast. It is hurting him.' },
   comedown:   { name: 'Comedown', type: 'street', power: 25, effect: { recoil: 0.35 }, anim: 'shout', text: 'He crashes. He snaps at {t}, then folds in on himself.', recoilText: 'He is exhausted and miserable. This is what the drug does.' },
+  // Rusty (speed)
+  shakeleaf:  { name: 'Shake Like a Leaf', type: 'speed', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} shakes like a leaf. {t} feels far too guilty to hit hard.' },
+  jumponyou:  { name: 'Jump On You', type: 'speed', power: 60, anim: 'hop', text: '{u} launches from nowhere and lands right on {t}. All legs.' },
+  clawrusty:  { name: 'Claw', type: 'street', power: 45, anim: 'claw', text: '{u} swipes with long, skinny toes.' },
+  runaway:    { name: 'Run Away', type: 'speed', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} zooms off at 60km/h. Good luck catching that.' },
+  barkrusty:  { name: 'Bark', type: 'speed', power: 40, anim: 'shout', text: '{u} lets out one sharp, surprisingly loud bark.' },
   // Water, park, caffeine and booze
   splash:     { name: 'Splash', type: 'water', power: 45, anim: 'gust', text: '{u} splashes {t}. Right in the face.' },
   hosedown:   { name: 'Hose Down', type: 'water', power: 60, anim: 'beam', text: '{u} turns the hose on {t}. Full blast.' },
@@ -147,4 +153,5 @@ export const PET_MOVES = {
   spooky: ['fadeout', 'nibble', 'hop', 'stretch'],
   stanley: ['bark', 'bitestan', 'claw', 'staredown'],
   salami: ['extendclaws', 'scratch', 'bluestring', 'hide'],
+  rusty: ['shakeleaf', 'jumponyou', 'clawrusty', 'runaway', 'barkrusty'],
 };

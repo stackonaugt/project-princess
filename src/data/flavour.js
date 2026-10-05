@@ -8,7 +8,7 @@ export const FLAVOUR = {
   'shop:records': [['The record shop has a whole crate labelled "Melbourne bands you have never heard of". You have heard of none of them.']],
   'shop:pho': [['The best pho on Sydney Rd, according to a handwritten sign. Also according to everyone.']],
   'shop:books': [['A secondhand bookshop. There is a cat asleep on the poetry section. It is not a pet in this game. It is just a cat.']],
-  'shop:milk bar': [['The milk bar. Bags of mixed lollies, a dusty ice cream sign, and Dimitri knows everyone by name.']],
+  'shop:milk bar': [['The milk bar. Bags of mixed lollies, a dusty ice cream sign, and James knows everyone by name.']],
   'shop:bakery': [['The bakery window is full of vanilla slices and something called a "custard scroll extravaganza".']],
   shed: [['A big tin shed. Something inside goes clank, then whirr, then clank again.'], ['A sign on the door: "Safety is everyone\'s job. So is a fair go." Someone has added a union sticker underneath.']],
   warehouse: [['The Hardware Barn. You could spend three hours in here and come out with only a sausage and a potted fern.']],

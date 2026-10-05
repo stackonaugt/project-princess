@@ -108,6 +108,26 @@ const schnauzer = [
   '...ww.....ww....',
 ];
 
+// Rusty: a slim brown whippet, deep chest, tucked belly, long legs, white bib.
+const whippet = [
+  '................',
+  '...........kk...',
+  '..........kaaa..',
+  '..........aeaaa.',
+  '...........aaaan',
+  '...........wa...',
+  '...aaaaaaaaww...',
+  '..aaaaaaaaaww...',
+  '.a.abaaaaaww....',
+  'a...b...aww.....',
+  'a...b....b......',
+  '....a....a......',
+  '...a.....a......',
+  '...a.....a......',
+  '...a.....a......',
+  '..aa.....aa.....',
+];
+
 // Evolved forms
 const flamcess = [
   '..y.......y.y...',
@@ -154,6 +174,7 @@ export const PET_FRAMES = {
   bunny:     [bunny, stride(bunny, 3)],
   frenchie:  [frenchie, stride(frenchie, 3)],
   schnauzer: [schnauzer, stride(schnauzer)],
+  whippet:   [whippet, stride(whippet, 5)],
 };
 
 // Colours shared by every pet unless the pet overrides them in pets.js.

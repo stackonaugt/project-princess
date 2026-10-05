@@ -37,7 +37,7 @@ export function buildLake() {
   b.exit(43, 12, 1, 3, 'wetlands', 'west', 'Edgars Creek Wetlands');
   b.entry('south', 21, 27, 'up').entry('east', 41, 13, 'left');
 
-  b.npc('priya', 10, 15, { path: [[10, 15], [10, 24], [20, 24.5], [20, 25], [36, 23], [40, 14], [36, 4], [12, 4]] });
+  b.npc('abby', 10, 15, { path: [[10, 15], [10, 24], [20, 24.5], [20, 25], [36, 23], [40, 14], [36, 4], [12, 4]] });
 
   b.lane({ axis: 'y', pos: 1.5, dir: 1, from: -3, to: 33, every: [8, 16], speed: 60, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
   b.lane({ axis: 'y', pos: 2.5, dir: -1, from: -3, to: 33, every: [9, 17], speed: 60, kinds: ['veh-car-v-yellow'] });

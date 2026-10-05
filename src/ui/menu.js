@@ -48,7 +48,7 @@ export function openMenu(panel, close) {
           h('li', {}, 'Battles earn experience and a bit of money. Spend it at The Leash You Can Do, Ed\'s pet shop on Hope St, Brunswick: treats, and gear to put on your pets from the bag.'),
           h('li', {}, 'Some pets evolve once they reach a high enough level AND like you enough. Check the Petdex for hints.'),
           h('li', {}, 'Townsfolk have hearts too. Chat daily and bring gifts. Good friends sometimes turn up to help in battles near where they live.'),
-          h('li', {}, 'Farming: Wen at the Edgars Creek community garden gives you plots. Water once a day (rain counts), then sell crops at Dimitri\'s milk bar.'),
+          h('li', {}, 'Farming: Chris at the Edgars Creek community garden gives you plots. Water once a day (rain counts), then sell crops at James\'s milk bar.'),
           h('li', {}, 'Olly at Bunnings Warehouse (Altona North, east of Laverton) sells seeds, garden tools and house upgrades.'),
           h('li', {}, 'Use your bed at home to sleep until morning or have a nap.'),
           h('li', {}, 'You can walk all the way from Laverton to Brunswick to Reservoir, through Altona North, Footscray, Flemington, Coburg and Preston. Or catch the train.'),

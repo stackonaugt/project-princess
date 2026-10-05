@@ -25,6 +25,14 @@ import { buildPreston } from '../world/maps/preston.js';
 import { buildPetShop } from '../world/maps/petshop.js';
 import { buildAlbion } from '../world/maps/albion.js';
 import { buildBottleShop } from '../world/maps/bottleshop.js';
+import { buildCivic } from '../world/maps/civic.js';
+import { buildCivicCentre } from '../world/maps/civiccentre.js';
+import { buildChamber } from '../world/maps/chamber.js';
+import { buildBookShop } from '../world/maps/bookshop.js';
+import { buildBunnings } from '../world/maps/bunnings.js';
+import { buildCozzo } from '../world/maps/cozzo.js';
+import { buildAnaconda } from '../world/maps/anaconda.js';
+import { buildVapeShop } from '../world/maps/vapeshop.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
@@ -34,50 +42,64 @@ const RES_GRASS = ['#68b04a', '#61a845', '#4b8f36', '#86ca5e'];
 const CITY_GRASS = ['#9aaa5a', '#91a253', '#73873e', '#b8c47e'];
 const LAWN = ['#6cbc4a', '#62b244', '#4f9a38', '#86ca5e'];
 
+import { PLACES } from './dialogue.js';
+
 export const SUBURBS = {
   laverton: { name: 'Laverton', tagline: 'Out west, where the sheds are big and the poodles are bigger.', station: 'station' },
   brunswick: { name: 'Brunswick', tagline: 'Trams, terraces and an oat milk surcharge.', station: 'brunswick' },
   reservoir: { name: 'Reservoir', tagline: 'Lemon trees, weatherboards and a lake full of opinions (ducks).', station: 'reservoir' },
   // In-between suburbs: walk through them, or skip them on the train (no station stop).
+  civic: { name: 'Altona', tagline: 'Hobsons Bay City Council, on Civic Parade.', between: true },
   altona: { name: 'Altona North', tagline: 'Sheds, trucks and the Westgate on the horizon.', between: true },
   footscray: { name: 'Footscray', tagline: 'Halfway to Brunswick. Pho, the river and a lot of pigeons.', between: true },
   flemington: { name: 'Flemington', tagline: 'Racecourse Rd. Nearly at Brunswick now.', between: true },
-  coburg: { name: 'Coburg', tagline: 'Bell St traffic and bluestone walls.', between: true },
+  coburg: { name: 'Coburg/Preston', tagline: 'Bell St traffic and bluestone walls.', between: true },
   preston: { name: 'Preston', tagline: 'Nearly at Reservoir. You can smell the lemon trees.', between: true },
 };
 export const SUBURB_ORDER = ['laverton', 'brunswick', 'reservoir'];
 
 // home: true marks your place, where pets you've found hang out.
 export const ZONES = {
-  home: { name: 'Home', suburb: 'laverton', build: buildHome, grass: LAWN, indoor: true, home: true, tagline: 'Your new place. Mid-renovation.' },
-  yard: { name: 'Backyard', suburb: 'laverton', build: buildYard, grass: LAWN, home: true, tagline: 'Plenty of room for zoomies.' },
-  allen: { name: 'Allen St', suburb: 'laverton', build: buildAllen, grass: LAVERTON_GRASS, tagline: 'A quiet court. Mostly quiet. There is a poodle.' },
-  petshop: { name: 'The Leash You Can Do', suburb: 'brunswick', build: buildPetShop, grass: LAWN, indoor: true, tagline: 'Treats, leads and a very judgemental goldfish.' },
-  woods: { name: 'Woods St', suburb: 'laverton', build: buildWoods, grass: LAVERTON_GRASS, tagline: 'Trish and Gordon\'s street.' },
-  lohse: { name: 'Lohse St Reserve', suburb: 'laverton', build: buildLohse, grass: LAVERTON_GRASS, tagline: 'Gum trees, a playground and a very clean toilet block.' },
-  station: { name: 'Laverton Station', suburb: 'laverton', build: buildStation, grass: LAVERTON_GRASS, tagline: 'Werribee line. Trains roughly as advertised.' },
-  brunswick: { name: 'Brunswick Station', suburb: 'brunswick', build: buildBrunswick, grass: BRUNSWICK_GRASS, tagline: 'Upfield line. Mind the gap, and the cyclists.' },
-  sydney: { name: 'Sydney Rd', suburb: 'brunswick', build: buildSydney, grass: BRUNSWICK_GRASS, tagline: 'Trams, bakeries and somebody\'s band.' },
-  albion: { name: 'Sydney Rd at Albion St', suburb: 'brunswick', build: buildAlbion, grass: BRUNSWICK_GRASS, tagline: 'The Edinburgh Castle, the 19 tram and a lot of For Lease signs.' },
-  bottleshop: { name: 'Edinburgh Castle Bottleshop', suburb: 'brunswick', build: buildBottleShop, grass: LAWN, indoor: true, tagline: 'Cold cans, warm Macca, and a wall of coasters.' },
-  donald: { name: 'Donald St', suburb: 'brunswick', build: buildDonald, grass: BRUNSWICK_GRASS, tagline: 'Rose\'s street. Salami\'s street, really.' },
-  hope: { name: 'Hope St', suburb: 'brunswick', build: buildHope, grass: BRUNSWICK_GRASS, tagline: 'Mem and Corni\'s place, and a lot of balcony plants.' },
-  reservoir: { name: 'Reservoir Station', suburb: 'reservoir', build: buildResStation, grass: RES_GRASS, tagline: 'Mernda line, up on the skyrail.' },
-  loddon: { name: 'Loddon Ave', suburb: 'reservoir', build: buildLoddon, grass: RES_GRASS, tagline: 'Seb and Sinead\'s units. Poppy\'s kingdom.' },
-  glasgow: { name: 'Glasgow Ave', suburb: 'reservoir', build: buildGlasgow, grass: RES_GRASS, tagline: 'Tim and Nick\'s street. Stanley approves. Barely.' },
-  track: { name: 'Athletics Track', suburb: 'reservoir', build: buildTrack, grass: RES_GRASS, tagline: 'Edwardes Lake Park. Tiny humans running in circles.' },
-  lake: { name: 'Edwardes Lake', suburb: 'reservoir', build: buildLake, grass: RES_GRASS, tagline: 'A lake full of opinions (ducks).' },
-  lakepark: { name: 'Lake Park', suburb: 'reservoir', build: buildLakePark, grass: RES_GRASS, tagline: 'Steam engines, pink slides and an ice cream van, rumour has it.' },
-  altona: { name: 'Kororoit Creek Rd', suburb: 'altona', build: buildAltona, grass: CITY_GRASS, tagline: 'The long walk east begins.' },
-  footscray: { name: 'Barkly St', suburb: 'footscray', build: buildFootscray, grass: CITY_GRASS, tagline: 'Halfway there. Keep going.' },
-  flemington: { name: 'Racecourse Rd', suburb: 'flemington', build: buildFlemington, grass: CITY_GRASS, tagline: 'Brunswick is just up the road.' },
-  coburg: { name: 'Bell St', suburb: 'coburg', build: buildCoburg, grass: CITY_GRASS, tagline: 'Halfway to Reservoir.' },
-  preston: { name: 'Gilbert Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, tagline: 'Reservoir is the next suburb up.' },
-  wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, tagline: 'Reeds, frogs and paths that all look the same.' },
+  home: { name: 'Home', suburb: 'laverton', build: buildHome, grass: LAWN, indoor: true, home: true, },
+  yard: { name: 'Backyard', suburb: 'laverton', build: buildYard, grass: LAWN, home: true, },
+  allen: { name: 'Allen St', suburb: 'laverton', build: buildAllen, grass: LAVERTON_GRASS, },
+  petshop: { name: 'The Leash You Can Do', suburb: 'brunswick', build: buildPetShop, grass: LAWN, indoor: true, },
+  woods: { name: 'Woods St', suburb: 'laverton', build: buildWoods, grass: LAVERTON_GRASS, },
+  lohse: { name: 'Lohse St Reserve', suburb: 'laverton', build: buildLohse, grass: LAVERTON_GRASS, },
+  civic: { name: 'Civic Parade', suburb: 'civic', build: buildCivic, grass: LAWN },
+  civiccentre: { name: 'Civic Centre', suburb: 'civic', build: buildCivicCentre, grass: LAWN, indoor: true },
+  chamber: { name: 'Council Chamber', suburb: 'civic', build: buildChamber, grass: LAWN, indoor: true },
+  station: { name: 'Laverton Station', suburb: 'laverton', build: buildStation, grass: LAVERTON_GRASS, },
+  brunswick: { name: 'Brunswick Station', suburb: 'brunswick', build: buildBrunswick, grass: BRUNSWICK_GRASS, },
+  sydney: { name: 'Sydney Rd', suburb: 'brunswick', build: buildSydney, grass: BRUNSWICK_GRASS, },
+  albion: { name: 'Sydney Rd at Albion St', suburb: 'brunswick', build: buildAlbion, grass: BRUNSWICK_GRASS, },
+  bottleshop: { name: 'Edinburgh Castle Bottleshop', suburb: 'brunswick', build: buildBottleShop, grass: LAWN, indoor: true, },
+  bookshop: { name: 'Brunswick Bound', suburb: 'brunswick', build: buildBookShop, grass: LAWN, indoor: true },
+  donald: { name: 'Donald St', suburb: 'brunswick', build: buildDonald, grass: BRUNSWICK_GRASS, },
+  hope: { name: 'Hope St', suburb: 'brunswick', build: buildHope, grass: BRUNSWICK_GRASS, },
+  reservoir: { name: 'Reservoir Station', suburb: 'reservoir', build: buildResStation, grass: RES_GRASS, },
+  loddon: { name: 'Loddon Ave', suburb: 'reservoir', build: buildLoddon, grass: RES_GRASS, },
+  glasgow: { name: 'Glasgow Ave', suburb: 'reservoir', build: buildGlasgow, grass: RES_GRASS, },
+  track: { name: 'Athletics Track', suburb: 'reservoir', build: buildTrack, grass: RES_GRASS, },
+  lake: { name: 'Edwardes Lake', suburb: 'reservoir', build: buildLake, grass: RES_GRASS, },
+  lakepark: { name: 'Lake Park', suburb: 'reservoir', build: buildLakePark, grass: RES_GRASS, },
+  bunnings: { name: 'Bunnings Warehouse', suburb: 'altona', build: buildBunnings, grass: LAWN, indoor: true },
+  cozzo: { name: 'Franco Cozzo', suburb: 'footscray', build: buildCozzo, grass: LAWN, indoor: true },
+  anaconda: { name: 'Anaconda', suburb: 'preston', build: buildAnaconda, grass: LAWN, indoor: true },
+  vapeshop: { name: 'Plenty Road Convenience', suburb: 'preston', build: buildVapeShop, grass: LAWN, indoor: true },
+  altona: { name: 'Kororoit Creek Rd', suburb: 'altona', build: buildAltona, grass: CITY_GRASS, },
+  footscray: { name: 'Barkly St', suburb: 'footscray', build: buildFootscray, grass: CITY_GRASS, },
+  flemington: { name: 'Racecourse Rd', suburb: 'flemington', build: buildFlemington, grass: CITY_GRASS, },
+  coburg: { name: 'Bell St', suburb: 'coburg', build: buildCoburg, grass: CITY_GRASS, },
+  preston: { name: 'Plenty Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, },
+  wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, },
 };
 
+
+for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
+
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'station', 'altona', 'footscray', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'vapeshop', 'anaconda', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;

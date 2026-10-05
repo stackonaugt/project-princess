@@ -316,11 +316,14 @@ body.touch .bt-btn { min-height: 52px; }
 .title-foot { margin-top: 14px; color: var(--parch); }
 
 /* ---------- Pawphone ---------- */
-.panel-phone { width: min(340px, 100%); background: transparent; border: none; box-shadow: none; }
-.phone { background: #1e1e24; border-radius: 28px; padding: 12px 10px 14px; box-shadow: 0 6px 0 #0c0c10, inset 0 0 0 3px #3a3a44; color: #f4f4f0; }
+.panel-phone { width: min(300px, 100%); background: transparent; border: none; box-shadow: none; }
+/* A tall phone, roughly 9:19, with a speaker notch at the top. */
+.phone { background: #1e1e24; border-radius: 36px; padding: 22px 10px 14px; box-shadow: 0 6px 0 #0c0c10, inset 0 0 0 3px #3a3a44; color: #f4f4f0;
+  display: flex; flex-direction: column; height: min(600px, 84vh); position: relative; }
+.phone::before { content: ''; position: absolute; top: 9px; left: 50%; width: 64px; height: 6px; margin-left: -32px; border-radius: 3px; background: #3a3a44; }
 .phone-bar { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 2px 10px 8px; }
 .phone-bar b { color: #ffe08a; }
-.phone-screen { border-radius: 18px; padding: 16px 12px 20px; min-height: 300px;
+.phone-screen { border-radius: 20px; padding: 18px 12px 20px; flex: 1; overflow-y: auto;
   background: linear-gradient(160deg, #f08aa0 0%, #f4c88a 45%, #7ab0d8 100%); }
 .phone-apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 8px; }
 .app { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; color: #1e1e24; }
@@ -350,3 +353,11 @@ body.touch .bt-btn { min-height: 52px; }
 .plot-row { display: flex; align-items: center; gap: 8px; font-size: 15px; }
 .plot-row img { width: 24px; height: 24px; }
 .plot-name { font-weight: 600; min-width: 80px; }
+/* Cheats */
+.cheat-select { font: inherit; font-size: 15px; padding: 6px 8px; border: 2px solid var(--wood); border-radius: 6px; background: #fffaf0; color: var(--ink); max-width: 100%; }
+/* Fishing */
+.fish-water { background: linear-gradient(#7ab0d8, #3a7ab0); border-radius: 10px; padding: 16px; display: grid; gap: 16px; color: #fff; }
+.fish-status { font-size: 17px; font-weight: 600; min-height: 2.4em; display: flex; align-items: center; justify-content: center; gap: 8px; text-shadow: 0 1px 0 rgba(0,0,0,.4); }
+.fish-bar { position: relative; height: 28px; border-radius: 14px; background: #24486a; border: 3px solid #f4efe0; overflow: hidden; }
+.fish-zone { position: absolute; top: 0; bottom: 0; background: #6dbb58; }
+.fish-marker { position: absolute; top: 2px; width: 12px; height: 18px; border-radius: 50%; background: #f5d63a; border: 2px solid #1e1e24; left: 0; }

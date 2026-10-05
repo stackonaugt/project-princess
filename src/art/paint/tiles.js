@@ -11,6 +11,7 @@
 // Indoors:
 //   W  wall         V  void (outside the house)       D  doorway
 //   o  timber floor T  bathroom tiles K  carpet        n  lino (laundry)
+//   Q  terrazzo (civic centre foyer)   U  patterned blue carpet (council chamber, brick walls)
 import { hash } from '../../util.js';
 
 export const TILE_NAMES = {
@@ -18,10 +19,10 @@ export const TILE_NAMES = {
   'r': 'rail', 'f': 'footpath', 'c': 'concrete', 'p': 'platform', 'b': 'bluestone', '~': 'water',
   'w': 'bridge', 's': 'sand', 'd': 'soil', 'g': 'gravel', 'm': 'mulch',
   'A': 'track', 'k': 'pavers', 'L': 'lawn', 'u': 'parkgravel', 'z': 'zebra', 'P': 'carpark', 'h': 'driveway',
-  'B': 'rail', 'W': 'wall', 'V': 'void', 'D': 'doorway', 'o': 'timber', 'T': 'bathtile', 'K': 'carpet', 'n': 'lino',
+  'B': 'rail', 'W': 'wall', 'V': 'void', 'D': 'doorway', 'o': 'timber', 'T': 'bathtile', 'K': 'carpet', 'n': 'lino', 'Q': 'terrazzo', 'U': 'chambercarpet',
 };
 const WALLISH = 'WV';
-const FLOORS = 'oTKnD';
+const FLOORS = 'oTKnDQU';
 
 const FLOWERS = ['#f5e66b', '#f28bb0', '#ffffff', '#b79cf0', '#f29a5b'];
 const ROADLIKE = '#+xzPk';
@@ -94,7 +95,13 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       const paint = '#f2f0ea', shadeL = '#e2dfd6', grout = '#cfd3d4';
       const cap = '#6a6460', capL = '#7e7872';
       const tiles = (y0) => { for (let y = y0; y < T; y += 4) p.r(grout, sx, sy + y, T, 1); for (let x = (ty % 2) * 2; x < T; x += 4) p.r(grout, sx + x, sy + y0, 1, T - y0); };
-      if (face) {
+      if (face && room === 'U') {
+        // the council chamber: a face brick wall with a timber dado
+        p.r('#a8603a', sx, sy, T, T);
+        for (let y = 0; y < T; y += 4) { p.r('#c89a7a', sx, sy + y + 3, T, 1); p.r('#c89a7a', sx + ((y / 4 + tx) % 2) * 8, sy + y, 1, 3); }
+        p.r('#8a5a32', sx, sy + T - 4, T, 4); p.r('#a8723c', sx, sy + T - 4, T, 1);
+        if (!upper && get(tx, ty - 1) !== 'W') p.r(cap, sx, sy, T, 2);
+      } else if (face) {
         p.r(paint, sx, sy, T, T);
         if (tiled) { p.r('#f8f8f6', sx, sy + 4, T, T - 4); tiles(4); }
         else { p.r(shadeL, sx, sy, T, 1); p.r('#ebe8e0', sx, sy + 5, T, 1); }   // picture rail
@@ -131,6 +138,18 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       // small terracotta floor tiles
       p.r('#a8744e', sx, sy, T, T);
       for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) p.r((i + j + tx + ty) % 3 ? '#b4805a' : '#9a6a46', sx + i * 4, sy + j * 4, 3, 3);
+      return;
+    }
+    case 'Q': {
+      // speckled terrazzo
+      p.r('#e4e0d8', sx, sy, T, T);
+      for (let i = 0; i < 14; i++) p.r(['#b8b2a8', '#f4f2ee', '#9a948a', '#d8c8b0'][i % 4], sx + Math.floor(hash(tx * 17 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 17 + i) * 15), 1, 1);
+      return;
+    }
+    case 'U': {
+      // navy chamber carpet with a little red and gold dot pattern
+      p.r('#2a3a68', sx, sy, T, T);
+      for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) if ((i + j + tx + ty) % 2 === 0) p.r(i % 2 ? '#a8443a' : '#c8a84a', sx + i * 4 + 1, sy + j * 4 + 1, 1, 1);
       return;
     }
     case 'K': {

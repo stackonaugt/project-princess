@@ -28,7 +28,6 @@ export function buildStation() {
   b.sign(18, 5, ['"Reunion" by Grant Finck.', 'Four giant green balloons, twisted into something. A dog? A clover? A cry for help? Locals have opinions.']);
   b.put('ptsign', 22, 3);
   b.put('buszone', 13, 2);
-  b.put('sizzle', 19, 3);
   b.put('bench', 14, 6); b.put('bench', 19, 7);
   b.put('bikerack', 28, 6);
   [15, 17, 21, 23].forEach(x => b.put('bollard', x, 2));
@@ -55,6 +54,7 @@ export function buildStation() {
   b.put('bluepillar', 23, 11); b.put('bluepillar', 27, 11);
   b.put('stanchion', 6, 12); b.put('stanchion', 34, 12);
   b.put('bench', 30, 11);
+  b.put('waysign', 21, 3, { v: 'lohse-up' });   // the way back to Lohse St Reserve is across the zebra crossing
   b.sign(17, 11, ['Laverton Station. Werribee line.', 'Tap your myki at the reader to catch a train to anywhere you have already been.']);
 
   // Side platform: long shelters with beige panel walls
@@ -74,11 +74,11 @@ export function buildStation() {
   b.put('powerpole', 10, 27); b.put('powerpole', 30, 27);
 
   b.exit(18, 0, 2, 1, 'lohse', 'south', 'Lohse St Reserve');
+  b.exit(0, 0, 1, 3, 'allen', 'west', 'Allen St');
   b.exit(43, 24, 1, 2, 'altona', 'west', 'Altona North');
-  b.entry('north', 18, 3, 'down').entry('station', 21, 12, 'down').entry('east', 42, 25, 'left');
+  b.entry('allen', 1, 2, 'right').entry('north', 18, 3, 'down').entry('station', 21, 12, 'down').entry('east', 42, 25, 'left');
 
   b.npc('commuter', 31, 12, { face: 'down' });
-  b.npc('gaz', 20, 4, { face: 'down' });
   b.npc('marisol', 22, 16, { face: 'up' });
 
   const train = { axis: 'x', from: -12, to: 56, speed: 120, kinds: ['veh-train-h'], train: true, under: true };

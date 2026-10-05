@@ -691,7 +691,8 @@ export class BattleScene extends Phaser.Scene {
       for (const lv of levels) {
         sfx.levelUp();
         if (m === this.mine) { this.burst(this.mid(this.mineSpr).x, this.mid(this.mineSpr).y, 0xf8e070, 16, { key: 'bt-star', spread: 50 }); this.showMine(); }
-        await this.say(`${m.name} grew to level ${lv}!`);
+        if (m === this.mine) B.hp(m);
+        await this.say(`${m.name} grew to level ${lv}! Full energy again!`);
       }
       if (canEvolve(m.petId, m.level)) await this.evolveFighter(m);
     }

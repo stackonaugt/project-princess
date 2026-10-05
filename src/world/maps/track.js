@@ -38,7 +38,7 @@ export function buildTrack() {
   b.entry('skyrail', 21, 27, 'up').entry('south', 2, 27, 'up').entry('north', 21, 2, 'down').entry('east', 41, 13, 'left');
 
   const loop = []; for (let i = 0; i < 20; i++) { const a = -i / 20 * Math.PI * 2; loop.push([24 + Math.cos(a) * 11.5, 14 + Math.sin(a) * 7]); }
-  b.npc('kez', loop[0][0], loop[0][1], { path: loop, speed: 46 });
+  b.npc('nathan', loop[0][0], loop[0][1], { path: loop, speed: 46 });
 
   b.lane({ axis: 'y', pos: 1.5, dir: 1, from: -3, to: 33, every: [8, 16], speed: 60, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
   b.lane({ axis: 'y', pos: 2.5, dir: -1, from: -3, to: 33, every: [9, 17], speed: 60, kinds: ['veh-car-v-yellow'] });

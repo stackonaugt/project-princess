@@ -114,6 +114,7 @@ console.log('--- The walk to Reservoir');
 trial('Team L9 vs Coburg/Preston wild', () => [mine('princess', 9), mine('salami', 9), mine('spooky', 9)], wildAvg('preston'));
 console.log('--- Reservoir');
 trial('Team L10 vs Reservoir wild', () => [mine('princess', 10), mine('salami', 10), mine('spooky', 10)], wildAvg('reservoir'));
+trial('Team L11 vs Nathan (Rusty)', () => [mine('princess', 11), mine('salami', 11), mine('spooky', 11)], trainer('nathan'));
 trial('Team L10 vs Sinead (Poppy)', () => [mine('princess', 10), mine('salami', 10), mine('spooky', 10)], trainer('sinead'));
 trial('Team L11 vs Golfer Next Door', () => [mine('princess', 11), mine('poppy', 10), mine('salami', 11)], trainer('golfer'));
 trial('Team L12 vs Tim (Stanley)', () => [mine('princess', 12), mine('poppy', 11), mine('salami', 12)], trainer('tim'));

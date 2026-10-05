@@ -9,9 +9,6 @@ export function buildWoods() {
 
   // Woods St and its footpaths
   b.fill(0, 12, 44, 2, '#').hline(0, 43, 11, 'f').hline(0, 43, 14, 'f');
-  // Lohse St heading south to the reserve
-  b.fill(16, 14, 2, 12, '#').vline(15, 15, 25, 'f').vline(18, 15, 25, 'f');
-  b.set(16, 14, '#').set(17, 14, '#');
 
   // The units. Number 72 has the colourful tiles.
   const row = ['endL', 'left', 'right', 'mural', 'left', 'right', 'endR'];
@@ -37,17 +34,17 @@ export function buildWoods() {
   b.put('bin', 14, 18, { v: 'red' });
   b.put('carparksign', 14, 20);
 
-  // The reserve starts across Lohse St
-  b.fenceH(19, 43, 16, 'park', [24, 25]);
-  b.fill(24, 16, 2, 10, 'u');
-  b.sign(26, 17, ['Lohse St Reserve.', 'Playground, picnic shelter, and the best gum trees in Laverton.']);
-  b.put('tall', 21, 19, { v: 'biggum' }); b.put('tall', 33, 20, { v: 'biggum' }); b.put('tall', 40, 18, { v: 'biggum' });
-  b.put('tall', 29, 23, { v: 'cypress' });
+  // Across the road: the car park carries on, and a house
+  b.fill(15, 19, 9, 1, 'f').fill(15, 20, 9, 5, 'P');
+  b.put('car', 17, 21, { v: 'yellow' }); b.put('car', 20, 23, { v: 'blue' });
+  b.put('house', 27, 16, { v: 'grey' }); b.fill(31, 19, 2, 6, 'h');
+  b.put('ute', 31, 20, { v: 'white' });
+  b.put('tall', 25, 22, { v: 'biggum' }); b.put('tall', 40, 18, { v: 'biggum' }); b.put('tall', 36, 22, { v: 'cypress' });
+  b.sign(42, 15, ['Woods St.', 'East to Lohse St Reserve. West to Allen St.']);
 
-  b.exit(43, 12, 1, 2, 'allen', 'south', 'Allen St');
-  b.exit(16, 25, 2, 1, 'lohse', 'north', 'Lohse St Reserve');
-  b.exit(24, 25, 2, 1, 'lohse', 'path', 'Lohse St Reserve');
-  b.entry('east', 42, 13, 'left').entry('lohse', 16, 23, 'up').entry('path', 24, 23, 'up');
+  b.exit(0, 12, 1, 2, 'allen', 'south', 'Allen St');
+  b.exit(43, 12, 1, 2, 'lohse', 'north', 'Lohse St Reserve');
+  b.entry('west', 1, 13, 'right').entry('east', 42, 13, 'left');
 
   b.npc('trish', 19, 9, { face: 'down' });
   b.npc('gordon', 21, 9, { face: 'down' });
