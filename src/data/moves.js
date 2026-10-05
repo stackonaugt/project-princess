@@ -15,6 +15,9 @@
 //              recoil: the user loses this fraction of its own max HP (recoilText explains)
 //   anim     the battle animation ('lunge', 'bite', 'claw', 'beam', 'shout', 'heal', 'fade', 'hop', 'dig', 'gust', 'stink', 'flame')
 //   text     the line shown when it's used ({u} = user, {t} = target)
+import { NORTH_MOVES } from './north.js';
+
+import { SH_MOVES } from './summerhill.js';
 
 export const MOVES = {
   // Princess (fairy)
@@ -167,7 +170,6 @@ export const MOVES = {
   silverpillow:{ name: 'Silver Pillow', type: 'booze', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} lies down. It is very comfy. It is a pillow, technically.' },
   beergoggles:{ name: 'Beer Goggles', type: 'booze', power: 0, effect: { foeDef: 1 }, anim: 'beam', text: '{u} looks at {t} through beer goggles. {t} gets all self-conscious.' },
   // Carlton and the city
-  chipsteal:  { name: 'Chip Heist', type: 'street', power: 50, effect: { drain: 0.3 }, anim: 'lunge', text: '{u} swoops on {t}\'s chips. Every chip. Somehow also the sauce.' },
   mine:       { name: 'Mine! Mine!', type: 'water', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} screams MINE MINE MINE. {t} drops everything.' },
   coo:        { name: 'Coo', type: 'psychic', power: 0, effect: { foeDef: 1 }, anim: 'shout', text: '{u} coos and bobs its head. {t} cannot look away.' },
   bigmap:     { name: 'Unfold Map', type: 'old', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} unfolds an enormous paper map. Nobody can see anything.' },
@@ -175,8 +177,7 @@ export const MOVES = {
   directions: { name: 'Ask Directions', type: 'psychic', power: 45, anim: 'beam', text: '{u} asks {t} the way to "the famous laneway". Twice. {t} is exhausted.' },
   gateslam:   { name: 'Gate Slam', type: 'steel', power: 55, anim: 'bite', text: 'The gates snap shut on {t}. Touch on next time.' },
   invalidcard:{ name: 'Card Invalid', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '"Please touch card again." {t} touches. "Card invalid." {t} loses the will to live.' },
-  fine:       { name: 'On-the-Spot Fine', type: 'old', power: 55, anim: 'beam', text: '{u} hands {t} a fine. $278. {t} feels it in its soul.' },
-  papercut:   { name: 'Paper Cut', type: 'plastic', power: 45, anim: 'claw', text: '{u} gives {t} a paper cut. Tiny. Unbearable.' },
+  redtape:    { name: 'Red Tape', type: 'plastic', power: 45, anim: 'claw', text: '{u} wraps {t} in red tape. Form 7B, in triplicate. Unbearable.' },
   triplicate: { name: 'File in Triplicate', type: 'old', power: 0, effect: { heal: 0.3, selfDef: 1 }, anim: 'heal', text: '{u} files itself in triplicate. It feels very official.' },
   napoletana: { name: 'Napoletana', type: 'fire', power: 55, anim: 'flame', text: '{u} splashes hot napoletana sauce all over {t}.' },
   meatroll:   { name: 'Off the Plate', type: 'rock', power: 50, anim: 'lunge', text: '{u} rolls off the plate, across the table and into {t}.' },
@@ -191,6 +192,7 @@ export const MOVES = {
   fountaindive:{ name: 'Fountain Dive', type: 'water', power: 60, anim: 'gust', text: '{u} leaps into the fountain, climbs out and shakes off all over {t}.' },
   puppyeyes:  { name: 'Puppy Eyes', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'beam', text: '{u} does the eyes. {t} cannot bring itself to hit hard.' },
   benchsnack: { name: 'Bench Snack', type: 'park', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} finds half a sandwich under a bench and eats it in one go. She feels amazing.' },
+  ...SH_MOVES,
 };
 
 // The four moves each pet knows, by pet id.
@@ -203,3 +205,5 @@ export const PET_MOVES = {
   girlie: ['fetch', 'fountaindive', 'puppyeyes', 'benchsnack'],
   rusty: ['shakeleaf', 'jumponyou', 'clawrusty', 'runaway', 'barkrusty'],
 };
+
+Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston

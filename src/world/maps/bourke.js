@@ -67,9 +67,9 @@ export function buildBourke() {
   b.wildGrass(41, 26, 2.6, 1.6); b.wildGrass(47, 25, 1.6, 2);
   b.fenceV(37, 18, 29, 'metal', [20, 21]);
 
-  b.npc('shaz', 40, 10, { face: 'down' });
-  b.npc('linh', 24, 12, { face: 'left' });
-  b.npc('inspector', 6, 12, { path: [[3, 12], [19, 12]] });
+  b.npc('raelene', 40, 10, { face: 'down' });
+  b.npc('mai', 24, 12, { face: 'left' });
+  b.npc('officer', 6, 12, { path: [[3, 12], [19, 12]] });
 
   b.forage(46, 29, ['feather', 'lemon']);
   b.forage(10, 27, ['sardine', 'croissant']);

@@ -377,7 +377,7 @@ export const MELBOURNE = {
     },
   },
   // A laneway coffee cart.
-  coffeecart: {
+  espressocart: {
     foot: [2, 1], tex: [36, 36], variants: ['laneway'],
     paint(p) {
       p.shadow(18, 35, 34);
@@ -413,7 +413,7 @@ export const MELBOURNE = {
     },
   },
   // Market stalls: trestles of produce, cheese, flowers and socks.
-  stall: {
+  marketstall: {
     foot: [2, 1], tex: [32, 30], variants: ['fruit', 'veg', 'deli', 'flowers', 'socks'],
     paint(p, v) {
       p.shadow(16, 29, 30);

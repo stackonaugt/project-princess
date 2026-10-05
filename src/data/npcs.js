@@ -6,6 +6,8 @@
 //  shop   the shop they open after a chat (data/shops.js)
 
 import { PEOPLE } from './dialogue.js';
+import { NORTH_NPCS } from './north.js';
+import { SH_NPCS } from './summerhill.js';
 
 export const NPCS = {
   trish: {
@@ -177,14 +179,14 @@ export const NPCS = {
     name: 'Margaret', look: { hair: '#d8d4cc', hairStyle: 'bun', skin: '#f2d0b8', shirt: '#f4f0e6', blazer: '#6a3a5a', pants: '#3a3a44', shoes: '#4a3a2a', glasses: '#8a6a4a', scarf: '#3a8a6a', holding: 'book' },
     gift: 'paperback',
   },
-  linh: {
-    name: 'Linh', shop: 'souvenirs', look: { hair: '#141012', hairStyle: 'long', skin: '#e8c090', shirt: '#e8c040', pants: '#2a2a30', shoes: '#f4f4f0', apron: '#3a6aa8' },
+  mai: {
+    name: 'Mai', shop: 'souvenirs', look: { hair: '#141012', hairStyle: 'long', skin: '#e8c090', shirt: '#e8c040', pants: '#2a2a30', shoes: '#f4f4f0', apron: '#3a6aa8' },
   },
-  shaz: {
-    name: 'Shaz', look: { hair: '#c8643a', hairStyle: 'messybun', skin: '#f2c8a8', shirt: '#5ab0b0', pants: '#5ab0b0', shoes: '#f4f4f0', lips: '#c0505a' },
+  raelene: {
+    name: 'Raelene', look: { hair: '#c8643a', hairStyle: 'messybun', skin: '#f2c8a8', shirt: '#5ab0b0', pants: '#5ab0b0', shoes: '#f4f4f0', lips: '#c0505a' },
   },
-  inspector: {
-    name: 'Myki Inspector', look: { hair: '#4a3a2a', hairStyle: 'cap', cap: '#1e2a48', skin: '#e8b48a', shirt: '#2a3a5a', collar: true, blazer: '#1e2a48', pants: '#1e2a48', shoes: '#1a1a1a', moustache: true },
+  officer: {
+    name: 'Authorised Officer', look: { hair: '#4a3a2a', hairStyle: 'cap', cap: '#1e2a48', skin: '#e8b48a', shirt: '#2a3a5a', collar: true, blazer: '#1e2a48', pants: '#1e2a48', shoes: '#1a1a1a', moustache: true },
   },
   remy: {
     name: 'Remy', shop: 'coffeecart', look: { hair: '#3a2416', hairStyle: 'mullet', skin: '#f0c8a8', shirt: '#1e1e24', pants: '#3a3a44', shoes: '#f4f4f0', apron: '#6a4a2a', beard: true },
@@ -195,15 +197,15 @@ export const NPCS = {
   dev: {
     name: 'Dev', look: { hair: '#1e1a18', hairStyle: 'wavyshort', skin: '#a8704a', shirt: '#f4f0e6', collar: true, blazer: '#5a3a2a', pants: '#2a2a30', shoes: '#4a2a1a' },
   },
-  bev: {
-    name: 'Bev', look: { hair: '#e8d890', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#2a8ad0', pants: '#2a2a30', shoes: '#1a1a1a', hivis: true },
+  marj: {
+    name: 'Marj', look: { hair: '#e8d890', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#2a8ad0', pants: '#2a2a30', shoes: '#1a1a1a', hivis: true },
   },
   dot: {
     name: 'Dot', shop: 'donuts', look: { hair: '#c8c4bc', hairStyle: 'curly', skin: '#f0c8a8', shirt: '#f4f0e6', pants: '#3a3a48', shoes: '#4a3a2a', apron: '#c8302a' },
     gift: 'jamdonut',
   },
-  stavros: {
-    name: 'Stavros', shop: 'deli', look: { hair: '#8a8d94', hairStyle: 'bald', skin: '#d8a070', shirt: '#2a5aa8', pants: '#2a2a30', shoes: '#1a1a1a', apron: '#f4f4f0', moustache: true },
+  yianni: {
+    name: 'Yianni', shop: 'qvdeli', look: { hair: '#8a8d94', hairStyle: 'bald', skin: '#d8a070', shirt: '#2a5aa8', pants: '#2a2a30', shoes: '#1a1a1a', apron: '#f4f4f0', moustache: true },
     gift: 'cheese',
   },
   carmel: {
@@ -216,8 +218,10 @@ export const NPCS = {
   ed: {
     name: 'Ed', shop: 'petshop', look: { hair: '#e0a880', hairStyle: 'bald', skin: '#e8b890', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', glasses: '#2a2a2a' },
   },
-
+  ...SH_NPCS,
 };
+
+Object.assign(NPCS, NORTH_NPCS);   // Coburg and Preston
 
 // What everyone says lives in dialogue.js.
 for (const [id, t] of Object.entries(PEOPLE)) {

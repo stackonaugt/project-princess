@@ -12,6 +12,9 @@
 //                 art: { kind: packet | vape, body, label, cap }
 //   story: true   a story item (the fish pie). deco: true  party decorations. Neither is a treat or a present.
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
+import { NORTH_ITEMS } from './north.js';
+import { SH_ITEMS } from './summerhill.js';
+
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
   sardine:   { name: 'Sardine', price: 6,            desc: 'One whole sardine. Oily, shiny, beloved.' },
@@ -71,7 +74,6 @@ export const ITEMS = {
   longblack:  { name: 'Long black', price: 5, gift: true, art: { kind: 'cup', body: '#f4f0e6', label: '#2a5a4a', cap: '#3a2a24' }, desc: 'From Remy\'s cart on Degraves St. Strong enough to fix a Monday.' },
   magic:      { name: 'A magic', price: 5, gift: true, art: { kind: 'cup', body: '#f4f0e6', label: '#c8a070', cap: '#e8d8b8' }, desc: 'Double ristretto, steamed milk, small glass. Melbourne\'s secret coffee.' },
   borek:      { name: 'Borek', price: 5, gift: true, art: { kind: 'packet', body: '#e8d8b0', label: '#3a8a3a', cap: '#f4f0e6' }, desc: 'Spinach and cheese, from the market. Everyone queues. Everyone is right.' },
-  olivejar:   { name: 'Jar of olives', price: 9, gift: true, art: { kind: 'jar', body: '#5a7a3a', label: '#f4f0e6', cap: '#c8a040' }, desc: 'Kalamatas from Stavros. His dad\'s recipe. The jar survived the trip this time.' },
   snowglobe:  { name: 'Tram snow globe', price: 12, gift: true, art: { kind: 'globe', body: '#c8e0f0', label: '#3a8a4a', cap: '#3a6aa8' }, desc: 'A little green tram in a snowstorm. It has never snowed on Swanston St. Yet.' },
   koala:      { name: 'Toy koala', price: 10, gift: true, art: { kind: 'koala', body: '#9a9aa2', label: '#f4f0e6', cap: '#2a2a30' }, desc: 'Soft, grey and made of recycled bottles. Clips onto a bag.' },
   umbrella:   { name: 'Four seasons umbrella', price: 15, gift: true, art: { kind: 'brolly', body: '#3a6aa8', label: '#e8c040', cap: '#2a2a30' }, desc: 'For Melbourne\'s four seasons in one day. Mostly the wet one.' },
@@ -132,7 +134,10 @@ export const ITEMS = {
   mangoice:   { name: 'Mango Ice vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#f0a030', label: '#f4efe0', cap: '#3a3a44' }, desc: 'Sinead\'s flavour. Smells like a tropical holiday in a bus shelter.' },
   grapeice:   { name: 'Grape Ice vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#7a3ab0', label: '#f4efe0', cap: '#3a3a44' }, desc: 'Purple. Very purple. Leaves a cloud like a nightclub smoke machine.' },
   watermelon: { name: 'Watermelon vape', price: 25, gift: true, vape: true, art: { kind: 'vape', body: '#e85a6a', label: '#5ab04a', cap: '#3a3a44' }, desc: 'Watermelon bubblegum flavour. Officially, vapes are pharmacy only now. Officially.' },
+  ...SH_ITEMS,
 };
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
 export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;
+
+Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston

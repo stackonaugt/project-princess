@@ -10,6 +10,8 @@
 // Anyone in npcs.js without an entry here still has hearts, with generic tastes.
 
 import { PEOPLE } from './dialogue.js';
+import { NORTH_FRIENDS } from './north.js';
+import { SH_FRIENDS } from './summerhill.js';
 
 export const FRIEND_POINTS = { talk: 10, love: 40, like: 20, neutral: 8, dislike: -10 };
 export const ASSIST_HEARTS = 4;
@@ -126,13 +128,13 @@ export const FRIENDS = {
     rewards: { 3: { item: 'paperback', n: 1 } },
     assist: { foeAtk: 2 },
   },
-  linh: { loves: ['magic', 'strawberry'], likes: ['gelatocone', 'jamdonut', 'flowers'], dislikes: ['koala'] },
-  shaz: {
+  mai: { loves: ['magic', 'strawberry'], likes: ['gelatocone', 'jamdonut', 'flowers'], dislikes: ['koala'] },
+  raelene: {
     loves: ['thermos', 'longblack', 'jamdonut'], likes: ['icedcoffee', 'flowers', 'gaytime'], dislikes: ['penfolds'],
     rewards: { 3: { item: 'longblack', n: 2 } },
     assist: { heal: 0.45 },
   },
-  inspector: { loves: ['mykicase', 'jamdonut'], likes: ['longblack', 'snag'], dislikes: ['hotchips'] },
+  officer: { loves: ['mykicase', 'jamdonut'], likes: ['longblack', 'snag'], dislikes: ['hotchips'] },
   remy: {
     loves: ['orangewine', 'borek'], likes: ['croissant', 'cannoli', 'olivejar'], dislikes: ['icedcoffee'],
     rewards: { 3: { item: 'magic', n: 2 } },
@@ -140,13 +142,13 @@ export const FRIENDS = {
   },
   spray: { loves: ['takis', 'moondog'], likes: ['hotchips', 'drpepper'], dislikes: ['umbrella'] },
   dev: { loves: ['flowers', 'gelatocone'], likes: ['magic', 'snowglobe'], dislikes: ['hotchips'] },
-  bev: { loves: ['mykicase', 'icedcoffee'], likes: ['jamdonut', 'longblack'], dislikes: ['umbrella'] },
+  marj: { loves: ['mykicase', 'icedcoffee'], likes: ['jamdonut', 'longblack'], dislikes: ['umbrella'] },
   dot: {
     loves: ['strawberry', 'thermos'], likes: ['jamdonut', 'longblack', 'vb'], dislikes: ['orangewine'],
     rewards: { 4: { item: 'jamdonut', n: 3 } },
     assist: { heal: 0.3, damage: 0.1 },
   },
-  stavros: {
+  yianni: {
     loves: ['olive', 'chianti', 'tomato'], likes: ['cheese', 'borek', 'basil'], dislikes: ['hahn'],
     rewards: { 3: { item: 'prosciutto', n: 2 } },
     assist: { damage: 0.18 },
@@ -179,8 +181,11 @@ export const FRIENDS = {
     loves: ['crown', 'pumpkin'], likes: ['snag', 'tennis', 'xxxx'], dislikes: ['chilli'],
     assist: { foeDef: 1, selfAtk: 1 },
   },
+  ...SH_FRIENDS,
 };
 
+
+Object.assign(FRIENDS, NORTH_FRIENDS);   // Coburg and Preston
 
 // Heart scenes and battle-help lines live in dialogue.js.
 for (const [id, f] of Object.entries(FRIENDS)) {

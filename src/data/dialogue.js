@@ -18,6 +18,10 @@
 //  Rules of thumb: Australian spelling, no em dashes, lines under about 140 characters
 //  (dialogue boxes are small on phones). Use \' for an apostrophe inside 'quotes'.
 //  Signs and the text when you inspect things are in the map files and flavour.js.
+import { NORTH_PEOPLE, NORTH_FOE_TEXT, NORTH_PLACES } from './north.js';
+//  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
+
+import { SH_PEOPLE, SH_FOE_TEXT, SH_PLACES } from './summerhill.js';
 
 export const PEOPLE = {
   trish: {
@@ -969,7 +973,7 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Margaret appears from nowhere. "SHHH." The foe is so startled it forgets what it was doing.',
   },
-  linh: {
+  mai: {
     role: 'Runs the souvenir kiosk in the Bourke St Mall',
     lines: [
       ['Koalas, snow globes, boomerangs, tram magnets! Everything says Melbourne on it. Some of it was made in Melbourne.'],
@@ -977,7 +981,7 @@ export const PEOPLE = {
       ['My mum ran this kiosk for twenty years. Now me. Same spot, same koalas. The koalas are very loyal.'],
     ],
   },
-  shaz: {
+  raelene: {
     role: 'Nurse. On the Parliament steps today',
     lines: [
       ['Safe staffing ratios save lives. One nurse, four patients. Not one nurse, twelve and a broken lift.'],
@@ -986,12 +990,12 @@ export const PEOPLE = {
       ['Every right at work was won by people standing on steps like these. The weekend did not come from nowhere.'],
     ],
     heartScenes: {
-      3: ['Shaz hands you a sticker: "WHEN WE FIGHT, WE WIN." "Put it on the pram. The twins can start early."'],
-      6: ['Shaz grins. "We won the ratios! In writing. Took three years, a thousand nurses and a lot of thermoses of tea. Never give up, eh."'],
+      3: ['Raelene hands you a sticker: "WHEN WE FIGHT, WE WIN." "Put it on the pram. The twins can start early."'],
+      6: ['Raelene grins. "We won the ratios! In writing. Took three years, a thousand nurses and a lot of thermoses of tea. Never give up, eh."'],
     },
-    helpsInBattle: 'Shaz checks your pet\'s pulse, gives a thumbs up and patches it up. "Twelve hour shift. This is nothing."',
+    helpsInBattle: 'Raelene checks your pet\'s pulse, gives a thumbs up and patches it up. "Twelve hour shift. This is nothing."',
   },
-  inspector: {
+  officer: {
     role: 'Authorised officer. Patrols the Bourke St Mall',
     lines: [
       ['Afternoon. Just checking everyone has touched on. You touched on, yeah? Course you did.'],
@@ -1048,7 +1052,7 @@ export const PEOPLE = {
       4: ['Dev, glowing: "Remember my date? We went to Hosier Lane, then dumplings, then talked till the last train. Second date Friday. Same clock."'],
     },
   },
-  bev: {
+  marj: {
     role: 'Station staff at Flinders Street',
     lines: [
       ['Next train to anywhere? Board on platform ten. Or it might be thirteen. Check the screen. Then check it again.'],
@@ -1069,7 +1073,7 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Dot leans out of the van and lobs a hot jam donut. Your pet catches it. The foe gets the jam.',
   },
-  stavros: {
+  yianni: {
     role: 'Runs a deli in the Queen Vic Market deli hall',
     lines: [
       ['Try the feta. Try the olives. Try the dolmades. Trying is free. Buying is how I put my kids through uni.'],
@@ -1078,9 +1082,9 @@ export const PEOPLE = {
     ],
     giftLine: 'Some cheese, for the pets. Not the good cheese. The good cheese is for people.',
     heartScenes: {
-      3: ['Stavros: "My father came from Kalamata with one suitcase and a jar of olives. The jar did not survive the trip. The business did."'],
+      3: ['Yianni: "My father came from Kalamata with one suitcase and a jar of olives. The jar did not survive the trip. The business did."'],
     },
-    helpsInBattle: 'Stavros throws an olive with deadly accuracy. Pit and all.',
+    helpsInBattle: 'Yianni throws an olive with deadly accuracy. Pit and all.',
   },
   carmel: {
     role: 'Sells fruit and veg at Queen Vic Market. Buys crops too',
@@ -1132,6 +1136,7 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Ed slides over a free sample from the counter jar. "Shh."',
   },
+  ...SH_PEOPLE,
 };
 
 export const PET_TEXT = {
@@ -1405,10 +1410,6 @@ export const FOE_TEXT = {
     leave: 'runs out of charge on the nature strip.',
   },
   // Carlton and the city
-  seagull: {
-    appear: 'A seagull lands right in front of you. It has seen your chips. It has seen everyone\'s chips.',
-    leave: 'flaps off to rob someone at Southbank.',
-  },
   pigeon: {
     appear: 'A city pigeon struts out of the grass. One foot. Total confidence.',
     leave: 'waddles off to sit on a statue.',
@@ -1443,6 +1444,7 @@ export const FOE_TEXT = {
   ice: {
     leave: 'wears off. He crashes hard, exhausted and shaking.',
   },
+  ...SH_FOE_TEXT,
 };
 
 export const PLACES = {
@@ -1471,7 +1473,7 @@ export const PLACES = {
   altona: 'Factories, trucks and Kororoit Creek. The long walk east begins.',
   footscray: 'Pho, the river and a lot of pigeons.',
   flemington: 'Racecourse Rd, the flats and the tram.',
-  coburg: 'Bell St, between Coburg and Preston. Six lanes and the old Pentridge wall.',
+  coburg: 'Bell St: six lanes, the old Pentridge wall and the Town Hall.',
   preston: 'Plenty Rd, Preston: a sage green pub, a convenience store and the 86 tram.',
   bunnings: 'Bunnings Warehouse. Aisles of everything, and a garden centre out the back.',
   cozzo: 'The Franco Cozzo showroom. Megalo couches as far as the eye can see.',
@@ -1489,4 +1491,10 @@ export const PLACES = {
   laneways: 'Painted walls, tiny cafes and a lot of people photographing both.',
   flinders: 'Meet you under the clocks.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
+  ...SH_PLACES,
 };
+
+// Coburg and Preston keep their words in north.js.
+Object.assign(PEOPLE, NORTH_PEOPLE);
+Object.assign(FOE_TEXT, NORTH_FOE_TEXT);
+Object.assign(PLACES, NORTH_PLACES);

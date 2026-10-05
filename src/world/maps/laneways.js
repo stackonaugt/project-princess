@@ -57,7 +57,7 @@ export function buildLaneways() {
   b.put('trattoria', 1, 25, { v: 'cannoli' });
   b.put('bshop', 5, 25, { v: 'oatmilk' });
   b.put('redshop', 9, 25, { v: 'red' });
-  b.put('coffeecart', 14, 25);
+  b.put('espressocart', 14, 25);
   b.put('shop', 17, 25, { v: 'signs' });
   b.put('trattoria', 21, 25, { v: 'pasta' });
   b.put('bshop', 25, 25, { v: 'yoga' });

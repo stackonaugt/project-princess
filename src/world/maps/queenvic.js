@@ -19,8 +19,8 @@ export function buildQueenVic() {
   for (const [sx, sy] of [[2, 3], [17, 3], [2, 11], [17, 11]]) {
     b.put('marketshed', sx, sy);
     for (let i = 0; i < 4; i++) {
-      b.put('stall', sx + 1 + i * 3, sy + 1, { v: STALLS[(i + sx + sy + 2) % STALLS.length] });
-      b.put('stall', sx + 1 + i * 3, sy + 3, { v: STALLS[(i + sx + sy) % STALLS.length] });
+      b.put('marketstall', sx + 1 + i * 3, sy + 1, { v: STALLS[(i + sx + sy + 2) % STALLS.length] });
+      b.put('marketstall', sx + 1 + i * 3, sy + 3, { v: STALLS[(i + sx + sy) % STALLS.length] });
     }
   }
   b.sign(15, 8, ['Queen Victoria Market, since 1878.', 'Get here early for the best fruit. Get here late for "two dollar a bag, two dollar!"']);
@@ -53,7 +53,7 @@ export function buildQueenVic() {
   b.sign(18, 25, ['Flagstaff Gardens.', 'Lunchtime lawn for half the office towers in the city. The possums run the night shift.']);
 
   b.npc('dot', 31, 5, { face: 'down' });
-  b.npc('stavros', 6, 6, { face: 'down' });
+  b.npc('yianni', 6, 6, { face: 'down' });
   b.npc('carmel', 20, 14, { face: 'down' });
 
   b.forage(46, 30, ['lemon', 'carrot']);

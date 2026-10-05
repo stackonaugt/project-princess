@@ -43,6 +43,16 @@ import { buildBourke } from '../world/maps/bourke.js';
 import { buildLaneways } from '../world/maps/laneways.js';
 import { buildFlinders } from '../world/maps/flinders.js';
 import { buildQueenVic } from '../world/maps/queenvic.js';
+import { buildCoburgSyd } from '../world/maps/coburgsyd.js';
+import { buildPideBakery } from '../world/maps/pidebakery.js';
+import { buildCoburgMall } from '../world/maps/coburgmall.js';
+import { buildCoburgLake } from '../world/maps/coburglake.js';
+import { buildPrestonHigh } from '../world/maps/prestonhigh.js';
+import { buildPrestonMkt } from '../world/maps/prestonmkt.js';
+import { buildMoreland } from '../world/maps/moreland.js';
+import { buildMurray } from '../world/maps/murray.js';
+import { buildSummerhill } from '../world/maps/summerhill.js';
+import { buildSummerhillMall } from '../world/maps/summerhillmall.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
@@ -65,13 +75,14 @@ export const SUBURBS = {
   altona: { name: 'Altona North', tagline: 'Sheds, trucks and the Westgate on the horizon.', between: true },
   footscray: { name: 'Footscray', tagline: 'Halfway to Brunswick. Pho, the river and a lot of pigeons.', between: true },
   flemington: { name: 'Flemington', tagline: 'Racecourse Rd. Nearly at Brunswick now.', between: true },
-  coburg: { name: 'Coburg/Preston', tagline: 'Bell St traffic and bluestone walls.', between: true },
-  preston: { name: 'Preston', tagline: 'Nearly at Reservoir. You can smell the lemon trees.', between: true },
+  // Coburg and Preston: full suburbs between Brunswick and Reservoir (content in data/north.js).
+  coburg: { name: 'Coburg', tagline: 'Pide ovens, Pentridge bluestone and a lake full of swans.', station: 'coburgmall' },
+  preston: { name: 'Preston', tagline: 'The market, the skyrail and the 86 tram up Plenty Rd.', station: 'prestonhigh' },
   // Off Brunswick to the south: Carlton (no station; walk from Brunswick or the city), then the CBD.
   carlton: { name: 'Carlton', tagline: 'Lygon St, gelato and the Exhibition Building.' },
   city: { name: 'Melbourne CBD', tagline: 'Trams, laneways and the clocks at Flinders St.', station: 'flinders', stationName: 'Flinders Street Station' },
 };
-export const SUBURB_ORDER = ['laverton', 'brunswick', 'reservoir', 'carlton'];
+export const SUBURB_ORDER = ['laverton', 'brunswick', 'coburg', 'preston', 'reservoir', 'carlton'];
 
 // home: true marks your place, where pets you've found hang out.
 export const ZONES = {
@@ -106,8 +117,18 @@ export const ZONES = {
   footscray: { name: 'Barkly St', suburb: 'footscray', build: buildFootscray, grass: CITY_GRASS, },
   flemington: { name: 'Racecourse Rd', suburb: 'flemington', build: buildFlemington, grass: CITY_GRASS, },
   coburg: { name: 'Bell St', suburb: 'coburg', build: buildCoburg, grass: CITY_GRASS, },
+  coburgsyd: { name: 'Sydney Rd', suburb: 'coburg', build: buildCoburgSyd, grass: CITY_GRASS, },
+  pidebakery: { name: 'Knead to Know', suburb: 'coburg', build: buildPideBakery, grass: LAWN, indoor: true },
+  coburgmall: { name: 'Coburg Station', suburb: 'coburg', build: buildCoburgMall, grass: CITY_GRASS, },
+  coburglake: { name: 'Coburg Lake', suburb: 'coburg', build: buildCoburgLake, grass: RES_GRASS, },
+  moreland: { name: 'Moreland Rd', suburb: 'coburg', build: buildMoreland, grass: CITY_GRASS, },
+  murray: { name: 'Murray Rd', suburb: 'preston', build: buildMurray, grass: CITY_GRASS, },
+  prestonmkt: { name: 'Preston Market', suburb: 'preston', build: buildPrestonMkt, grass: CITY_GRASS, },
+  prestonhigh: { name: 'Preston Station', suburb: 'preston', build: buildPrestonHigh, grass: CITY_GRASS, },
   preston: { name: 'Plenty Rd', suburb: 'preston', build: buildPreston, grass: CITY_GRASS, },
   wetlands: { name: 'Edgars Creek Wetlands', suburb: 'reservoir', build: buildWetlands, grass: RES_GRASS, },
+  summerhill: { name: 'Summerhill Shopping Centre', suburb: 'reservoir', build: buildSummerhill, grass: RES_GRASS, },
+  summerhillmall: { name: 'Summerhill Shopping Centre', suburb: 'reservoir', build: buildSummerhillMall, grass: LAWN, indoor: true },
   // Carlton and the city (south of Brunswick)
   lygon: { name: 'Lygon St', suburb: 'carlton', build: buildLygon, grass: MELB_GRASS },
   gelateria: { name: 'Gelateria', suburb: 'carlton', build: buildGelateria, grass: LAWN, indoor: true },
@@ -125,7 +146,7 @@ export const ZONES = {
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'preston', 'vapeshop', 'anaconda', 'loddon', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'queenvic', 'bourke', 'laneways', 'flinders'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'queenvic', 'bourke', 'laneways', 'flinders'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;

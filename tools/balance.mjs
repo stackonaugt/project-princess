@@ -110,8 +110,16 @@ trial('Princess L7 vs Brunswick wild', () => [mine('princess', 7)], wildAvg('bru
 trial('Princess L7 vs Rose (Salami)', () => [mine('princess', 7)], trainer('rose'));
 trial('Princess L8 + Salami L7 vs Slinks (Spooky)', () => [mine('princess', 8), mine('salami', 7)], trainer('slinks'));
 trial('Princess L9 + Salami L8 + Spooky L8 vs Hipster', () => [mine('princess', 9), mine('salami', 8), mine('spooky', 8)], trainer('hipster'));
-console.log('--- The walk to Reservoir');
-trial('Team L9 vs Coburg/Preston wild', () => [mine('princess', 9), mine('salami', 9), mine('spooky', 9)], wildAvg('preston'));
+console.log('--- Coburg and Preston');
+trial('Team L9 vs Coburg wild', () => [mine('princess', 9), mine('salami', 9), mine('spooky', 9)], wildAvg('coburg'));
+trial('Team L9 vs Preston wild', () => [mine('princess', 9), mine('salami', 9), mine('spooky', 9)], wildAvg('preston'));
+const team10 = () => [mine('princess', 10), mine('salami', 10), mine('spooky', 10)];
+trial('Team L10 vs Merv (Pentridge)', team10, trainer('merv'));
+trial('Team L10 vs Tash (bike path)', team10, trainer('tash'));
+trial('Team L10 vs Kostas (Coburg Lake)', team10, trainer('kostas'));
+trial('Team L11 vs Bev (Preston Market)', () => [mine('princess', 11), mine('salami', 11), mine('spooky', 11)], trainer('bev'));
+trial('Team L12 vs Myki Inspector', () => [mine('princess', 12), mine('salami', 12), mine('spooky', 12)], trainer('inspector'));
+trial('Team L12 vs Alison', () => [mine('princess', 12), mine('salami', 12), mine('spooky', 12)], trainer('alison'));
 console.log('--- Reservoir');
 trial('Team L10 vs Reservoir wild', () => [mine('princess', 10), mine('salami', 10), mine('spooky', 10)], wildAvg('reservoir'));
 trial('Team L11 vs Nathan (Rusty)', () => [mine('princess', 11), mine('salami', 11), mine('spooky', 11)], trainer('nathan'));

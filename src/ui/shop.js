@@ -39,7 +39,7 @@ export function openShop(panel, close, shopId = 'petshop') {
   const baby = !!HEROES[state.data.hero]?.look.baby, refused = t => baby && (shop.adultTabs || []).includes(t);
   const rowsFor = tab => {
     const itemRow = id => { const it = ITEMS[id]; return { name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }; };
-    if (tab === 'treats') return (shop.treats || Object.keys(ITEMS).filter(id => ITEMS[id].price && !ITEMS[id].crop && !ITEMS[id].local && isTreat(id))).map(itemRow);
+    if (tab === 'treats') return (shop.treats || Object.keys(ITEMS).filter(id => !ITEMS[id].local)).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
     if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
     if (tab === 'drinks') return Object.keys(ITEMS).filter(id => ITEMS[id].drink).map(itemRow);
     if (tab === 'lollies') return Object.keys(ITEMS).filter(id => ITEMS[id].lolly).map(itemRow);

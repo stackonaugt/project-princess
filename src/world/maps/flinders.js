@@ -53,7 +53,7 @@ export function buildFlinders() {
   b.ducks(10, 23, 6, 1.5, 2); b.ducks(40, 23, 6, 1.5, 2);
 
   b.npc('dev', 12, 10, { face: 'down' });
-  b.npc('bev', 6, 11, { face: 'right' });
+  b.npc('marj', 6, 11, { face: 'right' });
 
   b.forage(45, 29, ['sardine', 'croissant']);
   b.forage(26, 32, ['feather', 'tennis']);

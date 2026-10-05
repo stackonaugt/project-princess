@@ -8,6 +8,8 @@
 import { shade } from './painter.js';
 import { drawPerson, drawBaby } from './people.js';
 import { PET_FRAMES, BASE_PALETTE } from '../sprites.js';
+import { NORTH_FOE_ART } from './north.js';
+import { SH_FOE_ART } from './summerhill.js';
 
 const pet = (frame, pal) => p => p.sprite(PET_FRAMES[frame][0], { ...BASE_PALETTE, ...pal }, 0, 0);
 
@@ -105,14 +107,6 @@ export const FOE_ART = {
   // ---- Brunswick
   alleycat: [16, 16, pet('tabby', { a: '#4a4a52', s: '#2a2a30', c: '#6a6a72', w: '#d8d8d0', e: '#e8d040', p: '#c88a8a' })],
   // ---- Carlton and the city
-  seagull: [16, 16, p => {
-    const w = '#f4f4f0', g = '#a8b0b8', d = '#6a727a';
-    p.r('#e8823a', 6, 13, 1, 3); p.r('#e8823a', 9, 13, 1, 3); p.r('#e8823a', 5, 15, 2, 1); p.r('#e8823a', 9, 15, 2, 1);
-    p.r(w, 3, 7, 9, 6); p.r(w, 2, 8, 1, 3); p.r(w, 10, 4, 4, 5); p.r(w, 4, 6, 6, 1);
-    p.r(g, 3, 7, 7, 3); p.r(d, 1, 7, 3, 2); p.r(d, 0, 8, 1, 1); p.r('#dcdcd8', 4, 12, 7, 1);
-    p.r('#e8c040', 14, 6, 2, 1); p.r('#e8c040', 14, 7, 1, 1); p.r('#c8302a', 15, 7, 1, 1);
-    p.r('#1a1010', 12, 5, 1, 1);
-  }],
   pigeon: [16, 16, p => {
     const a = '#8a8e9a', b = '#6a6e7a', l = '#a8acb8';
     p.r('#d88a8a', 6, 13, 1, 2); p.r('#d88a8a', 9, 13, 1, 2); p.r('#d88a8a', 5, 15, 3, 1); p.r('#d88a8a', 9, 15, 3, 1);
@@ -260,4 +254,6 @@ export const FOE_ART = {
     p.r('#9ad0f0', 2, 4, 1, 2); p.r('#9ad0f0', 13, 3, 1, 2); p.r('#c8c8c0', 7, 3, 1, 2);  // steam
     face(p, 5, 11, { gap: 4 });
   }],
+  ...SH_FOE_ART,
 };
+Object.assign(FOE_ART, NORTH_FOE_ART);   // Coburg and Preston foes

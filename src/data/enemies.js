@@ -14,6 +14,8 @@
 //  TRAINERS  npc id -> { team: [[enemy id or 'pet:<id>', level], ...], prize?, lines... }
 
 import { PEOPLE, FOE_TEXT } from './dialogue.js';
+import { NORTH_ENEMIES, NORTH_TRAINERS } from './north.js';
+import { SH_ENEMIES, SH_ENCOUNTERS, SH_TRAINERS } from './summerhill.js';
 
 export const ENEMIES = {
   bag: {
@@ -119,10 +121,6 @@ export const ENEMIES = {
     moves: ['hiccup', 'slosh', 'silverpillow', 'beergoggles'],
   },
   // ---- Carlton and the city
-  seagull: {
-    name: 'Hot Chip Seagull', type: ['water', 'street'], stats: { hp: 48, attack: 66, defence: 42, speed: 88, special: 50 },
-    moves: ['chipsteal', 'mine', 'swoop'], drop: ['hotchips', 0.4],
-  },
   pigeon: {
     name: 'City Pigeon', type: 'street', stats: { hp: 50, attack: 55, defence: 50, speed: 70, special: 55 },
     moves: ['jab', 'coo', 'flutter'], drop: ['croissant', 0.25],
@@ -139,7 +137,7 @@ export const ENEMIES = {
   finenotice: {
     faces: 'front', float: true,
     name: 'Fine Notice', type: ['old', 'plastic'], stats: { hp: 52, attack: 50, defence: 50, speed: 70, special: 70 },
-    moves: ['fine', 'papercut', 'triplicate'],
+    moves: ['fine', 'redtape', 'triplicate'],
   },
   meatball: {
     faces: 'front',
@@ -207,6 +205,7 @@ export const ENEMIES = {
       'He is going to hospital. He is alive.',
     ],
   },
+  ...SH_ENEMIES,
 };
 
 // Who you can meet in each suburb's tall grass. Weights are relative.
@@ -243,6 +242,7 @@ export const ENCOUNTERS = {
     { id: 'bag', lv: [7, 9], weight: 1 },
     { id: 'sprinkler', lv: [7, 10], weight: 2, day: true, zones: ['loddon', 'glasgow', 'lakepark', 'wetlands'] },
     { id: 'possum', lv: [8, 11], weight: 2, night: 4 },
+    ...SH_ENCOUNTERS,
   ],
   // Carlton and the city, off Brunswick to the south
   carlton: [
@@ -271,8 +271,19 @@ export const ENCOUNTERS = {
   altona: [{ id: 'sprinkler', lv: [3, 5], weight: 1, day: true }, { id: 'bag', lv: [3, 5], weight: 3 }, { id: 'rat', lv: [3, 6], weight: 2 }, { id: 'dog', lv: [4, 6], weight: 2 }, { id: 'commuter', lv: [4, 6], weight: 1, day: true }],
   footscray: [{ id: 'goonbag', lv: [4, 6], weight: 1, night: 2 }, { id: 'rat', lv: [4, 6], weight: 2 }, { id: 'ibis', lv: [4, 7], weight: 3 }, { id: 'streetcat', lv: [4, 6], weight: 2 }, { id: 'boy', lv: [4, 6], weight: 1, day: true }],
   flemington: [{ id: 'ibis', lv: [5, 7], weight: 2 }, { id: 'scooter', lv: [5, 7], weight: 2 }, { id: 'magpie', lv: [5, 7], weight: 2, day: true }, { id: 'bag', lv: [5, 7], weight: 1 }],
-  coburg: [{ id: 'flatwhitefoe', lv: [6, 9], weight: 1, day: true }, { id: 'scooter', lv: [6, 9], weight: 2 }, { id: 'nonna', lv: [7, 9], weight: 2, day: true }, { id: 'alleycat', lv: [6, 9], weight: 2 }, { id: 'rat', lv: [6, 9], weight: 1 }],
-  preston: [{ id: 'possum', lv: [7, 10], weight: 2, night: 3 }, { id: 'nonna', lv: [7, 10], weight: 2, day: true }, { id: 'magpie', lv: [7, 10], weight: 2, day: true }, { id: 'dog', lv: [7, 10], weight: 2 }, { id: 'cavoodle', lv: [7, 9], weight: 1 }],
+  // Coburg and Preston (foes from data/north.js)
+  coburg: [
+    { id: 'flatwhitefoe', lv: [6, 9], weight: 1, day: true }, { id: 'scooter', lv: [6, 9], weight: 2 }, { id: 'nonna', lv: [7, 9], weight: 2, day: true },
+    { id: 'alleycat', lv: [6, 9], weight: 2 }, { id: 'rat', lv: [6, 9], weight: 1 },
+    { id: 'duck', lv: [7, 9], weight: 5, zones: ['coburglake'] }, { id: 'swan', lv: [8, 10], weight: 3, zones: ['coburglake'] },
+    { id: 'myki', lv: [7, 9], weight: 2, zones: ['coburgmall'] }, { id: 'possum', lv: [7, 10], weight: 2, night: 3 },
+  ],
+  preston: [
+    { id: 'possum', lv: [7, 10], weight: 2, night: 3 }, { id: 'nonna', lv: [7, 10], weight: 2, day: true }, { id: 'magpie', lv: [7, 10], weight: 2, day: true },
+    { id: 'dog', lv: [7, 10], weight: 2 }, { id: 'cavoodle', lv: [7, 9], weight: 1 },
+    { id: 'render', lv: [8, 10], weight: 5, zones: ['prestonmkt'] }, { id: 'trolley', lv: [8, 10], weight: 3, zones: ['prestonmkt', 'prestonhigh'] },
+    { id: 'myki', lv: [8, 10], weight: 2, zones: ['prestonhigh'] },
+  ],
 };
 
 // Trainers: talk to them to battle. `prize` is the pet you win (pets with
@@ -329,7 +340,7 @@ export const TRAINERS = {
     name: 'Spray', team: [['pigeon', 12], ['spraycan', 13]],
     reward: { hotchips: 1 }, money: 45,
   },
-  inspector: {
+  officer: {
     name: 'Myki Inspector', team: [['ticketgate', 13], ['finenotice', 14]],
     reward: { jamdonut: 2 }, money: 70,
   },
@@ -340,7 +351,12 @@ export const TRAINERS = {
     win: ['Fentanyl is so strong that a speck can stop someone breathing.', 'If you or someone you love uses drugs, DirectLine is free and confidential, any time: 1800 888 236.'],
     lose: ['He wanders off down the bike path, still talking to himself. You hope he is okay.'],
   },
+  ...SH_TRAINERS,
 };
+
+// Coburg and Preston
+Object.assign(ENEMIES, NORTH_ENEMIES);
+Object.assign(TRAINERS, NORTH_TRAINERS);
 
 // Who owns which pet you have to win (Princess has no trainer: she is free).
 export const PRIZE_TRAINER = Object.fromEntries(Object.entries(TRAINERS).filter(([, t]) => t.prize).map(([id, t]) => [t.prize, id]));
