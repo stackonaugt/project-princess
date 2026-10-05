@@ -23,12 +23,12 @@ export function openGarden(panel, close) {
   panel.replaceChildren(
     h('div', { class: 'm-head' }, h('h2', {}, 'Garden'), h('button', { class: 'wood-btn small', onclick: close }, 'Back')),
     h('div', { class: 'm-scroll' },
-      groups.length ? null : h('div', { class: 'note' }, h('p', {}, 'No garden yet. Wen at the Edgars Creek community garden in Reservoir is handing out plots. Olly at Bunnings in Altona North sells a backyard veggie patch.')),
+      groups.length ? null : h('div', { class: 'note' }, h('p', {}, 'No garden yet. Chris at the Edgars Creek community garden in Reservoir is handing out plots. Olly at Bunnings in Altona North sells a backyard veggie patch.')),
       ...groups.map(([title, plots]) => h('div', { class: 'note' }, h('h4', {}, title), h('ul', { class: 'plots' }, ...plots.map(plotRow)))),
       h('div', { class: 'note' }, h('h4', {}, 'Seeds'), seeds.length
         ? h('div', { class: 'gear-row' }, ...seeds.map(([c, n]) => h('span', { class: 'pref' }, h('img', { src: itemIcon(`seed-${c}`, 24), alt: '' }), `${CROPS[c].name} ×${n}`)))
-        : h('p', { class: 'small' }, 'No seeds. Gaz (Laverton Station) and Dimitri (Reservoir Station) sell them.')),
+        : h('p', { class: 'small' }, 'No seeds. Gaz (Laverton Station) and James (Reservoir Station) sell them.')),
       h('div', { class: 'note' }, h('h4', {}, 'Tips'), h('ul', { class: 'help' },
         h('li', {}, 'Water each plot once a day. Rain counts.'),
-        h('li', {}, 'Pets help: Poppy digs up extra, Spooky makes things grow overnight if you water after dark, Stanley sometimes finds a bonus one, and Princess gets you a better price at Dimitri\'s.')))));
+        h('li', {}, 'Pets help: Poppy digs up extra, Spooky makes things grow overnight if you water after dark, Stanley sometimes finds a bonus one, and Princess gets you a better price at James\'s.')))));
 }

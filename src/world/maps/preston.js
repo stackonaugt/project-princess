@@ -16,7 +16,7 @@ export function buildPreston() {
   row.forEach(([k, v], i) => b.put(k, 1 + i * 4, 6, { v }));
   // Anaconda: camping and fishing gear. Rusty out the front runs the shop.
   b.put('anaconda', 25, 6);
-  b.npc('rusty', 31, 9, { face: 'down' });
+  b.npc('bazza', 31, 9, { face: 'down' });
   b.put('weatherboard', 37, 6, { v: 'blue' }); b.put('weatherboard', 42, 6, { v: 'cream' });
   b.put('tramstop', 20, 9, { v: '19' });
   [[18, 9], [27, 9]].forEach(([x, y]) => b.put('table', x, y));

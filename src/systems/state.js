@@ -21,6 +21,8 @@ const VERSION = 9;
 export const MAX_TEAM = 3;
 export const SLOT_COUNT = 3;
 const slotKey = n => `${SAVE_KEY}-slot${n}`;
+// Old npc ids -> new ones (the owner renamed some people).
+const RENAMED = { jules: 'pearman', busker: 'jordan', priya: 'abby', dimitri: 'james', wen: 'chris', kez: 'nathan' };
 
 function fresh() {
   return {
@@ -38,7 +40,7 @@ function fresh() {
     seeds: {},         // crop id -> packets of seeds
     farm: {},          // plot id -> { crop, growth, watered (day), boost } (see data/crops.js)
     upgrades: {},      // upgrade id -> true (see data/upgrades.js)
-    flags: {},         // one-off story flags, e.g. garden (Wen gave you plots)
+    flags: {},         // one-off story flags, e.g. garden (Chris gave you plots)
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
@@ -76,6 +78,8 @@ function sanitise(raw) {
   if (raw.gear && typeof raw.gear === 'object') for (const [k, n] of Object.entries(raw.gear)) if (GEAR[k] && n > 0) d.gear[k] = n | 0;
   for (const r of Object.values(d.pets)) if (r.gear && !GEAR[r.gear]) r.gear = null;
   if (raw.friends && typeof raw.friends === 'object') d.friends = raw.friends;
+  // People renamed by the owner keep their friendships, gifts and battle wins.
+  for (const obj of [d.friends, d.npcDay, d.beaten]) for (const [from, to] of Object.entries(RENAMED)) if (obj[from] && !obj[to]) { obj[to] = obj[from]; delete obj[from]; }
   if (raw.seeds && typeof raw.seeds === 'object') for (const [k, n] of Object.entries(raw.seeds)) if (CROPS[k] && n > 0) d.seeds[k] = n | 0;
   if (raw.farm && typeof raw.farm === 'object') for (const [k, f] of Object.entries(raw.farm)) if (f && CROPS[f.crop]) d.farm[k] = f;
   if (raw.upgrades && typeof raw.upgrades === 'object') for (const k of Object.keys(raw.upgrades)) if (UPGRADES[k]) d.upgrades[k] = true;

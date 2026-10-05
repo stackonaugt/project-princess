@@ -1,4 +1,4 @@
-// The fifteen pet types and how they match up in battle.
+// The sixteen pet types and how they match up in battle.
 //
 //   strong  this type's attacks do DOUBLE damage to these types
 //   resist  this type's attacks do HALF damage to these types
@@ -18,10 +18,11 @@ export const TYPES = {
   old:     { name: 'Old',     colour: '#8a7a6a', blurb: 'Has seen it all. Was not impressed.',         strong: ['street', 'plastic'],               resist: ['rock', 'steel'] },
   plastic: { name: 'Plastic', colour: '#4ab8c8', blurb: 'Lightweight, flexible, will outlive us all.', strong: ['smelly', 'steel', 'water'],        resist: ['fire', 'plastic'] },
   steel:   { name: 'Steel',   colour: '#7a8698', blurb: 'Cold, hard and hard to bend.',                strong: ['fire', 'leather'],                 resist: ['steel', 'rock'] },
-  leather: { name: 'Leather', colour: '#8a4a2a', blurb: 'Tough, worn in, smells faintly of shoes.',    strong: ['rock', 'steel'],                   resist: ['fire', 'ghost'] },
+  leather: { name: 'Leather', colour: '#8a4a2a', blurb: 'Tough, worn in, smells faintly of shoes.',    strong: ['rock', 'steel', 'speed'],          resist: ['fire', 'ghost'] },
   water:   { name: 'Water',   colour: '#3a8ad8', blurb: 'Puddles, sprinklers and the Merri Creek.',    strong: ['fire', 'rock', 'caffeine'],        resist: ['water', 'park', 'plastic'] },
   park:    { name: 'Park',    colour: '#5aa83a', blurb: 'Gum nuts, magpies and wet grass.',            strong: ['water', 'rock', 'booze'],          resist: ['fire', 'plastic', 'park', 'steel'] },
   caffeine:{ name: 'Caffeine',colour: '#8a5a32', blurb: 'Fast, jittery, and talks too much.',          strong: ['old', 'psychic', 'booze'],         resist: ['caffeine', 'steel'] },
+  speed:   { name: 'Speed',   colour: '#e8b030', blurb: 'Gone before you finished the sentence.',     strong: ['old', 'rock', 'plastic'],          resist: ['speed', 'caffeine'] },
   booze:   { name: 'Booze',   colour: '#c89a2a', blurb: 'Loud, brave and wobbly. Sorry tomorrow.',     strong: ['street', 'psychic', 'fairy'],      resist: ['old', 'booze', 'rock'] },
 };
 

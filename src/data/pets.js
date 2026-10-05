@@ -71,6 +71,15 @@ export const PETS = [
     },
   },
   {
+    id: 'rusty', name: 'Rusty', species: 'Whippet', type: 'speed', sprite: 'whippet',
+    pal: { a: '#c07a3a', b: '#9a5a26', k: '#7a4a22', w: '#f0e8dc', e: '#1a1010', n: '#1a1010' },
+    owner: 'Nathan', region: 'reservoir', zone: 'track', home: [30, 22], range: 4,
+    homeSpot: { zone: 'home', x: 13, y: 15 },
+    behaviour: 'zoomies', sleeps: [20 * 60, 26 * 60],
+    loves: ['chicken', 'redfin', 'cheese'], likes: ['snag', 'sardine', 'tennis', 'carrot'], dislikes: ['lemon', 'chilli'],
+    stats: { hp: 66, attack: 78, defence: 50, speed: 115, special: 48 },
+  },
+  {
     id: 'stanley', name: 'Stanley', species: 'Mini schnauzer', type: 'psychic', sprite: 'schnauzer',
     pal: { a: '#55585f', l: '#9a9ea6', w: '#e8e6e0', d: '#3a3c42', e: '#2a1a10', n: '#1a1a1a' },
     owner: 'Tim and Nicholas', region: 'reservoir', zone: 'glasgow', home: [25, 8], range: 2.5,

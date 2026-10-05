@@ -231,6 +231,9 @@ export const TRAINERS = {
     name: 'Sinead', prize: 'poppy', team: [['pet:poppy', 12]],
     
   },
+  nathan: {
+    name: 'Nathan', prize: 'rusty', team: [['pet:rusty', 16]],
+  },
   tim: {
     name: 'Tim', prize: 'stanley', team: [['magpie', 12], ['pet:stanley', 14]],
     

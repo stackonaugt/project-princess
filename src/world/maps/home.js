@@ -109,6 +109,7 @@ export function buildHome() {
   b.put('petbed', 19, 15, { v: 'pink' });
   b.put('petbed', 12, 16, { v: 'grey' });
   b.put('petbed', 4, 6, { v: 'purple' });
+  b.put('petbed', 13, 15, { v: 'green' });   // Rusty's, by the heater
 
   // Paddy: heading out the door on weekday mornings, on the couch in the evenings (routines.js)
   b.npc('paddy', 15, 7, { face: 'down', at: 'leaving', leave: true, speed: 40, path: [[15, 9], [16, 10], [16, 16], [16, 17]] });

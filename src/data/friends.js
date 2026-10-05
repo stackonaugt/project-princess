@@ -90,19 +90,19 @@ export const FRIENDS = {
   rayna: { loves: ['gaytime', 'strawberry'], likes: ['croissant', 'flowers'], dislikes: ['sardine'], assist: { selfAtk: 1, foeAtk: 1 } },
   deanna: { loves: ['seedling', 'olive'], likes: ['tomato', 'basil', 'flowers'], dislikes: ['crown'], assist: { heal: 0.2, selfDef: 1 } },
   wren: { loves: ['monkeygrip', 'intermezzo', 'icedcoffee'], likes: ['croissant', 'flowers', 'paperback'], dislikes: ['vb'] },
-  rusty: { loves: ['redfin', 'eel', 'thermos'], likes: ['snag', 'vb', 'yabby'], dislikes: ['orangewine'] },
+  bazza: { loves: ['redfin', 'eel', 'thermos'], likes: ['snag', 'vb', 'yabby'], dislikes: ['orangewine'] },
   sal: { loves: ['chianti', 'croissant'], likes: ['coopers', 'cheese', 'flowers'], dislikes: ['goon'] },
   macca: {
     loves: ['coburglager', 'mountaingoat'], likes: ['snag', 'croissant', 'potato'], dislikes: ['goon'],
     rewards: { 5: { item: 'coburglager', n: 1 } },
     assist: { foeDef: 1, damage: 0.12 },
   },
-  wen: {
+  chris: {
     loves: ['seedling', 'gloves', 'carrot'], likes: ['basil', 'zucchini', 'potato', 'fertiliser'], dislikes: ['croissant'],
     rewards: { 2: { item: 'carrot', n: 3 } },
     assist: { damage: 0.15, heal: 0.15 },
   },
-  dimitri: {
+  james: {
     loves: ['lemon', 'melbbitter'], likes: ['potato', 'chilli', 'tomato'], dislikes: ['basil'],
     assist: { heal: 0.3 },
   },

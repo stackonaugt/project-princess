@@ -68,7 +68,7 @@ export function openCheats(panel, close) {
       h('div', { class: 'note' }, h('h4', {}, 'Garden and house'),
         h('div', { class: 'row' },
           btn('Grow every crop', () => { Object.values(d.farm).forEach(f => { f.growth = CROPS[f.crop].days; }); done('Everything is ready to pick.'); }),
-          btn('Open the community garden', () => { d.flags.garden = true; done('Wen has given you the plots.'); }),
+          btn('Open the community garden', () => { d.flags.garden = true; done('Chris has given you the plots.'); }),
           btn('Every upgrade', () => { Object.keys(UPGRADES).forEach(u => { d.upgrades[u] = true; }); invalidateMap('home'); invalidateMap('yard'); done('All upgrades and tools bought.'); }))),
       h('div', { class: 'note' }, h('h4', {}, 'Council'),
         h('div', { class: 'row' },

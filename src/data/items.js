@@ -7,7 +7,7 @@
 //   gift: true    a present for friends (books, plants...). Not a pet treat.
 //   farm: true    used on garden beds (fertiliser) or for fishing (bait). Not a pet treat.
 //   book: true    a novel from Brunswick Bound (also gift: true). art: { cover, band }
-//   fish: true    caught fishing (a treat pets eat). sell: what Dimitri pays. junk: true for old boots
+//   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
   sardine:   { name: 'Sardine', price: 6,            desc: 'One whole sardine. Oily, shiny, beloved.' },
@@ -19,7 +19,7 @@ export const ITEMS = {
   tennis:    { name: 'Tennis ball', price: 4,        desc: 'Slightly damp. Nobody knows why.' },
   ribbon:    { name: 'Pink ribbon', price: 8,        desc: 'Perfect for a pom-pom.' },
   feather:   { name: 'Magpie feather', price: 6,     desc: 'Dropped mid-swoop. A trophy of survival.' },
-  // Crops you grow (crop: true). Sold at Dimitri's; see data/crops.js. Carrot above is also a crop.
+  // Crops you grow (crop: true). Sold at James's; see data/crops.js. Carrot above is also a crop.
   basil:      { name: 'Basil', crop: true,      desc: 'A fragrant bunch. Smells like summer and Nonna.' },
   zucchini:   { name: 'Zucchini', crop: true,   desc: 'One of many. So, so many.' },
   potato:     { name: 'Potato', crop: true,     desc: 'Dirt still on it. Poppy dug it up with enthusiasm.' },
@@ -28,8 +28,8 @@ export const ITEMS = {
   chilli:     { name: 'Chilli', crop: true,     desc: 'Hot. Fire-type pets go wild for them.' },
   pumpkin:    { name: 'Pumpkin', crop: true,    desc: 'Enormous. A whole battle\'s worth of energy.' },
 
-  // Presents for friends (gift: true). Sold at Dimitri's (Reservoir) and Bunnings (Altona North).
-  paperback:  { name: 'Secondhand paperback', price: 5, gift: true, desc: 'From Dimitri\'s book swap shelf. Someone has underlined all the good bits.' },
+  // Presents for friends (gift: true). Sold at James's (Reservoir) and Bunnings (Altona North).
+  paperback:  { name: 'Secondhand paperback', price: 5, gift: true, desc: 'From James\'s book swap shelf. Someone has underlined all the good bits.' },
   byzbook:    { name: 'Byzantium: A History', price: 14, gift: true, desc: 'Nine hundred pages of emperors, mosaics and very complicated hats.' },
   modeltrain: { name: 'Model Comeng train', price: 16, gift: true, desc: 'A tiny silver Comeng. The doors open. Tim would lose his mind.' },
   flowers:    { name: 'Bunch of flowers', price: 6, gift: true, desc: 'Wrapped in newspaper. A bit of everything.' },
@@ -57,7 +57,7 @@ export const ITEMS = {
   fourthwing:     { name: 'Fourth Wing', price: 28, gift: true, book: true, art: { cover: '#1e1e24', band: '#e8a030' }, desc: 'Rebecca Yarros. Dragons. Romance. More dragons.' },
 
   // Fishing (Anaconda, Preston): bait, and what you catch. Fish are treats; sell
-  // them at Dimitri's (sell: price paid).
+  // them at James's (sell: price paid).
   bait:       { name: 'Bait', price: 2, farm: true, desc: 'A tub of wriggly worms. Better bites while you have some.' },
   redfin:     { name: 'Redfin', sell: 14, fish: true, desc: 'Stripy, spiky and good eating. Cats go feral for it.' },
   carp:       { name: 'Carp', sell: 6, fish: true, desc: 'A pest, honestly. Still counts as a fish.' },

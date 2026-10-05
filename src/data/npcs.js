@@ -25,30 +25,30 @@ export const NPCS = {
   commuter: {
     name: 'Commuter', look: { hair: '#5a3a1a', hairStyle: 'short', skin: '#f2c79a', shirt: '#5a6a8a', pants: '#2a2a2a', collar: true, glasses: true },
   },
-  jules: {
-    name: 'Jules', look: { hair: '#e8823a', hairStyle: 'bob', skin: '#f2c79a', shirt: '#2f5b4a', pants: '#3a3a48', apron: '#6b4226' },
+  pearman: {
+    name: 'Pearman', look: { hair: '#e8c8a0', hairStyle: 'bald', skin: '#f2c8a8', shirt: '#18181c', pants: '#1e1e24', shoes: '#1a1a1a', apron: '#6b4226', stubble: true },
     gift: 'croissant',
   },
-  busker: {
-    name: 'Busker', look: { hair: '#3a2412', hairStyle: 'curly', skin: '#8a5a3a', shirt: '#a24fc9', pants: '#3a6aa8', beard: true },
+  jordan: {
+    name: 'Jordan', look: { hair: '#3a2416', hairStyle: 'short', skin: '#f0c8a8', shirt: '#a8d0a0', collar: true, pants: '#1a1a1e', shoes: '#1a1a1a', lips: '#2a2a2a', holding: 'bass' },
   },
-  priya: {
-    name: 'Priya', look: { hair: '#1e1e24', hairStyle: 'long', skin: '#a8724a', shirt: '#3fa38f', pants: '#5a5a66' },
+  abby: {
+    name: 'Abby', look: { hair: '#f0d890', hairStyle: 'long', skin: '#f6d0b4', shirt: '#3fa38f', pants: '#5a5a66' },
   },
   pina: {
     name: 'Nonna Pina', look: { hair: '#e8e4d8', hairStyle: 'bun', skin: '#e8b48a', shirt: '#2a2a3a', pants: '#2a2a3a', glasses: true },
     gift: 'lemon',
   },
-  dimitri: {
-    name: 'Dimitri', shop: 'dimitri', look: { hair: '#3a3a3a', hairStyle: 'short', skin: '#d8a070', shirt: '#f4efe0', pants: '#3a3a48', moustache: true, apron: '#2f6aa3' },
+  james: {
+    name: 'James Blackman', shop: 'milkbar', look: { hair: '#141012', hairStyle: 'long', skin: '#f0c8a8', shirt: '#2a2a30', pants: '#3a3a48', apron: '#2f6aa3' },
     gift: 'cheese',
   },
-  wen: {
-    name: 'Wen', look: { hair: '#1e1e24', hairStyle: 'cap', cap: '#6aa83a', skin: '#f0c8a0', shirt: '#8aa858', pants: '#6b4226' },
+  chris: {
+    name: 'Chris Bates', look: { hair: '#3a2414', hairStyle: 'wavyshort', skin: '#f2c8a8', shirt: '#2a3a5a', shirtPattern: 'plaid', shirtAccent: ['#a8683a', '#e8a040'], pants: '#3a3a44', shoes: '#4a3a2a', beard: true },
     gift: 'carrot',
   },
-  kez: {
-    name: 'Kez', look: { hair: '#f5d63a', hairStyle: 'bun', skin: '#f2c79a', shirt: '#e77fb8', pants: '#1e1e24', shoes: '#f4f4f0' },
+  nathan: {
+    name: 'Nathan', look: { hair: '#4a3020', hairStyle: 'short', skin: '#f2c8a8', shirt: '#18181c', pants: '#4a4a52', shoes: '#f4f4f0' },
   },
   rose: {
     name: 'Rose', look: { hair: '#b08a58', hairStyle: 'wavy', skin: '#f2c8a0', shirt: '#1e1e24', pants: '#d8a860', pantsPattern: 'leopard', shoes: '#1e1e24', sunglasses: '#9a5ad0', frame: '#d8dce4', bumbag: '#18181c', lips: '#c0505a', holding: 'book' },
@@ -118,8 +118,8 @@ export const NPCS = {
   wren: {
     name: 'Wren', shop: 'bookshop', look: { hair: '#c8643a', hairStyle: 'bun', skin: '#f2c8a8', shirt: '#2a3a58', shirtPattern: 'stripes', shirtAccent: '#f4efe0', pants: '#3a3a44', shoes: '#c8a070', glasses: '#2a2a2a', holding: 'book' },
   },
-  rusty: {
-    name: 'Rusty', shop: 'anaconda', look: { hair: '#8a4a22', hairStyle: 'cap', cap: '#e8643a', skin: '#e8b48a', shirt: '#e8643a', pants: '#5a5a48', shoes: '#4a3a2a', beard: true },
+  bazza: {
+    name: 'Bazza', shop: 'anaconda', look: { hair: '#8a4a22', hairStyle: 'cap', cap: '#e8643a', skin: '#e8b48a', shirt: '#e8643a', pants: '#5a5a48', shoes: '#4a3a2a', beard: true },
   },
   sal: {
     name: 'Sal', shop: 'cozzo', look: { hair: '#1e1a18', hairStyle: 'short', skin: '#e0a882', shirt: '#f4f4f0', collar: true, blazer: '#2a2a34', pants: '#2a2a34', shoes: '#1a1a1a', moustache: true },

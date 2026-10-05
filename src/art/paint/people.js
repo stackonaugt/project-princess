@@ -20,7 +20,7 @@
 //   bumbag     a bum bag on the waist (colour)
 //   gloves     work gloves (colour)
 //   holding    something in one hand: 'monkey' | 'teddy' (toys), 'pint' (a Guinness),
-//              'wine' (a glass of red), 'book', 'vape'
+//              'wine' (a glass of red), 'book', 'vape', 'bass' (a bass guitar)
 //   baby       true draws a toddler instead (see drawBaby). Toddlers also take
 //              motif (colour) + print ('teddy' | 'star' | 'heart', or a plain patch),
 //              and pants (+ pantsPattern) for a top and trousers instead of a onesie.
@@ -106,6 +106,7 @@ function toy(p, kind, x, y) {
   if (kind === 'pint') { p.r('#1e1a18', x, y + 1, 4, 6); p.r('#16100c', x + 1, y + 3, 2, 3); p.r('#f0e4c8', x + 1, y + 1, 2, 2); p.r('rgba(255,255,255,0.5)', x + 1, y + 3, 1, 2); return; }
   if (kind === 'wine') { p.r('#d8e0e8', x, y + 1, 4, 1); p.r('#6a1424', x + 1, y + 2, 2, 2); p.r('#d8e0e8', x + 1, y + 1, 2, 1); p.r('#d8e0e8', x + 2, y + 4, 1, 2); p.r('#d8e0e8', x + 1, y + 6, 3, 1); return; }
   if (kind === 'book') { p.r('#2a1a12', x, y + 1, 4, 6); p.r('#c8443a', x + 1, y + 2, 3, 4); p.r('#f4efe0', x + 3, y + 2, 1, 4); return; }
+  if (kind === 'bass') { p.r('#d8dce4', x - 3, y + 2, 6, 4); p.r('#8a8e96', x - 2, y + 3, 4, 2); p.r('#c8a070', x + 2, y - 4, 1, 7); p.r('#2a2a2a', x + 2, y - 5, 2, 1); return; }
   if (kind === 'vape') { p.r('#3a3a44', x + 1, y + 2, 2, 4); p.r('#f06aa8', x + 1, y + 3, 2, 1); p.r('rgba(240,240,250,0.7)', x + 2, y, 2, 1); p.r('rgba(240,240,250,0.5)', x + 3, y - 1, 2, 1); return; }
   const fur = kind === 'teddy' ? '#b07a44' : '#7a4a26', face = kind === 'teddy' ? '#e0b888' : '#e8c89a', dk = shade(fur, -0.3);
   p.r(fur, x + 1, y, 3, 3); p.r(fur, x, y + 1, 1, 1); p.r(fur, x + 4, y + 1, 1, 1); // head and ears

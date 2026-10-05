@@ -279,11 +279,11 @@ export class WorldScene extends Phaser.Scene {
   }
   async usePlot(t) {
     const p = t.plot, day = state.data.day;
-    if (!this.plotOpen(p)) return ui.say(['These are community garden plots. Have a chat with Wen first.']);
+    if (!this.plotOpen(p)) return ui.say(['These are community garden plots. Have a chat with Chris first.']);
     const f = state.data.farm[p.id], c = f && CROPS[f.crop];
     if (!c) {
       const seeds = Object.keys(state.data.seeds).filter(k => state.seedCount(k));
-      if (!seeds.length) return ui.say(['An empty bed of good soil. You have no seeds. Olly at Bunnings (Altona North) and Dimitri at Reservoir sell them.']);
+      if (!seeds.length) return ui.say(['An empty bed of good soil. You have no seeds. Olly at Bunnings (Altona North) and James at Reservoir sell them.']);
       const pick = await ui.say({ text: 'Plant something?', choices: [...seeds.map(k => ({ label: `${CROPS[k].name} seeds`, value: k, icon: itemIcon(`seed-${k}`, 32), note: `×${state.seedCount(k)} · ${CROPS[k].days} days` })), { label: 'Not now', value: null }] }, { cancelValue: null });
       if (!pick || !state.useSeed(pick)) return;
       state.data.farm[p.id] = { crop: pick, growth: 0, watered: day, boost: false };
@@ -504,7 +504,7 @@ export class WorldScene extends Phaser.Scene {
     return [1, 2].some(k => this.map.ground[ty + v[1] * k]?.[tx + v[0] * k] === '~');
   }
   async goFishing() {
-    if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Rusty at Anaconda in Preston sells them.']);
+    if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
     const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
     const bait = state.count('bait') > 0;
     if (bait) state.removeItem('bait');
@@ -633,8 +633,8 @@ export class WorldScene extends Phaser.Scene {
     if (trainer && !done) return this.challenge(npc, trainer, opts);
     const f = state.friend(npc.id), fi = friendInfo(npc.id);
     if (!f.met) { f.met = true; bus.emit('friends:changed'); }
-    // Wen hands out the community garden plots the first time you chat
-    if (npc.id === 'wen' && !state.data.flags.garden) await this.wenGarden(opts);
+    // Chris hands out the community garden plots the first time you chat
+    if (npc.id === 'chris' && !state.data.flags.garden) await this.chrisGarden(opts);
     // A heart event the first time you chat at a new heart level, otherwise a normal line
     const hc = state.friendHearts(npc.id);
     const ev = Object.keys(fi.events || {}).map(Number).sort((x, y) => x - y).find(n => n <= hc && !f.events.includes(n));
@@ -734,13 +734,13 @@ export class WorldScene extends Phaser.Scene {
     await ui.say(lines, opts);
   }
 
-  // Wen gives you the community garden plots and some seeds to start.
-  async wenGarden(opts) {
+  // Chris gives you the community garden plots and some seeds to start.
+  async chrisGarden(opts) {
     state.data.flags.garden = true;
     state.addSeeds('carrot', 3); state.addSeeds('basil', 2);
     sfx.found();
     await ui.say([
-      'Wen: "Oh, perfect timing. Plots are open! The two beds on the right are yours."',
+      'Chris: "Oh, perfect timing. Plots are open! The two beds on the right are yours."',
       '"Here: carrot and basil seeds to start. Water every day. Rain counts. Snails do not count."',
       'You got: 3 carrot seeds and 2 basil seeds. The Garden app on your phone keeps track.',
     ], opts);

@@ -139,7 +139,7 @@ export const PEOPLE = {
       ],
     ],
   },
-  jules: {
+  pearman: {
     role: 'Barista',
     lines: [
       ['Oat flat white? We also do a pour-over that tastes like a bushfire, in a good way.'],
@@ -154,9 +154,10 @@ export const PEOPLE = {
     },
     giftLine: 'We have a spare almond croissant. Take it before I eat it.',
   },
-  busker: {
-    role: 'Plays outside the op shop',
+  jordan: {
+    role: 'Plays bass in a band. Busks outside the op shop',
     lines: [
+      ['Bass is the most important instrument. Nobody notices it until it stops. Like public transport.'],
       ['This next song is called "No Fault Evictions Are Still Somebody\'s Fault". Thank you, thank you.'],
       ['I know four chords and I use all of them. Every song is about the 19 tram.'],
       ['Spare change? No? Then spare a compliment. Thank you, that one was lovely.'],
@@ -165,7 +166,7 @@ export const PEOPLE = {
       spooky: 'Played a late gig in the park last week. A bunny watched the whole set, then disappeared. Best crowd I have ever had.',
     },
   },
-  priya: {
+  abby: {
     role: 'Dog walker',
     lines: [
       ['Six dogs today. Four of them are called Luna.'],
@@ -195,12 +196,10 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Nonna Pina feeds your pet a meatball. Mangia!',
   },
-  dimitri: {
-    role: 'Runs the milk bar',
+  james: {
+    role: 'Runs the milk bar at Reservoir Station',
     lines: [
-      [
-        'Milk bar has been in the family since 1974. We still sell the bags of mixed lollies. Twenty cents each. Inflation.',
-      ],
+      ['The milk bar is a dying art. I am keeping it alive. With mixed lollies and sheer stubbornness.'],
       ['The new supermarket down the road has self-checkouts. I have a self too. I am right here.'],
       [
         'Everyone comes in for cheese sticks for that schnauzer. Very particular dog. He only likes the good brand.',
@@ -211,12 +210,12 @@ export const PEOPLE = {
     },
     giftLine: 'Here, a cheese stick. For the schnauzer. Or for you. I do not judge, unlike the schnauzer.',
     heartScenes: {
-      2: ['Dimitri: "Forty years in this milk bar. Seen it all. Except the skyrail. Didn\'t see that coming."'],
-      5: ['Dimitri gives you a Golden Gaytime from the back freezer. "Don\'t tell the kids."'],
+      2: ['James: "Forty years in this milk bar. Seen it all. Except the skyrail. Didn\'t see that coming."'],
+      5: ['James gives you a Golden Gaytime from the back freezer. "Don\'t tell the kids."'],
     },
-    helpsInBattle: 'Dimitri sends over a Paddle Pop. Your pet is revitalised.',
+    helpsInBattle: 'James sends over a Paddle Pop. Your pet is revitalised.',
   },
-  wen: {
+  chris: {
     role: 'Community gardener',
     lines: [
       [
@@ -231,20 +230,28 @@ export const PEOPLE = {
     },
     giftLine: 'Have a carrot from my plot. Bunnies go wild for them.',
     heartScenes: {
-      2: ['Wen: "The garden belongs to everyone who turns up. That\'s the whole idea."'],
-      4: ['Wen shows you the seed library. People leave seeds, take seeds. Nobody owns it.'],
-      6: ['Wen: "Working bee on Saturday. Bring the twins. Bring the dogs. Bring the ghost bunny."'],
+      2: ['Chris: "The garden belongs to everyone who turns up. That\'s the whole idea."'],
+      4: ['Chris shows you the seed library. People leave seeds, take seeds. Nobody owns it.'],
+      6: ['Chris: "Working bee on Saturday. Bring the twins. Bring the dogs. Bring the ghost bunny."'],
     },
-    helpsInBattle: 'Wen chucks a handful of compost. Rich, warm, and devastating.',
+    helpsInBattle: 'Chris chucks a handful of compost. Rich, warm, and devastating.',
   },
-  kez: {
-    role: 'Jogging the lake loop',
+  nathan: {
+    role: 'Runs the lake loop with Rusty, his whippet',
     lines: [
-      ['Cannot stop! Lap twelve! Talk while I run!'],
-      ['This loop is exactly one point eight kilometres. I have measured it four hundred times.'],
+      ['Cannot stop! Lap twelve! Rusty is on lap forty. Whippets.'],
+      ['This loop is exactly one point eight kilometres. Rusty does it in about ninety seconds. Then shivers.'],
+      ['Rusty shakes like a leaf when it is cold. Or warm. Or Tuesday. He is a whippet. It is his whole personality.'],
     ],
     hints: {
-      poppy: 'There is a frenchie by the picnic tables who keeps trying to race me. She has never won. She has never stopped trying.',
+      poppy: 'There is a frenchie by the picnic tables who keeps trying to race Rusty. She has never won. She has never stopped trying.',
+      rusty: 'Rusty? That brown blur is my whippet. Want him to run with your team? You will have to beat us first.',
+    },
+    battle: {
+      challenge: ['You want Rusty on your team? He is very fast. And very dramatic about it.', 'Race you. Well, play-fight you. Same thing for a whippet.'],
+      ask: 'Play-fight Rusty?', yes: 'Ready, set, go', no: 'Let me catch my breath',
+      win: ['He is shaking. That is happy shaking. Probably.', 'Rusty can come and stay at your place on Allen St. Keep the heater on. He feels the cold.'],
+      lose: ['Zoom. He was gone before you blinked. Come back faster.'],
     },
   },
   rose: {
@@ -668,7 +675,7 @@ export const PEOPLE = {
     advice: {
       noPets: 'Princess is out the front on Allen St, guarding the court. Say hi and she might join your team.',
       oneTeam: 'When you head out the front door, you pick who comes with you. Up to three pets.',
-      noGarden: 'Wen runs the community garden at the Edgars Creek wetlands in Reservoir. Have a chat and she\'ll give you a plot.',
+      noGarden: 'Chris runs the community garden at the Edgars Creek wetlands in Reservoir. Have a chat and she\'ll give you a plot.',
       noMotion: 'See the noticeboard by reception? Those are motions for council. Chip in, and I\'ll try to get them through on Tuesday.',
       swing: 'Kirsty and Dahlia are the swing votes. Be nice to them. Bring them something they love. It\'s called politics.',
       train: 'Tap your myki at the green reader at a station. The train goes to any station you\'ve already visited.',
@@ -739,7 +746,7 @@ export const PEOPLE = {
       ['Buying a present? Monkey Grip for a Melbourne person. Cloudstreet for a crier. Fourth Wing for anyone who likes dragons.'],
     ],
   },
-  rusty: {
+  bazza: {
     role: 'Runs the Anaconda in Preston. Fishing nut',
     lines: [
       ['G\'day! Hike, bike, camp, fish, kayak. Mostly fish, if you ask me.'],
@@ -916,6 +923,21 @@ export const PET_TEXT = {
     night: ['Stanley is staying up late, supervising the possums. They are not doing it right.'],
     rain: ['Stanley stands under the verandah, looking at the rain as if it has personally disappointed him.'],
     asleep: ['Stanley is asleep. Even his snoring sounds disapproving.'],
+  },
+  rusty: {
+    bio: 'A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.',
+    clue: 'Something brown and very fast is doing laps of the athletics track. Its owner, Nathan, jogs behind it. Slowly.',
+    funFact: 'Rusty can reach 60km/h, but prefers to spend most of the day under a blanket.',
+    favouriteSpot: 'The warm patch of sun on the lounge room floor. Or under three blankets.',
+    lines: {
+      0: ['Rusty zooms past. Then back. Then past again. He did not stop to say hello.', 'Rusty is shivering. It is 24 degrees.'],
+      3: ['Rusty leans his whole skinny body against your legs. That is a whippet hug.'],
+      6: ['Rusty does a lap of the court, then flops down next to you, exhausted and proud.'],
+      9: ['Rusty curls up on your feet like a tiny brown deer. You cannot move. You will not move.'],
+    },
+    night: ['Rusty is tucked under a blanket. Only his nose is showing.'],
+    rain: ['Rusty refuses to go out in the rain. He is staring at you like it is your fault.'],
+    asleep: ['Rusty is asleep, legs twitching. He is winning a race in his dreams.'],
   },
 };
 

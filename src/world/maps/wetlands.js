@@ -39,12 +39,12 @@ export function buildWetlands() {
     b.fill(x, y, 2, 2, 'd');
     if (x === 3) for (let j = 0; j < 2; j++) for (let k = 0; k < 2; k++) if ((j + k + i) % 2 === 0) b.put('crops', x + k, y + j, { v: ['sprout', 'leafy', 'flower', 'leafy'][i] });
   });
-  // Your plots (Wen hands them over the first time you chat): the two right-hand beds
+  // Your plots (Chris hands them over the first time you chat): the two right-hand beds
   [[7, 23], [8, 23], [7, 24], [8, 24], [7, 26], [8, 26], [7, 27], [8, 27]].forEach(([x, y], i) => b.plot(`cg${i + 1}`, x, y, `Plot ${i + 1}`));
   // Four more plots once council passes the garden expansion (data/council.js)
   if (state.motionPassed('gardenplus')) [[3, 23], [4, 23], [3, 26], [4, 26]].forEach(([x, y], i) => b.plot(`cg${i + 9}`, x, y, `Plot ${i + 9}`));
   b.put('tank', 9, 22);
-  b.sign(5, 20, ['Reservoir Community Garden.', 'Plots available: see Wen. Bring a hat and a good attitude about snails.']);
+  b.sign(5, 20, ['Reservoir Community Garden.', 'Plots available: see Chris. Bring a hat and a good attitude about snails.']);
 
   // Bush everywhere
   b.ellipse(20, 6, 5, 3, '"', '.').ellipse(41, 26, 3, 3, '"', '.').ellipse(24, 26, 4, 3, '"', '.').ellipse(6, 4, 4, 1.5, '"', '.');
@@ -55,7 +55,7 @@ export function buildWetlands() {
   b.exit(18, 29, 3, 1, 'lakepark', 'north', 'Lake Park');
   b.entry('west', 1, 9, 'right').entry('south', 19, 27, 'up');
 
-  b.npc('wen', 6, 24, { face: 'down' });
+  b.npc('chris', 6, 24, { face: 'down' });
 
   b.lane({ axis: 'x', pos: 0.5, dir: -1, from: -3, to: 47, every: [10, 20], speed: 56, kinds: ['veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 1.5, dir: 1, from: -3, to: 47, every: [11, 21], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-red'] });
