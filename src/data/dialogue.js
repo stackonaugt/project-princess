@@ -566,6 +566,42 @@ export const PEOPLE = {
       again: ['Back for another bin-off? The bins have been training. Mostly by sitting there.'],
     },
   },
+  spiro: {
+    role: 'Runs the fish van on Kororoit Creek Rd',
+    lines: [
+      ['Spiro: "Forty years frying fish. Flake, potato cakes, dim sims. The dim sims are not Greek. Nobody complains."'],
+      ['Spiro: "You catch, I buy. Better than the milk bar pays, I promise you. James knows. James is jealous."'],
+      ['Spiro: "Carp? Fine, fine, I take carp. I will not tell you what goes in the potato cakes."'],
+      ['Spiro: "Kororoit Creek used to be full of rubbish. Now there are eels again. The volunteers did that. Respect."'],
+    ],
+    giftLine: 'Spiro: "Here, a sardine for the dog. Off the books."',
+  },
+  julie: {
+    role: 'Door knocker extraordinaire',
+    lines: [['Julie Jana: "Twenty-one weeks! Every door counts!"']],
+    byHero: {
+      helen: [['Julie Jana: "Hey Helen!!! You ready for some door knocking? We could really use your help! Only 21 weeks until the election, no time to lose!"']],
+      hadrian: [['Julie Jana: "Hey boys, where\'s your mumma? She\'s supposed to help me go door knocking."']],
+      aleksy: [['Julie Jana: "Hey boys, where\'s your mumma? She\'s supposed to help me go door knocking."']],
+    },
+    battle: {
+      tutorial: [
+        '"Oh, is that Princess? Perfect. Let\'s warm up with a quick play-fight. Nobody gets hurt, promise."',
+        '"Here\'s how it works. Pick one of Princess\'s moves each turn. Hits lower the other side\'s energy bar."',
+        '"Every move has a type. The right type hits twice as hard, the wrong one half. Treats from your bag top her up."',
+        '"Get their bar to zero and you win. If Princess runs out, she just runs home. Ready?"',
+      ],
+      win: [
+        '"Ha! She\'s a natural. Way tougher than a door with a Beware of Dog sign."',
+        '"Wild things jump out of tall grass, and people around town will want a play-fight too. Win and your pets get stronger."',
+        '"Right, I\'ve got 400 doors to knock before lunch. See you on polling day!"',
+      ],
+      lose: [
+        '"Don\'t stress, that\'s what warm-ups are for. Go home and rest her up, she\'ll be right."',
+        '"Right, I\'ve got 400 doors to knock before lunch. See you on polling day!"',
+      ],
+    },
+  },
   hipster: {
     role: 'Was into Brunswick before it was cool',
     lines: [
@@ -995,6 +1031,10 @@ export const FOE_TEXT = {
   magpie: {
     appear: 'A magpie has remembered your face!',
     leave: 'flies off to swoop someone else.',
+  },
+  dlcard: {
+    appear: 'A "Sorry I missed you" card flutters out from under the door!',
+    leave: 'goes in the recycling. Where it was always going to end up.',
   },
   recycling: {
     appear: 'The recycling bin rolls forward. Yellow lid. No soft plastics.',

@@ -15,7 +15,7 @@ import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell' };
+const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell', fish: 'Sell fish' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -59,6 +59,13 @@ export function openShop(panel, close, shopId = 'petshop') {
       return { name: `${c.name} seeds`, desc: `${c.blurb} Ready in ${c.days} days${c.regrow ? ', keeps producing' : ''}.`, price: c.seed, icon: itemIcon(`seed-${id}`, 32), have: state.seedCount(id), act: buy(`${c.name} seeds`, c.seed, () => state.addSeeds(id)) };
     });
     if (tab === 'upgrades' || tab === 'tools') return upgradeRows(tab === 'tools' ? TOOL_ORDER : UPGRADE_ORDER);
+    if (tab === 'fish') return state.bagItems().concat(state.treatItems()).filter((id, i, a) => (ITEMS[id].fish || ITEMS[id].junk) && a.indexOf(id) === i).map(id => {
+      const price = ITEMS[id].junk ? 1 : Math.round(sellPrice(id) * 1.5);
+      return {
+        name: ITEMS[id].name, desc: `You have ${state.count(id)}.`, price, icon: itemIcon(id, 32), sell: true,
+        act: () => { state.removeItem(id); state.addMoney(price); sfx.pickup(); state.save(); msg.textContent = ITEMS[id].junk ? 'Spiro takes the boot. "For the bin. No charge. Well, a dollar."' : `Sold: ${ITEMS[id].name} for $${price}.`; render(); },
+      };
+    });
     return [];
   };
   const upgradeRows = ids => ids.map(id => {
@@ -85,7 +92,7 @@ export function openShop(panel, close, shopId = 'petshop') {
     return;
   }
   const render = () => {
-    const tab = tabFor[shopId], rows = tab === 'sell' ? rowsForRest(tab) : rowsFor(tab);
+    const tab = tabFor[shopId], rows = tab === 'sell' || tab === 'fish' ? rowsForRest(tab) : rowsFor(tab);
     panel.replaceChildren(...[
       h('div', { class: 'm-head' }, h('h2', {}, shop.name), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
       h('p', { class: 'dex-sum shop-money' }, `You have $${state.data.money}`),
@@ -101,6 +108,8 @@ export function openShop(panel, close, shopId = 'petshop') {
         tab === 'fishing' ? h('p', { class: 'small' }, 'With a rod, face the water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A.') : null,
         tab === 'furniture' ? h('p', { class: 'small' }, 'Pick a couch for the lounge. It is delivered straight away. Megalo service!') : null,
         tab === 'sell' ? h('p', { class: 'small' }, state.inParty('princess') ? 'Princess is charming the shopkeeper. You get 20% more.' : 'Crops sell well. Treats go for half what they cost.') : null,
+        tab === 'fish' ? h('p', { class: 'small' }, 'Spiro pays better for fish than anyone in Melbourne. Catch them at Edwardes Lake, Edgars Creek or right here in Kororoit Creek.') : null,
+        tab === 'fish' && !rows.length ? h('p', { class: 'center' }, '"No fish? Come back when you\'ve had a cast, mate."') : null,
         tab === 'sell' && !rows.length ? h('p', { class: 'center' }, 'Nothing to sell.') : null,
         ...rows.map(r => h('div', { class: 'shop-row' },
           r.icon ? h('img', { class: 'pix', src: r.icon, alt: '' }) : h('span', { class: 'shop-glyph' }, '🏠'),

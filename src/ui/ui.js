@@ -18,6 +18,7 @@ import { openShop } from './shop.js';
 import { openPhone } from './phone.js';
 import { openCouncil } from './council.js';
 import { openRequests } from './requests.js';
+import { openCalendar } from './calendar.js';
 import { openCheats } from './cheats.js';
 import { openFishing } from './fishing.js';
 import { openFriends } from './friends.js';
@@ -226,6 +227,7 @@ export const ui = {
     if (which === 'garden') openGarden(panel, close);
     if (which === 'council') openCouncil(panel, close);
     if (which === 'requests') openRequests(panel, close);
+    if (which === 'calendar') openCalendar(panel, close);
     if (which === 'cheats') openCheats(panel, close);
     if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });

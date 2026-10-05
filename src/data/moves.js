@@ -64,6 +64,10 @@ export const MOVES = {
   tug:        { name: 'Tug of War', type: 'leather', power: 50, anim: 'bite', text: '{u} grabs on and tugs!' },
   gnaw:       { name: 'Gnaw', type: 'smelly', power: 45, anim: 'bite', text: '{u} gnaws with its horrible little teeth.' },
   plague:     { name: 'Bin Juice', type: 'smelly', power: 55, anim: 'stink', text: '{u} smells of bin juice. It is unbearable.' },
+  // The "Sorry I missed you" card (Julie's tutorial battle): deliberately feeble
+  papercut:   { name: 'Paper Cut', type: 'plastic', power: 18, anim: 'claw', text: '{u} gives {t} a paper cut. Tiny. Surprisingly rude.' },
+  guilttrip:  { name: 'Guilt Trip', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '"We knocked, but you weren\'t home." {t} feels a bit bad.' },
+  flapinwind: { name: 'Flap in the Wind', type: 'plastic', power: 12, anim: 'gust', text: '{u} flaps about in the breeze, mostly by accident.' },
   tantrum:    { name: 'Tantrum', type: 'street', power: 45, anim: 'shout', text: '{u} throws a full-volume tantrum.' },
   sausageroll:{ name: 'Sausage Roll', type: 'old', power: 0, effect: { heal: 0.35, usesHeld: true }, anim: 'heal', text: '{u} eats a sausage roll from his pocket.' },
   bounceball: { name: 'Bounce', type: 'plastic', power: 40, anim: 'hop', text: 'Tennis balls bounce everywhere. Some of them hit {t}.' },

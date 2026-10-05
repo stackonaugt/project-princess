@@ -5,7 +5,9 @@ import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_G
 import { ZONES, SUBURBS, SUBURB_ORDER, getMap } from '../data/regions.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
-import { isAt, inMeeting } from '../data/routines.js';
+import { PEOPLE } from '../data/dialogue.js';
+import { isAt, inMeeting, isMeetingDay } from '../data/routines.js';
+import { todayJobs } from '../ui/calendar.js';
 import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 import { REQUEST_BONUS } from '../data/requests.js';
 
@@ -31,7 +33,7 @@ import { flavourFor } from '../data/flavour.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
-import { custom, objectTexture, tuftTexture, fitScale, cropTexture } from '../art/textures.js';
+import { custom, objectTexture, tuftTexture, fitScale, cropTexture, exitSignTexture } from '../art/textures.js';
 import { Player, Pet, Npc, toWorld } from '../world/entities.js';
 import { Traffic } from '../world/traffic.js';
 import { state } from '../systems/state.js';
@@ -75,6 +77,7 @@ export class WorldScene extends Phaser.Scene {
     this.buildCollision();
     this.buildObjects();
     this.buildDecor();
+    this.buildExitMarkers();
     this.buildForage();
     this.buildPlots();
 
@@ -95,7 +98,7 @@ export class WorldScene extends Phaser.Scene {
       else if (p.zone === this.regionId) mode = 'wild';
       if (!mode) continue;
       const pet = new Pet(this, p, { mode, index: mode === 'follow' ? followers++ : 0, near: this.player });
-      if (mode !== 'follow') this.physics.add.collider(pet, this.layer);
+      if (mode !== 'follow') pet.collider = this.physics.add.collider(pet, this.layer);
       pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }); });
       this.pets.push(pet);
     }
@@ -142,10 +145,18 @@ export class WorldScene extends Phaser.Scene {
     this.intro(firstVisit).then(() => this.morningNews()).then(() => this.maybeMeeting());
   }
 
+  // A nudge each morning about anything time sensitive today.
+  reminders() {
+    const ready = MOTION_ORDER.some(id => !state.motionPassed(id) && state.motionReady(id));
+    if (isMeetingDay(state.data.day) && ready) ui.toast('Reminder: council votes tonight, 6:30pm at 115 Civic Parade. Check the Calendar app.');
+    else { const jobs = todayJobs(); if (jobs.length) ui.toast(`Today: ${jobs[0]}`); }
+  }
+
   // Things that happened overnight (pet door presents, rain on the garden),
   // and the daily splash in the paddling pool.
   async morningNews() {
     if (this.news.length) { await ui.say(this.news); this.news = []; }
+    if (this.newDay) { this.newDay = false; this.reminders(); }
     if (this.regionId === 'yard' && state.hasUpgrade('pool') && state.data.flags.poolDay !== state.data.day) {
       const home = state.foundIds().filter(id => !state.inParty(id));
       if (home.length) {
@@ -218,6 +229,34 @@ export class WorldScene extends Phaser.Scene {
         const g = this.add.image(sx, sy, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setDepth(9001).setScale(light.r * 2 / 64).setAlpha(0);
         this.lights.push(g);
       }
+    }
+  }
+
+  // A green way sign beside every exit off the edge of the map, and witches
+  // hats across the ones that are closed for now.
+  buildExitMarkers() {
+    const W = this.map.w, H = this.map.h;
+    const free = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && !this.map.solid[y * W + x];
+    for (const e of this.map.exits) {
+      const dir = e.x === 0 && e.w === 1 ? 'left' : e.x + e.w === W && e.w === 1 ? 'right' : e.y === 0 && e.h === 1 ? 'up' : e.y + e.h === H && e.h === 1 ? 'down' : null;
+      if (!dir) continue;   // doors in the middle of a map are easy to spot
+      const vertical = dir === 'left' || dir === 'right';
+      const inX = dir === 'left' ? 1 : dir === 'right' ? W - 2 : 0, inY = dir === 'up' ? 1 : dir === 'down' ? H - 2 : 0;
+      if (!e.to) {
+        const n = vertical ? e.h : e.w;
+        for (let i = 0; i < n; i++) {
+          const tx = vertical ? inX : e.x + i, ty = vertical ? e.y + i : inY;
+          const x = (tx + 0.5) * T, y = (ty + 0.7) * T;
+          this.add.image(x, y, 'fx-cone').setOrigin(0.5, 1).setDepth(y);
+        }
+        continue;
+      }
+      if (!e.label) continue;
+      const spots = vertical ? [[inX, e.y - 1], [inX, e.y + e.h], [inX + (dir === 'left' ? 1 : -1), e.y - 1]] : [[e.x - 1, inY], [e.x + e.w, inY], [e.x - 1, inY + (dir === 'up' ? 1 : -1)]];
+      const [sx, sy] = spots.find(([x, y]) => free(x, y)) || spots[0];
+      const key = exitSignTexture(this, e.label, dir);
+      const x = (sx + 0.5) * T, y = (sy + 1) * T - 2;
+      this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y);
     }
   }
 
@@ -400,6 +439,9 @@ export class WorldScene extends Phaser.Scene {
     // Keep the player in the middle of the area not covered by the HUD and touch controls.
     const hud = 56, pad = controls.touchMode ? Math.min(200, h * 0.3) : 0;
     cam.setFollowOffset(0, -(pad - hud) / 2 / zoom);
+    // Let the camera scroll a little past the map edges so the HUD and the
+    // touch controls never sit on top of you when you stand at an edge.
+    cam.setBounds(0, -hud / zoom, this.map.w * T, this.map.h * T + (hud + pad) / zoom);
   }
 
   // ------------------------------------------------------------ queries
@@ -547,11 +589,41 @@ export class WorldScene extends Phaser.Scene {
       ];
       if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
       else lines.push('Come back every day for a chat. Pets love treats, too.');
+      const joined = this.joinTeam(pet);
+      if (joined) lines.push(`${d.name} falls in behind you. She is on your team now!`);
       this.save();
-      return ui.say(lines, opts);
+      await ui.say(lines, opts);
+      if (d.id === 'princess' && !state.data.flags.tutorial) await this.julieTutorial();
+      return;
     }
     if (pet.asleep) return ui.say([pick(d.asleep)], opts);
 
+    // Chat, or give a treat (once a day): your choice.
+    for (let first = true; ; first = false) {
+      const canTreat = rec.giftedDay !== day && state.treatItems().length;
+      let act = 'chat';
+      if (canTreat || !first) {
+        if (!canTreat) break;
+        act = await ui.say({
+          text: first ? `${d.name} looks up at you.` : `Anything else for ${d.name}?`,
+          choices: [{ label: 'Chat', value: 'chat' }, { label: 'Give a treat', value: 'treat' }, { label: 'Bye', value: null }],
+        }, { ...opts, cancelValue: null });
+      }
+      if (!act) break;
+      if (act === 'chat') await this.chatPet(pet, opts);
+      if (act === 'treat') {
+        const choice = await ui.say({
+          text: `Give ${d.name} a treat?`,
+          choices: [...state.treatItems().map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not now', value: null }],
+        }, { ...opts, cancelValue: null });
+        if (choice) await this.giveTreat(pet, choice, opts);
+      }
+    }
+    this.save();
+  }
+
+  async chatPet(pet, opts) {
+    const d = pet.data_, rec = state.pet(d.id), day = state.data.day;
     const hearts = state.hearts(d.id);
     const tiers = Object.keys(d.lines).map(Number).filter(n => n <= hearts).sort((a, b) => b - a);
     let pool = Math.random() < 0.5 ? d.lines[tiers[0]] : tiers.flatMap(t => d.lines[t]);
@@ -566,14 +638,38 @@ export class WorldScene extends Phaser.Scene {
     }
     await ui.say(lines, opts);
     if (canEvolve(d.id)) await this.evolveInWorld(pet);
+  }
 
-    if (rec.giftedDay !== day && state.treatItems().length) {
-      const choice = await ui.say({
-        text: `Give ${d.name} a treat?`,
-        choices: [...state.treatItems().map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not now', value: null }],
-      }, { ...opts, cancelValue: null });
-      if (choice) await this.giveTreat(pet, choice, opts);
-    }
+  // A pet you have just found trots straight onto your team if there's room.
+  joinTeam(pet) {
+    const party = state.data.party;
+    if (party.length >= 3 || party.includes(pet.id)) return false;
+    state.setParty([...party, pet.id]);
+    pet.collider?.destroy(); pet.collider = null;
+    pet.mode = 'follow'; pet.index = state.data.party.length - 1;
+    this.trail.length = 0;
+    return true;
+  }
+
+  // Straight after you find Princess, Julie Jana pops round for a warm-up
+  // play-fight that shows you the ropes. Then she's off door knocking for good.
+  async julieTutorial() {
+    state.data.flags.tutorial = true;
+    const P = PEOPLE.julie, t = TRAINERS.julie;
+    const spot = { id: 'julie', x: Math.floor(this.player.x / T) + 2, y: Math.floor(this.player.y / T), face: 'left' };
+    if (this.solidAt((spot.x + 0.5) * T, (spot.y + 0.75) * T)) spot.x -= 4;
+    const npc = this.spawnNpc(spot);
+    this.npcs.push(npc);
+    npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400 });
+    npc.faceTowards(this.player.x, this.player.y);
+    this.facePlayerTo(npc.x, npc.y);
+    const opts = { name: 'Julie Jana', portrait: npcIcon('julie') };
+    await ui.say([...(P.byHero[state.data.hero] || P.lines)[0], ...t.tutorial], opts);
+    const result = await this.startBattle({ trainer: 'julie' });
+    state.data.beaten.julie = state.data.day;
+    if (result.outcome === 'lose') state.healAll();
+    await ui.say(result.outcome === 'win' ? t.win : t.lose, opts);
+    this.removeNpc(npc);
     this.save();
   }
 
@@ -630,11 +726,43 @@ export class WorldScene extends Phaser.Scene {
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
     const trainer = TRAINERS[npc.id];
     const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
-    if (trainer && !done) return this.challenge(npc, trainer, opts);
-    const f = state.friend(npc.id), fi = friendInfo(npc.id);
+    // Trainers you have never beaten go straight to their challenge.
+    if (trainer && !done && !state.data.beaten[npc.id]) return this.challenge(npc, trainer, opts);
+    const f = state.friend(npc.id);
     if (!f.met) { f.met = true; bus.emit('friends:changed'); }
     // Chris hands out the community garden plots the first time you chat
     if (npc.id === 'chris' && !state.data.flags.garden) await this.chrisGarden(opts);
+    // A menu: chat, give a gift, shop, or a rematch. Just one thing to do? Straight to it.
+    const greet = ['"Oh, hi!"', '"G\'day!"', '"Hey, you."', '"Hiya!"', '"Oh, it\'s you!"'][Math.floor(hash(npc.id.length, npc.id.charCodeAt(0)) * 5)];
+    for (let first = true; ; first = false) {
+      const choices = [{ label: 'Chat', value: 'chat' }];
+      if (f.giftedDay !== day && state.bagItems().length) choices.push({ label: 'Give a gift', value: 'gift' });
+      if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
+      if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
+      let act = 'chat';
+      if (choices.length > 1 || !first) {
+        if (!first && choices.length === 1) break;
+        act = await ui.say({ text: first ? `${info.name}: ${greet}` : 'Anything else?', choices: [...choices, { label: 'Bye', value: null }] }, { ...opts, cancelValue: null });
+      }
+      if (!act) break;
+      if (act === 'chat') await this.chatNpc(npc, opts);
+      if (act === 'gift') {
+        const choice = await ui.say({
+          text: `Give ${info.name} a gift?`,
+          choices: [...state.bagItems().map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not today', value: null }],
+        }, { ...opts, cancelValue: null });
+        if (choice) await this.giveFriendGift(npc, choice, opts);
+      }
+      if (act === 'shop') { await ui.shop(info.shop); }
+      if (act === 'fight') { await this.challenge(npc, trainer, opts); break; }
+      this.save();
+    }
+    this.save();
+  }
+
+  async chatNpc(npc, opts) {
+    const info = npc.info, day = state.data.day;
+    const f = state.friend(npc.id), fi = friendInfo(npc.id);
     // A heart event the first time you chat at a new heart level, otherwise a normal line
     const hc = state.friendHearts(npc.id);
     const ev = Object.keys(fi.events || {}).map(Number).sort((x, y) => x - y).find(n => n <= hc && !f.events.includes(n));
@@ -667,16 +795,6 @@ export class WorldScene extends Phaser.Scene {
       ui.toast(`+1 ${ITEMS[info.gift].name}`, itemIcon(info.gift, 32));
       await ui.say([info.giftLine, `You got: ${ITEMS[info.gift].name}.`], opts);
     }
-    // Your gift to them (once a day)
-    if (f.giftedDay !== day && state.bagItems().length) {
-      const choice = await ui.say({
-        text: `Give ${info.name} a gift?`,
-        choices: [...state.bagItems().map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not today', value: null }],
-      }, { ...opts, cancelValue: null });
-      if (choice) await this.giveFriendGift(npc, choice, opts);
-    }
-    this.save();
-    if (info.shop) { await ui.shop(info.shop); this.save(); }
   }
 
   // What Paddy suggests depends on how far along you are.
@@ -685,7 +803,7 @@ export class WorldScene extends Phaser.Scene {
     if (!state.foundIds().length) return A.noPets;
     if (!d.party.length) return A.oneTeam;
     if (!d.flags.garden) return A.noGarden;
-    if (!Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
+    if (state.foundCount() >= 2 && !Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
     const rest = [A.swing, A.train, A.friends, A.types, A.rest];
     return rest[d.day % rest.length];
   }
@@ -950,16 +1068,25 @@ export class WorldScene extends Phaser.Scene {
     const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 1) / T);
     const ex = this.map.exits.find(e => tx >= e.x && tx < e.x + e.w && ty >= e.y && ty < e.y + e.h);
     if (!ex) { this.lockedExit = null; return; }
+    // You can't wander off from Allen St until you've made friends with Princess.
+    if (ex.to && this.regionId === 'allen' && !['home', 'yard'].includes(ex.to) && !state.isFound('princess')) {
+      if (this.lockedExit === ex) return;
+      this.lockedExit = ex;
+      return this.bounceBack(ex, ['I really should get Princess before I go...', 'She is usually doing laps of the court.']);
+    }
     if (ex.to && ex.team && state.foundIds().length) return this.chooseTeamThenGo(ex);
     // Walking into another suburb takes 20 minutes, 10 once the bike lane motion passes.
     if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : state.motionPassed('bikelane') ? 10 : 20);
     if (this.lockedExit === ex) return;
     this.lockedExit = ex;
+    this.bounceBack(ex, ex.label ? ex.lines || [`The way to ${ex.label} is closed for now.`] : ['The way is closed.']);
+  }
+  bounceBack(ex, lines) {
     sfx.bump();
     const back = { x: ex.x === 0 ? 1 : ex.x === this.map.w - 1 ? -1 : 0, y: ex.y === 0 ? 1 : ex.y === this.map.h - 1 ? -1 : 0 };
     this.player.setPosition(this.player.x + back.x * 10, this.player.y + back.y * 10);
     this.player.target = null;
-    ui.say(ex.label ? ex.lines || [`The way to ${ex.label} is closed for now.`] : ['The way is closed.']);
+    ui.say(lines);
   }
 
   // ------------------------------------------------------------ saving & intro
