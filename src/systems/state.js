@@ -16,6 +16,7 @@ import { requestsFor, REQUEST_BONUS } from '../data/requests.js';
 import { CROPS } from '../data/crops.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
+import { CHAPTERS } from '../data/story.js';
 
 const VERSION = 9;
 export const MAX_TEAM = 3;
@@ -50,8 +51,10 @@ function fresh() {
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
     settings: { sound: true },
     seenIntro: false,
+    story: freshStory(),   // the chapters (systems/story.js)
   };
 }
+const freshStory = () => ({ chapter: 0, done: {}, ch2: {}, pranks: [], invited: [], party: null, heroBefore: null });
 
 function petRecord(d, id) {
   return d.pets[id] || (d.pets[id] = { found: false, day: 0, date: null, points: 0, talkedDay: 0, giftedDay: 0, reactions: {}, chats: 0, level: 0, xp: 0, hp: null, evolved: false, gear: null });
@@ -93,6 +96,12 @@ function sanitise(raw) {
   d.startGiven = !!raw.startGiven;
   if (Array.isArray(raw.party)) d.party = raw.party.filter(id => d.pets[id]?.found && d.pets[id].hp !== 0).slice(0, MAX_TEAM);
   d.seenIntro = !!raw.seenIntro;
+  if (raw.story && typeof raw.story === 'object') {
+    const st = raw.story;
+    d.story = { ...freshStory(), chapter: Math.max(0, Math.min(5, st.chapter | 0)), done: st.done || {}, ch2: st.ch2 || {},
+      pranks: Array.isArray(st.pranks) ? st.pranks : [], invited: Array.isArray(st.invited) ? st.invited : [], party: st.party || null,
+      heroBefore: st.heroBefore || null };
+  }
   d.created = raw.created || d.created;
   return d;
 }
@@ -248,6 +257,12 @@ export const state = {
     if (isMeetingDay(ended) && d.council.metDay !== ended) {
       for (const r of this.holdMeeting(ended)) news.push(r.passed ? `Council news: "${MOTIONS[r.id].title}" passed ${r.yes.length} votes to ${r.no.length}! ${MOTIONS[r.id].effect}` : `Council news: "${MOTIONS[r.id].title}" lost ${r.yes.length} votes to ${r.no.length}. Win over Kirsty or Dahlia and try again next Tuesday.`);
     }
+    // The spill vote (Chapter 2): out of time, and Paddy is rolled.
+    const st = d.story, c2 = st.ch2;
+    if (st.chapter === 2 && !st.done[2] && c2.deadline && ended >= c2.deadline && !c2.swapped) {
+      c2.deposed = true; st.done[2] = ended;
+      news.push(...CHAPTERS[2].failed);
+    }
     d.day += 1; d.minutes = DAY_START_MIN; d.pos = null;
     this.healAll();
     const home = this.foundIds().filter(id => !this.inParty(id));
@@ -288,10 +303,14 @@ export const state = {
     given[key] = (given[key] || 0) + n;
     return n;
   },
+  // Paddy not mayor (rolled in Chapter 2 and not re-elected, or lost the
+  // election in Chapter 4): the swing votes are twice as hard to win.
+  paddyDeposed() { const st = this.data.story; return st.party ? !st.party.won : !!st.ch2.deposed; },
+  swingHearts(h) { return this.paddyDeposed() ? Math.min(10, h * 2) : h; },
   // How each councillor votes on a motion right now.
   councilVote() {
     const yes = [...ALLIES], no = [...AGAINST];
-    for (const [id, h] of Object.entries(SWING)) (this.friendHearts(id) >= h ? yes : no).push(id);
+    for (const [id, h] of Object.entries(SWING)) (this.friendHearts(id) >= this.swingHearts(h) ? yes : no).push(id);
     return { yes, no, passed: yes.length >= 4 };
   },
   // Vote on every motion that has all it needs. Returns the results.

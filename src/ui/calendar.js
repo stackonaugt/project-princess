@@ -14,6 +14,9 @@ export function dayEvents(day) {
   const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id)).length;
   if (isMeetingDay(day)) ev.push(ready ? `Council meeting, 6:30pm, 115 Civic Parade. ${ready} ${ready === 1 ? 'motion' : 'motions'} up for a vote.` : 'Council meeting, 6:30pm, 115 Civic Parade. Nothing on the agenda yet.');
   if (isMeetingDay(day)) ev.push('Bin night. The Bin Man is restless.');
+  const st = state.data.story, c2 = st.ch2;
+  if (st.chapter === 2 && !st.done[2] && c2.deadline === day) ev.push('THE SPILL VOTE. Paddy\'s job is on the line. Swap Cr Bentleigh\'s lunch before tonight!');
+  if (st.chapter === 2 && !st.done[2] && c2.deadline > day && day >= state.data.day && !isWeekend(day) && !c2.swapped) ev.push('Cr Bentleigh eats lunch in the civic centre foyer, 11am to 3pm.');
   if (isWeekend(day)) ev.push('Paddy is home all day.');
   const rain = state.rainWindow(day);
   if (rain) ev.push(`Showers around ${timeLabel(rain[0])}. The garden waters itself.`);

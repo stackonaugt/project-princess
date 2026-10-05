@@ -74,6 +74,11 @@ export function openCheats(panel, close) {
         h('div', { class: 'row' },
           btn('Fill every motion', () => { MOTION_ORDER.forEach(id => { d.council.given[id] = { ...MOTIONS[id].needs }; }); done('Every motion is ready for Tuesday.'); }),
           btn('Pass every motion', () => { MOTION_ORDER.forEach(id => state.passMotion(id)); done('All passed. Re-enter a zone to see changes.'); }))),
+      h('div', { class: 'note' }, h('h4', {}, 'Story'),
+        h('p', { class: 'small' }, `Chapter ${d.story.chapter}${d.story.done[d.story.chapter] ? ' (done)' : ''}.`),
+        h('div', { class: 'row' },
+          btn('Finish this chapter', () => { d.story.done[d.story.chapter] = d.day - 1; done('Done. Sleep (or Next day) to start the next one.'); }),
+          ...[1, 2, 3, 4].map(n => btn(`Start chapter ${n}`, () => { d.story.chapter = n - 1; d.story.done = Object.fromEntries(Array.from({ length: n - 1 }, (_, i) => [i + 1, d.day - 1])); done(`Chapter ${n} starts when you next load or wake up.`); })))),
       h('div', { class: 'note' }, h('h4', {}, 'Character'),
         h('div', { class: 'row' }, ...['helen', 'hadrian', 'aleksy'].map(id => btn(id[0].toUpperCase() + id.slice(1), () => { d.hero = id; world().player.refreshLook(); done(`Now playing as ${id}.`); })))),
       msg));

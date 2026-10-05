@@ -107,6 +107,21 @@ export const ITEM_ART = {
   fertiliser: { pal: { a: '#c8a060', b: '#e0c088', k: '#6a4a2a', r: '#c8443a', w: '#f4efe0' }, rows: [
     '............', '...kkkkkk...', '..kbbbbbbk..', '..kaaaaaak..', '..kwwwwwwk..', '..kwrrrrwk..',
     '..kwwwwwwk..', '..kaaaaaak..', '..kaaaaaak..', '..kaaaaaak..', '...kkkkkk...', '............'] },
+  fishpie: { pal: { a: '#d8a050', b: '#f0c878', k: '#6a4020', g: '#8aa83a', f: '#b8c8d0' }, rows: [
+    '....g..g....', '.....gg..g..', '...g..g.g...', '..kkkkkkkk..', '.kbbabbabbk.', 'kbaafaabaabk',
+    'kaabaafbaaak', 'kkkkkkkkkkkk', '.kaaaaaaaak.', '..kkkkkkkk..', '............', '............'] },
+  lunchbowl: { pal: { a: '#f4f4f0', b: '#d8d8d0', k: '#5a5a5a', g: '#4a8a3a', l: '#7ab858', y: '#e8d888', n: '#f0e040' }, rows: [
+    '............', '.......nn...', '.......nn...', '..lggllgyl..', '.glylgglyyl.', 'kkkkkkkkkkkk',
+    'kaaaaaaaaaak', '.kabbbbbbak.', '..kaaaaaak..', '...kkkkkk...', '............', '............'] },
+  bunting: { pal: { r: '#e2506a', y: '#f5d63a', b: '#3a8ad8', g: '#5aa83a', k: '#5a3a1a' }, rows: [
+    '............', 'kkkkkkkkkkkk', 'rrr.yyy.bbb.', '.rr..yy..bb.', '.r...y...b..', '............',
+    'kkkkkkkkkkkk', '.ggg.rrr.yyy', '..gg..rr..yy', '..g...r...y.', '............', '............'] },
+  balloons: { pal: { r: '#e2506a', b: '#3a8ad8', y: '#f5d63a', w: '#ffffff', k: '#5a5a5a' }, rows: [
+    '..rrr.......', '.rwrrr.bbb..', '.rrrrrbwbbb.', '..rrr.bbbbb.', '...r.yybbb..', '...k.ywyb...',
+    '...k.yyyy...', '....k.yyk...', '....k..k....', '.....k.k....', '.....kk.....', '......k.....'] },
+  fairylights: { pal: { k: '#3a5a2a', y: '#fff3a0', o: '#f0c040', w: '#ffffff' }, rows: [
+    '............', 'k...........', '.kk.......kk', '.y.kk...kk.y', '....kkkkk...', '..w..y.y..w.',
+    '............', 'kk.......kk.', '..kkk.kkk...', '.o...k...o..', '.....y......', '............'] },
 };
 
 // Seed packets: drawn from the crop's colour (texture item-seed-<crop>).

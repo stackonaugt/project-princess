@@ -901,6 +901,7 @@ export const PET_TEXT = {
     night: ['Salami is out on her night rounds. She knows every cat on Sydney Rd, and outranks most of them.'],
     rain: ['Salami glares at the rain from under a terrace verandah, as if it was your idea.'],
     asleep: ['Salami is having her afternoon nap in a sunbeam. Disturb her at your peril.'],
+    evolvedBio: 'Salami, aged and cured to perfection. Sopressa wears a flat cap, sits on the porch and judges Donald St.',
   },
   spooky: {
     bio: 'A night walker who can phase in and out of reality at will.',
@@ -923,6 +924,7 @@ export const PET_TEXT = {
     ],
     rain: ['Raindrops fall straight through Spooky. She does not seem to mind.'],
     asleep: ['Spooky is asleep, which mostly means she is see-through and very still.'],
+    evolvedBio: 'Spooky has gone full poltergeist. Doors open by themselves. Carrots go missing. She is very pleased with herself.',
   },
   poppy: {
     bio: 'Pure muscle and brawn, with very little brains. Ready to bust her way through.',
@@ -969,6 +971,7 @@ export const PET_TEXT = {
     night: ['Stanley is staying up late, supervising the possums. They are not doing it right.'],
     rain: ['Stanley stands under the verandah, looking at the rain as if it has personally disappointed him.'],
     asleep: ['Stanley is asleep. Even his snoring sounds disapproving.'],
+    evolvedBio: 'Stanley has joined the legion. Centurionely marches in sandals, guards the house and expects a triumph for every walk.',
   },
   rusty: {
     bio: 'A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.',
@@ -984,6 +987,7 @@ export const PET_TEXT = {
     night: ['Rusty is tucked under a blanket. Only his nose is showing.'],
     rain: ['Rusty refuses to go out in the rain. He is staring at you like it is your fault.'],
     asleep: ['Rusty is asleep, legs twitching. He is winning a race in his dreams.'],
+    evolvedBio: 'Rusty, rebuilt in sheet metal. Even Rustier is faster than a Vline train and squeaks a bit going round corners.',
   },
 };
 
