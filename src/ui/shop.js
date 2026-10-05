@@ -59,13 +59,6 @@ export function openShop(panel, close, shopId = 'petshop') {
       return { name: `${c.name} seeds`, desc: `${c.blurb} Ready in ${c.days} days${c.regrow ? ', keeps producing' : ''}.`, price: c.seed, icon: itemIcon(`seed-${id}`, 32), have: state.seedCount(id), act: buy(`${c.name} seeds`, c.seed, () => state.addSeeds(id)) };
     });
     if (tab === 'upgrades' || tab === 'tools') return upgradeRows(tab === 'tools' ? TOOL_ORDER : UPGRADE_ORDER);
-    if (tab === 'fish') return state.bagItems().concat(state.treatItems()).filter((id, i, a) => (ITEMS[id].fish || ITEMS[id].junk) && a.indexOf(id) === i).map(id => {
-      const price = ITEMS[id].junk ? 1 : Math.round(sellPrice(id) * 1.5);
-      return {
-        name: ITEMS[id].name, desc: `You have ${state.count(id)}.`, price, icon: itemIcon(id, 32), sell: true,
-        act: () => { state.removeItem(id); state.addMoney(price); sfx.pickup(); state.save(); msg.textContent = ITEMS[id].junk ? 'Spiro takes the boot. "For the bin. No charge. Well, a dollar."' : `Sold: ${ITEMS[id].name} for $${price}.`; render(); },
-      };
-    });
     return [];
   };
   const upgradeRows = ids => ids.map(id => {
@@ -81,6 +74,13 @@ export function openShop(panel, close, shopId = 'petshop') {
       name: ITEMS[id].name, desc: `You have ${state.count(id)}.`, price: sellPrice(id), icon: itemIcon(id, 32), sell: true,
       act: () => { state.removeItem(id); state.addMoney(sellPrice(id)); sfx.pickup(); state.save(); msg.textContent = `Sold: ${ITEMS[id].name} for $${sellPrice(id)}.`; render(); },
     }));
+    if (tab === 'fish') return state.bagItems().filter(id => ITEMS[id].fish || ITEMS[id].junk).map(id => {
+      const price = ITEMS[id].junk ? 1 : Math.round(sellPrice(id) * 1.5);
+      return {
+        name: ITEMS[id].name, desc: `You have ${state.count(id)}.`, price, icon: itemIcon(id, 32), sell: true,
+        act: () => { state.removeItem(id); state.addMoney(price); sfx.pickup(); state.save(); msg.textContent = ITEMS[id].junk ? 'Spiro takes the boot. "For the bin. No charge. Well, a dollar."' : `Sold: ${ITEMS[id].name} for $${price}.`; render(); },
+      };
+    });
     return [];
   };
   // The bottle shop does not serve toddlers. Obviously.
