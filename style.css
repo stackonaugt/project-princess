@@ -369,3 +369,33 @@ body.touch .bt-btn { min-height: 52px; }
 @keyframes fish-burst { from { transform: translate(0, 0); opacity: 1; } to { transform: translate(var(--x), var(--y)) rotate(200deg); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .fish-big, .fish-confetti { animation: none; } .fish-confetti { display: none; } }
 .fish-marker { position: absolute; top: 2px; width: 12px; height: 18px; border-radius: 50%; background: #f5d63a; border: 2px solid #1e1e24; left: 0; }
+/* Story: chapter cards, West is Best News, the party games */
+.story-card { padding: 22px 18px 18px; display: grid; gap: 10px; text-align: center; }
+.story-card p { margin: 0; font-size: 17px; line-height: 1.4; }
+.story-kicker { font-size: 15px !important; letter-spacing: .12em; text-transform: uppercase; color: var(--wood); font-weight: 700; }
+.story-title { margin: 0; font-size: 30px; }
+.news { display: grid; gap: 12px; padding: 0 0 14px; }
+.news-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #1e2a5a; color: #fff; border-radius: 8px 8px 0 0; }
+.news-head b { flex: 1; font-size: 19px; letter-spacing: .06em; }
+.news-head span:last-child { font-size: 13px; opacity: .8; }
+.news-live { background: #c8302a; color: #fff; font-weight: 700; font-size: 12px; padding: 2px 6px; border-radius: 3px; animation: news-blink 1.2s steps(2) infinite; }
+.news-anchor { display: flex; gap: 12px; align-items: flex-start; padding: 0 14px; }
+.news-anchor img { width: 56px; height: 112px; object-fit: contain; flex: none; background: #c8d8e8; border-radius: 6px; }
+.news-anchor p { margin: 0 0 6px; font-size: 16px; }
+.news-ticker { overflow: hidden; white-space: nowrap; background: #f5d63a; color: #1e1e24; font-size: 13px; font-weight: 600; padding: 3px 0; }
+.news-ticker span { display: inline-block; padding-left: 100%; animation: news-scroll 18s linear infinite; }
+.vote-bar { position: relative; margin: 0 14px; height: 30px; border-radius: 6px; background: #d8d0c0; border: 3px solid var(--wood-dark, #5a3a1a); overflow: hidden; }
+.vote-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: #c8443a; transition: background .3s; }
+.vote-fill.win { background: #3f8a3e; }
+.vote-half { position: absolute; left: 50%; top: 0; bottom: 0; border-left: 2px dashed #1e1e24; }
+.vote-label { position: absolute; right: 8px; top: 3px; font-weight: 700; font-size: 17px; }
+@keyframes news-scroll { to { transform: translateX(-100%); } }
+@keyframes news-blink { 50% { opacity: .4; } }
+.party { display: grid; gap: 10px; }
+.party-guests { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+.party-guests img { width: 28px; height: 56px; object-fit: contain; }
+.party-answer { min-width: 70%; }
+.dance-show { text-align: center; font-size: 44px; min-height: 60px; font-weight: 700; letter-spacing: .1em; }
+.dance-pads { display: flex; justify-content: center; gap: 8px; }
+.dance-pad { font-size: 26px; min-width: 56px; }
+@media (prefers-reduced-motion: reduce) { .news-ticker span, .news-live { animation: none; } .news-ticker span { padding-left: 0; } }

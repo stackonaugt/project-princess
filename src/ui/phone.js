@@ -8,6 +8,7 @@ import { sfx } from '../systems/sfx.js';
 import { cheatsOn } from './cheats.js';
 
 const APPS = [
+  { id: 'story', label: 'Story', colour: '#d8862a', glyph: '📖' },
   { id: 'dex', label: 'Petdex', colour: '#e2506a', icon: () => petIcon('princess', 48) },
   { id: 'bag', label: 'Bag', colour: '#c8823a', icon: () => itemIcon('chicken', 48) },
   { id: 'friends', label: 'Friends', colour: '#3fa38f', icon: () => npcIcon('trish') },

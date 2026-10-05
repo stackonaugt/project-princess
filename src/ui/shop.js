@@ -15,7 +15,7 @@ import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell', fish: 'Sell fish' };
+const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell', fish: 'Sell fish', party: 'Party' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -44,6 +44,7 @@ export function openShop(panel, close, shopId = 'petshop') {
     if (tab === 'drinks') return Object.keys(ITEMS).filter(id => ITEMS[id].drink).map(itemRow);
     if (tab === 'lollies') return Object.keys(ITEMS).filter(id => ITEMS[id].lolly).map(itemRow);
     if (tab === 'vapes') return refused(tab) ? [] : Object.keys(ITEMS).filter(id => ITEMS[id].vape).map(itemRow);
+    if (tab === 'party') return Object.keys(ITEMS).filter(id => ITEMS[id].deco).map(itemRow);
     if (tab === 'books') return Object.keys(ITEMS).filter(id => ITEMS[id].book).map(itemRow);
     if (tab === 'fishing') return [...upgradeRows(FISHING_ORDER), itemRow('bait')];
     if (tab === 'furniture') return COUCH_ORDER.map(id => {

@@ -41,4 +41,4 @@ window.addEventListener('pagehide', () => bus.emit('game:save'));
 document.addEventListener('visibilitychange', () => { if (document.hidden) bus.emit('game:save'); });
 
 // Handy in the browser console: __pp.state.data
-window.__pp = { game, state, bus };
+window.__pp = { game, state, bus, ui };

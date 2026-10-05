@@ -46,8 +46,8 @@ export function buildWoods() {
   b.exit(43, 12, 1, 2, 'lohse', 'north', 'Lohse St Reserve');
   b.entry('west', 1, 13, 'right').entry('east', 42, 13, 'left');
 
-  b.npc('trish', 19, 9, { face: 'down' });
-  b.npc('gordon', 21, 9, { face: 'down' });
+  b.npc('trish', 19, 9, { face: 'down', at: 'woods' });
+  b.npc('gordon', 21, 9, { face: 'down', at: 'woods' });
   // The Bin Man and his three bins, out on the nature strip for bin night
   b.put('bin', 37, 15, { v: 'yellow' }); b.put('bin', 38, 15, { v: 'garbage' }); b.put('bin', 39, 15, { v: 'compost' });
   b.npc('binman', 38, 14, { face: 'down' });

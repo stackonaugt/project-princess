@@ -10,6 +10,7 @@
 //   lolly: true   American lollies from the Plenty Rd convenience store (also gift: true).
 //   vape: true    vapes from the same shop, adults only (also gift: true). Both use `art` like drinks:
 //                 art: { kind: packet | vape, body, label, cap }
+//   story: true   a story item (the fish pie). deco: true  party decorations. Neither is a treat or a present.
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
@@ -70,6 +71,13 @@ export const ITEMS = {
   thermos:    { name: 'Thermos', price: 24, gift: true, desc: 'Keeps tea hot for twelve hours. Keeps soup hot for a whole council meeting.' },
   headtorch:  { name: 'Head torch', price: 20, gift: true, desc: 'For night runs, possum spotting and finding the car keys.' },
 
+  // The story (data/story.js). story: true items are for the plot: not treats, not presents.
+  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon and three days on a windowsill. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  // Party decorations (deco: true) from Bunnings, for the September Babies Bash.
+  bunting:    { name: 'Bunting', price: 6, deco: true, desc: 'Ten metres of little triangle flags. Gets tangled just by looking at it.' },
+  balloons:   { name: 'Balloons', price: 4, deco: true, desc: 'A bag of balloons. Somebody is going to have to blow these up.' },
+  fairylights:{ name: 'Fairy lights', price: 12, deco: true, desc: 'Warm white, solar powered. Makes any backyard look like a wedding.' },
+
   // The bottle shop at the Edinburgh Castle (drink: true). Presents for friends. Never for pets.
   vb:          { name: 'VB', price: 4, drink: true, art: { kind: 'stubby', body: '#4a2a12', label: '#2a7a3a', cap: '#c8443a' }, desc: 'A hard-earned thirst needs a big cold beer. Apparently.' },
   draught:     { name: 'Carlton Draught', price: 4, drink: true, art: { kind: 'stubby', body: '#4a2a12', label: '#2a3a6a', cap: '#e8c040' }, desc: 'Made from beer. The pub standard.' },
@@ -110,4 +118,4 @@ export const ITEMS = {
 };
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
-export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk;
+export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;
