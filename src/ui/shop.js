@@ -68,7 +68,7 @@ export function openShop(panel, close, shopId = 'petshop') {
   }
   const render = () => {
     const tab = tabFor[shopId], rows = rowsFor(tab);
-    panel.replaceChildren(
+    panel.replaceChildren(...[
       h('div', { class: 'm-head' }, h('h2', {}, shop.name), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
       h('p', { class: 'dex-sum shop-money' }, `You have $${state.data.money}`),
       shop.tabs.length > 1 ? h('div', { class: 'tabs', role: 'tablist' }, ...shop.tabs.map(id =>
@@ -84,7 +84,7 @@ export function openShop(panel, close, shopId = 'petshop') {
           h('div', { class: 'shop-info' }, h('b', {}, r.name), h('p', {}, r.desc), h('small', {}, r.have ? `You have ${r.have}` : '')),
           r.owned ? h('span', { class: 'meta' }, 'Done ✓')
             : h('button', { class: 'wood-btn small', disabled: !r.sell && state.data.money < r.price, onclick: r.act }, r.sell ? `Sell $${r.price}` : `$${r.price}`))),
-        msg));
+        msg)].filter(Boolean));
   };
   render();
 }

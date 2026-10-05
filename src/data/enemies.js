@@ -205,8 +205,8 @@ export const ENCOUNTERS = {
     { id: 'alleycat', lv: [5, 8], weight: 3 },
     { id: 'nonna', lv: [6, 9], weight: 2, day: true },
     { id: 'cavoodle', lv: [5, 8], weight: 2, day: true },
-    { id: 'flatwhitefoe', lv: [5, 8], weight: 2, day: true },
-    { id: 'goonbag', lv: [6, 9], weight: 2, night: 3 },
+    { id: 'flatwhitefoe', lv: [5, 7], weight: 2, day: true },
+    { id: 'goonbag', lv: [5, 7], weight: 2, night: 3 },
   ],
   reservoir: [
     { id: 'duck', lv: [7, 10], weight: 6, zones: ['track', 'lake', 'lakepark', 'wetlands'] },
@@ -254,7 +254,7 @@ export const TRAINERS = {
     lose: ['She phased out. You were punching air. Come back after dark, maybe. Or with snacks.'],
   },
   sinead: {
-    name: 'Sinead', prize: 'poppy', team: [['pet:poppy', 11]],
+    name: 'Sinead', prize: 'poppy', team: [['pet:poppy', 12]],
     challenge: ['Hi! Poppy loves a play-fight. Like, LOVES one. Are you sure?', 'She is basically a bowling ball with ears. Brace yourself.'],
     ask: 'Play-fight Poppy?', yes: 'Bring it on', no: 'Let me stretch first',
     win: ['She is so happy. She has never had this much fun losing. She has never won, to be fair.', 'Poppy can come stay at your place. She will eat anything. Hide the good snacks.'],

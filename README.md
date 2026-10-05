@@ -12,15 +12,15 @@ A cosy pet-collecting adventure across Melbourne. Explore Laverton (home, Allen 
 - Press **A** (or Space) next to a pet, person or sign to talk.
 - Chat with each pet once a day, and give them one treat a day. Find out what they love.
 - Treats appear around town each morning, and some locals hand them out too.
-- **Battles:** with pets on your team, wild things jump out of tall grass (plastic bags, street cats, bin chickens, angry commuters...). Pick moves that suit their type, toss treats to give energy back. A pet who has had enough runs home; everyone rests up at home. Fancy a challenge? Find the Bin Man on Woods St.
-- **Money and the pet shop:** battles earn a little money. Spend it at The Leash You Can Do, Olly's pet shop on Hope St, Brunswick: treats, plus gear like leads, collars and bow ties that you put on your pets (from the Bag) for a boost in battles.
+- **Battles:** with pets on your team, wild things jump out of tall grass (plastic bags, street cats, bin chickens, angry commuters...). Fifteen types (Water, Park, Caffeine and Booze are the newest): pick moves that suit their type, toss treats to give energy back. A pet who has had enough runs home; everyone rests up at home. Fancy a challenge? Find the Bin Man on Woods St.
+- **Money and the pet shop:** battles earn a little money. Spend it at The Leash You Can Do, Ed's pet shop on Hope St, Brunswick: treats, plus gear like leads, collars and bow ties that you put on your pets (from the Bag) for a boost in battles.
 - **Evolutions:** level a pet up AND become close friends and something may happen. Princess and Poppy have surprises in store.
 - **The long walk:** you can walk from Laverton to Brunswick to Reservoir through Altona North, Footscray, Flemington, Coburg and Preston. Or tap your myki.
 - Tap your **myki** at a station to catch the train to suburbs you have already visited.
 - **Your Pawphone** (Phone button, or M) has everything: Petdex, Bag, Friends, a Map of the whole route, your Garden and Settings. Three save slots live on the title screen.
-- **Friends:** chat to townsfolk every day and bring them gifts. Each heart unlocks a little scene, and good friends will come to your rescue in battles (Call).
+- **Friends:** chat to townsfolk every day and bring them gifts. Each heart unlocks a little scene, and good friends sometimes turn up to help when you battle near where they live. Buy presents: books and flowers at Dimitri's milk bar, plants at Bunnings, and beer and wine at the Edinburgh Castle bottle shop on Sydney Rd (for friends, never for pets).
 - **Farming:** Wen at the Edgars Creek community garden gives you plots and seeds. Water once a day (rain counts), pick when ripe, sell at Dimitri's milk bar. Your pets help.
-- **House upgrades:** Gaz at the Laverton Station sausage sizzle sells seeds and upgrades: a backyard veggie patch, a pet door, finishing the twins' room and a paddling pool.
+- **House upgrades and garden tools:** Olly at Bunnings Warehouse in Altona North sells seeds, a long hose, a sprinkler, fertiliser and house upgrades: a backyard veggie patch, a pet door, finishing the twins' room and a paddling pool.
 - Tired? Use your bed at home to sleep until morning, or have a nap to rest your pets.
 - The clock is ticking: there is day and night, Melbourne showers, and some pets keep odd hours.
 
