@@ -13,6 +13,8 @@
 //   fishing  the fishing rod (a tool in upgrades.js) and bait
 //   furniture couches for the house (data/furniture.js)
 //   sell     sell crops and treats from your bag (crops at their price, treats at half)
+import { SH_SHOPS } from './summerhill.js';
+
 export const SHOPS = {
   petshop: { name: 'The Leash You Can Do', where: 'Hope St, Brunswick', tabs: ['treats', 'gear'] },
   bunnings: { name: 'Bunnings Warehouse', where: 'Kororoit Creek Rd, Altona North', tabs: ['seeds', 'tools', 'upgrades', 'gifts'], gifts: ['seedling', 'olive', 'gloves', 'fertiliser'] },
@@ -22,4 +24,5 @@ export const SHOPS = {
   cozzo: { name: 'Franco Cozzo', where: 'Barkly St, Footscray', tabs: ['furniture'] },
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
+  ...SH_SHOPS,
 };

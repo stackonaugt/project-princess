@@ -6,6 +6,7 @@
 //  shop   the shop they open after a chat (data/shops.js)
 
 import { PEOPLE } from './dialogue.js';
+import { SH_NPCS } from './summerhill.js';
 
 export const NPCS = {
   trish: {
@@ -133,7 +134,7 @@ export const NPCS = {
   ed: {
     name: 'Ed', shop: 'petshop', look: { hair: '#e0a880', hairStyle: 'bald', skin: '#e8b890', shirt: '#2f6aa3', pants: '#3a3a48', apron: '#c8443a', glasses: '#2a2a2a' },
   },
-
+  ...SH_NPCS,
 };
 
 // What everyone says lives in dialogue.js.

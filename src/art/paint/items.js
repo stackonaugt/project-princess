@@ -1,4 +1,6 @@
 // Built-in item icons, 12x12 strings centred in a 16x16 texture.
+import { SH_ITEM_ART } from './summerhill.js';
+
 export const ITEM_ART = {
   chicken: { pal: { a: '#c8823a', b: '#e8b060', w: '#f4efe0', k: '#5e3a1a' }, rows: [
     '............', '.........ww.', '........wwww', '.......kaaw.', '......kaab..', '.....kaab...',
@@ -107,6 +109,7 @@ export const ITEM_ART = {
   fertiliser: { pal: { a: '#c8a060', b: '#e0c088', k: '#6a4a2a', r: '#c8443a', w: '#f4efe0' }, rows: [
     '............', '...kkkkkk...', '..kbbbbbbk..', '..kaaaaaak..', '..kwwwwwwk..', '..kwrrrrwk..',
     '..kwwwwwwk..', '..kaaaaaak..', '..kaaaaaak..', '..kaaaaaak..', '...kkkkkk...', '............'] },
+  ...SH_ITEM_ART,
 };
 
 // Seed packets: drawn from the crop's colour (texture item-seed-<crop>).
