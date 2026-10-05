@@ -1,7 +1,7 @@
 // Built-in art for Brunswick East: Holmes St (Adam's red brick unit, the auto
 // parts shop on the Mitchell St corner, the new townhouses opposite, the old
-// red brick corner house), the shopfront strip, the deli and record shop
-// insides, plus the new items and wild things.
+// red brick corner house), the Nicholson St shops, the milk bar's insides,
+// Lygon St's shops and apartments, plus the new items and wild things.
 // Same format as objects.js.
 import { shade, outline, textWidth } from './painter.js';
 import { bricks, tileRoof, window_, door } from './laverton.js';
@@ -17,57 +17,25 @@ function tags(p, x, y, w, h, seed, cols = ['#1e1e24', '#e77fb8', '#3fa38f', '#f5
 }
 const centred = (p, str, cx, y, c) => p.text(str, Math.round(cx - textWidth(str) / 2), y, c);
 
-// Lygon St shopfronts: two-storey Italianate fronts with a cornice, arched
-// upper windows, the painted sign and the shop window. Gentle joke names.
-const SHOPS = {
-  deli: { wall: '#e8dcc0', trim: '#f6efe0', fascia: '#2a6a3a', ink: '#f4efe0', label: 'PASTA LA VISTA', awning: ['#c8302a', '#f4efe0'] },
-  gelato: { wall: '#f4c8d8', trim: '#fbe8ee', fascia: '#5ab0a8', ink: '#ffffff', label: 'BRAIN FREEZE', awning: ['#5ab0a8', '#fbe8ee'] },
-  roaster: { wall: '#7a4a32', trim: '#c8a070', fascia: '#e8d8b0', ink: '#3a2a22', label: 'BEAN THERE', awning: null, brick: true },
-  plants: { wall: '#f2ecdc', trim: '#ffffff', fascia: '#3f7a3a', ink: '#f4efe0', label: 'PLANT DADDY', awning: null },
-  realty: { wall: '#eef0f2', trim: '#ffffff', fascia: '#1e2a48', ink: '#e8c040', label: 'GOUGE & CO', awning: null },
-  records: { wall: '#2a2a34', trim: '#4a4a58', fascia: '#e8c040', ink: '#2a2a34', label: 'WAX LYRICAL', awning: null },
-  pilates: { wall: '#dfe8ec', trim: '#f6fafc', fascia: '#8a9aa8', ink: '#ffffff', label: 'CORE VALUES', awning: ['#8a9aa8', '#f6fafc'] },
-  pub: { wall: '#3a5a4a', trim: '#e8dcc0', fascia: '#1e2a24', ink: '#e8c040', label: 'THE LOCAL', awning: null, brick: true },
-};
-
-function shopWindow(p, v, x, y, w, h) {
-  const dark = v === 'records' || v === 'pub' || v === 'roaster';
-  const glass = dark ? '#3a4a5a' : '#a8d0e4';
-  p.r('#2a2e33', x - 1, y - 1, w + 2, h + 2); p.r(glass, x, y, w, h); p.r(shade(glass, 0.3), x + 1, y + 1, 4, 2);
-  const b = y + h;
-  if (v === 'deli') {                                // salami on hooks, cheese wheels, a jar of olives
-    p.r('#6a4a2a', x + 2, y + 2, w - 4, 1);
-    for (let i = 0; i < 5; i++) { p.r('#8a2a2a', x + 4 + i * 6, y + 3, 3, 6); p.r('#e8c8b8', x + 5 + i * 6, y + 4, 1, 1); }
-    for (let i = 0; i < 3; i++) { p.r('#e8c060', x + 3 + i * 8, b - 5, 7, 4); p.r('#c8a040', x + 3 + i * 8, b - 2, 7, 1); }
-    p.r('#5a7a3a', x + 28, b - 7, 4, 6); p.r('#c8ccd0', x + 28, b - 8, 4, 1);
-  } else if (v === 'gelato') {                       // tubs of gelato in a glass case
-    p.r('#c8ccd0', x + 2, b - 6, w - 4, 5);
-    ['#f4a0b0', '#a8e0a0', '#6a4a2a', '#f8f0d8', '#f0d040', '#b8a0e8'].forEach((c, i) => p.r(c, x + 3 + i * 5, b - 6, 4, 2));
-    p.r('#e8b880', x + 25, y + 3, 5, 6); p.blob(x + 27, y + 3, 3, '#f4a0b0');   // a giant cone sign
-  } else if (v === 'roaster') {                      // hessian sacks and the roaster drum
-    for (let i = 0; i < 3; i++) { p.r('#c8b088', x + 2 + i * 7, b - 8, 6, 8); p.r('#a89068', x + 2 + i * 7, b - 8, 6, 1); p.r('#3a2a1a', x + 4 + i * 7, b - 5, 2, 1); }
-    p.r('#8a8e96', x + 24, b - 12, 8, 9); p.blob(x + 28, b - 8, 3, '#5a5e66'); p.r('#c8443a', x + 30, b - 13, 2, 3);
-  } else if (v === 'plants') {                       // a monstera, hanging pots, a cactus
-    p.blob(x + 8, b - 9, 5, '#2f7a37'); p.r('#3f8a3e', x + 5, b - 12, 2, 2); p.r('#c8643a', x + 5, b - 4, 7, 4);
-    for (const dx of [17, 24]) { p.r('#e8e4dc', x + dx + 2, y, 1, 3); p.r('#c8643a', x + dx, y + 3, 5, 3); p.blob(x + dx + 2, y + 7, 2, '#57a84a'); }
-    p.r('#4a8a4a', x + 28, b - 9, 3, 8); p.r('#4a8a4a', x + 31, b - 7, 2, 1); p.r('#e8e4dc', x + 27, b - 2, 5, 2);
-  } else if (v === 'realty') {                       // the listings: very small flats, very big numbers
-    for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) {
-      const cx = x + 2 + i * 11, cy = y + 2 + j * 8;
-      p.r('#f4f4f0', cx, cy, 9, 7); p.r(['#7aa0c8', '#c8a070', '#8ac0a0'][(i + j) % 3], cx + 1, cy + 1, 7, 3); p.r('#c8302a', cx + 1, cy + 5, 6, 1);
-    }
-    p.r('#c8302a', x + 2, b - 3, w - 4, 2);
-  } else if (v === 'records') {                      // records in the window, a turntable
-    [[6, 5], [15, 4], [24, 5]].forEach(([dx, dy]) => { p.blob(x + dx, y + dy, 3, '#1e1e24'); p.r('#e8c040', x + dx, y + dy, 1, 1); });
-    p.r('#6a4a2a', x + 3, b - 5, 14, 4); p.r('#1e1e24', x + 5, b - 6, 9, 1); p.r('#e8c040', x + 22, b - 6, 10, 5); p.text('LP', x + 24, b - 6, '#2a2a34');
-  } else if (v === 'pilates') {                      // a reformer machine and a big pink ball
-    p.r('#c8ccd0', x + 3, b - 5, 18, 3); p.r('#f4f4f0', x + 6, b - 7, 10, 2); p.r('#5a5e66', x + 3, b - 2, 2, 2); p.r('#5a5e66', x + 19, b - 2, 2, 2);
-    p.blob(x + 27, b - 5, 4, '#f0a0c0'); p.r('#f8d0e0', x + 25, b - 8, 2, 1);
-  } else if (v === 'pub') {                          // warm lights, a tap, a pint
-    p.r('#5a4030', x, b - 7, w, 7); p.r('#f5d070', x + 3, y + 3, 3, 2); p.r('#f5d070', x + 14, y + 3, 3, 2); p.r('#f5d070', x + 25, y + 3, 3, 2);
-    p.r('#e8a040', x + 8, b - 12, 4, 5); p.r('#f4efe0', x + 8, b - 12, 4, 1); p.r('#c8ccd0', x + 20, b - 13, 2, 6);
-  }
+// Lygon St, from the owner's Street View shots: single-storey Victorian
+// shops with tall parapets (arched pediments, scrolls), each painted its own
+// colour. Real names, because the owner asked for this exact strip.
+function pediment(p, x0, W, c, kind) {
+  const cx = x0 + W / 2, l = shade(c, 0.25), d = shade(c, -0.3);
+  if (kind === 'arch') { p.r(c, cx - 10, 4, 20, 8); p.blob(cx, 5, 8, c); p.r(l, cx - 6, -2, 12, 1); p.blob(cx, 6, 4, d); p.blob(cx, 7, 3, c); }
+  if (kind === 'scroll') { p.r(c, cx - 12, 6, 24, 6); p.r(c, cx - 6, 3, 12, 3); p.r(l, cx - 6, 3, 12, 1); for (const dx of [-14, 11]) { p.blob(cx + dx + 1, 9, 2, c); p.r(d, cx + dx, 9, 2, 1); } }
+  for (const dx of [2, W - 5]) { p.r(c, x0 + dx, 6, 3, 6); p.blob(x0 + dx + 1, 5, 2, shade(c, -0.1)); }   // urns on the corners
 }
+function shopGlass(p, x, y, w, h, glass = '#2a3644') {
+  p.r('#1e1e22', x - 1, y - 1, w + 2, h + 2); p.r(glass, x, y, w, h); p.r(shade(glass, 0.25), x + 1, y + 1, 3, 2);
+}
+const LYGON_SHOPS = {
+  benjys: { wall: '#c8c8c4', ped: 'arch' },
+  toystore: { wall: '#e070a8', ped: 'arch' },
+  lygons: { wall: '#2a2a2e', ped: 'arch' },
+  wilkinson: { wall: '#26262a', ped: 'scroll', ground: '#2f5a3a' },
+  oldbrick: { wall: '#e8d890', ped: null, ground: '#b83a2a' },
+};
 
 // A tiny hen, side on (for the chook run).
 function chook(p, x, y, c) {
@@ -91,32 +59,108 @@ export const BRUNSEAST = {
       outline(p.ctx, 0, 0, 48, 40);
     },
   },
-  eshop: {
-    foot: [4, 3], tex: [64, 66], variants: Object.keys(SHOPS), lined: true,
+  lygonshop: {
+    foot: [5, 3], tex: [80, 74], variants: Object.keys(LYGON_SHOPS), lined: true,
     paint(p, v) {
-      const s = SHOPS[v], W = 62, x0 = 1, top = 3, H = 66;
-      if (s.brick) bricks(p, x0, top, W, H - top - 1, s.wall, 7);
-      else { p.r(s.wall, x0, top, W, H - top - 1); p.r(shade(s.wall, -0.12), x0 + W - 2, top, 2, H - top - 1); }
-      // cornice and a curved pediment with the year
-      p.r(s.trim, x0, top, W, 4); p.r(shade(s.trim, 0.3), x0, top, W, 1); p.r(shade(s.trim, -0.2), x0, top + 4, W, 1);
-      p.r(s.trim, x0 + 20, top - 3, 22, 4); p.r(s.trim, x0 + 24, top - 4, 14, 1); p.r(shade(s.trim, 0.3), x0 + 20, top - 3, 22, 1);
-      p.text('1892', x0 + 24, top - 1, shade(s.trim, -0.35));
-      // arched upper windows
-      for (const wx of [8, 40]) {
-        p.r(s.trim, wx - 2, top + 9, 18, 15); p.r(s.trim, wx, top + 7, 14, 2);
-        p.r('#5a6a7a', wx, top + 10, 14, 11); p.r('#5a6a7a', wx + 2, top + 9, 10, 1);
-        p.r('#8aa4b8', wx + 1, top + 11, 4, 2); p.r(s.trim, wx + 6, top + 10, 1, 11); p.r(shade(s.trim, -0.25), wx - 2, top + 23, 18, 1);
+      const s = LYGON_SHOPS[v], W = 78, x0 = 1, H = 74, top = 10, sf = 40, g = s.ground || s.wall;
+      p.shadow(40, H - 1, 76);
+      if (s.ped) pediment(p, x0, W, s.wall, s.ped);
+      if (v === 'oldbrick') bricks(p, x0, top - 4, W, sf - top + 4, s.wall, 7); else p.r(s.wall, x0, top, W, sf - top);
+      p.r(shade(s.wall, 0.2), x0, top, W, 1); p.r(shade(s.wall, -0.25), x0, top + 3, W, 1); p.r(shade(s.wall, -0.15), x0 + W - 2, top, 2, sf - top);
+      p.r(g, x0, sf, W, H - sf - 1); p.r(shade(g, -0.2), x0 + W - 2, sf, 2, H - sf - 1);
+      const win = (x, w, glass) => shopGlass(p, x0 + x, sf + 8, w, H - sf - 10, glass);
+      if (v === 'benjys') {
+        tags(p, x0 + 4, top + 4, 48, 14, 31, ['#1e1e24', '#1e1e24', '#3a3a44']);
+        ['#f0a0c0', '#7ab0e8', '#f0d040', '#e8823a', '#b88ad8', '#e870a0'].forEach((c, k) => { for (let x = k * 4; x < W; x += 24) p.r(c, x0 + x, sf - 6, 4, 7); });
+        for (const cx of [22, 56]) { p.blob(x0 + cx, sf - 3, 6, '#1e2a5a'); p.blob(x0 + cx, sf - 3, 5, '#2a3a7a'); centred(p, 'B', x0 + cx, sf - 5, '#f4f4f0'); }
+        win(3, 50, '#1e2a3a'); p.text('KARAOKE', x0 + 6, sf + 12, '#c8e0ff'); p.text('BEER GDN', x0 + 6, sf + 19, '#c8e0ff');
+        p.r('#f0a0c0', x0 + 42, sf + 14, 5, 8); p.r('#7ab0e8', x0 + 42, sf + 18, 5, 2); p.r('#f2c8a8', x0 + 43, sf + 11, 3, 3);   // the mannequin in sequins
+        p.r('#1e1e22', x0 + 58, sf + 6, 16, H - sf - 7); p.r('#3a4a5a', x0 + 60, sf + 8, 12, H - sf - 10);
+      } else if (v === 'toystore') {
+        p.blob(x0 + 39, top + 10, 5, '#3f8a3e'); p.r('#1e3a1e', x0 + 37, top + 9, 4, 2); p.r('#f0d040', x0 + 38, top + 9, 1, 1);
+        p.r('#2a2a44', x0 + 2, sf - 9, W - 4, 13); p.text('THIS IS NOT', x0 + 18, sf - 7, '#a8c8f0'); p.text('A TOY STORE', x0 + 18, sf - 1, '#a8c8f0');
+        win(3, 52, '#3a3a4a');
+        ['#f0d040', '#e870a0', '#7ab0e8', '#e8823a', '#57a84a', '#b88ad8'].forEach((c, k) => { p.r(c, x0 + 6 + k * 8, H - 9 - (k % 3) * 3, 5, 5 + (k % 3) * 3); p.r('#1e1e22', x0 + 7 + k * 8, H - 8 - (k % 3) * 3, 1, 1); });
+        p.r('#e070a8', x0 + 58, sf + 6, 16, H - sf - 7); p.r('#4a3a2a', x0 + 60, sf + 8, 12, H - sf - 9); p.r('#f0d090', x0 + 61, sf + 10, 10, 6);
+      } else if (v === 'lygons') {
+        p.r('#3a3a40', x0 + 39, top + 2, 1, 4); p.blob(x0 + 39, top + 12, 6, '#1e1e22'); p.blob(x0 + 39, top + 12, 5, '#e8e0c8'); p.blob(x0 + 39, top + 12, 3, '#c8a040');
+        p.r('#1e1e22', x0 + 2, sf - 4, W - 4, 4);
+        win(3, 70, '#2a2a30'); for (const x of [12, 30, 48, 64]) p.r('#f5d070', x0 + x, sf + 10, 3, 2);   // warm lights inside
+        p.blob(x0 + 34, sf + 20, 8, '#c8a040'); p.blob(x0 + 34, sf + 20, 7, '#2a2a30'); p.text('LYGONS', x0 + 23, sf + 18, '#e8c860');
+        for (let k = 0; k < 4; k++) p.r('#f4f4f0', x0 + 56 + (k % 2) * 5, sf + 14 + Math.floor(k / 2) * 7, 4, 5);   // menus taped up
+      } else if (v === 'wilkinson') {
+        p.r('#1e1e22', x0 + 2, sf - 4, W - 4, 4); p.text('MR WILKINSON', x0 + 15, sf - 9, '#c8a050');
+        p.r('#1e1a18', x0 + 28, sf, 6, H - sf - 1); for (let y = sf; y < H - 1; y += 3) p.r('#2e2a28', x0 + 28, y, 6, 1);   // the painted brick pier
+        p.r('#3a2a1a', x0 + 24, sf + 2, 9, 8); p.r('#d8c060', x0 + 25, sf + 3, 7, 6); p.text('W', x0 + 27, sf + 4, '#2a2010');
+        win(3, 22, '#1e2a24'); win(48, 27, '#1e2a24');
+        for (let r = 9; r > 1; r -= 2) p.blob(x0 + 61, sf + 20, r, r % 4 === 1 ? '#3f8a3e' : '#1e2a24');   // the green spiral in the window
+        p.r('#c8302a', x0 + 70, sf + 4, 6, 5); p.r('#f4efe0', x0 + 71, sf + 5, 4, 3);   // the round pizza sign
+        p.r('#1e1e22', x0 + 35, sf + 6, 12, H - sf - 7); p.r('#3a4a44', x0 + 37, sf + 8, 8, H - sf - 9); p.r('#c8a050', x0 + 38, sf + 10, 1, 14);
+      } else if (v === 'oldbrick') {
+        tags(p, x0 + 2, sf + 2, W - 4, H - sf - 6, 77, ['#7ab0e8', '#e870a0', '#1e1e24', '#f4f4f0', '#3fa38f']);
+        p.r('#8a2a1e', x0 + 22, sf + 6, 24, H - sf - 7); for (let y = sf + 8; y < H - 2; y += 3) p.r('#a83a2a', x0 + 23, y, 22, 1);   // roller door
+        tags(p, x0 + 22, sf + 8, 24, 20, 12, ['#7ab0e8', '#f4f4f0']);
+        p.text('300', x0 + 54, sf + 6, '#f4efe0'); p.r('#3a3a40', x0 + 52, sf + 13, 22, H - sf - 14); p.r('#c8c8cc', x0 + 54, sf + 16, 8, 10);   // the bike shop next door
       }
-      if (s.awning) { for (let i = 0; i < W; i += 6) p.r(i % 12 ? s.awning[1] : s.awning[0], x0 + i, top + 25, 6, 6); p.r(shade(s.awning[0], -0.3), x0, top + 31, W, 1); }
-      else { p.r(shade(s.wall, -0.3), x0, top + 28, W, 3); p.r(shade(s.wall, 0.15), x0, top + 27, W, 1); }
-      p.r(shade(s.fascia, -0.3), x0 + 2, top + 33, W - 4, 11); p.r(s.fascia, x0 + 3, top + 34, W - 6, 9); p.r(shade(s.fascia, 0.2), x0 + 3, top + 34, W - 6, 1);
-      centred(p, s.label, x0 + W / 2, top + 36, s.ink);
-      shopWindow(p, v, x0 + 4, top + 47, 34, H - top - 50);
-      // the door, with a little sign
-      p.r('#2a1a10', x0 + 42, top + 46, 14, H - top - 47); p.r(shade(s.fascia, -0.2), x0 + 43, top + 47, 12, H - top - 48);
-      p.r('#a8d0e4', x0 + 45, top + 49, 8, 7); p.r('#f4f4f0', x0 + 46, top + 51, 6, 2); p.r('#f0c040', x0 + 53, top + 58, 1, 2);
-      p.r(shade(s.wall, -0.35), x0, H - 2, W, 1);
-      outline(p.ctx, 0, 0, 64, H);
+      p.r(shade(g, -0.35), x0, H - 2, W, 1);
+      outline(p.ctx, 0, 0, 80, H);
+    },
+  },
+  // Bed Bath N' Table clearance outlet at 297: dark green, a red band, grey awnings.
+  bbnt: {
+    foot: [7, 3], tex: [112, 74], variants: ['outlet'], lined: true,
+    paint(p) {
+      const W = 110, x0 = 1, H = 74, top = 8, sf = 40, c = '#1e2a26';
+      p.shadow(56, H - 1, 108);
+      p.r(c, x0 + 30, top - 4, 50, 5); p.r(shade(c, 0.2), x0 + 30, top - 4, 50, 1);
+      p.r(c, x0, top, W, H - top - 1); p.r(shade(c, 0.2), x0, top, W, 1); p.r(shade(c, -0.3), x0 + W - 2, top, 2, H - top - 1);
+      p.text("BED BATH N' TABLE", x0 + 22, top + 7, '#f4f4f0');
+      p.r('#c8302a', x0, top + 15, W, 7); p.r('#e8443a', x0, top + 15, W, 1); p.text('CLEARANCE OUTLET', x0 + 25, top + 16, '#f4f4f0');
+      p.r(shade(c, -0.2), x0, sf - 6, W, 2);
+      const awning = (x, w) => { p.r('#c8c8c4', x0 + x, sf - 2, w, 6); p.r('#e8e8e4', x0 + x, sf - 2, w, 1); p.r('#8a8a88', x0 + x, sf + 3, w, 1); };
+      shopGlass(p, x0 + 3, sf + 6, 48, H - sf - 8, '#e8e4dc');
+      p.r('#f4f4f0', x0 + 8, H - 12, 22, 8); p.r('#e8d8c8', x0 + 10, H - 15, 7, 4); p.r('#e8d8c8', x0 + 19, H - 15, 7, 4); p.r('#c8b8a8', x0 + 8, H - 5, 22, 1);   // a made bed
+      p.r('#c8302a', x0 + 34, sf + 9, 13, 10); p.text('SALE', x0 + 35, sf + 12, '#f4f4f0');
+      for (let k = 0; k < 4; k++) p.r(['#c8302a', '#e8a0a0', '#f4f4f0', '#8a3a3a'][k], x0 + 34 + k * 3, H - 10, 2, 8);   // towels on a shelf
+      awning(1, 52);
+      p.r('#1e1e22', x0 + 58, sf + 6, 14, H - sf - 7); p.r('#d8d0c4', x0 + 60, sf + 8, 10, H - sf - 9); awning(55, 20); p.text('297', x0 + 59, sf + 5, '#2a2a2a');
+      shopGlass(p, x0 + 78, sf + 6, 28, H - sf - 8, '#e8e4dc'); p.r('#c8302a', x0 + 80, sf + 10, 9, 8); awning(76, 32);
+      p.r(shade(c, -0.35), x0, H - 2, W, 1);
+      outline(p.ctx, 0, 0, 112, H);
+    },
+  },
+  // The apartments across the road. 'fins': a concrete tower with lime green
+  // fins up one corner. 'balconies': grey panels, deep timber-lined balconies,
+  // green pixel tiles on the ground floor and a pub with its posters.
+  lygonapts: {
+    foot: [8, 7], tex: [128, 112], variants: ['fins', 'balconies'], lined: true,
+    paint(p, v) {
+      const H = 112, W = 126, x0 = 1;
+      p.shadow(64, H - 1, 124);
+      if (v === 'fins') {
+        p.r('#a8a8a2', x0, 10, W, H - 11); p.r('#c0c0ba', x0, 10, W, 1); p.r('#4a4a50', x0 + 60, 0, 66, 12); p.r('#5a5a62', x0 + 60, 0, 66, 1);
+        for (let x = 10; x < W; x += 22) p.r('#9a9a94', x0 + x, 12, 1, H - 30);
+        for (let f = 0; f < 5; f++) { const y = 16 + f * 15; p.r('#3a3a40', x0 + 6, y, 36, 8); p.r('#a8c8d8', x0 + 7, y + 1, 34, 3); p.r('#d8e8f0', x0 + 6, y + 8, 36, 1); p.r('#3a3a40', x0 + 96, y + 2, 10, 9); }
+        for (let k = 0; k < 6; k++) { const x = x0 + 44 + k * 3; p.r(k % 2 ? '#7ac83a' : '#a8e040', x, 14, 2, H - 34); }   // the green fins
+        p.r('#3a3a40', x0, H - 20, W, 19); p.r('#f4efe0', x0 + 4, H - 20, 30, 4); p.text('CAFE', x0 + 10, H - 20, '#c8302a');
+        shopGlass(p, x0 + 4, H - 14, 30, 11, '#5a6a7a'); shopGlass(p, x0 + 70, H - 14, 24, 11, '#5a6a7a'); p.r('#1e1e22', x0 + 100, H - 16, 12, 15);
+      } else {
+        p.r('#d8d8d4', x0, 4, W, H - 5); p.r('#ececea', x0, 4, W, 1);
+        for (let x = 0; x < W; x += 16) p.r('#c4c4c0', x0 + x, 6, 1, H - 34);
+        for (let f = 0; f < 3; f++) {
+          const y = 12 + f * 22;
+          for (const [x, w] of [[6, 52], [64, 56]]) { p.r('#1e1e22', x0 + x, y, w, 14); p.r('#8a5a3a', x0 + x + 1, y + 1, w - 2, 4); p.r('#2a2e33', x0 + x + 1, y + 5, w - 2, 8); p.r('#4a5a6a', x0 + x + 4, y + 6, 10, 6); }
+          p.r('#57a84a', x0 + 70, y + 10, 4, 3);
+        }
+        const base = H - 28;
+        for (let y = base; y < base + 12; y += 2) for (let x = 0; x < W; x += 3) p.r((x * 7 + y * 3) % 5 < 2 ? '#a8c838' : '#5a7a2a', x0 + x, y, 3, 2);   // the green pixel tiles
+        p.r('#2a2a34', x0, base + 12, W, 15); for (let y = base + 13; y < H - 1; y += 3) p.r('#34343e', x0, y, W, 1);
+        p.r('#1e1e22', x0 + 40, base + 4, 14, 23); p.r('#3a4a5a', x0 + 42, base + 6, 10, 21);
+        shopGlass(p, x0 + 60, base + 4, 18, 18, '#2a3640'); shopGlass(p, x0 + 88, base + 4, 34, 18, '#2a3640');
+        p.r('#f070b0', x0 + 90, base + 7, 9, 12); p.text('PARMA', x0 + 89, base + 22, '#f4f4f0'); p.r('#3a3a44', x0 + 101, base + 7, 9, 12); p.r('#7ab0e8', x0 + 112, base + 7, 8, 12);
+        p.r('#f4f4f0', x0 + 8, base + 4, 22, 22); tags(p, x0 + 8, base + 4, 22, 22, 55, ['#1e1e24', '#e8823a', '#7ab0e8']);   // the tagged board by the tram stop
+      }
+      outline(p.ctx, 0, 0, 128, H);
     },
   },
 
@@ -235,7 +279,7 @@ export const BRUNSEAST = {
   // blue awning. sandwich: the sandwich parlour (with a rainbow lottery
   // board); milkbar: the takeaway and milk bar (door inside); mural: the
   // black shopfront painted with brush lettering.
-  nshop: {
+  nichshop: {
     foot: [4, 3], tex: [64, 80], variants: ['sandwich', 'milkbar', 'mural'], lined: true,
     paint(p, v) {
       const H = 80, top = 14;
@@ -413,31 +457,6 @@ export const BRUNSEAST = {
       outline(p.ctx, 0, 0, 16, 22);
     },
   },
-  // Inside the deli: a glass counter of cheese, salami and olives.
-  delicase: {
-    foot: [3, 1], tex: [48, 30], variants: ['deli'], lined: true,
-    paint(p) {
-      p.shadow(24, 29, 44);
-      p.r('#d8d4cc', 1, 14, 46, 15); p.r('#f4f0e8', 1, 14, 46, 1); p.r('#a8a49c', 1, 26, 46, 3);
-      p.r('#c8e4ec', 2, 4, 44, 10); p.r('#e8f4f8', 3, 5, 10, 1);
-      for (let i = 0; i < 5; i++) p.r(['#e8c060', '#8a2a2a', '#f4f0d8', '#5a7a3a', '#c86a5a'][i], 4 + i * 8, 10, 7, 4);
-      p.r('#8a2a2a', 6, 7, 2, 3); p.r('#8a2a2a', 30, 7, 2, 3);
-      outline(p.ctx, 0, 0, 48, 30);
-    },
-  },
-
-  // Crates of records in the record shop.
-  recordbin: {
-    foot: [2, 1], tex: [32, 26], variants: ['a', 'b'], lined: true,
-    paint(p, v) {
-      p.shadow(16, 25, 28);
-      p.r('#8a6a42', 2, 14, 28, 11); p.r('#a8845a', 2, 14, 28, 1); p.r('#6a4a2a', 2, 23, 28, 2);
-      const cols = v === 'a' ? ['#c8443a', '#2f6aa3', '#e8c040', '#3fa38f', '#f4efe0'] : ['#7a3ab0', '#e77fb8', '#1e1e24', '#e8823a', '#5ab0a8'];
-      for (let i = 0; i < 6; i++) { p.r(cols[i % cols.length], 4 + i * 4, 6 + (i % 2), 4, 9); p.r(shade(cols[i % cols.length], -0.25), 7 + i * 4, 6 + (i % 2), 1, 9); }
-      outline(p.ctx, 0, 0, 32, 26);
-    },
-  },
-
   // Gig posters pasted on a wall (inside the record shop, or a lane wall).
   gigposters: {
     foot: [2, 1], tex: [32, 20], variants: ['a'], lined: true,
@@ -475,33 +494,47 @@ export const EAST_ITEM_ART = {
     '...kwwwwk...', '...kwggwk...', '...kaaaak...', '...kaaaak...', '...kkkkkk...', '............'] },
 };
 
-// Records from the record shop (items with record: true): a sleeve with the
-// disc peeking out. art: { cover, band }
-export function paintRecord(p, a) {
-  const k = '#1e1a18';
-  p.blob(11, 8, 5, '#1e1e24'); p.blob(11, 8, 1, a.band); p.r('#3a3a44', 9, 4, 2, 1);
-  p.r(k, 1, 2, 11, 12); p.r(a.cover, 2, 3, 9, 10); p.r(shade(a.cover, -0.2), 2, 12, 9, 1);
-  p.r(a.band, 3, 5, 7, 2); p.r(a.band, 4, 9, 2, 2); p.r(shade(a.cover, 0.3), 2, 3, 9, 1);
-}
-
 // Wild things in Brunswick East (same format as FOE_ART in enemies.js).
 export const EAST_FOE_ART = {
-  scoby: [16, 16, p => {                               // a kombucha mother, out of its jar and cross about it
-    p.r('#c8b898', 1, 8, 14, 7); p.r('#e8dcc0', 2, 7, 12, 3); p.r('#a89878', 1, 13, 14, 2);
-    p.r('#d8c8a8', 3, 10, 3, 1); p.r('#b8a888', 9, 12, 4, 1); p.r('#e8a050', 0, 14, 3, 2); p.r('#e8a050', 13, 15, 3, 1);
-    p.r('#ffffff', 4, 9, 2, 2); p.r('#ffffff', 9, 9, 2, 2); p.r('#1a1010', 5, 10, 1, 1); p.r('#1a1010', 9, 10, 1, 1);
-    p.r('#1a1010', 4, 8, 2, 1); p.r('#1a1010', 9, 8, 2, 1); p.r('#1a1010', 6, 12, 3, 1);
+  sandwich: [16, 16, p => {                             // ham, cheese and tomato, half out of its paper bag
+    p.r('#e8dcc0', 1, 9, 14, 6); p.r('#c8b898', 1, 13, 14, 2); p.r('#f4ecd8', 2, 9, 12, 1);
+    p.r('#e8c88a', 3, 2, 10, 8); p.r('#d8a860', 3, 2, 10, 1); p.r('#f4e0b0', 4, 3, 8, 1);
+    p.r('#e88a8a', 3, 5, 10, 1); p.r('#f0d040', 2, 6, 12, 1); p.r('#c8302a', 3, 7, 3, 1); p.r('#8a1a3a', 9, 7, 3, 1); p.r('#57a84a', 12, 7, 2, 1);
+    p.r('#ffffff', 5, 3, 2, 2); p.r('#ffffff', 9, 3, 2, 2); p.r('#1a1010', 6, 4, 1, 1); p.r('#1a1010', 9, 4, 1, 1);
   }],
-  rakali: [16, 16, p => {                              // native water rat: dark back, gold belly, white tail tip
-    p.r('#3a2e26', 3, 7, 9, 5); p.r('#4a3a30', 4, 6, 7, 2); p.r('#d8a050', 4, 11, 8, 2);
-    p.r('#3a2e26', 0, 8, 4, 3); p.r('#2a201a', 0, 9, 1, 1); p.r('#1a1010', 1, 8, 1, 1); p.r('#5a4a40', 3, 6, 1, 2);
-    p.r('#3a2e26', 12, 10, 3, 1); p.r('#3a2e26', 14, 11, 2, 1); p.r('#f4f4f0', 15, 12, 1, 2);
-    p.r('#2a201a', 4, 13, 2, 1); p.r('#2a201a', 9, 13, 2, 1); p.r('#7ab0d8', 0, 15, 16, 1);
+  surprisecandy: [16, 16, p => {                        // a bowl of mixed lollies
+    p.r('#c8ccd0', 1, 9, 14, 4); p.r('#a8acb0', 2, 13, 12, 2); p.r('#e8ecf0', 1, 9, 14, 1);
+    [['#e8302a', 3, 6], ['#57c84a', 6, 5], ['#f0d040', 9, 6], ['#7ab0e8', 11, 7], ['#f070b0', 5, 7], ['#e8823a', 8, 4], ['#b88ad8', 12, 5]].forEach(([c, x, y]) => p.r(c, x, y, 3, 3));
+    p.r('#ffffff', 5, 10, 2, 2); p.r('#ffffff', 9, 10, 2, 2); p.r('#1a1010', 6, 11, 1, 1); p.r('#1a1010', 9, 11, 1, 1);
   }],
-  cargobike: [16, 16, p => {                           // a long-tail cargo bike with a box full of shopping
-    p.blob(3, 12, 3, '#2a2e33'); p.blob(3, 12, 2, '#c8ccd0'); p.blob(13, 12, 3, '#2a2e33'); p.blob(13, 12, 2, '#c8ccd0');
-    p.r('#3fa38f', 3, 9, 10, 2); p.r('#3fa38f', 11, 6, 2, 6); p.r('#1e1e24', 10, 5, 4, 1); p.r('#3fa38f', 6, 7, 1, 3);
-    p.r('#8a6a42', 0, 4, 7, 5); p.r('#a8845a', 0, 4, 7, 1); p.r('#3f8a3e', 1, 2, 2, 2); p.r('#e8823a', 4, 3, 2, 1);
-    p.r('#ffffff', 1, 6, 2, 2); p.r('#ffffff', 4, 6, 2, 2); p.r('#1a1010', 2, 7, 1, 1); p.r('#1a1010', 4, 7, 1, 1);
+  pint: [16, 16, p => {                                 // a pint o' beer, perfect head
+    p.r('#e8f0f4', 3, 2, 10, 13); p.r('#e8a838', 4, 5, 8, 9); p.r('#c88828', 10, 5, 2, 9); p.r('#f0c050', 5, 6, 2, 6);
+    p.r('#f8f4e8', 3, 1, 10, 4); p.r('#ffffff', 4, 1, 4, 1); p.blob(5, 2, 1, '#f8f4e8'); p.blob(11, 2, 1, '#f8f4e8');
+    p.r('#ffffff', 5, 7, 2, 2); p.r('#ffffff', 9, 7, 2, 2); p.r('#1a1010', 6, 8, 1, 1); p.r('#1a1010', 9, 8, 1, 1); p.r('#8a5a1a', 7, 11, 2, 1);
+  }],
+  psychbee: [16, 16, p => {                             // an enormous bee in every colour at once
+    p.blob(5, 4, 3, '#c8f0ff'); p.blob(11, 4, 3, '#f0c8ff'); p.r('#ffffff', 4, 3, 2, 1); p.r('#ffffff', 10, 3, 2, 1);
+    p.r('#f0d040', 3, 7, 10, 6); ['#e870a0', '#7ab0e8', '#57c84a'].forEach((c, k) => p.r(c, 5 + k * 3, 7, 2, 6));
+    p.r('#1e1e24', 1, 8, 3, 4); p.r('#ffffff', 1, 9, 1, 1); p.r('#f070b0', 13, 9, 2, 2); p.r('#1e1e24', 14, 10, 2, 1);
+    p.r('#b88ad8', 2, 6, 1, 2); p.r('#7ae8c8', 0, 5, 1, 1);
+  }],
+  partyguest: [16, 16, p => {                           // party hat, a balloon, no idea where they are
+    p.r('#c8c8cc', 13, 0, 1, 6); p.blob(13, 1, 2, '#e870a0');
+    p.r('#7ab0e8', 6, 0, 4, 1); p.r('#7ab0e8', 5, 1, 6, 1); p.r('#f0d040', 6, 1, 1, 1); p.r('#7ab0e8', 5, 2, 6, 1);
+    p.r('#f2c8a0', 5, 3, 6, 5); p.r('#1a1010', 6, 5, 1, 1); p.r('#1a1010', 9, 5, 1, 1); p.r('#c8302a', 7, 7, 2, 1);
+    p.r('#e8823a', 4, 8, 8, 5); p.r('#f0d040', 5, 9, 1, 1); p.r('#57c84a', 9, 11, 1, 1); p.r('#3a3a48', 5, 13, 2, 3); p.r('#3a3a48', 9, 13, 2, 3);
+    p.r('#f2c8a0', 12, 9, 2, 2);
+  }],
+  crane: [16, 16, p => {                                // a tower crane with a pallet of bricks
+    p.r('#f0c030', 3, 3, 2, 13); for (let y = 4; y < 16; y += 3) p.r('#c89020', 3, y, 2, 1);
+    p.r('#f0c030', 0, 2, 16, 2); p.r('#c89020', 0, 3, 16, 1); p.r('#5a5e66', 0, 1, 3, 2); p.r('#f0c030', 3, 0, 2, 2);
+    p.r('#2a2a30', 12, 4, 1, 6); p.r('#c8443a', 10, 10, 5, 3); p.r('#a8302a', 10, 12, 5, 1);
+    p.r('#ffffff', 1, 5, 2, 2); p.r('#1a1010', 2, 6, 1, 1);
+  }],
+  bowler: [16, 16, p => {                               // crisp whites, a sun hat and a bowl ready to go
+    p.r('#f4f4f0', 4, 1, 8, 2); p.r('#e8e8e4', 3, 3, 10, 1);
+    p.r('#e0a07a', 5, 4, 6, 4); p.r('#1a1010', 6, 5, 1, 1); p.r('#1a1010', 9, 5, 1, 1); p.r('#8a5a4a', 7, 7, 2, 1);
+    p.r('#f4f4f0', 4, 8, 8, 5); p.r('#d8d8d4', 10, 8, 2, 5); p.r('#e8e4dc', 5, 13, 2, 3); p.r('#e8e4dc', 9, 13, 2, 3);
+    p.blob(13, 11, 2, '#2a2a30'); p.r('#c8302a', 13, 10, 1, 1); p.r('#e0a07a', 11, 10, 1, 2);
   }],
 };

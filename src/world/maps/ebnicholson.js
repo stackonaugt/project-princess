@@ -10,8 +10,8 @@
 //   y18-25 shops, the apartments and Victoria St
 import { MapBuilder } from '../MapBuilder.js';
 
-export function buildNicholson() {
-  const b = new MapBuilder({ id: 'nicholson', w: 46, h: 26, fill: 'c', seed: 611 });
+export function buildEbNicholson() {
+  const b = new MapBuilder({ id: 'ebnicholson', w: 46, h: 26, fill: 'c', seed: 611 });
 
   b.hline(0, 45, 9, 'f');
   b.fill(0, 10, 46, 2, '#').hline(0, 45, 12, '+').hline(0, 45, 13, '+');
@@ -27,7 +27,7 @@ export function buildNicholson() {
   b.put('tall', 7, 8, { v: 'cypress' }); b.put('tree', 14, 8, { v: 'lemon' });
   b.sign(4, 8, ['199 Nicholson St.', 'Helen and Paddy lived here before the twins, the mayoring and the house out west. The lemon tree is still going.']);
   b.put('letterbox', 12, 8);
-  // Concetta's place and her chooks, up the top end
+  // Nonna Concetta's place and her chooks, up the top end
   b.put('bungalow', 24, 5, { v: 'cream' });
   b.fenceH(23, 31, 8, 'brickwall', [27]);
   b.fill(32, 0, 9, 8, '.');
@@ -35,15 +35,16 @@ export function buildNicholson() {
   b.put('chookpen', 34, 3);
   b.put('tree', 39, 5, { v: 'lemon' }); b.put('tree', 32, 2, { v: 'lemon' });
   b.fill(37, 6, 3, 2, '"');
-  b.sign(33, 8, ['Concetta\'s.', 'Three chooks: Gina, Dina and Other Gina. Fifty one years in this street and counting.']);
+  b.sign(33, 8, ['Nonna Concetta\'s.', 'Three chooks, one lemon tree, and very strong views on which side of the street the bins go.']);
+  b.put('bin', 28, 9, { v: 'garbage' }); b.put('bin', 29, 9, { v: 'yellow' });
   b.put('powerpole', 23, 9); b.put('powerpole', 43, 9);
   b.put('streettree', 10, 9); b.put('streettree', 30, 9);
 
   // The shop strip on the south side, with the milk bar in the middle
-  b.put('nshop', 2, 18, { v: 'sandwich' });
-  b.put('nshop', 7, 18, { v: 'milkbar' });
+  b.put('nichshop', 2, 18, { v: 'sandwich' });
+  b.put('nichshop', 7, 18, { v: 'milkbar' });
   b.exit(9, 23, 1, 1, 'ebmilkbar', 'door', 'East Brunswick Take Away and Milk Bar');
-  b.put('nshop', 12, 18, { v: 'mural' });
+  b.put('nichshop', 12, 18, { v: 'mural' });
   b.put('phonebooth', 6, 23);
   b.put('bin', 11, 23, { v: 'garbage' });
   b.sign(17, 23, ['The milk bar.', 'Potato cakes, cold drinks and, behind the counter, a shelf of powerful protection spells. The prices move.']);
@@ -63,12 +64,13 @@ export function buildNicholson() {
   b.put('car', 4, 17, { v: 'white' }); b.put('car', 30, 17, { v: 'blue' }); b.put('car', 15, 9, { v: 'red' });
 
   b.exit(0, 9, 1, 9, 'holmes', 'east', 'Holmes St');
-  b.exit(45, 9, 1, 9, 'lygon', 'east', 'Lygon St');
+  b.exit(45, 9, 1, 9, 'eblygon', 'east', 'Lygon St');
   b.exit(14, 25, 3, 1, 'fleming', 'nicholson', 'Fleming Park');
   b.entry('east', 1, 10, 'right').entry('west', 44, 10, 'left').entry('station', 21, 16, 'down')
     .entry('park', 15, 23, 'up').entry('milkbar', 9, 24, 'down');
 
   b.npc('concetta', 36, 7, { face: 'down' });
+  b.npc('hatman', 13, 24, { face: 'up' });
 
   b.lane({ axis: 'x', pos: 12.5, dir: 1, from: -6, to: 52, every: [26, 44], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 13.5, dir: -1, from: -6, to: 52, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });

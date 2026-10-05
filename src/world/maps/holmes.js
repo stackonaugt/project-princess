@@ -66,12 +66,13 @@ export function buildHolmes() {
   b.wildGrass(42, 24, 2, 2); b.wildGrass(19, 24, 2, 1.2);
 
   b.exit(0, 10, 1, 8, 'donald', 'east', 'Donald St, Brunswick');
-  b.exit(43, 10, 1, 8, 'nicholson', 'west', 'Nicholson St');
+  b.exit(43, 10, 1, 8, 'ebnicholson', 'west', 'Nicholson St');
   b.exit(26, 25, 2, 1, 'fleming', 'north', 'Fleming Park');
   b.entry('west', 1, 11, 'right').entry('east', 42, 11, 'left').entry('south', 26, 23, 'up');
 
   b.npc('adam', 8, 10, { face: 'down' });
   b.npc('chelsea', 10, 10, { face: 'down' });
+  b.npc('tradie', 30, 17, { face: 'up' });
 
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -6, to: 50, every: [28, 48], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 14.5, dir: -1, from: -6, to: 50, every: [32, 52], speed: 50, kinds: ['veh-tram-h'], tram: true });

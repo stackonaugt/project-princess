@@ -13,12 +13,15 @@
 //   EAST_SHOPS    -> SHOPS (shops.js)
 //   EAST_ITEMS    -> ITEMS (items.js)        icons in src/art/paint/brunseast.js
 //   EAST_ENEMIES  -> ENEMIES, EAST_FOE_TEXT -> FOE_TEXT, EAST_TRAINERS -> TRAINERS (enemies.js)
+//   EAST_MOVES    -> MOVES (moves.js)
 //   EAST_PLACES   -> PLACES (dialogue.js)    zone taglines
 //
 // The real places are Holmes St (Adam's unit), 199 Nicholson St (where Helen
 // and Paddy used to live), the Nicholson St milk bar strip, Fleming Park and
-// the Brunswick Bowls Club. Everyone here is made up, apart from Adam, who is
-// a real friend of the owner: keep him affectionate.
+// the Brunswick Bowls Club, and Lygon St from the owner's Street View shots.
+// Adam, Chelsea, Hatman, Mr Wilkinson, James the tradie, Nonna Concetta,
+// Abby's aunt and Michael are real people the owner knows: keep them
+// affectionate, specific and never mean. The Sorceress is invented.
 //
 // Australian spelling, no em dashes, lines under about 140 characters.
 
@@ -37,33 +40,36 @@ export const EAST_NPCS = {
     name: 'The Sorceress', shop: 'spells',
     look: { hair: '#1e1a18', hairStyle: 'bun', skin: '#e0b48a', shirt: '#4a2a7a', shirtPattern: 'stripes', shirtAccent: '#f0d040', pants: '#2a1a4a', shoes: '#c8a070', hoops: '#f0d040', lips: '#8a2a5a' },
   },
-  enzo: {
-    name: 'Enzo', shop: 'eastdeli', gift: 'prosciutto',
-    look: { hair: '#d8d4cc', hairStyle: 'short', skin: '#e0a882', shirt: '#f4f4f0', pants: '#3a3a44', apron: '#c8302a', moustache: true },
+  // A Brunswick East legend. Broad brimmed grey hat, torn grey trench coat,
+  // a ripped blue t-shirt. Yells at nobody in particular. Same sandwich daily.
+  hatman: {
+    name: 'Hatman',
+    look: { hair: '#6a5a48', hairStyle: 'short', skin: '#e0a882', hat: '#8a8a84', coat: '#7a7a72', tatters: true, shirt: '#3a6ab0', rips: true, pants: '#4a4238', shoes: '#3a2a1e', stubble: true },
   },
-  juno: {
-    name: 'Juno', shop: 'records',
-    look: { hair: '#c8443a', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#1e1e24', pants: '#3a3a48', shoes: '#1a1a1a', glasses: '#2a2a2a' },
+  // Runs the bar on Lygon St. Grey swept-back hair, short beard, black shirt.
+  mrwilkinson: {
+    name: 'Mr Wilkinson', gift: 'beans',
+    look: { hair: '#7a7068', hairStyle: 'wavyshort', skin: '#e8b894', shirt: '#1e1a1a', collar: true, pants: '#2a3448', shoes: '#1a1414', stubble: true, moustache: '#5a4a40' },
   },
+  // A tradie with a big mop of blond hair. Will fix your doors after the party.
+  tradie: {
+    name: 'James', gift: 'snag',
+    look: { hair: '#f0d070', hairStyle: 'curly', skin: '#f0c098', shirt: '#f08a2a', hivis: true, pants: '#3a3a30', shoes: '#5a3a20', gloves: '#c8a050' },
+  },
+  // The nonna two doors down from 199. The bins go on HER side. No, the other side.
   concetta: {
-    name: 'Concetta', gift: 'egg',
-    look: { hair: '#e8e4d8', hairStyle: 'bun', skin: '#e8b48a', shirt: '#3a5a4a', shirtPattern: 'gingham', shirtAccent: '#f4efe0', pants: '#2a2a34', shoes: '#4a3a2a', glasses: true },
+    name: 'Nonna Concetta', gift: 'egg',
+    look: { hair: '#e8e4d8', hairStyle: 'bun', skin: '#e8b48a', shirt: '#1e1e24', pants: '#1e1e24', shoes: '#2a2a2a', glasses: true, scarf: '#3a3a44' },
   },
-  shane: {
-    name: 'Shane', gift: 'snag',
-    look: { hair: '#8a8d94', hairStyle: 'cap', cap: '#2f6a4a', skin: '#e0a07a', shirt: '#f4f4f0', collar: true, pants: '#e8e4dc', shoes: '#f4f4f0', sunglasses: '#2a2a2a', shades: 'wrap' },
+  // Abby's aunt. A psychologist with an office round the corner.
+  abbysaunt: {
+    name: 'Abby\'s Aunt', gift: 'honey',
+    look: { hair: '#c8a868', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#f4efe0', blazer: '#5a6a8a', pants: '#3a3a48', shoes: '#4a3a2a', glasses: '#8a6a4a' },
   },
-  trudy: {
-    name: 'Trudy',
-    look: { hair: '#b08a58', hairStyle: 'messybun', skin: '#f2c8a0', shirt: '#e8823a', pants: '#3a5a7a', shoes: '#4a3a2a', holding: 'book' },
-  },
-  kev: {
-    name: 'Kev',
-    look: { hair: '#2a1a12', hairStyle: 'short', skin: '#c8906a', shirt: '#3fa38f', pants: '#2a2a30', shoes: '#f4f4f0', beard: true },
-  },
-  tash: {
-    name: 'Tash',
-    look: { hair: '#1e1a18', hairStyle: 'long', skin: '#d8a882', shirt: '#f0a0c0', blazer: '#1e1e24', blazerTrim: '#3a3a44', pants: '#2a2a34', shoes: '#1e1e24', lips: '#8a2a4a' },
+  // Black hair, hoodie up. Asks after Nathan and Rose.
+  michael: {
+    name: 'Michael',
+    look: { hair: '#1a1414', hairStyle: 'short', skin: '#f0c8a8', hood: '#3a3a44', shirt: '#3a3a44', pants: '#2a2a30', shoes: '#f4f4f0' },
   },
 };
 
@@ -131,153 +137,147 @@ export const EAST_PEOPLE = {
     },
     helpsInBattle: 'The Sorceress mutters something old. The foe is briefly very worried about its choices.',
   },
-  enzo: {
-    role: 'Runs the deli on Lygon St. Will not sell you young cheese',
+  hatman: {
+    role: 'Brunswick East legend. Hat, coat, sandwich',
     lines: [
-      ['Prosciutto, parmigiano, cannoli. Everything else is a side dish.'],
-      ['Two years is the youngest I sell. Anything younger is for children.'],
-      ['My nonna opened this shop. The slicer is older than me and it still goes.'],
+      ['"THE TRAMS! They KNOW!" Hatman points at the 96, then at you, then at the sky. Then he nods, satisfied.'],
+      ['"Ham, cheese, tomato. HAM. CHEESE. TOMATO." He holds up the sandwich like evidence.'],
+      ['Hatman yells something long and urgent at a bin. The bin takes it well.'],
+      ['"Nobody listens," says Hatman, very clearly. Then he goes back to yelling.'],
     ],
-    giftLine: 'Eat it here. It does not travel well. Nothing good travels well.',
     heartScenes: {
-      3: ['Enzo gives you a taste of something off the back shelf. "Do not tell the others I let you have this." He says this to everyone.'],
+      3: ['Hatman tears his sandwich exactly in half and hands you the bigger bit. He does not say a word. It is the nicest thing anyone has done for you all week.'],
+      6: ['Hatman tips his enormous hat to you. Just once. Then he yells at a pigeon for about ten minutes.'],
     },
-    helpsInBattle: 'Enzo throws a wedge of parmigiano. It lands like a brick. The foe sits down.',
+    helpsInBattle: 'Hatman thunders across the road yelling something about the moon. The foe does not know what is happening. Neither do you.',
+    battle: {
+      challenge: ['Hatman stops yelling. He looks you dead in the eye.', '"SANDWICH." He unwraps it. It has been waiting for this.'],
+      ask: 'Battle Hatman?', yes: 'Bring it', no: 'Back away slowly',
+      win: ['Hatman wraps the sandwich back up, very gently. "Good," he says. "GOOD." Then he yells at a tram.'],
+      lose: ['The sandwich has won. Hatman raises it to the sky and yells for a while about it.'],
+      again: ['"SANDWICH." Here we go again.'],
+    },
   },
-  juno: {
-    role: 'Runs Wax Lyrical, the record shop',
+  mrwilkinson: {
+    role: 'Runs the bar on Lygon St',
     lines: [
-      ['Australian stuff is in the front crate. Everything else can wait.'],
-      ['People come in asking for "something chill". I hand them The Avalanches and they leave happy.'],
-      ['Yes, you can play it before you buy. No, you cannot play it twice.'],
+      ['Come in, come in. Grab a stool. There is a bowl of lollies on the bar. Nobody knows what is in it. That is the point.'],
+      ['Trivia is Tuesday. Karaoke is up the road at Benjy\'s. We do not compete. We just listen to it through the wall.'],
+      ['Best bar on Lygon St. I am biased. I am also right.'],
     ],
+    giftLine: 'Beans from the roaster up the road. Do not tell them I gave them away.',
     heartScenes: {
-      4: ['Juno puts on Paul Kelly and both of you stop talking until the song finishes. "Yeah," she says. That is the whole conversation.'],
+      3: ['Mr Wilkinson throws his arms wide behind the bar, mid song, and does not stop until the chorus is done. "Sorry. It was a good one."'],
+      6: ['Mr Wilkinson pours you something he will not name. "On the house. Do not make it weird." It is very good.'],
     },
-    helpsInBattle: 'Juno turns the shop speakers towards the street. The bass alone knocks the foe sideways.',
+    helpsInBattle: 'Mr Wilkinson leans out the door and pours the foe a pint. It sits down to drink it and forgets the battle.',
+    battle: {
+      challenge: ['Mr Wilkinson wipes down the bar and grins.', '"Fancy a round? Two rounds. Surprise first."'],
+      ask: 'Battle Mr Wilkinson?', yes: 'Pour it', no: 'Just looking',
+      win: ['"Good game. Next one is on me." He means the pint, not the battle. Probably.'],
+      lose: ['"House always wins," says Mr Wilkinson, and finishes the pint himself.'],
+      again: ['"Another round? Go on then."'],
+    },
+  },
+  tradie: {
+    role: 'A carpenter. Big blond hair, bigger heart',
+    lines: [
+      ['Having a party? Going to be a big one? If any doors come off, you call me. I mean it.'],
+      ['Thirty years of carpentry and the only thing I cannot fix is the rent.'],
+      ['Saw your front door, by the way. Hinge is going. Not today. But it is going.'],
+    ],
+    giftLine: 'Snag from the job site barbie. Still warm. Mostly.',
+    heartScenes: {
+      3: ['James measures your doorway twice, out of habit. "Cut once," he says, and winks. You do not know what it means, but you feel safer.'],
+      6: ['James: "Seriously. Wild party, doors off, bring them round. No charge for mates." He shakes your hand. It is like shaking a fence post.'],
+    },
+    helpsInBattle: 'James jogs over with a cordless drill. The foe takes one look and decides to be somewhere else.',
   },
   concetta: {
-    role: 'Keeps chooks and a lemon tree behind 199 Nicholson St',
+    role: 'Lives two doors from 199 Nicholson St. Watches the bins',
     lines: [
-      ['Fifty one years in this street. I have seen four milk bars and one very strange sorceress.'],
-      ['The chooks are called Gina, Dina and Other Gina. Do not ask about Other Gina.'],
-      ['Helen lived at 199 before you were born, near enough. Lovely girl. Never once took my lemons without asking.'],
+      ['EH! YOU! The bin! She go on THIS side, not THAT side! Every week, the same! Mamma mia!'],
+      ['You always make the mess in my street! The leaves, the bins, the little dog! Always!'],
+      ['Fifty one years I live here. Fifty one years the bins go on THIS side. Then you come.'],
+      ['Thursday is the bins. THURSDAY. Not Wednesday. Not "whenever". Madonna santa.'],
     ],
-    giftLine: 'Still warm. Take two, I have more than I can use.',
+    giftLine: 'Here. Eggs from my chooks. Eat something, you are too skinny. And fix the bin.',
     heartScenes: {
-      3: ['Concetta shows you the lemon tree her husband planted in 1974. "It has outlived him and it will outlive me. That is the deal with trees."'],
-      6: ['Concetta hands you a bag of lemons and will not hear a word about it. You are now in the lemon arrangement. It is permanent.'],
+      3: ['Nonna Concetta catches you putting the bin on the right side. She stares. She nods, once. "Finally." It is the best review of your life.'],
+      6: ['Nonna Concetta pinches your cheek hard enough to leave a mark. "You are a good one. A disaster with the bins. But a good one."'],
     },
-    helpsInBattle: 'Concetta arrives with a broom and a point of view. The foe backs away.',
+    helpsInBattle: 'Nonna Concetta storms out with a wooden spoon, yelling in Italian. The foe has never been so sorry.',
   },
-  shane: {
-    role: 'Bowls at the BBC. Barefoot, always',
+  abbysaunt: {
+    role: 'Abby\'s aunt. A psychologist with an office nearby',
     lines: [
-      ['Barefoot bowls Friday nights. Everyone welcome, nobody good.'],
-      ['The green is in beautiful nick. Do not let the dog on the green.'],
-      ['Bocce is through the gate. The bocce blokes have been playing the same game since 1987.'],
+      ['If you ever need someone to talk to, my office is just round the corner. Second floor, the door with the plant.'],
+      ['Twins, a mayor husband and a house full of pets? You are doing really well. It is okay if it does not feel like it.'],
+      ['Abby says you are lovely. Abby is a good judge. She gets that from me.'],
     ],
-    giftLine: 'Snag from the barbecue. Onions underneath, as God intended.',
+    giftLine: 'Honey from the Merri Creek hives. Very good in tea. Very good for a hard day.',
     heartScenes: {
-      4: ['Shane teaches you the bowls bias. Your bowl curves gently into the ditch. "First one always does," he says, lying kindly.'],
+      3: ['Abby\'s aunt asks how you are, and then waits for a real answer. You give her one. She just listens. It helps more than you expected.'],
+      6: ['Abby\'s aunt: "Remember to look after yourself too. Not just the pets." You promise. You mostly mean it.'],
     },
-    helpsInBattle: 'Shane rolls a bowl across the grass. It curves, impossibly, right into the foe.',
+    helpsInBattle: 'Abby\'s aunt says something calm and kind. Your pet takes a deep breath and gets back up.',
   },
-  trudy: {
-    role: 'Walks her greyhound round Fleming Park twice a day',
+  michael: {
+    role: 'Hoodie up, hanging round Fleming Park',
     lines: [
-      ['Off leash area is down the bottom end. The oval is for the cricket and the cricket is very serious about that.'],
-      ['Greyhounds sleep twenty hours a day. The other four they spend doing one enormous lap.'],
-      ['The playground is up by Albert St. Nice and shady. The twins would love it.'],
+      ['Hey. You would not have any codeine on you? No? Yeah. Fair enough.'],
+      ['Have you seen Nathan lately? Or Rose? I have not heard from either of them in ages.'],
+      ['Tell Rose I said hi if you see her. And Nathan. Tell Nathan too.'],
     ],
     heartScenes: {
-      3: ['Trudy tells you her greyhound was a rescue. "She had never seen grass. First time she felt it she just stood there." She gets a bit teary. So do you.'],
+      3: ['You tell Michael that Rose is over on Donald St and Nathan runs Rusty round the athletics track. He looks really relieved. "I will text them. I will actually text them."'],
+      6: ['Michael: "Rose messaged me back. We are getting a coffee." He pulls his hood down for the first time. "Thanks for that."'],
     },
-    helpsInBattle: 'Trudy lets the greyhound off the lead. One lap later the foe has given up.',
-  },
-  kev: {
-    role: 'Does the Nicholson St run on a cargo bike',
-    lines: [
-      ['Two kids, a week of shopping and a crate of oat milk. The bike does not care.'],
-      ['Nicholson St bike lane, Fleming Park, the bakery. That is my whole world and it is enough.'],
-    ],
-    helpsInBattle: 'Kev rings his bell. It is an extremely loud bell.',
-    battle: {
-      challenge: ['Oh, a battle? Hang on, let me park.', 'Right. Me and the bike. We are undefeated at the school drop-off.'],
-      ask: 'Battle Kev?', yes: 'Have a go', no: 'Let him park',
-      win: ['Fair enough. Take this, it is from the bottom of the crate.'],
-      lose: ['The bike stays undefeated.'],
-      again: ['Another go? I have got about four minutes before pick up.'],
-    },
-  },
-  tash: {
-    role: 'Runs the coffee window on Lygon St',
-    lines: [
-      ['Single origin, roasted up the road. No, I will not do it with three sugars. Yes, I will do it with three sugars.'],
-      ['Brunswick East has one of everything and four of some things. All of them are good.'],
-    ],
-    helpsInBattle: 'Tash slides a flat white across. Your pet does not drink coffee but is flattered.',
-    battle: {
-      challenge: ['You battle? Good. I have had six coffees and nowhere to put the energy.'],
-      ask: 'Battle Tash?', yes: 'Bring it', no: 'Just the coffee',
-      win: ['Nice work. Cannoli on the house. Do not tell Enzo what I charged you.'],
-      lose: ['Caffeine wins again.'],
-      again: ['Back for more? The machine is still on.'],
-    },
+    helpsInBattle: 'Michael wanders over, hood up, and stands next to your pet. Just being there. It counts.',
   },
 };
 
 // ------------------------------------------------------------ zone taglines
 export const EAST_PLACES = {
   holmes: 'Red brick units, the 96 tram and an auto parts shop on the corner.',
-  nicholson: 'A milk bar, a sandwich parlour and a wall of graffiti.',
+  ebnicholson: 'A milk bar, a sandwich parlour and a wall of graffiti.',
   ebmilkbar: 'Potato cakes, cold drinks and a shelf of protection spells.',
   fleming: 'A big oval, a pavilion and dogs off the lead down the bottom end.',
   bowls: 'Two greens, the bocce courts and the hall on Victoria St.',
-  lygon: 'A deli, a record shop and more coffee than one street needs.',
-  eastdeli: 'Salami on hooks, cheese wheels and a slicer older than Enzo.',
-  records: 'Crates of vinyl, gig posters and a turntable you get one go on.',
+  eblygon: 'Bars, karaoke, a toy store that is not a toy store and apartments all the way up.',
 };
 
 // ------------------------------------------------------------ friends
 export const EAST_FRIENDS = {
   adam: {
-    loves: ['beans', 'cannoli', 'sitandthink'], likes: ['croissant', 'icedcoffee', 'littlecreatures', 'paperback'], dislikes: ['goon'],
+    loves: ['beans', 'cannoli', 'honey'], likes: ['croissant', 'icedcoffee', 'littlecreatures', 'paperback'], dislikes: ['goon'],
     rewards: { 4: { item: 'beans', n: 1 } },
     assist: { heal: 0.35, selfAtk: 1 },
   },
   chelsea: { loves: ['tennis', 'chicken', 'kombucha'], likes: ['cannoli', 'icedcoffee', 'strawberry'], dislikes: ['goon'], rewards: { 4: { item: 'tennis', n: 2 } }, assist: { selfAtk: 1, heal: 0.2 } },
   sorceress: { loves: ['kombucha', 'honey'], likes: ['lemon', 'cheese', 'icedcoffee'], dislikes: ['vb'], rewards: { 5: { item: 'kombucha', n: 2 } }, assist: { foeAtk: 1, foeDef: 1 } },
-  enzo: { loves: ['parmigiano', 'chianti', 'olive'], likes: ['tomato', 'basil', 'lemon'], dislikes: ['twinkie'], rewards: { 4: { item: 'prosciutto', n: 2 } }, assist: { damage: 0.18 } },
-  juno: { loves: ['gossip', 'sinceileft', 'orangewine'], likes: ['croissant', 'paperback', 'moondog'], dislikes: ['xxxx'], assist: { foeDef: 1 } },
-  concetta: { loves: ['lemon', 'tomato', 'olive'], likes: ['basil', 'zucchini', 'flowers', 'egg'], dislikes: ['takis'], rewards: { 3: { item: 'egg', n: 3 } }, assist: { heal: 0.4 } },
-  shane: { loves: ['snag', 'draught', 'vb'], likes: ['potato', 'cheese', 'greatnorthern'], dislikes: ['orangewine'], assist: { selfDef: 1, damage: 0.1 } },
-  trudy: { loves: ['chicken', 'tennis', 'thedry'], likes: ['sardine', 'paperback', 'flowers'], dislikes: ['goon'], assist: { heal: 0.2, selfAtk: 1 } },
-  kev: { loves: ['kombucha', 'carrot'], likes: ['croissant', 'tomato', 'icedcoffee'], dislikes: ['vb'] },
-  tash: { loves: ['beans', 'icedcoffee'], likes: ['cannoli', 'croissant', 'strawberry'], dislikes: ['snag'], assist: { damage: 0.15 } },
+  hatman: { loves: ['snag', 'potato'], likes: ['cheese', 'croissant', 'icedcoffee'], dislikes: ['kombucha'], assist: { foeAtk: 1, foeDef: 1 } },
+  mrwilkinson: { loves: ['beans', 'draught', 'orangewine'], likes: ['cannoli', 'prosciutto', 'cheese'], dislikes: ['goon'], rewards: { 4: { item: 'beans', n: 1 } }, assist: { foeAtk: 1 } },
+  tradie: { loves: ['snag', 'vb', 'icedcoffee'], likes: ['potato', 'cheese', 'croissant'], dislikes: ['kombucha'], rewards: { 4: { item: 'snag', n: 2 } }, assist: { selfDef: 1, damage: 0.12 } },
+  concetta: { loves: ['lemon', 'tomato', 'olive'], likes: ['basil', 'zucchini', 'flowers', 'egg'], dislikes: ['takis'], rewards: { 3: { item: 'egg', n: 3 } }, assist: { damage: 0.2 } },
+  abbysaunt: { loves: ['honey', 'flowers', 'paperback'], likes: ['kombucha', 'lemon', 'croissant'], dislikes: ['goon'], rewards: { 4: { item: 'honey', n: 1 } }, assist: { heal: 0.4 } },
+  michael: { loves: ['icedcoffee', 'potato'], likes: ['snag', 'cannoli', 'croissant'], dislikes: ['kombucha'], assist: { selfDef: 1 } },
 };
 
 // ------------------------------------------------------------ shops
 export const EAST_SHOPS = {
-  spells: { name: 'East Brunswick Take Away and Milk Bar', where: 'Nicholson St, Brunswick East', tabs: ['spells', 'treats', 'gifts'], treats: ['cannoli', 'cheese', 'snag'], gifts: ['kombucha', 'icedcoffee', 'gaytime'] },
-  eastdeli: { name: 'Pasta La Vista', where: 'Lygon St, Brunswick East', tabs: ['treats', 'gifts'], treats: ['prosciutto', 'cannoli', 'cheese'], gifts: ['parmigiano', 'beans', 'olive'] },
-  records: { name: 'Wax Lyrical', where: 'Lygon St, Brunswick East', tabs: ['gifts'], gifts: ['gossip', 'eastlp', 'sitandthink', 'sinceileft'] },
+  spells: { name: 'East Brunswick Take Away and Milk Bar', where: 'Nicholson St, Brunswick East', tabs: ['spells', 'treats', 'gifts'], treats: ['cannoli', 'prosciutto', 'egg', 'cheese', 'snag'], gifts: ['kombucha', 'honey', 'beans', 'parmigiano', 'icedcoffee'] },
 };
 
 // ------------------------------------------------------------ items
 export const EAST_ITEMS = {
-  cannoli:    { name: 'Cannoli', price: 6, desc: 'Ricotta, pistachio and icing sugar on your nose. From the Lygon St deli.' },
+  cannoli:    { name: 'Cannoli', price: 6, desc: 'Ricotta, pistachio and icing sugar on your nose. The milk bar gets them in from Lygon St.' },
   prosciutto: { name: 'Prosciutto', price: 8, desc: 'Sliced so thin you can read through it. Every dog in Brunswick East knows that door.' },
   egg:        { name: 'Free-range egg', price: 3, desc: 'From Concetta\'s chooks. Still warm. Gina would like it back.' },
-  parmigiano: { name: 'Wedge of parmigiano', price: 12, gift: true, desc: 'Aged two years. Enzo says anything younger is for children.' },
+  parmigiano: { name: 'Wedge of parmigiano', price: 12, gift: true, desc: 'Aged two years. Anything younger is for children, apparently.' },
   beans:      { name: 'Bag of coffee beans', price: 16, gift: true, desc: 'Roasted up the road. Tasting notes of stone fruit and rent.' },
   honey:      { name: 'Merri Creek honey', price: 10, gift: true, desc: 'From the hives by the creek. The bees commute about three kilometres.' },
   kombucha:   { name: 'Kombucha', price: 7, gift: true, desc: 'Homebrewed ginger kombucha. Fizzy, sour and very good for you, apparently.' },
-  // Vinyl from Wax Lyrical (record: true). art: { cover, band } for the sleeve.
-  gossip:      { name: 'Paul Kelly: Gossip', price: 30, gift: true, record: true, art: { cover: '#e8d8b0', band: '#c8302a' }, desc: 'Melbourne songs about Melbourne things. Darling it hurts.' },
-  eastlp:      { name: 'Cold Chisel: East', price: 30, gift: true, record: true, art: { cover: '#c8302a', band: '#f4efe0' }, desc: 'Pub rock for the drive home from the pub.' },
-  sitandthink: { name: 'Courtney Barnett: Sometimes I Sit and Think', price: 34, gift: true, record: true, art: { cover: '#7ab0d8', band: '#e8c040' }, desc: 'Recorded just up the road. Very Brunswick East.' },
-  sinceileft:  { name: 'The Avalanches: Since I Left You', price: 36, gift: true, record: true, art: { cover: '#3fa38f', band: '#f0a0c0' }, desc: 'Nine hundred samples and a parrot. Melbourne\'s greatest party record.' },
 };
 
 // Protection spells from the milk bar (spell: true). They go on a pet like
@@ -297,45 +297,88 @@ export function spellPrice(id, day) {
 }
 
 // ------------------------------------------------------------ battles
+export const EAST_MOVES = {
+  soggy:        { name: 'Soggy Bottom', type: 'smelly', power: 45, anim: 'stink', text: '{u} has been in the bag since breakfast. {t} gets the full soggy.' },
+  beetroot:     { name: 'Beetroot Stain', type: 'park', power: 0, effect: { foeDef: 1 }, anim: 'gust', text: 'A slice of beetroot slides out of {u} and stains {t} for life.' },
+  clingwrap:    { name: 'Cling Wrap', type: 'plastic', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} wraps itself back up tight. Fresh as.' },
+  mysterylolly: { name: 'Mystery Lolly', type: 'fairy', power: 50, anim: 'beam', text: '{u} flings a lolly at {t}. Nobody knows what flavour it was. Not even {t}.' },
+  sugarrush:    { name: 'Sugar Rush', type: 'caffeine', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} has had too many red frogs. Way too many.' },
+  chewytoffee:  { name: 'Chewy Toffee', type: 'plastic', power: 40, effect: { foeAtk: 1 }, anim: 'bite', text: '{u} glues {t}\'s jaws together with a toffee.' },
+  buzz:         { name: 'Big Buzz', type: 'psychic', power: 45, anim: 'shout', text: '{u} buzzes in a colour {t} has never seen before.' },
+  sting:        { name: 'Sting', type: 'park', power: 50, anim: 'lunge', text: '{u} stings {t}. Everything goes a bit paisley.' },
+  kaleidoscope: { name: 'Kaleidoscope', type: 'psychic', power: 0, effect: { foeDef: 1 }, anim: 'beam', text: '{u} spins and {t} sees seventeen bees. Seventeen.' },
+  whereparty:   { name: 'Where Is The Party', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} asks {t} where the September Babies party is. {t} does not know. Nobody knows.' },
+  happybday:    { name: 'Happy Birthday', type: 'fairy', power: 45, anim: 'shout', text: '{u} sings Happy Birthday at {t}. Badly. And loudly.' },
+  partypie:     { name: 'Party Pie', type: 'old', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} finds a party pie in its pocket. Still warm, somehow.' },
+  craneswing:   { name: 'Swinging Load', type: 'steel', power: 55, anim: 'lunge', text: '{u} swings a pallet of bricks right at {t}.' },
+  concrete:     { name: 'Concrete Pour', type: 'rock', power: 45, effect: { foeAtk: 1 }, anim: 'dig', text: '{u} pours a slab over {t}\'s feet. Another eight storeys coming.' },
+  reversing:    { name: 'Beep Beep Beep', type: 'steel', power: 0, effect: { selfDef: 1 }, anim: 'shout', text: '{u} beeps for a very long time. Nobody can think.' },
+  bowl:         { name: 'Bowl', type: 'rock', power: 50, anim: 'lunge', text: '{u} sends a bowl down the green. It curves, impossibly, into {t}.' },
+  bias:         { name: 'Bias', type: 'old', power: 0, effect: { foeDef: 1 }, anim: 'gust', text: '{u} explains the bias of a bowl to {t}. For twenty minutes.' },
+  barefoot:     { name: 'Barefoot Friday', type: 'old', power: 40, anim: 'hop', text: '{u} kicks off its shoes and stomps on {t}.' },
+};
+
 export const EAST_ENEMIES = {
-  scoby: {
+  sandwich: {
     faces: 'front',
-    name: 'Kombucha SCOBY', type: 'smelly', stats: { hp: 58, attack: 50, defence: 58, speed: 40, special: 58 },
-    moves: ['stench', 'rot', 'plague'], drop: ['kombucha', 0.1],
+    name: 'Milk Bar Sandwich', type: ['old', 'smelly'], stats: { hp: 66, attack: 58, defence: 60, speed: 35, special: 50 },
+    moves: ['soggy', 'beetroot', 'clingwrap'], drop: ['cheese', 0.3],
   },
-  rakali: {
-    name: 'Rakali', type: 'water', stats: { hp: 54, attack: 60, defence: 48, speed: 75, special: 45 },
-    moves: ['splash', 'gnaw', 'hide'], drop: ['sardine', 0.3],
-  },
-  cargobike: {
+  surprisecandy: {
     faces: 'front',
-    name: 'Cargo Bike', type: 'steel', stats: { hp: 64, attack: 60, defence: 62, speed: 50, special: 35 },
-    moves: ['runover', 'beep', 'scoot2'], drop: ['carrot', 0.3],
+    name: 'Surprise Candy', type: ['fairy', 'plastic'], stats: { hp: 58, attack: 50, defence: 55, speed: 70, special: 66 },
+    moves: ['mysterylolly', 'sugarrush', 'chewytoffee'],
+  },
+  pint: {
+    faces: 'front',
+    name: 'Pint o\' Beer', type: 'booze', stats: { hp: 68, attack: 62, defence: 58, speed: 42, special: 55 },
+    moves: ['hiccup', 'slosh', 'beergoggles', 'silverpillow'],
+  },
+  psychbee: {
+    name: 'Psychedelic Bee', type: ['psychic', 'park'], stats: { hp: 50, attack: 58, defence: 44, speed: 78, special: 62 },
+    moves: ['buzz', 'sting', 'kaleidoscope'], drop: ['honey', 0.2],
+  },
+  partyguest: {
+    faces: 'front',
+    name: 'Lost Party Guest', type: ['booze', 'fairy'], stats: { hp: 60, attack: 52, defence: 50, speed: 45, special: 58 },
+    moves: ['whereparty', 'happybday', 'hiccup', 'partypie'],
+  },
+  crane: {
+    faces: 'front',
+    name: 'Tower Crane', type: 'steel', stats: { hp: 72, attack: 66, defence: 70, speed: 25, special: 35 },
+    moves: ['craneswing', 'concrete', 'reversing'],
+  },
+  bowler: {
+    faces: 'front',
+    name: 'Lawn Bowler', type: ['old', 'rock'], stats: { hp: 64, attack: 60, defence: 62, speed: 30, special: 50 },
+    moves: ['bowl', 'bias', 'barefoot', 'grumble'], drop: ['snag', 0.2],
   },
 };
 
 export const EAST_FOE_TEXT = {
-  scoby: { appear: 'A kombucha mother slides out of its jar. It has been fermenting. It has thoughts.', leave: 'settles back into the jar to keep brewing.' },
-  rakali: { appear: 'A rakali slips out of the Merri Creek! A native water rat, gold belly, white tipped tail.', leave: 'slides back into the creek without a splash.' },
-  cargobike: { appear: 'An unattended cargo bike rolls down the bike lane at you!', leave: 'coasts off towards the bakery.' },
+  sandwich: { appear: 'Hatman unwraps a ham, cheese and tomato sandwich from the milk bar. It looks ready.', leave: 'is wrapped back up for later.' },
+  surprisecandy: { appear: 'Mr Wilkinson slides a bowl of mixed lollies down the bar. Something in there moves.', leave: 'goes back on the bar for the next customer.' },
+  pint: { appear: 'A pint o\' beer, poured perfectly, with a head like a cloud.', leave: 'is sipped down to the bottom.' },
+  psychbee: { appear: 'A huge bee buzzes out of the flowers. It is every colour at once.', leave: 'drifts off in a cloud of swirls.' },
+  partyguest: { appear: 'A very lost guest from the September Babies party stumbles out of the bushes. "Is this the party?"', leave: 'wanders off to find the party. Wrong way.' },
+  crane: { appear: 'A tower crane swings round over the new apartments. It has noticed you.', leave: 'goes back to building eight more storeys.' },
+  bowler: { appear: 'A lawn bowler in crisp whites lines up a bowl. At you.', leave: 'heads in for a shandy.' },
 };
 
 export const EAST_TRAINERS = {
-  adam: { name: 'Adam', prize: 'chloe', team: [['cargobike', 8], ['pet:chloe', 10]] },
-  kev: { name: 'Kev', team: [['cargobike', 9], ['scooter', 10]], reward: { carrot: 2 }, money: 40 },
-  tash: { name: 'Tash', team: [['flatwhitefoe', 9], ['ristretto', 10], ['scoby', 10]], reward: { cannoli: 1 }, money: 45 },
+  adam: { name: 'Adam', prize: 'chloe', team: [['pet:chloe', 10]] },
+  hatman: { name: 'Hatman', intro: 'Hatman wants to battle! Probably. It is hard to tell.', sendOut: 'He unwraps the {f}.', team: [['sandwich', 10]], reward: { cheese: 1 }, money: 30 },
+  mrwilkinson: { name: 'Mr Wilkinson', intro: 'Mr Wilkinson wants to shout you a round!', sendOut: 'He slides the {f} down the bar.', team: [['surprisecandy', 10], ['pint', 11]], reward: { beans: 1 }, money: 50 },
 };
 
-// Who you can meet in Brunswick East's tall grass.
+// Who you can meet in Brunswick East's tall grass. Lygon St is all concrete.
 export const EAST_ENCOUNTERS = [
-  { id: 'scoby', lv: [6, 9], weight: 2 },
-  { id: 'cargobike', lv: [6, 9], weight: 2, day: true },
-  { id: 'rakali', lv: [6, 9], weight: 4, zones: ['fleming'] },
-  { id: 'flatwhitefoe', lv: [6, 8], weight: 2, day: true, zones: ['lygon', 'nicholson'] },
-  { id: 'sourdough', lv: [6, 9], weight: 1, zones: ['lygon'] },
+  { id: 'psychbee', lv: [6, 9], weight: 4, day: true, zones: ['fleming', 'holmes'] },
+  { id: 'partyguest', lv: [6, 9], weight: 3, zones: ['fleming', 'ebnicholson'] },
+  { id: 'crane', lv: [7, 9], weight: 3, day: true, zones: ['holmes', 'ebnicholson'] },
+  { id: 'bowler', lv: [7, 9], weight: 5, day: true, zones: ['bowls'] },
   { id: 'scooter', lv: [6, 9], weight: 2 },
   { id: 'ibis', lv: [6, 8], weight: 2 },
   { id: 'alleycat', lv: [6, 9], weight: 2 },
   { id: 'possum', lv: [7, 9], weight: 2, night: 3 },
-  { id: 'rat', lv: [6, 8], weight: 1, night: 2 },
 ];

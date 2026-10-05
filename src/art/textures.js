@@ -20,7 +20,7 @@ import { paintCrop } from './paint/crops.js';
 import { FX, FX_STRIPS, VEHICLES } from './paint/fx.js';
 import { paintTuft } from './paint/tiles.js';
 import { FOE_ART } from './paint/enemies.js';
-import { EAST_ITEM_ART, EAST_FOE_ART, paintRecord } from './paint/brunseast.js';
+import { EAST_ITEM_ART, EAST_FOE_ART } from './paint/brunseast.js';
 
 // Folder in assets/sprites -> texture key prefix
 const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe' };
@@ -108,7 +108,6 @@ export function buildTextures(scene) {
   for (const [id, art] of Object.entries({ ...ITEM_ART, ...EAST_ITEM_ART })) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   for (const [id, it] of Object.entries(ITEMS)) if (it.drink || it.lolly || it.vape) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
   for (const [id, it] of Object.entries(ITEMS)) if (it.book) canvasTexture(scene, `item-${id}`, 16, 16, p => paintBook(p, it.art));
-  for (const [id, it] of Object.entries(ITEMS)) if (it.record) canvasTexture(scene, `item-${id}`, 16, 16, p => paintRecord(p, it.art));
   for (const [id, c] of Object.entries(CROPS)) canvasTexture(scene, `item-seed-${id}`, 16, 16, p => paintSeedPacket(p, c.colour));
   for (const [id, art] of Object.entries(GEAR_ART)) canvasTexture(scene, `item-gear-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   // Effects and vehicles

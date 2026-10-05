@@ -50,13 +50,13 @@ export function buildFleming() {
   [[6, 5], [10, 7], [33, 24], [38, 26], [13, 12], [8, 20], [30, 29], [3, 10]].forEach(([x, y]) => b.put('tall', x, y, { v: 'biggum' }));
   b.wildGrass(8, 11, 3, 2); b.wildGrass(32, 27, 3.5, 1.6); b.wildGrass(41, 23, 2.5, 2); b.wildGrass(14, 5, 3, 1.4);
 
-  b.exit(0, 2, 1, 2, 'nicholson', 'park', 'Nicholson St');
+  b.exit(0, 2, 1, 2, 'ebnicholson', 'park', 'Nicholson St');
   b.exit(20, 33, 3, 1, 'holmes', 'south', 'Holmes St');
   b.exit(45, 31, 1, 2, 'bowls', 'east', 'Brunswick Bowls Club');
   b.entry('nicholson', 2, 2, 'down').entry('north', 21, 31, 'up').entry('bowls', 43, 31, 'left')
     .entry('south', 21, 4, 'down');
 
-  b.npc('trudy', 15, 26, { face: 'down' });
+  b.npc('michael', 15, 26, { face: 'down' });
 
   b.lane({ axis: 'x', pos: 0.5, dir: -1, from: -3, to: 49, every: [12, 24], speed: 56, kinds: ['veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 31.5, dir: 1, from: -3, to: 49, every: [12, 24], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-red'] });

@@ -28,7 +28,7 @@ export function buildEbMilkBar() {
   b.sign(12, 11, ['PRICES SUBJECT TO THE MOON.', 'No refunds on warding. The Sorceress says the spell worked, you simply were not attacked.']);
 
   b.npc('sorceress', 4, 6, { face: 'down' });
-  b.exit(8, 13, 1, 1, 'nicholson', 'milkbar', 'Nicholson St');
+  b.exit(8, 13, 1, 1, 'ebnicholson', 'milkbar', 'Nicholson St');
   b.entry('door', 8, 12, 'up');
   b.noDress = true;
   return b.finish();

@@ -20,6 +20,10 @@
 //   jersey     football jersey colours, e.g. ['#c8202a', '#1e1e24'] (horizontal hoops)
 //   bumbag     a bum bag on the waist (colour)
 //   gloves     work gloves (colour)
+//   hat        a broad brimmed hat (colour)
+//   hood       a hoodie with the hood up (colour; set shirt to match)
+//   coat       a long open coat down to the knees (colour); tatters: true rips the hem
+//   rips       a torn shirt, skin showing through (true)
 //   holding    something in one hand: 'monkey' | 'teddy' (toys), 'pint' (a Guinness),
 //              'wine' (a glass of red), 'book', 'vape', 'bass' (a bass guitar)
 //   baby       true draws a toddler instead (see drawBaby). Toddlers also take
@@ -36,12 +40,30 @@ export const FRAME_W = 16, FRAME_H = 32;
 export function drawPerson(p, look, dir, step) {
   const L = { skin: '#f2c79a', hair: '#6b3f1f', shirt: '#3fa38f', pants: '#33446e', shoes: '#3a2418', hairStyle: 'short', ...look };
   if (L.jersey) { L.shirt = L.jersey[0]; L.shirtPattern = L.shirtPattern || 'jersey'; L.shirtAccent = L.jersey; }
-  L.sleeve = L.blazer || L.shirt;
+  L.sleeve = L.coat || L.blazer || L.shirt;
   L.twoPiece = !!look.pants;
   if (L.baby) return drawBaby(p, L, dir, step);
   const bob = step ? -1 : 0;
   if (dir === 'left') side(p, L, step, bob); else front(p, L, dir === 'up', step, bob);
   if (dir !== 'up') extras(p, L, dir, bob);
+  headwear(p, L, dir, bob);
+}
+
+// Hats and hoods go on last, over the hair.
+function headwear(p, L, dir, y) {
+  const side = dir === 'left', back = dir === 'up';
+  if (L.hood) {
+    const c = L.hood, d = shade(c, -0.25), l = shade(c, 0.18);
+    if (back) { p.r(c, 2, 3 + y, 12, 13); p.r(l, 4, 4 + y, 6, 1); p.r(d, 11, 5 + y, 2, 10); }
+    else if (side) { p.r(c, 4, 3 + y, 8, 3); p.r(c, 8, 6 + y, 5, 10); p.r(l, 5, 3 + y, 4, 1); p.r(d, 11, 7 + y, 2, 8); }
+    else { p.r(c, 2, 3 + y, 12, 3); p.r(c, 2, 6 + y, 2, 10); p.r(c, 12, 6 + y, 2, 10); p.r(l, 4, 3 + y, 7, 1); p.r(d, 12, 7 + y, 2, 8); p.r('#e8e4dc', 6, 16 + y, 1, 3); p.r('#e8e4dc', 9, 16 + y, 1, 3); }
+  }
+  if (L.hat) {
+    const c = L.hat, d = shade(c, -0.28), l = shade(c, 0.2);
+    p.r(c, 3, 1 + y, 10, 4); p.r(l, 4, 1 + y, 6, 1); p.r(d, 3, 4 + y, 10, 1); // crown and band
+    p.r(c, 0, 5 + y, 16, 2); p.r(d, 0, 6 + y, 16, 1); p.r(l, 1, 5 + y, 5, 1); // brim
+    if (!back) p.r('rgba(20,10,10,0.25)', 3, 7 + y, 10, 1); // shade on the face
+  }
 }
 
 // Paint a pattern over a rectangle. Coordinates are frame pixels; oy is the
@@ -195,7 +217,14 @@ function torso(p, L, x, w, bob, back, side) {
   p.r(L.shirtPattern ? DIM : sd, x + w - 2, 18 + bob, 2, 8);
   if (!L.pinafore) p.r(shade(L.pants, -0.1), x, 25 + bob, w, 1); // belt line
   if (L.jersey && back && !side) { p.r('#f4f4f0', 6, 19 + bob, 3, 1); p.r('#f4f4f0', 8, 20 + bob, 1, 3); } // number 7
+  if (L.rips && !back) [[2, 19], [3, 20], [5, 21], [6, 22], [3, 23]].forEach(([i, j]) => p.r(i < w - 2 ? L.skin : DIM, x + i, j + bob, 1, 1));
   if (L.blazer) blazer(p, L, x, w, bob, back, side);
+  if (L.coat) {
+    const c = L.coat, d = shade(c, -0.22), l = shade(c, 0.15);
+    if (back || side) { p.r(c, x, 17 + bob, w, 12); p.r(l, x + 1, 17 + bob, w - 2, 1); p.r(d, x + w - 2, 18 + bob, 2, 11); }
+    else { p.r(c, x, 17 + bob, 3, 12); p.r(c, x + w - 3, 17 + bob, 3, 12); p.r(l, x, 17 + bob, 2, 1); p.r(d, x + w - 2, 18 + bob, 2, 11); p.r(d, x + 2, 18 + bob, 1, 10); }
+    if (L.tatters) for (let i = 0; i < w; i += 2) p.r(i % 4 ? d : 'rgba(0,0,0,0)', x + i, 28 + bob, 1, 1), p.r(shade(c, -0.4), x + i + 1, 27 + bob + (i % 3 ? 1 : 0), 1, 1);
+  }
   if (L.pinafore) pinafore(p, L, bob, back, side);
   // A slogan across the chest (colour), a few pixels of "lettering".
   if (L.logo && !back && !side) [0, 1, 3, 4, 5, 7].forEach(i => p.r(L.logo, x + 2 + i * (w - 5) / 8, 20 + bob, 1, 2));
