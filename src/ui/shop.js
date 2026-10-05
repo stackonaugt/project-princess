@@ -11,11 +11,12 @@ import { UPGRADES, UPGRADE_ORDER, TOOL_ORDER, FISHING_ORDER } from '../data/upgr
 import { COUCHES, COUCH_ORDER } from '../data/furniture.js';
 import { HEROES } from '../data/heroes.js';
 import { SHOPS } from '../data/shops.js';
+import { SPELLS, SPELL_ORDER, spellPrice } from '../data/east.js';
 import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell', fish: 'Sell fish', party: 'Party' };
+const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell', fish: 'Sell fish', party: 'Party' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -39,8 +40,13 @@ export function openShop(panel, close, shopId = 'petshop') {
   const baby = !!HEROES[state.data.hero]?.look.baby, refused = t => baby && (shop.adultTabs || []).includes(t);
   const rowsFor = tab => {
     const itemRow = id => { const it = ITEMS[id]; return { name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }; };
-    if (tab === 'treats') return (shop.treats || Object.keys(ITEMS).filter(id => ITEMS[id].price && !ITEMS[id].crop && !ITEMS[id].local && isTreat(id))).map(itemRow);
+    if (tab === 'treats') return (shop.treats || Object.keys(ITEMS)).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
     if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
+    if (tab === 'spells') return SPELL_ORDER.map(id => {
+      const sp = SPELLS[id], price = spellPrice(id, state.data.day), on = state.data.spell?.id === id && state.data.spell.day === state.data.day;
+      return { name: sp.name, desc: sp.desc, price, icon: itemIcon('gear-bandana', 32), owned: on, ownedLabel: 'Cast today ✓',
+        act: buy(sp.name, price, () => { state.data.spell = { id, day: state.data.day }; }) };
+    });
     if (tab === 'drinks') return Object.keys(ITEMS).filter(id => ITEMS[id].drink).map(itemRow);
     if (tab === 'lollies') return Object.keys(ITEMS).filter(id => ITEMS[id].lolly).map(itemRow);
     if (tab === 'vapes') return refused(tab) ? [] : Object.keys(ITEMS).filter(id => ITEMS[id].vape).map(itemRow);
@@ -100,6 +106,7 @@ export function openShop(panel, close, shopId = 'petshop') {
       shop.tabs.length > 1 ? h('div', { class: 'tabs', role: 'tablist' }, ...shop.tabs.map(id =>
         h('button', { class: 'tab' + (tab === id ? ' on' : ''), role: 'tab', 'aria-selected': tab === id, onclick: () => { tabFor[shopId] = id; sfx.select(); render(); } }, TAB_NAMES[id]))) : null,
       h('div', { class: 'm-scroll' },
+        tab === 'spells' ? h('p', { class: 'small' }, 'A spell protects your whole team until the end of the day. The prices move. The Sorceress does not explain the prices.') : null,
         tab === 'gear' ? h('p', { class: 'small' }, 'Gear goes on a pet from your bag. One piece each. It helps in battles.') : null,
         refused(tab) ? h('div', { class: 'note' }, h('p', {}, 'Sam leans right over the counter. "Absolutely not, little one. Lollies are that way."')) : null,
         tab === 'vapes' && !refused(tab) ? h('p', { class: 'small' }, 'Presents for adult friends who already vape. Sam says the law changed and these are "basically pharmacy only". There is a sign. It says VAPES.') : null,

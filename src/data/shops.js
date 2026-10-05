@@ -1,6 +1,7 @@
 // The shops. An NPC with `shop: '<id>'` in npcs.js opens one of these when
 // you talk to them (see ui/shop.js). Tabs:
-//   treats   pet treats from items.js (with a price, not crops, drinks or presents; list `treats` to pick them)
+//   treats   pet treats from items.js (with a price, not crops, drinks or presents) (list `treats` to limit which)
+//   spells   the milk bar sorceress's protection spells (data/east.js). Prices move every day
 //   gear     pet gear from gear.js
 //   seeds    seed packets for crops.js (list `seeds` to limit which)
 //   tools    garden tools from upgrades.js (tool: true)
@@ -25,8 +26,7 @@ export const SHOPS = {
   fishvan: { name: 'Spiro\'s Fish Van', where: 'Kororoit Creek Rd, Altona North', tabs: ['fish'] },
   vapeshop: { name: 'Plenty Road Convenience', where: 'Plenty Rd, Preston', tabs: ['lollies', 'vapes'], adultTabs: ['vapes'] },
   bottleshop: { name: 'Edinburgh Castle Bottleshop', where: 'Sydney Rd, Brunswick', tabs: ['drinks'], adults: true },
-  // Brunswick East
-  deli: { name: 'Pasta La Vista', where: 'Lygon St, Brunswick East', tabs: ['treats', 'gifts'], treats: ['cannoli', 'prosciutto', 'cheese'], gifts: ['parmigiano', 'beans', 'olive'] },
-  records: { name: 'Wax Lyrical', where: 'Lygon St, Brunswick East', tabs: ['gifts'], gifts: ['gossip', 'eastlp', 'sitandthink', 'sinceileft'] },
-  market: { name: 'Enviro Park Market', where: 'Merri Creek, Brunswick East', tabs: ['seeds', 'gifts'], seeds: ['basil', 'carrot', 'zucchini', 'strawberry'], gifts: ['honey', 'kombucha', 'seedling', 'flowers'] },
 };
+
+import { EAST_SHOPS } from './east.js';
+Object.assign(SHOPS, EAST_SHOPS);   // Brunswick East

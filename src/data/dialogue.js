@@ -18,6 +18,7 @@
 //  Rules of thumb: Australian spelling, no em dashes, lines under about 140 characters
 //  (dialogue boxes are small on phones). Use \' for an apostrophe inside 'quotes'.
 //  Signs and the text when you inspect things are in the map files and flavour.js.
+import { EAST_PEOPLE, EAST_FOE_TEXT, EAST_PLACES } from './east.js';
 
 export const PEOPLE = {
   trish: {
@@ -854,6 +855,31 @@ export const PEOPLE = {
 };
 
 export const PET_TEXT = {
+  chloe: {
+    bio: 'Adam and Chelsea\'s kelpie. Works all day, then sits on a chair at the pub like a person.',
+    clue: 'A black and tan kelpie lives in the front unit on Holmes St, Brunswick East. She knows every tram timetable.',
+    funFact: 'She has her own bar stool at the local. Nobody decided this. It simply happened.',
+    favouriteSpot: 'The driveway at Holmes St, where she can see the whole street at once.',
+    lines: {
+      0: [
+        'Chloe watches you from the driveway. She is working out whether you are livestock.',
+        'Chloe does one lap of you at speed. Assessment complete.',
+        'Chloe drops a ball at your feet and stares. This is not a request.',
+      ],
+      3: [
+        'Chloe leans her whole weight against your leg. Kelpies do not do halfway.',
+        'Chloe herds you gently towards the front gate. She has decided it is time to go somewhere.',
+      ],
+      6: [
+        'Chloe trots at your heel, checking back every few steps that you are keeping up.',
+        'Chloe hears a tram three streets away and tells you about it at length.',
+      ],
+      9: ['Chloe falls asleep across your feet mid-pat. The tail keeps wagging the whole time.'],
+    },
+    night: ['Chloe is curled on the doormat, one ear up, on duty.'],
+    rain: ['Chloe is out in the rain anyway. Kelpies consider weather a rumour.'],
+    asleep: ['Chloe is asleep on the couch she is absolutely not allowed on.'],
+  },
   princess: {
     bio: 'The guardian of Laverton. Sassy, fluffy, and ready to attack.',
     clue: 'Locals talk about a tiny, very fluffy security guard who patrols Allen St. Try right out the front.',
@@ -1151,3 +1177,8 @@ export const PLACES = {
   vapeshop: 'Plenty Road Convenience. American lollies, cold drinks and a sign that says VAPES.',
   wetlands: 'Reeds, frogs and paths that all look the same.',
 };
+
+// Brunswick East keeps its words in east.js.
+Object.assign(PEOPLE, EAST_PEOPLE);
+Object.assign(FOE_TEXT, EAST_FOE_TEXT);
+Object.assign(PLACES, EAST_PLACES);

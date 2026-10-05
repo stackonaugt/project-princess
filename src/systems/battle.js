@@ -10,6 +10,7 @@ import { MOVES, PET_MOVES } from '../data/moves.js';
 import { effectiveness, typeList } from '../data/types.js';
 import { form, petTex } from './forms.js';
 import { GEAR } from '../data/gear.js';
+import { SPELLS } from '../data/east.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from './state.js';
 import { BALANCE } from '../config.js';
@@ -31,13 +32,29 @@ export function statsAt(base, lv) {
   return { hp: Math.floor((2 * base.hp * lv / 100 + lv + 12) * BALANCE.hp), attack: s('attack'), defence: s('defence'), special: s('special'), speed: s('speed') };
 }
 
-// Stats at a level, with the pet's gear bonus on top.
+// A protection spell from the milk bar lasts the rest of the day, and helps
+// every pet on your team (data/east.js).
+export function spellBonus() {
+  const sp = state.data.spell;
+  return sp && sp.day === state.data.day ? SPELLS[sp.id]?.bonus || {} : {};
+}
+
+// Stats at a level, with the pet's gear bonus (and today's spell) on top.
 export function fighterStats(f) {
-  const s = statsAt(f.base, f.level), b = GEAR[f.gear]?.bonus || {};
-  for (const k of ['attack', 'defence', 'speed', 'special']) if (b[k]) s[k] = Math.round(s[k] * b[k]);
+  const s = statsAt(f.base, f.level), b = { ...GEAR[f.gear]?.bonus || {} }, sp = f.side === 'mine' ? spellBonus() : {};
+  for (const k of ['attack', 'defence', 'speed', 'special']) {
+    const m = (b[k] || 1) * (sp[k] || 1);
+    if (m !== 1) s[k] = Math.round(s[k] * m);
+  }
   return s;
 }
-export const gearBonus = f => GEAR[f.gear]?.bonus || {};
+export function gearBonus(f) {
+  const g = GEAR[f.gear]?.bonus || {};
+  if (f.side !== 'mine') return g;
+  const sp = spellBonus(), out = { ...g };
+  for (const k of ['crit', 'regen']) if (sp[k]) out[k] = (out[k] || 0) + sp[k];
+  return out;
+}
 
 function fighter(o) {
   const stats = statsAt(o.base, o.level);

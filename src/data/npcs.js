@@ -6,6 +6,7 @@
 //  shop   the shop they open after a chat (data/shops.js)
 
 import { PEOPLE } from './dialogue.js';
+import { EAST_NPCS } from './east.js';
 
 export const NPCS = {
   trish: {
@@ -142,6 +143,8 @@ export const NPCS = {
   },
 
 };
+
+Object.assign(NPCS, EAST_NPCS);   // Brunswick East
 
 // What everyone says lives in dialogue.js.
 for (const [id, t] of Object.entries(PEOPLE)) {
