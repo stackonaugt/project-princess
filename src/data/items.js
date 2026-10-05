@@ -12,6 +12,7 @@
 //                 art: { kind: packet | vape, body, label, cap }
 //   local: true   a treat only sold where a shop lists it (shops.js `treats`), not in every treats tab
 //   record: true  a vinyl record from Wax Lyrical, Lygon St (also gift: true). art: { cover, band }
+//   story: true   a story item (the fish pie). deco: true  party decorations. Neither is a treat or a present.
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 export const ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
@@ -86,6 +87,13 @@ export const ITEMS = {
   sitandthink: { name: 'Courtney Barnett: Sometimes I Sit and Think', price: 34, gift: true, record: true, art: { cover: '#7ab0d8', band: '#e8c040' }, desc: 'On vinyl. Recorded just up the road. Very Brunswick East.' },
   sinceileft: { name: 'The Avalanches: Since I Left You', price: 36, gift: true, record: true, art: { cover: '#3fa38f', band: '#f0a0c0' }, desc: 'On vinyl. Melbourne\'s greatest party record. Nine hundred samples and a parrot.' },
 
+  // The story (data/story.js). story: true items are for the plot: not treats, not presents.
+  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon and three days on a windowsill. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  // Party decorations (deco: true) from Bunnings, for the September Babies Bash.
+  bunting:    { name: 'Bunting', price: 6, deco: true, desc: 'Ten metres of little triangle flags. Gets tangled just by looking at it.' },
+  balloons:   { name: 'Balloons', price: 4, deco: true, desc: 'A bag of balloons. Somebody is going to have to blow these up.' },
+  fairylights:{ name: 'Fairy lights', price: 12, deco: true, desc: 'Warm white, solar powered. Makes any backyard look like a wedding.' },
+
   // The bottle shop at the Edinburgh Castle (drink: true). Presents for friends. Never for pets.
   vb:          { name: 'VB', price: 4, drink: true, art: { kind: 'stubby', body: '#4a2a12', label: '#2a7a3a', cap: '#c8443a' }, desc: 'A hard-earned thirst needs a big cold beer. Apparently.' },
   draught:     { name: 'Carlton Draught', price: 4, drink: true, art: { kind: 'stubby', body: '#4a2a12', label: '#2a3a6a', cap: '#e8c040' }, desc: 'Made from beer. The pub standard.' },
@@ -126,4 +134,4 @@ export const ITEMS = {
 };
 
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
-export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk;
+export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;

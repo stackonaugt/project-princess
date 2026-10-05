@@ -79,6 +79,13 @@ export const NPCS = {
   binman: {
     name: 'Bin Man', look: { hair: '#5a3a1a', hairStyle: 'cap', cap: '#f07a1a', skin: '#e0a880', shirt: '#f07a1a', hivis: true, pants: '#2a3a5a', shoes: '#2a2a2a', gloves: '#e8c040', stubble: true },
   },
+  spiro: {
+    name: 'Spiro', shop: 'fishvan', look: { hair: '#d8d4cc', hairStyle: 'short', skin: '#e0b088', shirt: '#f4f4f0', apron: '#2f6aa3', pants: '#2a2e3a', shoes: '#2a2a2a', moustache: '#d8d4cc' },
+    gift: 'sardine',
+  },
+  julie: {
+    name: 'Julie Jana', look: { hair: '#9a7a58', hairStyle: 'long', skin: '#f2c8a8', shirt: '#d8202a', logo: '#f4f4f0', pants: '#3a5a8a', shoes: '#f4f4f0', lips: '#c8202a', hoops: '#e8a070' },
+  },
   hipster: {
     name: 'Hipster', look: { hair: '#2a1a12', hairStyle: 'cap', cap: '#1e1e22', skin: '#f0c8a0', shirt: '#1e1e22', pants: '#1e1e22', shoes: '#1e1e22', beard: true, glasses: '#3a2a1a' },
   },

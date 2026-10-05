@@ -58,6 +58,7 @@ src/
   bus.js              Tiny event bus shared by scenes and the HTML UI
   util.js             hash() noise, seeded rng(), pick/clamp/lerp
   data/               CONTENT. Most edits happen here.
+    story.js          THE STORY: chapter cards, objectives config, Paddy's spill, the lunch swap, recipes, pranks, news bulletins, RSVPs, party trivia, the end pop-up
     dialogue.js       ALL THE WORDS: PEOPLE (lines, hints, heart scenes, battle text, byHero, advice), PET_TEXT, FOE_TEXT, PLACES (zone taglines). Merged into the other data files at import
     routines.js       Where people are by time and weekday (isAt): Paddy's work day, council meetings (Tuesday 6:30pm)
     council.js        Council motions (Stardew community-centre style), the swing votes
@@ -95,9 +96,10 @@ src/
     controls.js       Keyboard + floating joystick + A/B buttons -> movement vector and bus events
     clock.js          Time labels, darkness curve, night checks
     battle.js         Battle rules: levels, stats, damage, enemy AI, XP, money, gear bonuses
+    story.js          Chapter state and objectives (objectives(), inChapter(), spillDeadline(), electionVotes())
     forms.js          A pet's current form (evolved or not): form(id), petTex(id), canEvolve, evolve
     sfx.js            Synthesised WebAudio blips (no audio files)
-  ui/                 HTML interface: ui.js (HUD, dialogue, banner, toasts, modals), title.js (title screen and save slots), phone.js (the Pawphone menu) with apps friends.js, map.js, garden.js, requests.js, council.js, cheats.js; fishing.js (the fishing mini-game); battle.js (battle boxes, messages, menus), shop.js (all shops), petdex.js, bag.js (treats and gear), menu.js, team.js, hero.js
+  ui/                 HTML interface: story.js (Story app, chapter cards, West is Best News, the party games), ui.js (HUD, dialogue, banner, toasts, modals), title.js (title screen and save slots), phone.js (the Pawphone menu) with apps friends.js, map.js, garden.js, requests.js, council.js, cheats.js; fishing.js (the fishing mini-game); battle.js (battle boxes, messages, menus), shop.js (all shops), petdex.js, bag.js (treats and gear), menu.js, team.js, hero.js
 assets/sprites/       Custom art drop zone (see its README). templates/ has every built-in sprite as PNG
 tools/                serve.mjs (dev server), build-manifest.mjs (used by the deploy workflow), balance.mjs (battle simulator)
 archive/prototype.html  The original single-file canvas prototype, kept for reference
@@ -120,9 +122,13 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Time.** The day runs 6am to 2am (`DAY_START`/`DAY_END`), 10 game minutes per 7 real seconds, paused while any dialogue or menu is open. At 2am the day ends and you wake up in bed at home. You can also use your bed at home (`sleep` interactable on `bed`/`single`, and `cot` for the twins): sleep until morning, or a 2-hour nap that heals your pets. Rain is decided per day from the day number (`state.rainWindow`), so it is stable across reloads.
 - **Dialogue** lives in `src/data/dialogue.js`, one entry per person, pet, foe and place. Edit words there, not in npcs.js/pets.js/friends.js/enemies.js. `byHero` gives per-hero lines (helen, hadrian, aleksy).
 - **Routines** (`data/routines.js`): an NPC spot in a map can be `{ at: 'place' }`; the NPC only appears while `isAt(id, place)` is true, and World re-checks every 10 game minutes (`syncRoutines`). Paddy walks out the front door before 8am on weekdays (`leaving`), works at council reception, chairs Tuesday meetings and is home in the evening and on weekends.
-- **Council** (`data/council.js`, `ui/council.js`): motions on the foyer noticeboard. Chip in items or money, then it is voted on at the next Tuesday meeting (be in the chamber to watch, or read about it next morning). Paddy, Rayna and Deanna vote yes, Lesley and Malcolm no, Kirsty and Dahlia once you have `SWING` hearts with them. Passed motions change maps (`state.motionPassed(id)`) and rules (bike lane halves long walks; dog park gives friendship at Lohse).
+- **Council** (`data/council.js`, `ui/council.js`): motions on the foyer noticeboard, going up one at a time as you find pets (`state.motionUnlocked`: the first at two pets). Chip in items or money, then it is voted on at the next Tuesday meeting (be in the chamber to watch, or read about it next morning). Paddy, Rayna and Deanna vote yes, Lesley and Malcolm no, Kirsty and Dahlia once you have `SWING` hearts with them. Passed motions change maps (`state.motionPassed(id)`) and rules (bike lane halves long walks; dog park gives friendship at Lohse).
+- **Start of the game:** you can't leave Allen St (except into home and the yard) until you find Princess. Found pets join your team straight away if there's room (`joinTeam`). Finding Princess triggers Julie Jana's tutorial play-fight (`julieTutorial`, `flags.tutorial`): she battles once with a "Sorry I Missed You" card, your pet can't lose it (trainer `tutorial` lines make it hang on), then she leaves for good.
+- **Talking:** townsfolk open a menu (Chat, Give a gift, Shop, Play-fight for rematchable trainers you've beaten); pets offer Chat or Give a treat. Only one option means straight to it. Unbeaten trainers still go straight to their challenge.
+- **Exit markers:** every exit off a map edge gets a green way sign with its label (`buildExitMarkers`, texture from `exitSignTexture`); locked exits get witches hats (`fx-cone`). The camera can scroll a little past map edges so the HUD never hides the player.
+- **Calendar** (Pawphone app, `ui/calendar.js`): the week ahead (council meetings, bin night, rain, Paddy's weekends) and today's jobs; a reminder toast each morning (`reminders()`).
 - **Requests** (Pawphone app): three a day from people you have met. Give them the item as a gift for a money and friendship bonus. A "!" floats over anyone with an open request.
-- **Fishing**: buy a rod (and bait) at Anaconda, face water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A. Catches by zone in `FISH_TABLES` (WorldScene). Fish are treats; James buys them.
+- **Fishing**: buy a rod (and bait) at Anaconda, face water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A. Catches by zone in `FISH_TABLES` (WorldScene), with a catch celebration and size in cm (`ui/fishing.js`). Fish are treats; Spiro's fish van on Kororoit Creek Rd (`fishvan` shop, `fish` tab) pays 50% more than James.
 - **Cheats**: add `?cheat=1` to the URL once (stored in localStorage) for a Cheats app on the Pawphone (money, items, warp, time and day, pets, hearts, upgrades, motions). `?cheat=0` turns it off.
 - **Pets** have one chat per day (+friendship) and one treat per day (love/like/neutral/dislike). 25 points per heart, 10 hearts. Lines unlock by heart level. Behaviours live in `Pet.think()`: `patrol` (Princess), `stalk` (Salami), `phase` (Spooky teleports, solid at night), `zoomies` (Poppy charges and bonks), `aloof` (Stanley walks away until 3 hearts, approaches at 6). Rusty (Nathan's whippet, Speed type) uses `zoomies` too. Pets can sleep on a schedule.
 
@@ -159,6 +165,15 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Councillors** are playful near-names, not the real people: Cr Lesley Bentleigh (the antagonist, red-faced and yelling), Cr Malcolm Dismay (her ally), Cr Kirsty Bishopp (swing, leans right), Cr Dahlia Kellandra (swing, leans to Paddy), Cr Rayna Hawley and Cr Deanna Grimes (allies). Keep them comic, not cruel.
 - Trainers who haven't been beaten still go straight to their challenge; friendship starts once that's done.
 
+### The story
+
+Four chapters, words in `src/data/story.js`, state in `state.data.story` (see `systems/story.js`), scenes in WorldScene (`advanceStory`, `startChapter`, `checkStory`, `cook`, `lunch`, `prank`, `invite`, `partyTime`). A chapter that finishes hands over to the next the following morning. The Story app on the Pawphone lists the current objectives; the Cheats app can start any chapter.
+
+1. **Helen's Pet Training School.** One Nation has cancelled early childhood education; Helen opens a pet school. Find all six pets, train three to level 10, evolve one.
+2. **Get Bent!** Paddy's morning scene (Rayna is away, Bentleigh moves a spill). Build the kitchen, cook the very dodgy fish pie at the stove (any fish and a lemon), and swap it for Cr Bentleigh's lunch on the foyer booth (weekdays 11am to 3pm; a pet on your team causes the distraction). She goes home sick for a week and Paddy survives. Miss the spill vote (the second Tuesday) and Paddy is deposed: the swing votes need double hearts (`state.swingHearts`) until he wins the election. The sabotage is all data in story.js (`LUNCH`, `RECIPES`) so it can be swapped for something gentler.
+3. **Boys Go Wild!** Trish and Gordon have gastro and leave Woods St; Helen is away and can't be picked. Talk to Paddy, Corni, Mem, Rose, Slinks, Tim or Nicholas and choose Prank; three pranks finishes it.
+4. **Election Season.** West is Best News, then finish the kitchen, twins' room and study, buy 6 drinks and 4 decorations (Bunnings Party tab), invite 6 friends (talk menu; 3+ hearts means they come), then Throw the party from the Story app. Party games (snags, trivia, dance-off) score 0 to 8; `electionVotes()` turns guests, score and being the sitting mayor into a vote share, shown on a filling bar. Then the "That's it for now" pop-up and chapter 5 (free play).
+
 ### Farming and house upgrades
 
 - **Plots** are placed in maps with `b.plot(id, x, y, label)` (walkable soil). The community garden (`cg1..8` in wetlands) opens when you first chat to Chris Bates (`flags.garden`, plus starter seeds). The backyard beds (`yd1..6`) exist once you buy the veggie patch upgrade (yard.js checks `state.hasUpgrade`).
@@ -190,8 +205,9 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - each pet's four moves as the owner asked, Laverton/Brunswick/Reservoir wild things, the Bin Man, and owner battles to win pets. See **Battles** above.
 - Ideas still open: a Rat King of Sydney Rd boss in the laneways, a Boom Gate boss at a level crossing, the Myki Inspector as a wandering mini-boss, a Hoon in a Commodore on Aviation Rd at night, magpies only swooping in spring, battle music.
 
-### 1. More evolutions
-- Done: Princess to Flamcess (fire), Poppy to Floppy (plastic/rock). The owner will decide the rest. Earlier ideas: Spooky to Poltergeist Spooky, Stanley to Professor Stanley, Salami to Sopressa (the elder salami).
+### Done: evolutions and the story
+- Every pet evolves: Flamcess (fire), Floppy (plastic/rock), Sopressa (street/old), Poltergeist Spooky (ghost/psychic), Centurionely (Stanley as a Roman centurion, steel), Even Rustier (Rusty in sheet metal, steel/speed).
+- The four story chapters (see **The story** above).
 
 ### More economy
 - A shop in Brunswick and Reservoir, selling back items, gear that changes a pet's look, rent jokes.
@@ -203,7 +219,7 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - Pests (snails, cabbage moths, a possum boss at night), seasons (four in one day), crop quality, cooking with Nonna, a swap table at the community garden, balcony pots in Brunswick.
 
 ### Next up (agreed with the owner)
-- The agreed order after this: story chapters (Housewarming as the spine, the Pet Census as Act 2), Coburg and Preston as full suburbs, then Brunswick East; more pets and evolutions as the owner sends photos; mini-games; Carlton and the CBD; the Meredith expansion as the finale.
+- The agreed order after this: Coburg and Preston as full suburbs, then Brunswick East; more pets and evolutions as the owner sends photos; mini-games; Carlton and the CBD; the Meredith expansion as the finale.
 - Balance battles after the owner plays them (`node tools/balance.mjs`, then `BALANCE` in config.js and levels in `TRAINERS`/`ENCOUNTERS`). More spots in any suburb as the owner sends photos.
 - A deeper detail pass on the older zones to match the in-between city zones and the reference screenshots (Zuzu City style): more props, signage and shopfronts per zone. The ground painter already has asphalt wear, drains, manholes, kerbs, cracks and weeds.
 - Extra Laverton spots and shops, once the core zones feel right.

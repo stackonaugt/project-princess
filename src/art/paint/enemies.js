@@ -32,6 +32,14 @@ function wheelie(p, lid, body, sticker) {
 }
 
 export const FOE_ART = {
+  dlcard: [16, 16, p => {
+    const w = '#f8f6f0', g = '#d8d4cc', red = '#d8202a';
+    p.r(w, 3, 1, 10, 14); p.r(g, 12, 1, 1, 14); p.r(g, 3, 14, 10, 1);
+    p.r(red, 3, 1, 10, 4); p.r(shade(red, 0.25), 3, 1, 9, 1);
+    p.r(w, 4, 2, 1, 2); p.r(w, 6, 2, 2, 2); p.r(w, 9, 2, 2, 2);   // the logo, roughly
+    face(p, 5, 7, { gap: 4 });
+    p.r('#8a8a90', 4, 11, 8, 1); p.r('#8a8a90', 4, 13, 5, 1);     // "Sorry I missed you"
+  }],
   bag: [16, 16, p => {
     const w = '#f4f4f0', g = '#c8ccd2';
     p.r(w, 4, 1, 2, 4); p.r(w, 10, 1, 2, 4); p.r(g, 5, 2, 1, 3); p.r(g, 11, 2, 1, 3);

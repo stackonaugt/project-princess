@@ -53,6 +53,25 @@ export const MOVES = {
   flopslam:   { name: 'Flop Slam', type: 'rock', power: 75, anim: 'hop', text: '{u} goes completely floppy and lands on {t}. All of her.' },
   squeak:     { name: 'Squeak', type: 'plastic', power: 60, anim: 'shout', text: '{u} squeaks like a dog toy. It is deafening.' },
   bubblewrap: { name: 'Bubble Wrap', type: 'plastic', power: 0, effect: { selfDef: 1, heal: 0.25 }, anim: 'heal', text: '{u} wraps herself in bubble wrap. Pop. Pop. Pop.' },
+  // Sopressa (Salami evolved, street and old)
+  agedclaws:  { name: 'Aged Claws', type: 'street', power: 75, anim: 'claw', text: '{u} swipes with claws that have seen things. Many things.' },
+  grumble:    { name: 'Grumble', type: 'old', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'shout', text: '{u} grumbles about the price of sardines. {t} feels personally responsible.' },
+  cured:      { name: 'Cured', type: 'old', power: 0, effect: { heal: 0.45, selfDef: 1 }, anim: 'heal', text: '{u} hangs in a cool dark cupboard for a bit. Matured. Improved.' },
+  backinmyday:{ name: 'Back In My Day', type: 'old', power: 80, anim: 'beam', text: '"Back in my day, Sydney Rd had one cafe." {u} goes on. And on. {t} wilts.' },
+  // Poltergeist Spooky (Spooky evolved, ghost and psychic)
+  possess:    { name: 'Possess', type: 'ghost', power: 80, anim: 'fade', text: '{u} floats straight into {t}. For a moment {t} really fancies a carrot.' },
+  rattlechains:{ name: 'Rattle Chains', type: 'ghost', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'shout', text: 'Somewhere, chains rattle. The lights flicker. {t} wants to go home.' },
+  flicker:    { name: 'Flicker', type: 'psychic', power: 0, effect: { evade: true, heal: 0.2 }, anim: 'fade', text: '{u} flickers like a dodgy fluoro tube and is suddenly somewhere else.' },
+  hauntedcarrot:{ name: 'Haunted Carrot', type: 'psychic', power: 70, effect: { drain: 0.4 }, anim: 'beam', text: 'A carrot floats up by itself and bonks {t}. {u} eats it afterwards.' },
+  // Centurionely (Stanley evolved, steel)
+  pilum:      { name: 'Pilum', type: 'steel', power: 75, anim: 'lunge', text: '{u} hurls a little Roman javelin. It is beautifully made.' },
+  testudo:    { name: 'Testudo', type: 'steel', power: 0, effect: { selfDef: 1, heal: 0.3 }, anim: 'heal', text: '{u} forms a tortoise of shields. It is one dog, but the formation is perfect.' },
+  venividivici:{ name: 'Veni Vidi Vici', type: 'steel', power: 95, effect: { recoil: 0.1 }, anim: 'claw', text: '{u} came. {u} saw. {u} conquered {t}.', recoilText: '{u} pulled something in his little sandals.' },
+  // Even Rustier (Rusty evolved, steel and speed)
+  sliceanddice:{ name: 'Slice and Dice', type: 'steel', power: 85, anim: 'claw', text: '{u} goes through {t} like a mandoline through a zucchini.' },
+  turbozoom:  { name: 'Turbo Zoom', type: 'speed', power: 80, anim: 'lunge', text: '{u} hits 90km/h on the athletics track and forgets to stop.' },
+  rustcloud:  { name: 'Rust Cloud', type: 'steel', power: 0, effect: { foeDef: 1, foeAtk: 1 }, anim: 'gust', text: '{u} shakes off a cloud of rust flakes. {t} gets them in its eyes.' },
+  oilchange:  { name: 'Oil Change', type: 'steel', power: 0, effect: { heal: 0.4, selfAtk: 1 }, anim: 'heal', text: '{u} pulls into a pit stop. Fresh oil. Purring.' },
 
   // Wild things and bins
   flutter:    { name: 'Flutter', type: 'plastic', power: 30, anim: 'gust', text: '{u} flutters into {t}\'s face.' },
@@ -64,6 +83,10 @@ export const MOVES = {
   tug:        { name: 'Tug of War', type: 'leather', power: 50, anim: 'bite', text: '{u} grabs on and tugs!' },
   gnaw:       { name: 'Gnaw', type: 'smelly', power: 45, anim: 'bite', text: '{u} gnaws with its horrible little teeth.' },
   plague:     { name: 'Bin Juice', type: 'smelly', power: 55, anim: 'stink', text: '{u} smells of bin juice. It is unbearable.' },
+  // The "Sorry I missed you" card (Julie's tutorial battle): deliberately feeble
+  papercut:   { name: 'Paper Cut', type: 'plastic', power: 18, anim: 'claw', text: '{u} gives {t} a paper cut. Tiny. Surprisingly rude.' },
+  guilttrip:  { name: 'Guilt Trip', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '"We knocked, but you weren\'t home." {t} feels a bit bad.' },
+  flapinwind: { name: 'Flap in the Wind', type: 'plastic', power: 12, anim: 'gust', text: '{u} flaps about in the breeze, mostly by accident.' },
   tantrum:    { name: 'Tantrum', type: 'street', power: 45, anim: 'shout', text: '{u} throws a full-volume tantrum.' },
   sausageroll:{ name: 'Sausage Roll', type: 'old', power: 0, effect: { heal: 0.35, usesHeld: true }, anim: 'heal', text: '{u} eats a sausage roll from his pocket.' },
   bounceball: { name: 'Bounce', type: 'plastic', power: 40, anim: 'hop', text: 'Tennis balls bounce everywhere. Some of them hit {t}.' },
