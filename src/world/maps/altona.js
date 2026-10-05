@@ -2,7 +2,7 @@
 // Laverton to Brunswick. Factories, a container yard, trucks, the creek
 // and its reeds, and billboards. Not much happening, which is the point.
 //
-//   y2-8   factories, container yard     y9 footpath   y10-11 road   y12 footpath
+//   y2-8   factories, Bunnings (Olly, out the front), container yard     y9 footpath   y10-11 road   y12 footpath
 //   y13-24 truck parking, Kororoit Creek, a weedy lot
 import { MapBuilder } from '../MapBuilder.js';
 import { street, furnish } from './citykit.js';
@@ -14,14 +14,16 @@ export function buildAltona() {
   // North side: factories and the container yard
   b.fill(0, 0, 48, 2, 'g');
   b.put('factory', 1, 6, { v: 'tin' });
-  b.put('warehouse', 10, 5, { v: 'hardware' });
+  // Bunnings Warehouse. Olly runs the garden centre and stands out the front.
+  b.put('warehouse', 10, 5, { v: 'bunnings' });
+  b.npc('olly', 14, 9, { face: 'down' });
   b.put('shed', 19, 6, { v: 'grey' });
   b.fill(26, 2, 12, 7, 'g');
   b.fenceH(26, 37, 2, 'metal'); b.fenceV(26, 3, 8, 'metal', [7]); b.fenceV(37, 3, 8, 'metal', [7]);
   [[27, 3, 'red'], [31, 3, 'blue'], [27, 5, 'green'], [33, 5, 'orange'], [29, 7, 'blue']].forEach(([x, y, v]) => b.put('container', x, y, { v }));
   b.put('trolley', 35, 7);
   b.put('shed', 40, 6, { v: 'blue' });
-  furnish(b, 9, { skip: [1, 26, 37], seed: 3 });
+  furnish(b, 9, { skip: [1, 14, 26, 37], seed: 3 });
 
   // South: truck parking, the creek, a weedy lot with billboards
   b.fill(0, 13, 18, 5, 'P');

@@ -1,18 +1,20 @@
-// Shops: buy treats, gear, seeds and house upgrades, and sell your crops.
+// Shops: buy treats, gear, seeds, tools, house upgrades, presents and drinks,
+// and sell your crops.
 // Which tabs a shop has is set in src/data/shops.js.
 import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { bus } from '../bus.js';
-import { ITEMS } from '../data/items.js';
+import { ITEMS, isTreat } from '../data/items.js';
 import { GEAR, GEAR_ORDER } from '../data/gear.js';
 import { CROPS, CROP_ORDER } from '../data/crops.js';
-import { UPGRADES, UPGRADE_ORDER } from '../data/upgrades.js';
+import { UPGRADES, UPGRADE_ORDER, TOOL_ORDER } from '../data/upgrades.js';
+import { HEROES } from '../data/heroes.js';
 import { SHOPS } from '../data/shops.js';
 import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', upgrades: 'House', sell: 'Sell' };
+const TAB_NAMES = { treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', sell: 'Sell' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -22,7 +24,7 @@ export function sellPrice(id) {
   return Math.max(1, Math.round(base * (state.inParty('princess') ? 1.2 : 1)));
 }
 
-export function openShop(panel, close, shopId = 'olly') {
+export function openShop(panel, close, shopId = 'petshop') {
   const shop = SHOPS[shopId];
   const msg = h('p', { class: 'small center', role: 'status' });
   if (!shop.tabs.includes(tabFor[shopId])) tabFor[shopId] = shop.tabs[0];
@@ -33,13 +35,16 @@ export function openShop(panel, close, shopId = 'olly') {
     render();
   };
   const rowsFor = tab => {
-    if (tab === 'treats') return Object.entries(ITEMS).filter(([, it]) => it.price && !it.crop).map(([id, it]) => ({ name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }));
+    const itemRow = id => { const it = ITEMS[id]; return { name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }; };
+    if (tab === 'treats') return Object.keys(ITEMS).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
+    if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
+    if (tab === 'drinks') return Object.keys(ITEMS).filter(id => ITEMS[id].drink).map(itemRow);
     if (tab === 'gear') return GEAR_ORDER.map(id => ({ name: GEAR[id].name, desc: GEAR[id].desc, price: GEAR[id].price, icon: itemIcon(`gear-${id}`, 32), have: state.gearCount(id), act: buy(GEAR[id].name, GEAR[id].price, () => state.addGear(id)) }));
     if (tab === 'seeds') return (shop.seeds || CROP_ORDER).map(id => {
       const c = CROPS[id];
       return { name: `${c.name} seeds`, desc: `${c.blurb} Ready in ${c.days} days${c.regrow ? ', keeps producing' : ''}.`, price: c.seed, icon: itemIcon(`seed-${id}`, 32), have: state.seedCount(id), act: buy(`${c.name} seeds`, c.seed, () => state.addSeeds(id)) };
     });
-    if (tab === 'upgrades') return UPGRADE_ORDER.map(id => {
+    if (tab === 'upgrades' || tab === 'tools') return (tab === 'tools' ? TOOL_ORDER : UPGRADE_ORDER).map(id => {
       const u = UPGRADES[id], owned = state.hasUpgrade(id);
       return { name: u.name, desc: u.desc, price: u.price, owned, act: buy(u.name, u.price, () => {
         state.data.upgrades[id] = true;
@@ -53,6 +58,14 @@ export function openShop(panel, close, shopId = 'olly') {
     }));
     return [];
   };
+  // The bottle shop does not serve toddlers. Obviously.
+  if (shop.adults && HEROES[state.data.hero]?.look.baby) {
+    panel.replaceChildren(
+      h('div', { class: 'm-head' }, h('h2', {}, shop.name), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
+      h('div', { class: 'note' }, h('p', {}, 'The bottle shop guy leans over the counter and looks down. A long way down.'),
+        h('p', {}, '"Nice try, little mate. Come back in about eighteen years. Or bring Helen."')));
+    return;
+  }
   const render = () => {
     const tab = tabFor[shopId], rows = rowsFor(tab);
     panel.replaceChildren(
@@ -62,6 +75,8 @@ export function openShop(panel, close, shopId = 'olly') {
         h('button', { class: 'tab' + (tab === id ? ' on' : ''), role: 'tab', 'aria-selected': tab === id, onclick: () => { tabFor[shopId] = id; sfx.select(); render(); } }, TAB_NAMES[id]))) : null,
       h('div', { class: 'm-scroll' },
         tab === 'gear' ? h('p', { class: 'small' }, 'Gear goes on a pet from your bag. One piece each. It helps in battles.') : null,
+        tab === 'drinks' || tab === 'gifts' ? h('p', { class: 'small' }, 'Presents for your friends around town. Not for pets. Everyone has favourites: check the Friends app.') : null,
+        tab === 'tools' ? h('p', { class: 'small' }, 'Garden tools work as soon as you buy them.') : null,
         tab === 'sell' ? h('p', { class: 'small' }, state.inParty('princess') ? 'Princess is charming the shopkeeper. You get 20% more.' : 'Crops sell well. Treats go for half what they cost.') : null,
         tab === 'sell' && !rows.length ? h('p', { class: 'center' }, 'Nothing to sell.') : null,
         ...rows.map(r => h('div', { class: 'shop-row' },

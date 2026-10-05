@@ -18,6 +18,8 @@ import { shade } from './painter.js';
 import { CITY } from './city.js';
 import { PROPS } from './props.js';
 import { BRUNSWICK } from './brunswick.js';
+import { ALBION } from './albion.js';
+import { carSide } from './cars.js';
 import { RESERVOIR } from './reservoir.js';
 
 const T = 16;
@@ -389,10 +391,30 @@ const BASE = {
   },
 
   warehouse: {
-    foot: [8, 4], tex: [128, 72], variants: ['hardware'],
-    paint(p) {
+    foot: [8, 4], tex: [128, 72], variants: ['hardware', 'bunnings'],
+    paint(p, v) {
       const { sx, sy, W, H } = frame(this);
       p.r('rgba(30,50,20,.22)', sx + 2, sy + H - 2, W - 2, 4);
+      if (v === 'bunnings') {
+        // Bunnings Warehouse (the owner asked for the real name): dark green
+        // tilt-up walls, the red and white sign, the garden centre fence.
+        p.r('#1f4a32', sx, sy + 8, W, H - 8);
+        for (let x = 0; x < W; x += 16) p.r('#173a26', sx + x, sy + 8, 1, H - 8);
+        p.r('#5b6066', sx, sy - 8, W, 17); p.r('#71767c', sx, sy - 8, W, 2);
+        p.r('#c8302a', sx + 14, sy + 10, W - 28, 13); p.r('#e04a3a', sx + 14, sy + 10, W - 28, 1);
+        p.r('#f4f4f0', sx + 18, sy + 11, 8, 6); p.r('#c8302a', sx + 20, sy + 13, 4, 4);   // the little roof logo
+        p.text('BUNNINGS', sx + Math.round((W - textWidth('BUNNINGS')) / 2) + 4, sy + 14, '#ffffff');
+        p.r('#1f4a32', sx + 34, sy + 24, W - 68, 7); p.text('WAREHOUSE', sx + Math.round((W - textWidth('WAREHOUSE')) / 2), sy + 25, '#f4f4f0');
+        // big entry doors with a red canopy, a trolley bay, and the garden centre on the right
+        p.r('#c8302a', sx + 40, sy + 33, 40, 4);
+        p.r('#2a2e33', sx + 44, sy + 37, 32, 27); p.r('#a8d4e8', sx + 45, sy + 38, 30, 26); p.r('#2a2e33', sx + 59, sy + 38, 2, 26);
+        p.r('#c3c8cb', sx + 6, sy + 36, 30, 28); for (let y = 0; y < 27; y += 3) p.r('#a9afb2', sx + 6, sy + 37 + y, 30, 1);
+        p.r('#2a2e33', sx + 86, sy + 34, 38, 30);
+        for (let x = 87; x < 124; x += 3) p.r('#5a6a5a', sx + x, sy + 35, 1, 29);
+        for (let i = 0; i < 6; i++) { p.blob(sx + 90 + i * 6, sy + 56, 3, ['#3f8a3e', '#57a84a', '#c8443a', '#e77fb8', '#2f7a37', '#f5d63a'][i]); p.r('#8a4a2a', sx + 88 + i * 6, sy + 59, 5, 4); }
+        p.r('#f4f4f0', sx + 92, sy + 38, 26, 6); p.text('GARDEN', sx + 94, sy + 39, '#1f4a32');
+        return;
+      }
       p.r('#3d6e5e', sx, sy + 8, W, H - 8);
       for (let x = 0; x < W; x += 4) p.r('#335e50', sx + x, sy + 8, 1, H - 8);
       p.r('#5b6066', sx, sy - 8, W, 17); p.r('#71767c', sx, sy - 8, W, 2);
@@ -437,14 +459,9 @@ const BASE = {
   },
 
   car: {
-    foot: [2, 1], tex: [32, 22], variants: ['white', 'red', 'blue', 'silver', 'yellow'],
+    foot: [2, 1], tex: [48, 28], variants: ['white', 'red', 'blue', 'silver', 'yellow'],
     paint(p, v) {
-      const c = { white: ['#f0f0ec', '#c9c9c4'], red: ['#c8443a', '#9a3028'], blue: ['#3a6aa8', '#2a5080'], silver: ['#b8bcc4', '#8e939b'], yellow: ['#e8c030', '#b8961e'] }[v];
-      p.shadow(16, 21, 30);
-      p.r('#1e1e1e', 4, 16, 6, 5); p.r('#1e1e1e', 22, 16, 6, 5);
-      p.r(c[0], 1, 9, 30, 10); p.r(c[1], 1, 16, 30, 3);
-      p.r(c[0], 7, 3, 18, 8); p.r('#7fb4d2', 9, 4, 6, 6); p.r('#7fb4d2', 17, 4, 6, 6); p.r(c[1], 15, 4, 2, 6);
-      p.r('#f5e66b', 29, 11, 2, 2); p.r('#d83c3c', 1, 11, 2, 2);
+      carSide(p, { white: '#eeeeea', red: '#c8443a', blue: '#3a6aa8', silver: '#b8bcc4', yellow: '#e8c030' }[v], { y: 2 });
     },
   },
 
@@ -598,7 +615,7 @@ const BASE = {
   },
 };
 
-export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...RESERVOIR, ...CITY, ...PROPS };
+export const OBJECTS = { ...BASE, ...FURNITURE, ...LAVERTON, ...BRUNSWICK, ...ALBION, ...RESERVOIR, ...CITY, ...PROPS };
 
 // Which object kinds give off light at night.
 export const LIGHT_SOURCES = { lamp: { x: 8, y: 6, r: 44 }, shelter: { x: 24, y: 18, r: 40 }, myki: { x: 8, y: 6, r: 16 }, floorlamp: { x: 8, y: 5, r: 40 }, hphouse: { x: 86, y: 56, r: 30 } };

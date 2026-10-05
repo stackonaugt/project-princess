@@ -51,6 +51,37 @@ export const ITEM_ART = {
   pumpkin: { pal: { a: '#e89030', b: '#f8b860', k: '#a85a1a', g: '#3f8a3e', s: '#6a4a2a' }, rows: [
     '............', '.....sg.....', '.....s.gg...', '..kkkkkkkk..', '.kbakbaakbk.', 'kbaakaaakaak',
     'kaaakaaakaak', 'kaaakaaakaak', '.kaakaaakak.', '..kkkkkkkk..', '............', '............'] },
+  // Presents (gift: true) and fertiliser.
+  paperback: { pal: { a: '#3a7ac8', b: '#6aa8e8', k: '#1a3a6a', w: '#f4efe0', y: '#e8c040' }, rows: [
+    '............', '..kkkkkkkk..', '..kaaaaaawk.', '..kabbbbawk.', '..kayyyyawk.', '..kaaaaaawk.',
+    '..kaybbyawk.', '..kaaaaaawk.', '..kaaaaaawk.', '..kaaaaaawk.', '..kkkkkkkkk.', '............'] },
+  byzbook: { pal: { a: '#6a1a5a', b: '#9a3a8a', k: '#2a0a24', y: '#e8c040', w: '#f4efe0' }, rows: [
+    '............', '.kkkkkkkkk..', '.kaaaaaaaawk', '.kayyyyyyawk', '.kayaaaayawk', '.kayabbayawk',
+    '.kayabbayawk', '.kayaaaayawk', '.kayyyyyyawk', '.kaaaaaaaawk', '.kkkkkkkkkkk', '............'] },
+  modeltrain: { pal: { a: '#c8ccd0', b: '#f4f4f0', k: '#4a4a54', r: '#c8443a', w: '#7ac8f0', d: '#2a2a2a' }, rows: [
+    '............', '............', '............', '.kkkkkkkkkk.', 'kbbbbbbbbbbk', 'kwwakwwakwak',
+    'kwwakwwakwak', 'krrrrrrrrrrk', 'kaaaaaaaaaak', '.kdkk..kkdk.', '..d......d..', '............'] },
+  flowers: { pal: { r: '#e83a5a', y: '#f5d63a', p: '#c87ae8', g: '#3f8a3e', w: '#e8e0c8', k: '#8a8270' }, rows: [
+    '..r..y......', '.rrryyy.p...', '..r.gy.ppp..', '...g.g..p...', '..ywg.gg....', '.yyywggw....',
+    '..kwwwwwk...', '..kwwwwwk...', '...kwwwk....', '...kwwwk....', '....kwk.....', '............'] },
+  icedcoffee: { pal: { a: '#8a5a32', b: '#f4efe0', k: '#4a2a12', g: '#3a7a4a', w: '#ffffff' }, rows: [
+    '....kk......', '...kbbk.....', '..kbbbbk....', '..kkkkkk....', '..kaaaak....', '..kawwak....',
+    '..kaaaak....', '..kggggk....', '..kbbbbk....', '..kaaaak....', '..kkkkkk....', '............'] },
+  gaytime: { pal: { a: '#d89a3a', b: '#f0c070', k: '#7a4a1a', w: '#8a6a4a', c: '#f4e0b0' }, rows: [
+    '....kkkk....', '...kabbak...', '...kbcbak...', '...kaaabk...', '...kabaak...', '...kaabak...',
+    '...kbaaak...', '...kaaaak...', '....kkkk....', '.....ww.....', '.....ww.....', '.....ww.....'] },
+  seedling: { pal: { g: '#3f8a3e', l: '#6dbb58', r: '#d8403a', k: '#2a2a2a', t: '#4a4a54' }, rows: [
+    '.....rr.....', '....rrrr....', '....rrrr.l..', '.l..rrrr.l..', '..l..gg.l...', '...l.g.l....',
+    '....lgl.....', '.....g......', '...kkkkk....', '...ktttk....', '...ktttk....', '...kkkkk....'] },
+  olive: { pal: { g: '#7a9a6a', l: '#a8c098', k: '#3a4a2a', t: '#6a4a2a', p: '#c87a4a', d: '#8a4a2a' }, rows: [
+    '...glg.gl...', '..glgglggl..', '.gllgklgllg.', '..gggkgglg..', '...gl.kgg...', '......k.....',
+    '.....tk.....', '.....t......', '..pppppppp..', '...pddddp...', '...pppppp...', '....pppp....'] },
+  gloves: { pal: { a: '#4a9a4a', b: '#7ac87a', k: '#1a4a1a', m: '#8a6a3a' }, rows: [
+    '............', '..k.k.k.....', '.kakakak....', '.kakakakk...', '.kaaaaakak..', '.kabbaaaak..',
+    '.kaaaaaak...', '.kaaaaak....', '.kkkkkkk....', '.kmmmmmk....', '.kkkkkkk....', '............'] },
+  fertiliser: { pal: { a: '#c8a060', b: '#e0c088', k: '#6a4a2a', r: '#c8443a', w: '#f4efe0' }, rows: [
+    '............', '...kkkkkk...', '..kbbbbbbk..', '..kaaaaaak..', '..kwwwwwwk..', '..kwrrrrwk..',
+    '..kwwwwwwk..', '..kaaaaaak..', '..kaaaaaak..', '..kaaaaaak..', '...kkkkkk...', '............'] },
 };
 
 // Seed packets: drawn from the crop's colour (texture item-seed-<crop>).
@@ -59,6 +90,28 @@ export function paintSeedPacket(p, colour) {
   p.blob(8, 7, 3, colour); p.r('#3f8a3e', 8, 3, 1, 2); p.r('#ffffff', 7, 6, 1, 1);
   p.r('#c8b898', 5, 11, 6, 1);
 }
+
+// Bottle shop drinks (items with drink: true), drawn from their art colours.
+export function paintDrink(p, a) {
+  const k = '#1e1a18', glint = 'rgba(255,255,255,0.45)';
+  if (a.kind === 'can') {
+    p.r(k, 4, 2, 8, 13); p.r(a.cap, 5, 2, 6, 1); p.r(a.body, 5, 3, 6, 11); p.r(a.cap, 5, 13, 6, 1);
+    p.r(a.label, 5, 6, 6, 4); p.r(a.body, 6, 7, 4, 2); p.r(a.label, 7, 7, 2, 2); p.r(glint, 6, 3, 1, 10);
+  } else if (a.kind === 'stubby' || a.kind === 'longneck') {
+    const top = a.kind === 'longneck' ? 1 : 3;
+    p.r(k, 6, top - 1, 4, 5); p.r(a.cap, 7, top - 1, 2, 1); p.r(a.body, 7, top, 2, 4);
+    p.r(k, 4, top + 3, 8, 15 - top - 2); p.r(a.body, 5, top + 4, 6, 15 - top - 4);
+    p.r(a.label, 5, 9, 6, 4); p.r(a.cap, 7, 10, 2, 2); p.r(glint, 6, top + 4, 1, 4);
+  } else if (a.kind === 'wine') {
+    p.r(k, 6, 0, 4, 6); p.r(a.cap, 7, 0, 2, 3); p.r(a.body, 7, 3, 2, 3);
+    p.r(k, 4, 5, 8, 11); p.r(a.body, 5, 6, 6, 9);
+    p.r(a.label, 5, 9, 6, 4); p.r(k, 6, 10, 4, 1); p.r(glint, 6, 6, 1, 3);
+  } else {
+    p.r(k, 2, 3, 12, 12); p.r(a.body, 3, 4, 10, 10); p.r(shadeHex(a.body), 3, 12, 10, 2);
+    p.r(a.label, 4, 6, 8, 4); p.r(a.body, 5, 7, 6, 2); p.r(a.cap, 10, 14, 2, 2); p.r(k, 6, 2, 4, 2);
+  }
+}
+const shadeHex = c => { const n = parseInt(c.slice(1), 16); const f = v => Math.round(v * 0.8); return '#' + ((1 << 24) | (f(n >> 16) << 16) | (f((n >> 8) & 255) << 8) | f(n & 255)).toString(16).slice(1); };
 
 // Gear icons (pet shop), same format. Texture keys: item-gear-<id>.
 export const GEAR_ART = {

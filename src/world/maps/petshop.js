@@ -1,8 +1,8 @@
 // THE LEASH YOU CAN DO: the pet shop on Hope St, Brunswick, near Mem and
-// Corni's. Talk to Olly at the counter to buy treats and gear (see src/ui/shop.js).
+// Corni's. Talk to Ed at the counter to buy treats and gear (see src/ui/shop.js).
 //
 //   y0-1  top wall     y2  shelves and the aquarium along the back
-//   y6, y10  aisles    y15 the counter by the door (Olly stands beside it)
+//   y6, y10  aisles    y15 the counter by the door (Ed stands beside it)
 //   y18   bottom wall, door at x11 back out to Hope St
 import { MapBuilder } from '../MapBuilder.js';
 
@@ -29,7 +29,7 @@ export function buildPetShop() {
   b.put('rug', 9, 11, { v: 'red' });
   b.put('doormat', 11, 17);
 
-  b.npc('olly', 5, 15, { face: 'right' });
+  b.npc('ed', 5, 15, { face: 'right' });
   b.exit(11, 18, 1, 1, 'hope', 'petshop', 'Hope St');
   b.entry('door', 11, 17, 'up');
   return b.finish();

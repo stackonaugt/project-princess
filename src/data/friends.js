@@ -4,7 +4,8 @@
 //   loves / likes / dislikes   item ids (treats and crops)
 //   events   { hearts: [lines] } little scenes the first time you chat at that many hearts
 //            (reward: { item, n } or { money }) given at the end of an event
-//   assist   at 4+ hearts you can call them once per battle (Call a friend):
+//   assist   at 4+ hearts they may turn up to help in a battle near where they
+//            live (same suburb), at random, once per battle:
 //            { line, heal | selfAtk | selfDef | foeAtk | foeDef | damage }
 // Anyone in npcs.js without an entry here still has hearts, with generic tastes.
 
@@ -13,7 +14,7 @@ export const ASSIST_HEARTS = 4;
 
 export const FRIENDS = {
   trish: {
-    loves: ['strawberry', 'croissant'], likes: ['tomato', 'basil', 'lemon'], dislikes: ['sardine'],
+    loves: ['strawberry', 'flowers'], likes: ['tomato', 'basil', 'lemon', 'moscato'], dislikes: ['sardine'],
     events: {
       2: ['Trish: "Come in, come in. I made too much lasagne. I always make too much lasagne."', 'You leave with a container. It is still warm.'],
       4: ['Trish shows you a photo album. Helen at six, dressed as a poodle for Book Week.', '"She was always going to end up with Princess, wasn\'t she."'],
@@ -23,17 +24,17 @@ export const FRIENDS = {
     assist: { line: 'Trish turns up with a casserole. Everyone feels better.', heal: 0.45 },
   },
   gordon: {
-    loves: ['pumpkin', 'snag'], likes: ['potato', 'zucchini'], dislikes: ['basil'],
+    loves: ['byzbook', 'olive'], likes: ['seedling', 'pumpkin', 'tomato', 'coopers'], dislikes: ['hahn'],
     events: {
-      2: ['Gordon: "Want to see the shed?" You do. It is incredible. Four thousand jars of screws, sorted.'],
-      4: ['Gordon teaches you to sharpen a mower blade. You do not own a mower. He does not care.'],
-      6: ['Gordon: "Paddy still has my ladder." A long pause. "You can have the other ladder. You\'re all right."'],
+      2: ['Gordon: "Come and see the fig." It is enormous. "Planted it in 1986. Older than Helen\'s first car, and it runs better."'],
+      4: ['Gordon shows you a book of mosaics from Ravenna. "Byzantium. A thousand years. They put gold behind everything. Even the saints."', '"Imagine a tram shelter done like that." You can, now.'],
+      6: ['Gordon gives you a cutting from the fig, wrapped in wet newspaper. "Plant it somewhere it can get big. Trees need room. So do people."'],
     },
-    rewards: { 4: { money: 30 } },
-    assist: { line: 'Gordon tells a very long story about agapanthus. The foe loses the will to fight.', foeAtk: 2 },
+    rewards: { 4: { item: 'seedling', n: 2 }, 6: { item: 'olive', n: 1 } },
+    assist: { line: 'Gordon starts explaining the Hagia Sophia dome. The foe sits down to listen.', foeAtk: 2 },
   },
   gaz: {
-    loves: ['snag', 'potato'], likes: ['tomato', 'chicken'], dislikes: ['strawberry'],
+    loves: ['snag', 'vb'], likes: ['tomato', 'chicken', 'draught'], dislikes: ['orangewine'],
     events: {
       2: ['Gaz lets you work the tongs for five minutes. Onions on the bottom. You are a natural.'],
       4: ['Gaz: "Eleven years of sizzles. Paid for the club\'s defib. Saved a bloke\'s life last winter." He goes quiet. "Snag?"'],
@@ -43,7 +44,7 @@ export const FRIENDS = {
     assist: { line: 'Gaz lobs a snag in bread. Perfect spiral. Energy restored.', heal: 0.3, selfAtk: 1 },
   },
   binman: {
-    loves: ['zucchini', 'potato'], likes: ['snag', 'tennis'], dislikes: ['croissant'],
+    loves: ['zucchini', 'greatnorthern'], likes: ['snag', 'potato', 'xxxx'], dislikes: ['croissant'],
     events: {
       3: ['Bin Man: "Want to know a secret? I name every bin on my route. That one\'s Kevin."'],
       6: ['Bin Man lets you ride in the truck for one street. You will never be the same.'],
@@ -51,81 +52,106 @@ export const FRIENDS = {
     assist: { line: 'The Bin Man\'s truck reverses in, beeping. Everyone panics.', damage: 0.2 },
   },
   rose: {
-    loves: ['sardine', 'strawberry'], likes: ['croissant', 'chilli'], dislikes: ['potato'],
+    loves: ['paperback', 'orangewine'], likes: ['croissant', 'flowers', 'icedcoffee', 'sardine'], dislikes: ['vb'],
     events: {
-      2: ['Rose: "Salami was a foundling, you know. Turned up in the stairwell with one ear inside out."', '"She chose me. I had no say in it."'],
-      4: ['Rose lends you her purple sunnies for the afternoon. You have never looked cooler.'],
-      6: ['Rose: "Salami brought me a whole sausage today. Stolen, obviously. Proudest day of my life."'],
+      2: ['Rose: "Long week in the Senate office. Three inquiries, two media releases, one senator who replies to emails in all caps."', '"Salami does not care about any of it. That is why I love her."'],
+      4: ['Rose lends you a novel with her notes in the margins. "Bring it back. The notes are the best part."'],
+      6: ['Rose: "If we ever get a decent renters\' rights bill through, I am framing it. Salami can sit on it."'],
     },
-    rewards: { 4: { item: 'sardine', n: 2 } },
-    assist: { line: 'Rose yells "GO ON, GET IT!" from the sidelines. Your pet feels unstoppable.', selfAtk: 2 },
+    rewards: { 4: { item: 'paperback', n: 1 } },
+    assist: { line: 'Rose drafts the foe a strongly worded letter. It reads it and wilts.', foeAtk: 1, foeDef: 1 },
   },
   slinks: {
-    loves: ['carrot', 'chilli'], likes: ['lemon', 'tomato'], dislikes: ['snag'],
+    loves: ['penfolds', 'wolfblass', 'orangewine', 'chianti'], likes: ['jacobs', 'yellowtail', 'carrot', 'paperback'], dislikes: ['goon', 'vb'],
     events: {
-      2: ['Slinks: "Spooky only comes out properly at night. She is not shy. She is selective."'],
-      5: ['Slinks shows you a photo where Spooky is in two places at once. You look for a long time.'],
+      2: ['Slinks: "Public service. Policy. I write briefs that ministers do not read." She pours a glass. "Spooky reads them. She has notes."'],
+      4: ['Slinks takes you to a wine bar on Lygon St. She orders in a voice you have never heard before. The sommelier is scared of her.'],
+      6: ['Slinks: "Spooky likes you. That means I have to like you. Fine. You can come to Friday wine."'],
     },
-    assist: { line: 'Slinks flickers the streetlight. The foe gets a fright.', foeDef: 2 },
+    rewards: { 4: { item: 'yellowtail', n: 1 } },
+    assist: { line: 'Slinks swirls her wine and gives the foe a look. It reconsiders everything.', foeDef: 2 },
   },
   mem: {
-    loves: ['croissant', 'chilli'], likes: ['tomato', 'basil'], dislikes: ['zucchini'],
+    loves: ['seedling', 'icedcoffee', 'guinness'], likes: ['strawberry', 'basil', 'flowers', 'moscato'], dislikes: ['goon'],
     events: {
-      2: ['Mem: "Corni names every pigeon on Hope St. There are forty. He knows all of them."'],
-      4: ['Mem takes you to the brewery for one lemonade. It is a nice afternoon.'],
-      6: ['Mem: "You\'re one of us now. That means you have to come to trivia. We lose every week."'],
+      2: ['Mem: "My PhD is on urban frogs. Brunswick has more frogs than you think. They hide in the drains and judge us."'],
+      4: ['Mem takes you along on a frog survey at dusk. She can tell four species apart by their croak. You can tell none.'],
+      6: ['Mem: "Corni and I are running the Merri Creek trail on Sunday. Come. He will cry at the end. He always cries at the end."'],
     },
-    assist: { line: 'Mem stares down the foe through wrap sunglasses. It backs off.', foeAtk: 1, foeDef: 1 },
+    rewards: { 4: { item: 'icedcoffee', n: 2 } },
+    assist: { line: 'Mem identifies the foe\'s species out loud, with its Latin name. It feels very seen.', foeAtk: 1, foeDef: 1 },
   },
   corni: {
-    loves: ['strawberry', 'basil'], likes: ['carrot', 'feather'], dislikes: ['sardine'],
+    loves: ['guinness', 'coburglager'], likes: ['croissant', 'potato', 'mountaingoat', 'icedcoffee'], dislikes: ['hahn', 'goon'],
     events: {
-      2: ['Corni introduces you to the toy monkey. Its name is Gerald. Gerald is shy.'],
-      4: ['Corni: "Gerald says you can hold him." You hold Gerald. It is an honour.'],
-      6: ['Corni gives you a friendship bracelet made from tram ticket stubs. Old ones. Very rare.'],
+      2: ['Corni: "In Germany the beer is good and the trains are on time. Here the beer is fine and the trains are a mood."', '"But here there is Mem. So I stay."'],
+      4: ['Corni pours you a Guinness and makes you wait. "Two minutes. It settles. You cannot rush a Guinness. Or a good friend."'],
+      6: ['Corni: "Mem and I run the Merri Creek trail on Sundays. You come next week. I will carry the Guinness for after. Prost!"'],
     },
-    rewards: { 6: { item: 'feather', n: 1 } },
-    assist: { line: 'Corni waves Gerald the monkey at the foe. Nobody knows why, but it works.', selfDef: 2 },
+    rewards: { 2: { item: 'guinness', n: 1 }, 6: { item: 'guinness', n: 2 } },
+    assist: { line: 'Corni hurls a can of Guinness. "PROST!" It hits the foe and foams everywhere.', damage: 0.18, foeDef: 1 },
   },
   sinead: {
-    loves: ['strawberry', 'croissant'], likes: ['tomato', 'basil', 'lemon'], dislikes: ['sardine'],
+    loves: ['moscato', 'strawberry', 'icedcoffee'], likes: ['flowers', 'tennis', 'gaytime', 'yellowtail'], dislikes: ['sardine'],
     events: {
-      2: ['Sinead: "Poppy ate a whole bar of soap once. Burped bubbles for a day. Unbothered."'],
-      4: ['Sinead lends you her round sunnies. "They suit you. Keep them till Sunday."'],
-      6: ['Sinead: "You\'re basically on the lease now. Poppy has decided."'],
+      2: ['Sinead: "Social work is mostly paperwork and phone calls. And then one day a family gets housed and it is all worth it."'],
+      4: ['Sinead sits with you on the unit steps, vaping something called Mango Ice. "Do not tell my mum. Or my clients. Or Seb."'],
+      6: ['Sinead: "You\'re basically on the lease now. Poppy has decided. I have filed the paperwork. In my head."'],
     },
     rewards: { 4: { item: 'tennis', n: 2 } },
-    assist: { line: 'Sinead throws a tennis ball. Your pet goes absolutely feral for it.', selfAtk: 1, heal: 0.15 },
+    assist: { line: 'Sinead blows a massive mango vape cloud. The foe cannot see a thing.', foeAtk: 1, selfDef: 1 },
   },
   tim: {
-    loves: ['basil', 'tomato'], likes: ['croissant', 'cheese'], dislikes: ['chilli'],
+    loves: ['modeltrain', 'chianti'], likes: ['croissant', 'cheese', 'coopers', 'paperback'], dislikes: ['hahn'],
     events: {
-      2: ['Tim: "Stanley watches the news with us. He sighs at the economy. Every time."'],
-      4: ['Tim does your hair. You did not ask. It looks incredible.'],
-      6: ['Tim: "Nicholas and I talked. You\'re invited to Stanley\'s birthday. There is a cake. He will not eat it."'],
+      2: ['Tim: "Union organiser. Today I signed up a whole call centre. Tomorrow, the world. Or at least the car park."'],
+      4: ['Tim shows you his photos of Rome. Two hundred of the Forum. Forty of trains. "The Roma Termini platforms, look at them."'],
+      6: ['Tim: "Nicholas and I talked. You\'re invited to Stanley\'s birthday. There is a cake. He will not eat it. There will be a toast to solidarity."'],
     },
-    assist: { line: 'Tim critiques the foe\'s outfit. Its confidence crumbles.', foeDef: 2 },
+    rewards: { 6: { item: 'chianti', n: 1 } },
+    assist: { line: 'Tim calls a snap stop-work meeting. The foe downs tools.', foeAtk: 2 },
   },
   nicholas: {
-    loves: ['cheese', 'croissant'], likes: ['basil', 'strawberry'], dislikes: ['snag'],
+    loves: ['icedcoffee', 'paperback'], likes: ['chianti', 'croissant', 'cheese', 'moscato'], dislikes: ['snag'],
     events: {
-      2: ['Nicholas: "I do the commentary. Stanley does the judging. Tim does the battling. It is a system."'],
-      5: ['Nicholas reads you a passage from a very long book. You feel smarter. Stanley approves.'],
+      2: ['Nicholas: "Law school by night, union office by day. I read contracts for fun now. Something has gone wrong with me."'],
+      4: ['Nicholas shows you a video of himself dancing, years ago. Leaps. Actual leaps. "Do not tell Tim you have seen this. He cries."'],
+      6: ['Nicholas: "When I am admitted, my first case is Stanley versus the electric blanket. He wants custody."'],
     },
-    assist: { line: 'Nicholas commentates the battle beautifully. Your pet plays up to the crowd.', selfAtk: 1, selfDef: 1 },
+    rewards: { 4: { item: 'icedcoffee', n: 1 } },
+    assist: { line: 'Nicholas raises an objection. "Sustained!" says nobody, but the foe is rattled.', foeDef: 1, selfAtk: 1 },
   },
   olly: {
-    loves: ['croissant', 'pumpkin'], likes: ['chicken', 'carrot'], dislikes: ['lemon'],
+    loves: ['snag', 'vb'], likes: ['seedling', 'tomato', 'potato', 'draught'], dislikes: ['orangewine'],
     events: {
-      2: ['Olly: "Kevin the goldfish is eleven. Older than the shop. Older than my lease, which is saying something."'],
-      4: ['Olly gives you a staff discount card. It does nothing. It is laminated, though.'],
-      6: ['Olly: "If I ever get a second shop, you\'re running it." You both laugh. Then Olly gets a business plan out of the drawer.'],
+      2: ['Olly: "Twelve years at Bunnings. I know where every hinge in this warehouse lives. Every single one."'],
+      4: ['Olly gives you a red apron with your name on it. "Honorary team member. You still have to pay for things."'],
+      6: ['Olly: "Best thing about this job? Someone comes in for one screw and leaves with a veggie patch. Changes their life."'],
+    },
+    rewards: { 4: { item: 'fertiliser', n: 3 } },
+    assist: { line: 'Olly turns up with the sausage sizzle tongs. One snag, perfectly cooked, onions on the bottom.', heal: 0.35 },
+  },
+  ed: {
+    loves: ['cheese', 'coopers'], likes: ['chicken', 'croissant', 'paperback'], dislikes: ['moscato'],
+    events: {
+      2: ['Ed: "Twenty years selling leads. I can tell what a dog is like by how its human picks a collar."'],
+      4: ['Ed polishes his glasses, slowly. "You treat those pets right. I can tell. Have a sample." He winks.'],
+      6: ['Ed: "If I ever retire, the shop goes to someone who cares. Not a chain. Someone like you." He means it.'],
     },
     rewards: { 4: { money: 25 } },
-    assist: { line: 'Olly tosses over a sample treat. "On the house. Don\'t tell Kevin."', heal: 0.35 },
+    assist: { line: 'Ed slides over a free sample from the counter jar. "Shh."', heal: 0.35 },
+  },
+  macca: {
+    loves: ['coburglager', 'mountaingoat'], likes: ['snag', 'croissant', 'potato'], dislikes: ['goon'],
+    events: {
+      3: ['Macca: "Thirty years behind this counter. Seen Brunswick go from sheds to sourdough. The Guinness drinkers never change."'],
+      5: ['Macca slips you a can of something from a tiny brewery in Coburg. "On the house. Don\'t tell the boss. I\'m the boss."'],
+    },
+    rewards: { 5: { item: 'coburglager', n: 1 } },
+    assist: { line: 'Macca rolls a keg out the side door. It thunders past the foe, who dives out of the way.', foeDef: 1, damage: 0.12 },
   },
   wen: {
-    loves: ['carrot', 'tomato'], likes: ['basil', 'zucchini', 'potato'], dislikes: ['croissant'],
+    loves: ['seedling', 'gloves', 'carrot'], likes: ['basil', 'zucchini', 'potato', 'fertiliser'], dislikes: ['croissant'],
     events: {
       2: ['Wen: "The garden belongs to everyone who turns up. That\'s the whole idea."'],
       4: ['Wen shows you the seed library. People leave seeds, take seeds. Nobody owns it.'],
@@ -135,7 +161,7 @@ export const FRIENDS = {
     assist: { line: 'Wen chucks a handful of compost. Rich, warm, and devastating.', damage: 0.15, heal: 0.15 },
   },
   dimitri: {
-    loves: ['lemon', 'tomato'], likes: ['potato', 'chilli'], dislikes: ['basil'],
+    loves: ['lemon', 'melbbitter'], likes: ['potato', 'chilli', 'tomato'], dislikes: ['basil'],
     events: {
       2: ['Dimitri: "Forty years in this milk bar. Seen it all. Except the skyrail. Didn\'t see that coming."'],
       5: ['Dimitri gives you a Golden Gaytime from the back freezer. "Don\'t tell the kids."'],
@@ -143,7 +169,7 @@ export const FRIENDS = {
     assist: { line: 'Dimitri sends over a Paddle Pop. Your pet is revitalised.', heal: 0.3 },
   },
   pina: {
-    loves: ['tomato', 'basil'], likes: ['lemon', 'zucchini'], dislikes: ['croissant'],
+    loves: ['tomato', 'basil', 'olive'], likes: ['lemon', 'zucchini', 'chianti'], dislikes: ['goon'],
     events: {
       2: ['Nonna Pina: "You grow your own basil now? Finally, someone listens."'],
       4: ['Nonna Pina teaches you her sugo. The secret is a whole Sunday.'],
@@ -152,16 +178,16 @@ export const FRIENDS = {
     assist: { line: 'Nonna Pina feeds your pet a meatball. Mangia!', heal: 0.4 },
   },
   hipster: {
-    loves: ['basil', 'chilli'], likes: ['croissant', 'tomato'], dislikes: ['snag'],
+    loves: ['orangewine', 'moondog'], likes: ['basil', 'chilli', 'croissant'], dislikes: ['vb', 'snag'],
     events: { 3: ['Hipster: "Your basil is... actually good. Do not tell anyone I said that."'] },
     assist: { line: 'The Hipster explains the foe is "derivative". It is crushed.', foeAtk: 1 },
   },
   golfer: {
-    loves: ['pumpkin', 'potato'], likes: ['snag', 'tennis'], dislikes: ['chilli'],
+    loves: ['crown', 'pumpkin'], likes: ['snag', 'tennis', 'xxxx'], dislikes: ['chilli'],
     events: { 3: ['The golfer next door: "Hole in one, 1987. Lost the ball in the celebration. And a tooth."'] },
     assist: { line: 'The golfer next door yells FORE! Everyone ducks except your pet.', foeDef: 1, selfAtk: 1 },
   },
 };
 
-export const GENERIC_FRIEND = { loves: [], likes: ['croissant', 'snag', 'cheese', 'tomato', 'strawberry'], dislikes: [] };
+export const GENERIC_FRIEND = { loves: [], likes: ['croissant', 'snag', 'tomato', 'strawberry', 'flowers', 'gaytime', 'draught'], dislikes: [] };
 export const friendInfo = id => FRIENDS[id] || GENERIC_FRIEND;

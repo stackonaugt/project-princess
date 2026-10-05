@@ -140,6 +140,32 @@ export class MapBuilder {
     }
   }
 
+  // Exits on the map edge that sit on a road or footpath grow to cover the
+  // whole width of it (road, tram tracks and both footpaths), so you can walk
+  // off anywhere along the road, not just one tile of it.
+  widenExits(solid) {
+    const ROADISH = '#+xzf';
+    const inExit = (x, y) => this.exits.some(e => x >= e.x && x < e.x + e.w && y >= e.y && y < e.y + e.h);
+    const road = (x, y) => x >= 0 && y >= 0 && x < this.w && y < this.h && ROADISH.includes(this.ground[y][x]);
+    // A tile joins the exit only if the road carries on into the map from it
+    // (so a road running along the edge doesn't become one long exit).
+    const ok = (x, y, dx, dy) => road(x, y) && !solid[y * this.w + x] && !inExit(x, y) && [1, 2, 3].every(k => road(x + dx * k, y + dy * k));
+    for (const e of this.exits) {
+      const vertical = (e.x === 0 || e.x + e.w === this.w) && e.w === 1, horizontal = (e.y === 0 || e.y + e.h === this.h) && e.h === 1;
+      if (vertical && !horizontal) {
+        if (![...Array(e.h)].some((_, j) => ROADISH.includes(this.ground[e.y + j][e.x]))) continue;
+        const dx = e.x === 0 ? 1 : -1;
+        while (ok(e.x, e.y - 1, dx, 0)) { e.y--; e.h++; }
+        while (ok(e.x, e.y + e.h, dx, 0)) e.h++;
+      } else if (horizontal && !vertical) {
+        if (![...Array(e.w)].some((_, i) => ROADISH.includes(this.ground[e.y][e.x + i]))) continue;
+        const dy = e.y === 0 ? 1 : -1;
+        while (ok(e.x - 1, e.y, 0, dy)) { e.x--; e.w++; }
+        while (ok(e.x + e.w, e.y, 0, dy)) e.w++;
+      }
+    }
+  }
+
   finish() {
     this.dress();
     // Work out which way each fence joins up.
@@ -153,6 +179,7 @@ export class MapBuilder {
       const o = this.occ[y][x];
       if (SOLID_GROUND.includes(this.ground[y][x]) || (o && OBJECTS[o.kind].solid !== false)) solid[y * this.w + x] = 1;
     }
+    this.widenExits(solid);
     return {
       id: this.id, w: this.w, h: this.h,
       ground: this.ground.map(r => r.join('')),

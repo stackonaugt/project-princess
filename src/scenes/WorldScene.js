@@ -263,7 +263,7 @@ export class WorldScene extends Phaser.Scene {
     const f = state.data.farm[p.id], c = f && CROPS[f.crop];
     if (!c) {
       const seeds = Object.keys(state.data.seeds).filter(k => state.seedCount(k));
-      if (!seeds.length) return ui.say(['An empty bed of good soil. You have no seeds. Gaz at Laverton Station and Dimitri at Reservoir sell them.']);
+      if (!seeds.length) return ui.say(['An empty bed of good soil. You have no seeds. Olly at Bunnings (Altona North) and Dimitri at Reservoir sell them.']);
       const pick = await ui.say({ text: 'Plant something?', choices: [...seeds.map(k => ({ label: `${CROPS[k].name} seeds`, value: k, icon: itemIcon(`seed-${k}`, 32), note: `×${state.seedCount(k)} · ${CROPS[k].days} days` })), { label: 'Not now', value: null }] }, { cancelValue: null });
       if (!pick || !state.useSeed(pick)) return;
       state.data.farm[p.id] = { crop: pick, growth: 0, watered: day, boost: false };
@@ -284,13 +284,34 @@ export class WorldScene extends Phaser.Scene {
       ui.toast(`+${n} ${c.name}`, itemIcon(f.crop, 32));
       return ui.say([`You pick ${n} ${c.name.toLowerCase()}${n > 1 && !c.name.endsWith('s') ? 's' : ''}!`, ...extra, ...(c.regrow ? ['It will keep producing. Keep watering it.'] : [])]);
     }
-    if (f.watered === day) return ui.say([`The ${c.name.toLowerCase()} has had its water today. ${f.growth} of ${c.days} days grown.`]);
-    f.watered = day;
-    const lines = [`You water the ${c.name.toLowerCase()}. ${f.growth} of ${c.days} days grown.`];
-    if (state.inParty('spooky') && isNight(state.data.minutes)) { f.boost = true; lines.push(`${form('spooky').name} hops into the bed and does something spooky to it. It will grow extra tonight.`); }
-    sfx.pickup(); this.splash(t);
-    this.refreshPlot(t); this.save();
-    return ui.say(lines);
+    const lines = [];
+    if (f.watered === day) lines.push(`The ${c.name.toLowerCase()} has had its water today. ${f.growth} of ${c.days} days grown.`);
+    else {
+      f.watered = day;
+      lines.push(`You water the ${c.name.toLowerCase()}. ${f.growth} of ${c.days} days grown.`);
+      if (state.inParty('spooky') && isNight(state.data.minutes)) { f.boost = true; lines.push(`${form('spooky').name} hops into the bed and does something spooky to it. It will grow extra tonight.`); }
+      // The long hose from Bunnings reaches every bed in this garden.
+      if (state.hasUpgrade('hose')) {
+        let n = 0;
+        for (const o of this.plots) {
+          const of = state.data.farm[o.plot.id];
+          if (o === t || !of || !this.plotOpen(o.plot) || of.watered === day || of.growth >= CROPS[of.crop].days) continue;
+          of.watered = day; n++; this.splash(o); this.refreshPlot(o);
+        }
+        if (n) lines.push(`The long hose reaches the other ${n === 1 ? 'bed' : `${n} beds`} too.`);
+      }
+      sfx.pickup(); this.splash(t);
+      this.refreshPlot(t); this.save();
+    }
+    await ui.say(lines);
+    if (state.count('fertiliser') && f.growth < c.days - 1 && !f.fed) {
+      const yes = await ui.say({ text: 'Add some fertiliser? One extra day of growth.', choices: [{ label: `Yes (${state.count('fertiliser')} left)`, value: true }, { label: 'Not now', value: false }] }, { cancelValue: false });
+      if (yes) {
+        state.removeItem('fertiliser'); f.growth++; f.fed = true;
+        sfx.found(); this.heartsFx(t, 3); this.refreshPlot(t); this.save();
+        await ui.say([`You dig in some blood and bone. The ${c.name.toLowerCase()} perks right up. ${f.growth} of ${c.days} days grown.`]);
+      }
+    }
   }
   splash(t) {
     for (let i = 0; i < 8; i++) {
@@ -398,7 +419,7 @@ export class WorldScene extends Phaser.Scene {
       if (!state.isFound(pet.id)) return 'fx-bubble-talk';
       if (pet.asleep) return 'fx-bubble-zzz';
       const rec = state.pet(pet.id);
-      if (rec.giftedDay !== state.data.day && state.bagItems().length) return 'fx-bubble-gift';
+      if (rec.giftedDay !== state.data.day && state.treatItems().length) return 'fx-bubble-gift';
       return 'fx-bubble-heart';
     }
     if (t.kind === 'npc') return t.ref.info.gift && state.data.npcDay[t.ref.id] !== state.data.day ? 'fx-bubble-gift' : 'fx-bubble-talk';
@@ -501,10 +522,10 @@ export class WorldScene extends Phaser.Scene {
     await ui.say(lines, opts);
     if (canEvolve(d.id)) await this.evolveInWorld(pet);
 
-    if (rec.giftedDay !== day && state.bagItems().length) {
+    if (rec.giftedDay !== day && state.treatItems().length) {
       const choice = await ui.say({
         text: `Give ${d.name} a treat?`,
-        choices: [...state.bagItems().map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not now', value: null }],
+        choices: [...state.treatItems().map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not now', value: null }],
       }, { ...opts, cancelValue: null });
       if (choice) await this.giveTreat(pet, choice, opts);
     }
@@ -605,7 +626,7 @@ export class WorldScene extends Phaser.Scene {
       if (choice) await this.giveFriendGift(npc, choice, opts);
     }
     this.save();
-    if (info.shop) { await ui.shop(info.shop === true ? 'olly' : info.shop); this.save(); }
+    if (info.shop) { await ui.shop(info.shop); this.save(); }
   }
 
   async heartEvent(npc, hearts, opts) {
@@ -617,7 +638,7 @@ export class WorldScene extends Phaser.Scene {
     const reward = fi.rewards?.[hearts];
     if (reward?.item) { state.addItem(reward.item, reward.n || 1); await ui.say(`You got: ${reward.n || 1} ${ITEMS[reward.item].name}.`, opts); }
     if (reward?.money) { state.addMoney(reward.money); await ui.say(`You got: $${reward.money}.`, opts); }
-    if (hearts >= 4 && fi.assist) await ui.say(`${npc.info.name} will help you out in battles now. Look for "Call" in the battle menu.`);
+    if (hearts >= 4 && fi.assist) await ui.say(`${npc.info.name} has your back now. Battle near their part of town and they might turn up to help.`);
   }
 
   async giveFriendGift(npc, item, opts) {

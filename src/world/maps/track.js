@@ -1,6 +1,6 @@
 // EDWARDES LAKE PARK, south: the red athletics track, the Little Athletics
 // clubhouse, toilets and Edwardes St. North to the lake, east into the
-// park, south down Edwardes St to the station.
+// park, south down Edwardes St to Loddon Ave, or the skyrail path to the station.
 import { MapBuilder } from '../MapBuilder.js';
 
 export function buildTrack() {
@@ -17,6 +17,9 @@ export function buildTrack() {
 
   // Gravel paths linking everything
   b.fill(20, 0, 3, 6, 'u').fill(37, 12, 7, 3, 'u').fill(5, 12, 7, 2, 'u').fill(5, 24, 14, 2, 'u');
+  // ...and the path south under the skyrail to Reservoir Station
+  b.fill(19, 24, 4, 2, 'u').fill(21, 26, 2, 4, 'u');
+  b.sign(23, 27, ['Skyrail path.', 'Under the Mernda line to Reservoir Station. The columns have murals now.']);
 
   // Clubhouse, toilets, gym
   b.put('clubhouse', 7, 26, { v: 'athletics' });
@@ -31,7 +34,8 @@ export function buildTrack() {
   b.exit(1, 29, 2, 1, 'loddon', 'south', 'Loddon Ave');
   b.exit(20, 0, 3, 1, 'lake', 'south', 'Edwardes Lake');
   b.exit(43, 12, 1, 3, 'lakepark', 'west', 'Lake Park');
-  b.entry('south', 2, 27, 'up').entry('north', 21, 2, 'down').entry('east', 41, 13, 'left');
+  b.exit(21, 29, 2, 1, 'reservoir', 'north', 'Reservoir Station');
+  b.entry('skyrail', 21, 27, 'up').entry('south', 2, 27, 'up').entry('north', 21, 2, 'down').entry('east', 41, 13, 'left');
 
   const loop = []; for (let i = 0; i < 20; i++) { const a = -i / 20 * Math.PI * 2; loop.push([24 + Math.cos(a) * 11.5, 14 + Math.sin(a) * 7]); }
   b.npc('kez', loop[0][0], loop[0][1], { path: loop, speed: 46 });

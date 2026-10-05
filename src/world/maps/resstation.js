@@ -40,7 +40,7 @@ export function buildResStation() {
   b.put('powerpole', 12, 19); b.put('powerpole', 30, 19);
 
   b.exit(0, 17, 1, 2, 'glasgow', 'east', 'Glasgow Ave');
-  b.exit(34, 0, 2, 1, null, null, 'Edwardes Lake Park', ['The path to the lake is fenced off for skyrail works.', 'Go round by Loddon Ave or Glasgow Ave.']);
+  b.exit(34, 0, 2, 1, 'track', 'skyrail', 'Edwardes Lake Park');
   b.exit(43, 17, 1, 2, 'loddon', 'north', 'Loddon Ave');
   b.entry('station', 20, 12, 'down').entry('west', 1, 18, 'right').entry('north', 34, 1, 'down').entry('east', 42, 18, 'left');
 

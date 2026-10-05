@@ -2,6 +2,7 @@
 // the station. Same format as objects.js. Objects with roof: true are drawn
 // above characters and fade when you walk underneath (carports, canopies).
 import { shade } from './painter.js';
+import { carSide } from './cars.js';
 import { hash } from '../../util.js';
 
 function box(p, x, y, w, h, c) {
@@ -263,14 +264,9 @@ export const LAVERTON = {
     },
   },
   ute: {
-    foot: [2, 1], tex: [34, 24], variants: ['white', 'red', 'silver'],
+    foot: [2, 1], tex: [48, 28], variants: ['white', 'red', 'silver'],
     paint(p, v) {
-      const c = { white: '#f0f0ec', red: '#c8443a', silver: '#b8bcc4' }[v];
-      p.shadow(17, 23, 32);
-      p.r('#1e1e1e', 4, 17, 6, 6); p.r('#1e1e1e', 24, 17, 6, 6);
-      box(p, 1, 10, 32, 9, c); p.r(shade(c, -0.2), 1, 16, 32, 3);
-      box(p, 18, 3, 13, 8, c); p.r('#7fb4d2', 20, 4, 9, 6); p.r('#3a3a3a', 2, 8, 15, 3);
-      p.r('#f5e66b', 31, 12, 2, 2); p.r('#d83c3c', 1, 12, 1, 2);
+      carSide(p, { white: '#eeeeea', red: '#c8443a', silver: '#b8bcc4' }[v], { ute: true, y: 2 });
     },
   },
   carport: {
@@ -499,7 +495,7 @@ export const LAVERTON = {
     },
   },
 
-  // THE LEASH YOU CAN DO: the pet shop on Hope St, Brunswick (Olly's).
+  // THE LEASH YOU CAN DO: the pet shop on Hope St, Brunswick (Ed's).
   petshop: {
     foot: [6, 3], tex: [96, 72], variants: ['laverton'],
     paint(p) {
