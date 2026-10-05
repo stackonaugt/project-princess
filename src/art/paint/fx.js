@@ -9,6 +9,13 @@ export const FX = {
   'fx-bubble-alert': [12, 13, p => bubble(p, b => { b.r('#e8a030', 5, 2, 2, 4); b.r('#e8a030', 5, 7, 2, 1); })],
   'fx-bubble-gift': [12, 13, p => bubble(p, b => { b.r('#3fa38f', 3, 3, 6, 5); b.r('#f5d63a', 5, 3, 2, 5); b.r('#f5d63a', 3, 2, 2, 1); b.r('#f5d63a', 7, 2, 2, 1); })],
   'fx-bubble-dots': [12, 13, p => bubble(p, b => { b.r('#7b4a24', 2, 5, 2, 2); b.r('#7b4a24', 5, 5, 2, 2); b.r('#7b4a24', 8, 5, 2, 2); })],
+  // A witches hat (traffic cone) for blocked roads.
+  'fx-cone': [10, 12, p => {
+    p.r('rgba(30,40,20,.3)', 1, 10, 8, 2);
+    p.r('#2a1a10', 0, 9, 10, 2); p.r('#3a3a3a', 1, 9, 8, 1);
+    p.r('#2a1a10', 3, 0, 4, 9); p.r('#e8701e', 4, 1, 2, 8); p.r('#2a1a10', 2, 4, 6, 5); p.r('#e8701e', 3, 4, 4, 5);
+    p.r('#f4f4f0', 3, 5, 4, 1); p.r('#f4f4f0', 4, 2, 2, 1); p.r('#ff9a4a', 4, 1, 1, 7); p.r('#b84e10', 6, 5, 1, 4);
+  }],
   'fx-heart': [5, 4, p => heart(p, 0, 0)],
   'fx-glow': [64, 64, p => {
     const g = p.ctx.createRadialGradient(32, 32, 0, 32, 32, 32);

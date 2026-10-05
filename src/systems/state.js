@@ -272,6 +272,9 @@ export const state = {
   },
 
   // Council motions (data/council.js)
+  // Motions go up on the noticeboard one at a time as you settle in: the
+  // first once you have found two pets, another with each pet after that.
+  motionUnlocked(id) { return this.motionPassed(id) || MOTION_ORDER.indexOf(id) < this.foundCount() - 1; },
   motionPassed(id) { return this.data.council.passed.includes(id); },
   motionGiven(id) { return this.data.council.given[id] || (this.data.council.given[id] = {}); },
   motionReady(id) { return motionReady(id, this.data.council.given[id]); },

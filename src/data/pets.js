@@ -29,11 +29,11 @@ export const PETS = [
     behaviour: 'patrol', patrol: [[17, 9], [24, 10], [25, 14], [20, 16], [15, 14]],
     sleeps: [22 * 60, 26 * 60],
     loves: ['ribbon', 'chicken', 'strawberry'], likes: ['cheese', 'croissant', 'chilli'], dislikes: ['lemon', 'tennis', 'zucchini'],
-    stats: { hp: 55, attack: 72, defence: 45, speed: 80, special: 95 },
+    stats: { hp: 66, attack: 84, defence: 52, speed: 80, special: 100 },
     evolution: {
       name: 'Flamcess', species: 'Toy poodle (on fire)', type: 'fire', level: 14, hearts: 5, sprite: 'flamcess',
       pal: { a: '#ffe0b0', b: '#f0b070', w: '#fff0a0', c: '#c8501a', p: '#e83a2a', y: '#ffd030', o: '#f08020', r: '#d8301a', n: '#5a2010', e: '#2a1a10' },
-      stats: { hp: 70, attack: 88, defence: 55, speed: 92, special: 112 },
+      stats: { hp: 82, attack: 98, defence: 62, speed: 92, special: 116 },
       moves: ['blazeclaws', 'hotbite', 'scorchbed', 'pompom'],
     },
   },

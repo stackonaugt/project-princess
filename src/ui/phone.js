@@ -13,6 +13,7 @@ const APPS = [
   { id: 'friends', label: 'Friends', colour: '#3fa38f', icon: () => npcIcon('trish') },
   { id: 'map', label: 'Map', colour: '#2f6aa3', glyph: '🗺' },
   { id: 'garden', label: 'Garden', colour: '#5a9a38', icon: () => itemIcon('carrot', 48) },
+  { id: 'calendar', label: 'Calendar', colour: '#7a4ab0', glyph: '📅' },
   { id: 'requests', label: 'Requests', colour: '#e8a030', glyph: '📌' },
   { id: 'menu', label: 'Settings', colour: '#6a6e78', glyph: '⚙' },
   { id: 'cheats', label: 'Cheats', colour: '#c8302a', glyph: '🛠', cheat: true },
