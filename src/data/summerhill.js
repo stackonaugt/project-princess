@@ -83,7 +83,7 @@ export const SH_PEOPLE = {
     },
   },
   thuy: {
-    role: 'Runs Summerhill Hot Bread. Up at 3am every day',
+    role: 'Runs the Bakers Delight at Summerhill. Up at 3am every day',
     lines: [
       ['Fresh! Sausage roll, vanilla slice, finger bun with sprinkles. The tomato sauce is free if you smile.'],
       ['Vanilla slice. Some people call it a snot block. Those people are not welcome in my shop.'],
@@ -195,7 +195,7 @@ export const SH_FOE_TEXT = {
 
 export const SH_PLACES = {
   summerhill: 'Summerhill Shopping Centre. A big car park, a pylon sign and everything you need.',
-  summerhillmall: 'Inside Summerhill. Terrazzo, air conditioning and the smell of hot bread.',
+  summerhillmall: 'Inside Summerhill. Grey tiles, air conditioning and the smell of fresh bread.',
 };
 
 // Presents for friends (gift: true). Icons in src/art/paint/summerhill.js.
@@ -216,7 +216,7 @@ export const SH_SHOPS = {
   summerfresh: { name: 'Coles', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['treats', 'seeds', 'gifts'], seeds: ['carrot', 'potato', 'zucchini', 'pumpkin'], gifts: ['timtams', 'icedcoffee', 'gaytime', 'flowers'] },
   chemist: { name: 'Summerhill Discount Chemist', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['handcream', 'sunscreen'] },
   newsagent: { name: 'Summerhill Newsagency', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['puzzlebook', 'bdaycard', 'paperback'] },
-  hotbread: { name: 'Summerhill Hot Bread', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['sausageroll', 'vanillaslice', 'fingerbun'] },
+  hotbread: { name: 'Bakers Delight', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['sausageroll', 'vanillaslice', 'fingerbun'] },
   twodollar: { name: 'Everything $2', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts', 'pranks'], gifts: ['fidget', 'fakeplant', 'flowers'] },
 };
 

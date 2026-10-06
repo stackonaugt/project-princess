@@ -20,11 +20,11 @@ export const TILE_NAMES = {
   'r': 'rail', 'f': 'footpath', 'c': 'concrete', 'p': 'platform', 'b': 'bluestone', '~': 'water',
   'w': 'bridge', 's': 'sand', 'd': 'soil', 'g': 'gravel', 'm': 'mulch',
   'A': 'track', 'k': 'pavers', 'L': 'lawn', 'u': 'parkgravel', 'z': 'zebra', 'P': 'carpark', 'h': 'driveway',
-  'B': 'rail', 'W': 'wall', 'V': 'void', 'D': 'doorway', 'o': 'timber', 'T': 'bathtile', 'K': 'carpet', 'n': 'lino', 'Q': 'terrazzo', 'U': 'chambercarpet',
+  'B': 'rail', 'W': 'wall', 'V': 'void', 'D': 'doorway', 'o': 'timber', 'T': 'bathtile', 'K': 'carpet', 'n': 'lino', 'Q': 'terrazzo', 'q': 'malltile', 'U': 'chambercarpet',
   'R': 'rooftop', 'Y': 'houseroof',
 };
 const WALLISH = 'WV';
-const FLOORS = 'oTKnDQU';
+const FLOORS = 'oTKnDQqU';
 
 const FLOWERS = ['#f5e66b', '#f28bb0', '#ffffff', '#b79cf0', '#f29a5b'];
 const ROADLIKE = '#+xzPk';
@@ -146,6 +146,13 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       // speckled terrazzo
       p.r('#e4e0d8', sx, sy, T, T);
       for (let i = 0; i < 14; i++) p.r(['#b8b2a8', '#f4f2ee', '#9a948a', '#d8c8b0'][i % 4], sx + Math.floor(hash(tx * 17 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 17 + i) * 15), 1, 1);
+      return;
+    }
+    case 'q': {
+      // plain grey shopping centre floor tiles, big squares with a faint shine
+      p.r('#c8ccd0', sx, sy, T, T);
+      if ((tx + ty) % 2) p.r('#c2c6ca', sx, sy, T, T);
+      p.r('#b4b8bc', sx, sy + T - 1, T, 1); p.r('#b4b8bc', sx + T - 1, sy, 1, T); p.r('#d6dade', sx + 2, sy + 2, 3, 1);
       return;
     }
     case 'U': {
