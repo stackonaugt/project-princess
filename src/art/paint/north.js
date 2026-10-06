@@ -285,6 +285,53 @@ export const NORTH = {
       goods[v]();
     },
   },
+  // Preston Market's big open shed (the owner's photos): steel columns and
+  // timber trusses under a pale roof you can half see through, drawn over
+  // the stalls and faded right back when you walk in under it.
+  marketroof: {
+    foot: [42, 14], tex: [672, 236], variants: ['shed'], roof: true, solid: false,
+    paint(p) {
+      const W = 672, H = 236, eave = 12;
+      p.r('rgba(220,226,222,0.28)', 0, eave, W, H - eave - 6);                 // the roof sheets, half see-through
+      for (let y = eave; y < H - 6; y += 16) p.r('rgba(160,170,166,0.35)', 0, y, W, 1);
+      p.r('#6a7a6a', 0, 0, W, eave); p.r('#8a9a8a', 0, 0, W, 2); p.r('#4a5a4a', 0, eave - 2, W, 2);   // the gutter edge along the front
+      for (let x = 8; x < W; x += 56) {
+        p.r('#8a5a2e', x - 20, eave, 40, 3);                                     // timber truss
+        for (let i = 0; i < 20; i++) p.r('#a87040', x - 20 + i * 2, eave + 3 + Math.abs(10 - i), 2, 2);
+        p.r('#4a6a4a', x, eave, 4, H - eave); p.r('#6a8a6a', x, eave, 1, H - eave);   // steel column
+      }
+      p.r('#4a5a4a', 0, H - 6, W, 3);
+    },
+  },
+  // The mural wall along the front of the market: a low building painted
+  // with fruit, veg and smiling stallholders, PRESTON MARKET in the corner.
+  marketmural: {
+    foot: [14, 2], tex: [224, 64], variants: ['left', 'right'],
+    paint(p, v) {
+      const W = 224, H = 64, top = 12;
+      p.r('#d8d0c0', 0, 4, W, 10); p.r('#e8e0d0', 0, 4, W, 2);
+      p.r('#f0d040', 0, top, W, H - top - 1);
+      const cols = ['#e8302a', '#3aa84a', '#e8742a', '#3a7ad8', '#e77fb8', '#2a2a30'];
+      for (let i = 0; i < 18; i++) { const x = 6 + i * 12, y = top + 14 + (i % 3) * 8; p.blob(x, y, 5, cols[(i + (v === 'right' ? 2 : 0)) % cols.length]); p.r('#2a2a30', x - 1, y - 1, 1, 1); p.r('#3aa84a', x, y - 6, 2, 2); }
+      for (let i = 0; i < 3; i++) { const x = 30 + i * 70; p.r('#f4efe0', x, top + 6, 22, 30); p.blob(x + 11, top + 10, 6, '#f2c79a'); p.r('#2a2a30', x + 8, top + 9, 2, 2); p.r('#2a2a30', x + 13, top + 9, 2, 2); p.r('#c8302a', x + 9, top + 13, 5, 1); p.r(cols[i], x + 2, top + 18, 18, 18); }   // stallholders
+      if (v === 'left') { p.r('#f4f4f0', 4, top + 2, 46, 18); p.text('PRESTON', 8, top + 5, '#2a2a30'); p.text('MARKET', 10, top + 12, '#2a2a30'); }
+      else { p.r('#2a2a30', W - 70, top + 4, 64, 12); p.text('FRESH DAILY', W - 66, top + 7, '#f0d040'); }
+      p.r('#2a2a30', 0, H - 4, W, 3);
+    },
+  },
+  // The green steel arch over the market entrance, PRESTON MARKET in script
+  // on its round sign (walk under it).
+  marketarch: {
+    foot: [6, 1], tex: [96, 72], variants: ['green'], roof: true,
+    paint(p) {
+      const G = '#2a7a4a', L = '#4a9a6a';
+      for (const x of [4, 88]) { p.r(G, x, 20, 4, 52); p.r(L, x, 20, 1, 52); }
+      for (let i = 0; i < 84; i++) { const y = 24 - Math.round(Math.sin(i / 83 * Math.PI) * 12); p.r(G, 6 + i, y, 1, 3); p.r(L, 6 + i, y, 1, 1); }
+      for (let i = 0; i < 8; i++) p.r(G, 12 + i * 10, 24 - Math.round(Math.sin((i * 10 + 6) / 83 * Math.PI) * 12), 1, 14);   // ribs
+      p.blob(48, 14, 13, G); p.blob(48, 14, 11, '#f4efe0');
+      p.text('PRESTON', 34, 9, G); p.text('MARKET', 36, 16, G);
+    },
+  },
   marketsign: {
     foot: [1, 1], tex: [48, 72], variants: ['preston'],
     paint(p) {
