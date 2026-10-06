@@ -25,6 +25,9 @@ export function buildBowls() {
   b.fill(2, 8, 17, 11, 'g'); b.fill(3, 9, 15, 9, 'L');
   b.fill(21, 8, 16, 11, 'g'); b.fill(22, 9, 14, 9, 'L');
   b.put('bowlshelter', 2, 19); b.put('bowlshelter', 6, 19); b.put('bowlshelter', 21, 19); b.put('bowlshelter', 25, 19);
+  // Old blokes bowling, and the President himself
+  b.npc('crazyjeff', 10, 13, { face: 'right', bowls: true, path: [[10, 13], [15, 13], [10, 13]] });
+  b.npc('bowler1', 6, 11, { face: 'right', bowls: true }); b.npc('bowler2', 28, 12, { face: 'left', bowls: true });   // talk to them for a bowl (ui/bowls.js)
   b.put('parkbin', 19, 19); b.put('potplant', 20, 8, { v: 'succulent' });
 
   // The bocce courts through the gate on the east side
@@ -44,8 +47,9 @@ export function buildBowls() {
   b.fill(0, 8, 2, 11, 'g'); b.wildGrass(1, 13, 1.5, 3); b.wildGrass(38, 24, 2, 1.2);
 
   b.exit(0, 2, 1, 18, 'fleming', 'bowls', 'Fleming Park');
+  b.exit(0, 25, 6, 1, 'fleming', 'bowls', 'Fleming Park');
   b.exit(39, 21, 1, 4, 'eblygon', 'bowls', 'Lygon St');
-  b.entry('east', 2, 10, 'right').entry('west', 38, 21, 'left').entry('street', 14, 21, 'up');
+  b.entry('east', 2, 10, 'right').entry('southwest', 2, 24, 'up').entry('west', 38, 21, 'left').entry('street', 14, 21, 'up');
 
 
   b.lane({ axis: 'x', pos: 22.5, dir: -1, from: -3, to: 43, every: [12, 24], speed: 50, kinds: ['veh-car-h-white', 'veh-ute-h'] });

@@ -48,6 +48,16 @@ export class MapBuilder {
     return true;
   }
 
+  // Take away any objects overlapping a rectangle (to lay a road through).
+  clear(x, y, w, h) {
+    this.objects = this.objects.filter(o => {
+      const hit = o.x < x + w && o.x + o.w > x && o.y < y + h && o.y + o.h > y;
+      if (hit) for (let j = o.y; j < o.y + o.h; j++) for (let i = o.x; i < o.x + o.w; i++) if (this.inside(i, j)) this.occ[j][i] = false;
+      return !hit;
+    });
+    return this;
+  }
+
   // Place an object with its footprint's top-left at tile x,y.
   // opts: v (variant), text (sign text), id, interact
   put(kind, x, y, opts = {}) {
@@ -65,6 +75,12 @@ export class MapBuilder {
   fenceH(x0, x1, y, style, gaps = []) { for (let x = x0; x <= x1; x++) if (!gaps.includes(x)) this.put('fence', x, y, { style }); return this; }
   fenceV(x, y0, y1, style, gaps = []) { for (let y = y0; y <= y1; y++) if (!gaps.includes(y)) this.put('fence', x, y, { style }); return this; }
   sign(x, y, text) { return this.put('sign', x, y, { text }); }
+  // Street art: a random piece, or (paste) a random wall of wheat-paste
+  // posters. Random each session, not seeded, so the walls change.
+  graffiti(x, y, paste = false) {
+    const v = paste ? `paste-${Math.floor(Math.random() * 10)}` : ['piece', 'kooka', 'tags', 'kelly', 'devil', 'bubble'][Math.floor(Math.random() * 6)];
+    return this.put('graffiti', x, y, { v });
+  }
 
   // Trees around the edge, leaving gaps on paths/roads so exits stay open.
   border(variants = ['oak']) {
@@ -107,6 +123,12 @@ export class MapBuilder {
   // to = null makes a locked exit that shows `lines` instead.
   exit(x, y, w, h, to, entry, label, lines = null, extra = {}) { this.exits.push({ x, y, w, h, to, entry, label, lines, ...extra }); return this; }
   entry(name, x, y, dir = 'down') { this.entries[name] = { x, y, dir }; return this; }
+  // An entry along a whole edge: you arrive as far along it (0..1) as you
+  // left the other map's exit. axis 'y' runs down a left/right edge.
+  edgeEntry(name, axis, at, from, to, dir) {
+    this.entries[name] = axis === 'y' ? { x: at, y: from, dir, axis, span: [from, to] } : { x: from, y: at, dir, axis, span: [from, to] };
+    return this;
+  }
   // A garden plot you can plant in (see systems state.farm). Walkable soil.
   plot(id, x, y, label = '') { this.set(x, y, 'd'); this.plots.push({ id, x, y, label: label || `Plot ${this.plots.length + 1}` }); this.reserve(x, y, 0.5); return this; }
   forage(x, y, items) { this.spawns.push({ x, y, items }); this.reserve(x, y, 0.5); return this; }

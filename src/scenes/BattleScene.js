@@ -363,7 +363,7 @@ export class BattleScene extends Phaser.Scene {
     await Promise.all(tweensIn);
     if (this.trainer) {
       await this.say(this.trainer.intro || (this.trainer.prize ? `${this.trainer.name} wants a friendly play-fight!` : `The ${this.trainer.name} wants to battle!`));
-      await this.tw(this.trainerSpr, { x: W + 20 * u, duration: 400, ease: 'Quad.easeIn' });
+      if (this.trainerSpr) await this.tw(this.trainerSpr, { x: W + 20 * u, duration: 400, ease: 'Quad.easeIn' });
       await this.sendOutFoe(this.sendText(this.foe));
     } else {
       B.setFighter(this.foe); B.show('foe');
@@ -698,7 +698,7 @@ export class BattleScene extends Phaser.Scene {
       }
       if (canEvolve(m.petId, m.level)) await this.evolveFighter(m);
     }
-    if (!this.trainer) {
+    if (!this.trainer && ENEMIES[f.id].tall) {   // only people have pockets
       const cash = R.wildMoney(f);
       state.addMoney(cash);
       await this.say(`You find $${cash} in loose change where ${f.name} was.`);

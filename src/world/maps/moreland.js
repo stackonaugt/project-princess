@@ -1,5 +1,5 @@
 // MORELAND RD at LYGON ST, Coburg (from the owner's Street View shots).
-// Betty and Ed's townhouse sits on the north-east corner: a red brick pier,
+// Betty and Ward's townhouse sits on the north-east corner: a red brick pier,
 // white render, glass balconies and a taupe front wall with lattice and ivy.
 // Betty stands out the front with something she has just cooked. Next door,
 // a catering kitchen and a cafe; across Moreland Rd, red-roofed brick houses
@@ -15,12 +15,14 @@ export function buildMoreland() {
   // Moreland Rd and Lygon St
   b.hline(0, 43, 12, 'f').hline(0, 43, 13, '#').hline(0, 43, 14, '#').hline(0, 43, 15, 'f');
   b.vline(19, 0, 25, 'f').fill(20, 0, 2, 26, '#').vline(22, 0, 25, 'f');
+  b.fill(19, 13, 4, 2, '#');             // Moreland Rd runs straight through: no footpath across the road
   b.fill(20, 12, 2, 1, 'z'); b.fill(20, 15, 2, 1, 'z');
 
-  // North-east corner: Betty and Ed's place
+  // North-east corner: Betty and Ward's place
   b.put('bettyhouse', 24, 9, { v: 'moreland' });
-  b.sign(23, 12, ['Betty and Ed\'s.', 'You can smell the berbere from the tram stop. Ed works at the pet shop on Hope St.']);
+  b.sign(23, 12, ['Betty and Ward\'s.', 'You can smell the cooking from the tram stop. Ward runs the bottle shop on Sydney Rd.']);
   b.npc('betty', 28, 12, { face: 'down' });
+  b.npc('ward', 30, 12, { face: 'down', at: 'home' });   // home from the bottle shop
   b.put('tree', 23, 8, { v: 'gum' });
   b.put('factory', 32, 9, { v: 'brick' });
   b.sign(31, 12, ['A catering kitchen.', 'Trays of food go out the roller door all day. Betty says hers is better. She is right.']);
@@ -49,10 +51,10 @@ export function buildMoreland() {
   b.wildGrass(33, 23, 4, 1.4); b.wildGrass(8, 23, 4, 1.3);
   b.put('tree', 24, 22, { v: 'lemon' });
 
-  b.exit(19, 0, 4, 1, 'coburg', 'lygon', 'Bell St');
-  b.exit(19, 25, 4, 1, null, null, 'Brunswick East', ['Lygon St heads south towards Brunswick East.', 'Not today. Betty says to bring her back some coffee beans when you go.']);
-  b.exit(0, 12, 1, 4, null, null, 'Moreland Rd', ['Moreland Rd heads west to Sydney Rd.', 'Roadworks. There are always roadworks on Moreland Rd.']);
-  b.entry('north', 20, 1, 'down');
+  b.exit(19, 0, 4, 1, null, null, 'Lygon St, Coburg', ['Lygon St carries on north into Coburg.', 'Roadworks. There are always roadworks up there.']);
+  b.exit(19, 25, 4, 1, 'holmes', 'east', 'Holmes St, Brunswick East');
+  b.exit(0, 12, 1, 4, 'albion', 'moreland', 'Sydney Rd, Brunswick');
+  b.entry('north', 20, 1, 'down').entry('south', 20, 24, 'up').entry('west', 1, 13, 'right');
 
   b.lane({ axis: 'x', pos: 13.5, dir: -1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 14.5, dir: 1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });

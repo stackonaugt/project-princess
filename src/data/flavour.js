@@ -1,11 +1,13 @@
 // Things you can inspect around town. Keyed by object kind (and variant).
 // Each entry is a list of possible conversations; one is picked at random.
 export const FLAVOUR = {
+  reunion: [['A big green sculpture outside the station. Apparently it\'s called Reunion. No idea what it\'s supposed to mean, but Helen LOVES it.']],
   brickhouse: [['Nobody is home. A sticker on the letterbox says NO JUNK MAIL, which has been ignored by everyone.'], ['You can hear a TV through the window. It is the footy replay. It is always the footy replay.']],
   weatherboard: [['The verandah has a cane chair, a pot plant and a sleeping cat that is definitely not a pet in this game.'], ['Someone inside is cooking with a lot of garlic. You are not invited, but you are tempted.']],
   terrace: [['A Victorian terrace, about 130 years old. Rent: astronomical. Insulation: none.'], ['A sign in the window says "Brunswick says NO to the new development". Another window says "YES". Neighbours.']],
   cafe: [['The cafe smells like coffee and ambition. There is a queue. There is always a queue.']],
   'shop:records': [['The record shop has a whole crate labelled "Melbourne bands you have never heard of". You have heard of none of them.']],
+  'shop:banh mi': [['Crunchy rolls, pickled carrot, pâté and chilli. The queue is out the door by 11. Worth it.']],
   'shop:pho': [['The best pho on Sydney Rd, according to a handwritten sign. Also according to everyone.']],
   'shop:books': [['A secondhand bookshop. There is a cat asleep on the poetry section. It is not a pet in this game. It is just a cat.']],
   'shop:milk bar': [['The milk bar. Bags of mixed lollies, a dusty ice cream sign, and James knows everyone by name.']],

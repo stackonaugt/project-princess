@@ -27,7 +27,7 @@ export const ROUTINES = {
     const m = d.minutes;
     if (isWeekend(d.day)) return m < 18 * 60 ? 'yard' : 'home';
     if (m < 8 * 60) return d.flags.paddyLeft === d.day ? null : 'leaving';
-    if (inMeeting(d)) return 'chamber';
+    if (inMeeting(d) && d.council?.metDay !== d.day) return 'chamber';
     if (m < (isMeetingDay(d.day) ? MEETING[0] : 17 * 60 + 30)) return 'reception';
     if (isMeetingDay(d.day) && m < MEETING[1] + 30) return null;   // walking home after the meeting
     return 'home';
@@ -39,18 +39,67 @@ export const ROUTINES = {
 //   Chapter 3: Trish and Gordon are in bed with gastro (Helen is looking after them).
 const st = d => d.story || {};
 const ch = (d, n) => st(d).chapter === n && !st(d).done?.[n];
+// Each councillor has a house in Laverton (allen.js, woods.js): out the front
+// first thing (7 to 9:30am) and home again in the evening (5 to 10pm, or
+// after the Tuesday meeting till 11pm). Lesley stays home while she is sick.
+const atHouse = d => (d.minutes >= 7 * 60 && d.minutes < 9.5 * 60) || (d.minutes >= 17 * 60 && d.minutes < (isMeetingDay(d.day) ? 23 : 22) * 60 && !inMeeting(d));
 for (const id of COUNCILLORS) {
-  ROUTINES[id] = d => (id === 'rayna' && ch(d, 2)) || (id === 'lesley' && st(d).ch2?.sickUntil >= d.day) ? null
+  ROUTINES[id] = d => (id === 'rayna' && ch(d, 2)) ? null
+    : (id === 'lesley' && st(d).ch2?.sickUntil >= d.day) ? (d.minutes < 22 * 60 ? 'house' : null)
     : id === 'lesley' && ch(d, 2) && !isWeekend(d.day) && d.minutes >= 11 * 60 && d.minutes < 15 * 60 && !inMeeting(d) ? 'foyer'
-    : inMeeting(d) ? 'chamber'
-    : FOYER_DAYS[id].includes(weekday(d.day)) && d.minutes >= 10 * 60 && d.minutes < 16 * 60 ? 'foyer' : null;
+    : inMeeting(d) && d.council?.metDay !== d.day ? 'chamber'
+    : FOYER_DAYS[id].includes(weekday(d.day)) && d.minutes >= 10 * 60 && d.minutes < 16 * 60 ? 'foyer'
+    : atHouse(d) ? 'house' : null;
 }
 
-ROUTINES.trish = ROUTINES.gordon = d => (ch(d, 3) ? null : 'woods');
+// Trish and Gordon: in the garden by day, inside at night, and Thursday
+// mornings shopping in Footscray.
+ROUTINES.trish = ROUTINES.gordon = d => ch(d, 3) || d.minutes >= 19 * 60 ? null
+  : weekday(d.day) === 'Thursday' && d.minutes >= 10 * 60 && d.minutes < 14 * 60 ? 'footscray' : 'woods';
+// The dela Cruz family sing karaoke at Lohse St Reserve, 10am to 6pm.
+ROUTINES.ramon = ROUTINES.liza = ROUTINES.migs = ROUTINES.bea = d => (d.minutes >= 10 * 60 && d.minutes < 18 * 60 ? 'karaoke' : null);
+// The ghost haunts Reservoir Station after 9pm.
+ROUTINES.ghost = d => (d.minutes >= 21 * 60 ? 'night' : null);
+// A real fairy visits Coburg Station every third day, 9am to 5pm.
+ROUTINES.fairy = d => (d.day % 3 === 0 && d.minutes >= 9 * 60 && d.minutes < 17 * 60 ? 'visit' : null);
+// Mem and Corni: up to the Edinburgh Castle at 7pm, home at 11pm.
+ROUTINES.mem = ROUTINES.corni = d => (d.minutes >= 19 * 60 && d.minutes < 23 * 60 ? 'pub' : 'home');
+// Pearman ducks up to the Edinburgh Castle on Friday and Saturday evenings.
+ROUTINES.pearman = d => (['Friday', 'Saturday'].includes(weekday(d.day)) && d.minutes >= 17 * 60 && d.minutes < 21 * 60 ? 'pub' : 'sydney');
+// Ward: the bottle shop till 7pm, then home to Betty on Moreland Rd.
+ROUTINES.ward = d => (d.minutes < 19 * 60 ? 'shop' : 'home');
+// Shannon closes Brunswick Bound at 8pm and heads home.
+ROUTINES.shannon = d => (d.minutes < 20 * 60 ? 'shop' : null);
+// Tim and Nicholas walk Stanley round Edwardes Lake every evening.
+ROUTINES.tim = ROUTINES.nicholas = d => (d.minutes >= 17 * 60 + 30 && d.minutes < 19 * 60 ? 'lake' : 'glasgow');
 
 // Is this person at this place right now? People without a routine always are.
 export function isAt(id, place, d) {
   if (!place) return true;
   const r = ROUTINES[id];
   return !r || r(d) === place;
+}
+
+// Everyone without a routine above still keeps hours. Shopkeepers are there
+// while their shop is open; everyone else is out from the morning (between
+// 6:30 and 8am) and heads home at night (between 8 and 10:30pm), a little
+// different for each person. Night owls come out in the afternoon and stay
+// till close. People at your place, and the ones the story needs on the spot
+// (Ben Carroll on Parliament's steps, Julie's tutorial), are always about.
+const ALWAYS = new Set(['bencarroll', 'julie']);
+const NIGHT_OWLS = { mrwilkinson: 14 * 60, possumpat: 17 * 60 };
+const SHOP_HOURS = {
+  milkbar: [6, 23], spells: [7, 23], vapeshop: [9, 23], coffeecart: [6.5, 15], donuts: [7, 18], fruit: [7, 17], qvdeli: [7, 17],
+  souvenirs: [9, 18], chemist: [8, 21], hotbread: [7, 18], twodollar: [9, 18], pide: [6, 19], deli: [7, 17], fruitveg: [7, 17],
+  opshop: [10, 17], gelateria: [11, 25], bunnings: [6, 21], fishvan: [8, 18], anaconda: [9, 21], cozzo: [9, 18], petshop: [9, 18],
+};
+const spread = id => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 7) / 997;   // 0..1, fixed per person
+export function onDuty(spot, info, d, home = false) {
+  const id = spot.id;
+  if (home || spot.at || ROUTINES[id] || ALWAYS.has(id) || spot.leave) return true;
+  const m = d.minutes;
+  if (NIGHT_OWLS[id] !== undefined) return m >= NIGHT_OWLS[id];
+  if (info?.shop || spot.counter) { const [o, c] = SHOP_HOURS[info?.shop] || [8, 20]; return m >= o * 60 && m < c * 60; }
+  const s = spread(id);
+  return m >= 6 * 60 + 30 + s * 90 && m < 20 * 60 + s * 150;
 }

@@ -34,6 +34,18 @@ function wheelie(p, lid, body, sticker) {
 }
 
 export const FOE_ART = {
+  lifeline: [16, 16, p => { p.r('#e8b890', 1, 10, 14, 5); p.r('#c8306a', 2, 6, 2, 6); p.r('#c8306a', 3, 4, 4, 2); p.r('#c8306a', 6, 3, 6, 2); p.r('#c8306a', 11, 4, 2, 4); face(p, 5, 7); }],
+  heartline: [16, 16, p => { p.blob(5, 6, 3, '#e8508a'); p.blob(10, 6, 3, '#e8508a'); p.r('#e8508a', 3, 7, 10, 3); p.r('#e8508a', 5, 10, 6, 2); p.r('#e8508a', 7, 12, 2, 2); p.r('#f8a0c0', 4, 5, 2, 1); face(p, 5, 7); }],
+  crystalball: [16, 16, p => { p.r('#6a4a2a', 3, 12, 10, 3); p.r('#8a6a42', 4, 12, 8, 1); p.blob(8, 7, 5, '#3a2a6a'); p.blob(8, 7, 4, '#8a7ae0'); p.r('#e0d8ff', 5, 4, 2, 2); face(p, 5, 7); }],
+  jack_: [16, 16, p => { p.blob(8, 9, 5, '#1e1e1e'); p.blob(8, 9, 4, '#f4f4f0'); p.r('#ffffff', 6, 6, 2, 1); p.r('#3a8a3a', 0, 14, 16, 2); face(p, 5, 8); }],
+  ghostdog: [16, 16, p => { const g = 'rgba(210,230,250,0.75)'; p.r(g, 2, 6, 10, 6); p.r(g, 10, 3, 5, 5); p.r(g, 3, 12, 2, 3); p.r(g, 9, 12, 2, 3); p.r(g, 0, 5, 2, 2); p.r('#3a4a6a', 12, 4, 1, 1); p.r('#3a4a6a', 14, 6, 1, 1); }],
+  ghostcat: [16, 16, p => { const g = 'rgba(210,230,250,0.75)'; p.r(g, 3, 8, 9, 5); p.r(g, 9, 4, 5, 5); p.r(g, 9, 2, 1, 2); p.r(g, 13, 2, 1, 2); p.r(g, 1, 4, 2, 6); p.r(g, 4, 13, 2, 2); p.r(g, 9, 13, 2, 2); p.r('#3a4a6a', 10, 6, 1, 1); p.r('#3a4a6a', 12, 6, 1, 1); }],
+  staffer: [16, 32, p => drawPerson(p, { hair: '#1e1612', hairStyle: 'bun', skin: '#f2c8a8', shirt: '#2a2a34', blazer: '#18181c', pants: '#18181c', shoes: '#1a1a1a', glasses: '#1e1e1e', lips: '#a04050' }, 'left', 0)],
+  juniormp: [16, 32, p => drawPerson(p, { hair: '#c8a070', hairStyle: 'wavyshort', skin: '#f6d0b4', shirt: '#c8d4e8', collar: true, blazer: '#3a4a6a', pants: '#3a4a6a', shoes: '#1a1a1a' }, 'left', 0)],
+  robocarroll: [16, 32, p => {
+    drawPerson(p, { hair: '#3a2a1e', hairStyle: 'short', skin: '#b8c0c8', shirt: '#f4f4f0', collar: true, blazer: '#1e2440', pants: '#1e2440', shoes: '#141414' }, 'left', 0);
+    p.r('#4ac8f0', 4, 9, 2, 1); p.r('#8a929e', 9, 6, 3, 1); p.r('#e8c040', 10, 7, 1, 1);   // a glowing eye and a seam on the head
+  }],
   dlcard: [16, 16, p => {
     const w = '#f8f6f0', g = '#d8d4cc', red = '#d8202a';
     p.r(w, 3, 1, 10, 14); p.r(g, 12, 1, 1, 14); p.r(g, 3, 14, 10, 1);

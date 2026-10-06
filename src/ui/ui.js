@@ -15,11 +15,12 @@ import { openPetdex } from './petdex.js';
 import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
 import { openShop } from './shop.js';
-import { openPhone } from './phone.js';
+import { openKaraoke } from './karaoke.js';
+import { openBowls } from './bowls.js';
+import { openPhone, PHONE_APPS, phoneClosed } from './phone.js';
 import { openCouncil } from './council.js';
-import { openRequests } from './requests.js';
 import { openCalendar } from './calendar.js';
-import { openStoryApp, openCard, openNews, openParty } from './story.js';
+import { openStoryApp, openCard, openNews, openPaper, openParty } from './story.js';
 import { openCheats } from './cheats.js';
 import { openFishing } from './fishing.js';
 import { openFriends } from './friends.js';
@@ -197,6 +198,9 @@ export const ui = {
 
   // Story screens (ui/story.js). Each resolves when it's closed.
   card(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('card'); }); },
+  karaoke() { return new Promise(resolve => { this._storyOpts = { done: resolve }; this.openModal('karaoke'); }); },
+  bowls() { return new Promise(resolve => { this._storyOpts = { done: resolve }; this.openModal('bowls'); }); },
+  paper(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('paper'); }); },
   news(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('news'); }); },
   // The party games. Resolves with the score.
   party(guests) { return new Promise(resolve => { this._storyOpts = { guests, done: resolve }; this.openModal('party'); }); },
@@ -214,7 +218,7 @@ export const ui = {
 
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing', 'card', 'news', 'party'].includes(this.modalOpen)) return;
+    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing', 'card', 'news', 'paper', 'party', 'karaoke', 'bowls'].includes(this.modalOpen)) return;
     if (this.modalOpen === which) return this.closeModal();
     this._fromPhone = false;
     this.openModal(which);
@@ -222,7 +226,7 @@ export const ui = {
   openModal(which) {
     const panel = $('modalPanel');
     panel.replaceChildren();
-    panel.className = `panel panel-${which}`;
+    panel.className = `panel panel-${which}` + (PHONE_APPS.includes(which) ? ` in-phone app-${which}` : '');
     const close = () => this.closeModal();
     if (which === 'dex') openPetdex(panel, close);
     if (which === 'bag') openBag(panel, close);
@@ -233,13 +237,15 @@ export const ui = {
     if (which === 'map') openMap(panel, close);
     if (which === 'garden') openGarden(panel, close);
     if (which === 'council') openCouncil(panel, close);
-    if (which === 'requests') openRequests(panel, close);
     if (which === 'calendar') openCalendar(panel, close);
     if (which === 'cheats') openCheats(panel, close);
     if (which === 'story') openStoryApp(panel, close);
     if (which === 'card') this.modalAction = openCard(panel, close, this._storyOpts).action;
+    if (which === 'paper') this.modalAction = openPaper(panel, close, this._storyOpts).action;
     if (which === 'news') this.modalAction = openNews(panel, close, this._storyOpts).action;
     if (which === 'party') { const f = openParty(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
+    if (which === 'karaoke') { const f = openKaraoke(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
+    if (which === 'bowls') { const f = openBowls(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
@@ -253,6 +259,7 @@ export const ui = {
     // Apps opened from the phone go back to the phone.
     if (this._fromPhone && this.modalOpen !== 'phone') { this._fromPhone = false; sfx.close(); this.openModal('phone'); return; }
     this._fromPhone = false;
+    phoneClosed();
     this.modalAction = null;
     if (this._fishCleanup) { const c = this._fishCleanup; this._fishCleanup = null; c(); }
     $('modal').hidden = true;

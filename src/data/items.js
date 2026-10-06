@@ -27,6 +27,11 @@ export const ITEMS = {
   tennis:    { name: 'Tennis ball', price: 4,        desc: 'Slightly damp. Nobody knows why.' },
   ribbon:    { name: 'Pink ribbon', price: 8,        desc: 'Perfect for a pom-pom.' },
   feather:   { name: 'Magpie feather', price: 6,     desc: 'Dropped mid-swoop. A trophy of survival.' },
+  pear:      { name: 'Pear', price: 3, art: { kind: 'pear', body: '#c8d050', label: '#3f8a3e' }, desc: 'From Pearman. Do not ask where he has been keeping it. Actually, he will tell you anyway.' },
+  pancit:    { name: 'Pancit', price: 8, gift: true, art: { kind: 'plate', body: '#e8c878', label: '#3f8a3e', cap: '#f4f0e6' }, desc: 'Tita Liza\'s pancit bihon. Long noodles, for a long life. Still warm.' },
+  manoush:   { name: 'Manoush', price: 6, gift: true, art: { kind: 'plate', body: '#d8a850', label: '#3f8a3e', cap: '#e8d8b0' }, desc: 'Lebanese flatbread with za\'atar and oil, still warm, from Sydney Rd. Slinks swears by it.' },
+  bread:     { name: 'Stale bread', price: 2, art: { kind: 'cake', body: '#e8c888', cap: '#b8803a', label: '#d8a860' }, desc: 'Half a loaf, gone hard. Not good for ducks, really. Although some ducks know what to do with it.' },
+  golfball:  { name: 'Golf ball', price: 5, gift: true, art: { kind: 'ball', body: '#f4f4f0', label: '#c8c8c0' }, desc: 'Found in the long grass. Pearman will want it. Pearman always wants one more.' },
   // Crops you grow (crop: true). Sold at James's; see data/crops.js. Carrot above is also a crop.
   basil:      { name: 'Basil', crop: true,      desc: 'A fragrant bunch. Smells like summer and Nonna.' },
   zucchini:   { name: 'Zucchini', crop: true,   desc: 'One of many. So, so many.' },
@@ -65,7 +70,7 @@ export const ITEMS = {
   fourthwing:     { name: 'Fourth Wing', price: 28, gift: true, book: true, art: { cover: '#1e1e24', band: '#e8a030' }, desc: 'Rebecca Yarros. Dragons. Romance. More dragons.' },
 
   // Carlton and the city. Treats with local: true are only sold at their own shop
-  // (not Ed's pet shop). Their icons are drawn from art (kinds: cone, donut, cup, chips, packet).
+  // (not Romey's pet shop). Their icons are drawn from art (kinds: cone, donut, cup, chips, packet).
   gelato:     { name: 'Dog gelato', price: 6, local: true, art: { kind: 'cone', body: '#e8c870', label: '#d8a050', cap: '#8a5a32' }, desc: 'Gina\'s pup-safe gelato. Peanut butter and banana, no sugar. The dogs do not know.' },
   jamdonut:   { name: 'Hot jam donut', price: 4, local: true, art: { kind: 'donut', body: '#d8a050', label: '#c8302a', cap: '#f4f0e6' }, desc: 'From the van at Queen Vic. The jam is the temperature of the sun.' },
   hotchips:   { name: 'Hot chips', price: 5, local: true, art: { kind: 'chips', body: '#c8302a', label: '#f4d070', cap: '#f4f0e6' }, desc: 'Chicken salt, obviously. Guard them from seagulls with your life.' },
@@ -90,7 +95,16 @@ export const ITEMS = {
   headtorch:  { name: 'Head torch', price: 20, gift: true, desc: 'For night runs, possum spotting and finding the car keys.' },
 
   // The story (data/story.js). story: true items are for the plot: not treats, not presents.
-  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon and three days on a windowsill. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon, laxatives and three days on a windowsill. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  laxatives:  { name: 'Laxatives', price: 12, story: true, art: { kind: 'packet', body: '#e8eef4', label: '#3a7ac8', cap: '#c83a3a' }, desc: 'Extra strength. "Do not exceed the stated dose." Noted.' },
+  // Chapter 3 prank supplies (data/story.js PRANKS). Bunnings, the $2 shop and James's milk bar.
+  whoopee:    { name: 'Whoopee cushion', price: 3, story: true, art: { kind: 'ball', body: '#d83a4a', label: '#f08090' }, desc: 'Pink rubber, maximum comedy. Place under an unsuspecting dad.' },
+  googly:     { name: 'Googly eyes', price: 2, story: true, art: { kind: 'packet', body: '#f4f4f0', label: '#1e1a18', cap: '#3a7ac8' }, desc: 'A bag of two hundred googly eyes. Everything is funnier when it is looking at you.' },
+  rubbermouse:{ name: 'Rubber mouse', price: 2, story: true, art: { kind: 'ball', body: '#9a9aa8', label: '#e8a0b0' }, desc: 'A squeaky grey mouse. Comes with a tiny plaster cast, for some reason.' },
+  bookmark:   { name: 'Tassel bookmark', price: 2, story: true, art: { kind: 'packet', body: '#c8443a', label: '#e8c040', cap: '#e8c040' }, desc: 'Fancy. Perfect for losing someone\'s place in a very long book.' },
+  grapejuice: { name: 'Grape juice', price: 3, story: true, art: { kind: 'wine', body: '#6a2a5a', label: '#f4e8c8', cap: '#3a1a2a' }, desc: 'In a wine bottle. From a distance, it is a shiraz. Up close, it is for kids.' },
+  crayons:    { name: 'Crayons', price: 2, story: true, art: { kind: 'packet', body: '#e8c040', label: '#3a9a4a', cap: '#c8443a' }, desc: 'Twenty-four colours. Enough to redraw an entire train timetable. With dinosaurs.' },
+  wigglescd:  { name: 'Wiggles CD', price: 5, story: true, art: { kind: 'globe', body: '#e8c040', label: '#c8443a', cap: '#3a7ac8' }, desc: 'Hot Potato, Fruit Salad, the hits. Guaranteed to start a dance-off.' },
   // Party decorations (deco: true) from Bunnings, for the September Babies Bash.
   bunting:    { name: 'Bunting', price: 6, deco: true, desc: 'Ten metres of little triangle flags. Gets tangled just by looking at it.' },
   balloons:   { name: 'Balloons', price: 4, deco: true, desc: 'A bag of balloons. Somebody is going to have to blow these up.' },

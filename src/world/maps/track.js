@@ -31,11 +31,12 @@ export function buildTrack() {
   b.ellipse(39, 4, 4, 3.5, '"', '.L').ellipse(8, 3, 3, 2.5, '"', '.').ellipse(39, 25, 4, 3, '"', '.');
   [[6, 17], [36, 8], [10, 21], [40, 19], [28, 26], [16, 3]].forEach(([x, y]) => b.put('tall', x, y, { v: 'biggum' }));
 
-  b.exit(1, 29, 2, 1, 'loddon', 'south', 'Loddon Ave');
+  b.exit(1, 29, 2, 1, 'loddon', 'south', 'Shortcut to Loddon Ave');
+  b.exit(1, 0, 2, 1, 'lake', 'southwest', 'Edwardes Lake');
   b.exit(20, 0, 3, 1, 'lake', 'south', 'Edwardes Lake');
   b.exit(43, 12, 1, 3, 'lakepark', 'west', 'Lake Park');
   b.exit(21, 29, 2, 1, 'reservoir', 'north', 'Reservoir Station');
-  b.entry('skyrail', 21, 27, 'up').entry('south', 2, 27, 'up').entry('north', 21, 2, 'down').entry('east', 41, 13, 'left');
+  b.entry('skyrail', 21, 27, 'up').entry('northwest', 2, 2, 'down').entry('south', 2, 27, 'up').entry('north', 21, 2, 'down').entry('east', 41, 13, 'left');
 
   const loop = []; for (let i = 0; i < 20; i++) { const a = -i / 20 * Math.PI * 2; loop.push([24 + Math.cos(a) * 11.5, 14 + Math.sin(a) * 7]); }
   b.npc('nathan', loop[0][0], loop[0][1], { path: loop, speed: 46 });

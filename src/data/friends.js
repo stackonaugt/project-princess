@@ -13,6 +13,7 @@ import { PEOPLE } from './dialogue.js';
 import { EAST_FRIENDS } from './east.js';
 import { NORTH_FRIENDS } from './north.js';
 import { SH_FRIENDS } from './summerhill.js';
+import { ITEMS } from './items.js';
 
 export const FRIEND_POINTS = { talk: 10, love: 40, like: 20, neutral: 8, dislike: -10 };
 export const ASSIST_HEARTS = 4;
@@ -41,6 +42,11 @@ export const FRIENDS = {
     loves: ['paperback', 'orangewine', 'monkeygrip', 'middlemarch', 'thedry'], likes: ['croissant', 'flowers', 'icedcoffee', 'sardine', 'janeeyre', 'prideprejudice'], dislikes: ['vb'],
     rewards: { 4: { item: 'paperback', n: 1 } },
     assist: { foeAtk: 1, foeDef: 1 },
+  },
+  // Pearman: golf balls, or any booze at all.
+  pearman: {
+    loves: ['golfball', ...Object.keys(ITEMS).filter(id => ITEMS[id].drink)], likes: ['pear', 'snag', 'hotchips'], dislikes: ['seedling'],
+    assist: { foeAtk: 1 },
   },
   slinks: {
     loves: ['penfolds', 'wolfblass', 'orangewine', 'chianti', 'thedry'], likes: ['jacobs', 'yellowtail', 'carrot', 'paperback'], dislikes: ['goon', 'vb'],
@@ -77,10 +83,15 @@ export const FRIENDS = {
     rewards: { 4: { item: 'fertiliser', n: 3 } },
     assist: { heal: 0.35 },
   },
-  ed: {
-    loves: ['cheese', 'coopers'], likes: ['chicken', 'croissant', 'paperback'], dislikes: ['moscato'],
+  romey: {
+    loves: ['cheese', 'seedling', 'strawberry'], likes: ['chicken', 'croissant', 'paperback', 'flowers'], dislikes: ['crown'],
     rewards: { 4: { money: 25 } },
     assist: { heal: 0.35 },
+  },
+  ward: {
+    loves: ['mountaingoat', 'coburglager', 'moondog'], likes: ['snag', 'croissant', 'littlecreatures', 'lasagne'], dislikes: ['vb', 'goon'],
+    rewards: { 4: { item: 'coburglager', n: 1 } },
+    assist: { foeDef: 1, damage: 0.12 },
   },
   paddy: {
     loves: ['coopers', 'byzbook', 'nineteen84'], likes: ['snag', 'croissant', 'icedcoffee', 'paperback'], dislikes: ['goon'],
@@ -92,10 +103,10 @@ export const FRIENDS = {
   dahlia: { loves: ['seedling', 'icedcoffee', 'tomorrows'], likes: ['strawberry', 'flowers', 'paperback'], dislikes: ['goon'] },
   rayna: { loves: ['gaytime', 'strawberry'], likes: ['croissant', 'flowers'], dislikes: ['sardine'], assist: { selfAtk: 1, foeAtk: 1 } },
   deanna: { loves: ['seedling', 'olive'], likes: ['tomato', 'basil', 'flowers'], dislikes: ['crown'], assist: { heal: 0.2, selfDef: 1 } },
-  wren: { loves: ['monkeygrip', 'intermezzo', 'icedcoffee'], likes: ['croissant', 'flowers', 'paperback'], dislikes: ['vb'] },
+  shannon: { loves: ['monkeygrip', 'intermezzo', 'icedcoffee'], likes: ['croissant', 'flowers', 'paperback'], dislikes: ['vb'] },
   sam: { loves: ['takis', 'drpepper', 'snag'], likes: ['reeses', 'icedcoffee', 'vb'], dislikes: ['orangewine'] },
   bazza: { loves: ['redfin', 'eel', 'thermos'], likes: ['snag', 'vb', 'yabby'], dislikes: ['orangewine'] },
-  sal: { loves: ['chianti', 'croissant'], likes: ['coopers', 'cheese', 'flowers'], dislikes: ['goon'] },
+  franco: { loves: ['chianti', 'croissant'], likes: ['coopers', 'cheese', 'flowers'], dislikes: ['goon'] },
   dell: {
     loves: ['flowers', 'seedling', 'monkeygrip'], likes: ['magic', 'tomato', 'jacobs', 'borek'], dislikes: ['goon'],
     rewards: { 3: { item: 'chicken', n: 2 } },
@@ -155,11 +166,6 @@ export const FRIENDS = {
     assist: { damage: 0.18 },
   },
   carmel: { loves: ['pumpkin', 'strawberry'], likes: ['tomato', 'zucchini', 'longblack'], dislikes: ['koala'] },
-  macca: {
-    loves: ['coburglager', 'mountaingoat'], likes: ['snag', 'croissant', 'potato'], dislikes: ['goon'],
-    rewards: { 5: { item: 'coburglager', n: 1 } },
-    assist: { foeDef: 1, damage: 0.12 },
-  },
   chris: {
     loves: ['seedling', 'gloves', 'carrot'], likes: ['basil', 'zucchini', 'potato', 'fertiliser'], dislikes: ['croissant'],
     rewards: { 2: { item: 'carrot', n: 3 } },

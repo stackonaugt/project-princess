@@ -19,6 +19,7 @@ export function buildEbLygon() {
   b.hline(0, 43, 14, 'f');
   // Lygon St heads north off the top (towards Moreland Rd, Coburg)
   b.fill(30, 0, 4, 7, '#').vline(29, 0, 6, 'f').vline(34, 0, 6, 'f');
+  b.fill(30, 7, 4, 1, '#');              // the side street meets Lygon St: no footpath across it
 
   // North side, west to east
   b.put('bbnt', 0, 4);
@@ -29,7 +30,7 @@ export function buildEbLygon() {
   b.put('lygonshop', 22, 4, { v: 'benjys' });
   b.put('gigposters', 27, 6);
   b.sign(28, 7, ['Lygon St, Brunswick East.', 'Bars, karaoke, a toy store that is not a toy store, and apartments all the way up. Not a blade of grass.']);
-  b.put('graffiti', 36, 5, { v: 'paste' });
+  b.graffiti(36, 5, true);
   b.put('rollerdoor', 40, 4, { v: 'tagged' });
 
   // South side: the apartments and the old yellow brick building at 300
@@ -49,11 +50,11 @@ export function buildEbLygon() {
   b.put('bin', 10, 22, { v: 'red' }); b.put('bin', 11, 22, { v: 'yellow' }); b.put('crate', 28, 22, { v: 'blue' });
   b.fenceH(0, 43, 25, 'colorbond');
 
-  b.exit(0, 7, 1, 8, 'ebnicholson', 'west', 'Nicholson St');
+  b.exit(0, 7, 1, 8, 'lygon', 'east', 'Lygon St, Carlton');
   b.exit(0, 22, 1, 3, 'bowls', 'west', 'Brunswick Bowls Club');
-  b.exit(43, 7, 1, 8, 'lygon', 'east', 'Lygon St, Carlton');
-  b.exit(30, 0, 4, 1, null, null, 'Moreland Rd, Coburg', ['Lygon St carries on north towards Moreland Rd.', 'Not today. Bring Betty back some coffee beans when you do.']);
-  b.entry('east', 1, 8, 'right').entry('bowls', 2, 23, 'right').entry('north', 31, 2, 'down').entry('carlton', 42, 10, 'left');
+  b.exit(43, 7, 1, 8, 'holmes', 'west', 'Holmes St');
+  b.exit(30, 0, 4, 1, 'donald', 'east', 'Donald St, Brunswick');
+  b.entry('west', 1, 10, 'right').entry('bowls', 2, 23, 'right').entry('north', 31, 2, 'down').entry('east', 42, 10, 'left');
 
   b.npc('mrwilkinson', 9, 7, { face: 'down' });
   b.npc('abbysaunt', 20, 14, { face: 'up' });

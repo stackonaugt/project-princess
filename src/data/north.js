@@ -21,7 +21,7 @@
 //
 // The same rules as dialogue.js: Australian spelling, no em dashes, lines
 // under about 140 characters. Everyone here is made up, apart from the places
-// themselves and two real friends of the owner: Betty (Ed's partner, Moreland Rd)
+// themselves and two real friends of the owner: Betty (Ward's partner, Moreland Rd)
 // and Alison (Murray Rd). Keep those two affectionate.
 
 // ------------------------------------------------------------ people
@@ -60,8 +60,8 @@ export const NORTH_NPCS = {
     name: 'Marko', gift: 'sardine',
     look: { hair: '#6a4a2a', hairStyle: 'short', skin: '#e8b48a', shirt: '#2a6ab8', pants: '#3a3a44', shoes: '#f4f4f0', apron: '#f4f4f0', beard: true, gloves: '#3a8ac8' },
   },
-  bev: {
-    name: 'Bev', look: { hair: '#c8c8c8', hairStyle: 'curly', skin: '#f0c4a0', shirt: '#c8302a', pants: '#3a4a6a', shoes: '#4a3a2a', glasses: '#3a3a3a', scarf: '#f0d040' },
+  greco: {
+    name: 'Greco', look: { hair: '#d8d4cc', hairStyle: 'short', skin: '#e8b898', shirt: '#e8902a', collar: true, scarf: '#d86a1a', blazer: '#22284a', pants: '#22284a', shoes: '#1a1a1a', glasses: '#1e1e1e', beret: '#1e1e22' },
   },
   nell: {
     name: 'Nell', shop: 'opshop',
@@ -76,7 +76,7 @@ export const NORTH_NPCS = {
   },
   // Real friends of the owner (keep them affectionate)
   betty: {
-    name: 'Betty', gift: ['doro', 'misir', 'shiro', 'sambusa'],
+    name: 'Betty', gift: ['lasagne', 'doro', 'bananabread', 'dumplings', 'lamington', 'curry', 'sambusa', 'scones'],
     look: { hair: '#141010', hairStyle: 'long', skin: '#8a5a3e', shirt: '#1e1e22', pants: '#1e1e22', shoes: '#2a2a2a', lips: '#7a3a3a' },
   },
   alison: {
@@ -240,28 +240,29 @@ export const NORTH_PEOPLE = {
     },
     giftLine: 'Here. One sardine. For the cat. Or the dog. Or you. I don\'t ask.',
   },
-  bev: {
-    role: 'Runs the Save Preston Market campaign. Has a clipboard',
+  greco: {
+    role: 'Preston Market regular. Beret, cravat, opinions. Leads the Save Preston Market campaign',
     lines: [
       ['Sign the petition? The market has been here since 1970. It belongs to the people who shop here, not the people who own it.'],
-      ['The plan is thousands of apartments and a "reimagined market". You can\'t reimagine a market. A market is just people.'],
-      ['We\'ve done rallies, submissions, a sausage sizzle. Next is the council. Paddy\'s not our mayor, but he\'s a mayor. That\'s a start.'],
+      ['A cravat is not an accessory. It is a statement. The statement is: I have standards.'],
+      ['They want a "reimagined market". You cannot reimagine a market. A market is people, and fetta, and arguing about the price of fetta.'],
+      ['The beret? Paris, 1974. It has outlived two Holdens and three prime ministers. It will outlive the developers.'],
       ['Organise, don\'t agonise. I got that off a badge in 1982. Still good advice.'],
     ],
     hints: {
       stanley: 'A little grey schnauzer comes through on Saturdays with his two dads from Glasgow Ave. Inspects every stall. Very thorough.',
     },
     heartScenes: {
-      2: ['Bev: "Every single stallholder here signed. Every one. That\'s solidarity. Now you sign too."'],
-      5: ['Bev pins a SAVE PRESTON MARKET badge on you. "You\'re one of us now. That means meetings. Lots of meetings."'],
+      2: ['Greco: "Every single stallholder here signed. Every one. That is solidarity. Now you sign too. Use the good pen."'],
+      5: ['Greco pins a SAVE PRESTON MARKET badge on you and straightens it twice. "There. Now you look like someone who goes to meetings."'],
     },
-    helpsInBattle: 'Bev arrives with forty stallholders and a megaphone. The foe is outnumbered.',
+    helpsInBattle: 'Greco arrives with forty stallholders and a megaphone. The foe is outnumbered, and underdressed.',
     battle: {
-      challenge: ['You look like you might be from the developer.', 'Only one way to find out. Show me what you\'re made of.'],
-      ask: 'Battle Bev?', yes: 'Solidarity', no: 'I\'ll sign instead',
-      win: ['Okay. You\'re not from the developer. They never fight fair. You did.', 'Have some baklava. Stall twelve. Tell them Bev sent you.'],
-      lose: ['Ha! Forty years of picket lines. You don\'t beat Bev.'],
-      again: ['Back again? Good. We need people with stamina.'],
+      challenge: ['You look like you might be from the developer.', 'Only one way to find out. Allow me to introduce my wardrobe.'],
+      ask: 'Battle Greco?', yes: 'Solidarity', no: 'I\'ll sign instead',
+      win: ['Not from the developer, then. They never fight fair. You did.', 'Have some baklava. Stall twelve. Tell them Greco sent you.'],
+      lose: ['Ha! Forty years of picket lines and a very good tailor. You don\'t beat Greco.'],
+      again: ['Back again? Good. The movement needs people with stamina. And better shoes.'],
     },
   },
   nell: {
@@ -304,16 +305,17 @@ export const NORTH_PEOPLE = {
     giftLine: 'Iced coffee, on the house. It is basically breakfast if you squint.',
   },
   betty: {
-    role: 'Lives on Moreland Rd with Ed from the pet shop. Cooks for everyone',
+    role: 'Lives on Moreland Rd with Ward from the bottle shop. Cooks for everyone',
     lines: [
       ['You\'re here! Good. I made too much again. I always make too much. That is the correct amount.'],
-      ['Ed is at the pet shop on Hope St all day. He comes home smelling like chicken neckies. I make him wash his hands twice.'],
-      ['Injera takes days. The batter has to ferment. You cannot rush it. Like a good friendship.'],
+      ['Ward is at the bottle shop on Sydney Rd all day. He comes home with a new beer I have never heard of. I still drink tea.'],
+      ['Monday, lasagne. Tuesday, doro wat. Wednesday, banana bread. I cook whatever the neighbours taught me last. Everyone teaches me something.'],
+      ['Injera takes days. The batter has to ferment. You cannot rush it. Scones, you can rush. Nobody can tell.'],
       ['Everybody on Moreland Rd knows when I am cooking. They walk slower past the gate. I see them.'],
     ],
     giftLine: 'Here, take this, it\'s still warm. No, you are not full. Nobody leaves my house hungry. Not even the front gate.',
     heartScenes: {
-      3: ['Betty: "Eat with your hands. Right hand. Tear the injera, scoop. See? Now you are doing it properly."'],
+      3: ['Betty: "My recipe book is just a shoebox of cards from everyone on this street. Nonna\'s lasagne. Mrs Nguyen\'s dumplings. Mine is the banana bread."'],
       5: ['Betty roasts green coffee beans in a pan until the whole street smells amazing. "Coffee ceremony. Three rounds. You stay for all three."'],
       7: ['Betty presses a takeaway container into your hands. "For your mum and dad. Tell them it is from Betty. They will know."'],
     },
@@ -349,7 +351,7 @@ export const NORTH_PLACES = {
   coburglake: 'Merri Creek, an old bluestone weir and a lake full of swans with attitude.',
   prestonmkt: 'Stalls, shouting, and a campaign to keep it all here.',
   prestonhigh: 'High St: the skyrail station, a coffee cart and a strip of shops.',
-  moreland: 'Betty and Ed\'s place on the corner of Lygon St, and the smell of something delicious.',
+  moreland: 'Betty and Ward\'s place on the corner of Lygon St, and the smell of something delicious.',
   murray: 'Alison\'s block on St Georges Rd, the 11 tram and a very empty block of land.',
 };
 
@@ -364,7 +366,7 @@ export const NORTH_FRIENDS = {
   stavros: { loves: ['olive', 'lemon', 'tomato'], likes: ['fetta', 'basil', 'chianti'], dislikes: ['cheese'], rewards: { 5: { item: 'olivejar', n: 1 } }, assist: { heal: 0.35 } },
   linh: { loves: ['chilli', 'pumpkin', 'strawberry'], likes: ['zucchini', 'basil', 'icedcoffee'], dislikes: ['oldboot'], rewards: { 3: { item: 'strawberry', n: 2 } }, assist: { foeDef: 1, damage: 0.1 } },
   marko: { loves: ['redfin', 'eel', 'vb'], likes: ['lemon', 'yabby', 'pide'], dislikes: ['carp'] },
-  bev: { loves: ['baklava', 'nineteen84', 'seedling'], likes: ['flowers', 'icedcoffee', 'snag', 'paperback'], dislikes: ['orangewine'], assist: { selfAtk: 1, foeAtk: 1 } },
+  greco: { loves: ['baklava', 'nineteen84', 'seedling'], likes: ['flowers', 'icedcoffee', 'snag', 'paperback'], dislikes: ['orangewine'], assist: { selfAtk: 1, foeAtk: 1 } },
   nell: { loves: ['cardigan', 'flowers', 'jacobs'], likes: ['paperback', 'baklava', 'tomato'], dislikes: ['takis'], assist: { heal: 0.2, selfDef: 1 } },
   inspector: { loves: ['modeltrain', 'icedcoffee'], likes: ['snag', 'croissant'], dislikes: ['goon', 'oldboot'] },
   dimi: { loves: ['croissant', 'baklava'], likes: ['icedcoffee', 'pide', 'drpepper'], dislikes: ['moscato'] },
@@ -375,7 +377,7 @@ export const NORTH_FRIENDS = {
 // ------------------------------------------------------------ shops
 export const NORTH_SHOPS = {
   pide: { name: 'Knead to Know', where: 'Sydney Rd, Coburg', tabs: ['treats', 'gifts'], treats: ['pide', 'cheese', 'croissant'], gifts: ['baklava', 'icedcoffee'] },
-  deli: { name: 'Stavros\'s Deli', where: 'Preston Market', tabs: ['treats', 'gifts'], treats: ['fetta', 'cheese', 'chicken', 'sardine'], gifts: ['olivejar', 'baklava'] },
+  deli: { name: 'Stavros\'s Deli', where: 'Preston Market', tabs: ['treats', 'gifts', 'remedies'], remedies: ['laxatives'], treats: ['fetta', 'cheese', 'chicken', 'sardine'], gifts: ['olivejar', 'baklava'] },
   fruitveg: { name: 'Linh\'s Fruit and Veg', where: 'Preston Market', tabs: ['sell', 'seeds', 'gifts'], seeds: ['tomato', 'zucchini', 'chilli', 'pumpkin', 'strawberry'], gifts: ['flowers', 'seedling'] },
   opshop: { name: 'Second Act Op Shop', where: 'High St, Preston', tabs: ['gifts'], gifts: ['cardigan', 'paperback', 'modeltrain', 'byzbook', 'thermos'] },
 };
@@ -392,10 +394,20 @@ export const NORTH_ITEMS = {
   misir:    { name: 'Misir wat', gift: true, loved: true, desc: 'Betty\'s red lentils, rich with berbere. Gone in about four seconds.' },
   shiro:    { name: 'Shiro', gift: true, loved: true, desc: 'A silky chickpea stew Betty makes when it\'s cold. It is somehow always the right thing.' },
   sambusa:  { name: 'Sambusa', gift: true, loved: true, desc: 'Crisp little pastries full of spiced lentils. Betty folded every single one.' },
+  lasagne:  { name: 'Betty\'s lasagne', gift: true, loved: true, art: { kind: 'plate', body: '#c8502a', label: '#f0d070' }, desc: 'Eleven layers. Betty counted. The corner piece, because you are special.' },
+  bananabread: { name: 'Banana bread', gift: true, loved: true, art: { kind: 'cake', body: '#b8803a', cap: '#7a4a1a', label: '#f0d070' }, desc: 'Still warm, with a slab of butter melting into it. Betty uses the very brown bananas.' },
+  dumplings: { name: 'Pork dumplings', gift: true, loved: true, art: { kind: 'plate', body: '#f0e8d0', label: '#3f8a3e' }, desc: 'Betty learned these from her neighbour. Pleated by hand, every single one. Bring your own vinegar.' },
+  lamington: { name: 'Lamingtons', gift: true, loved: true, art: { kind: 'cake', body: '#f0e0b0', cap: '#5a3020', label: '#f4f4f0' }, desc: 'Sponge, chocolate, coconut. Betty says the jam ones are for people who have earned them.' },
+  curry:    { name: 'Chicken curry', gift: true, loved: true, art: { kind: 'plate', body: '#e8a030', label: '#f4f0e6' }, desc: 'Betty\'s Friday curry, with rice and a dollop of yoghurt. Mild for the twins. Not that mild.' },
+  scones:   { name: 'Scones', gift: true, loved: true, art: { kind: 'cake', body: '#f0d8a0', cap: '#d8a860', label: '#c8302a' }, desc: 'Jam first, then cream. Betty will not be taking questions.' },
 };
 
 // ------------------------------------------------------------ battles
 export const NORTH_MOVES = {
+  windsor:     { name: 'Windsor Knot', type: 'leather', power: 55, anim: 'claw', text: '{u} ties itself around {t} in a perfect Windsor. Very tight. Very smart.' },
+  flourish:    { name: 'Flourish', type: 'old', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} does a little flourish. It feels tremendously well dressed.' },
+  tilt:        { name: 'Jaunty Tilt', type: 'psychic', power: 0, effect: { foeAtk: -1 }, anim: 'shout', text: '{u} tilts to one side. {t} feels terribly unsophisticated.' },
+  existential: { name: 'Existential Crisis', type: 'psychic', power: 60, anim: 'beam', text: '{u} asks {t} what any of it means, really. {t} has no answer.' },
   touchon:      { name: 'Touch On', type: 'plastic', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} touches on. Beep. It feels validated.' },
   insufficient: { name: 'Insufficient Funds', type: 'psychic', power: 55, anim: 'beam', text: '{u} flashes INSUFFICIENT FUNDS at {t}. Devastating.' },
   cardnotread:  { name: 'Card Not Read', type: 'steel', power: 0, effect: { evade: true }, anim: 'fade', text: '"Card not read. Please try again." {u} cannot be reached.' },
@@ -416,6 +428,14 @@ export const NORTH_MOVES = {
 };
 
 export const NORTH_ENEMIES = {
+  cravat: {
+    name: 'Cravat', type: ['leather', 'old'], stats: { hp: 56, attack: 58, defence: 60, speed: 66, special: 64 },
+    moves: ['windsor', 'flourish', 'backinmyday'], faces: 'front',
+  },
+  beret: {
+    name: 'Living Beret', type: ['psychic', 'old'], stats: { hp: 64, attack: 52, defence: 62, speed: 58, special: 70 },
+    moves: ['tilt', 'existential', 'flourish'], faces: 'front',
+  },
   myki: {
     name: 'Myki Card', type: 'plastic', stats: { hp: 48, attack: 55, defence: 55, speed: 70, special: 62 },
     moves: ['touchon', 'insufficient', 'flutter'], faces: 'front',
@@ -451,6 +471,8 @@ export const NORTH_ENEMIES = {
 };
 
 export const NORTH_FOE_TEXT = {
+  cravat: { appear: 'A silk cravat slithers out, perfectly knotted!', leave: 'loosens itself and goes back to the drawer, offended.' },
+  beret: { appear: 'A black beret floats down at a jaunty angle!', leave: 'sighs, lights an imaginary cigarette and drifts off to Paris.' },
   myki: { appear: 'A dropped myki card skitters across the ground!', leave: 'slides down a drain. It had no credit anyway.' },
   reader: { appear: 'A myki reader on a pole blinks red at you!', leave: 'goes "Card not read" and switches itself off.' },
   swan: { appear: 'A black swan rises up out of the reeds, hissing!', leave: 'glides back across the lake, still muttering.' },
@@ -465,7 +487,7 @@ export const NORTH_TRAINERS = {
   merv: { name: 'Merv', team: [['possum', 12], ['rat', 13]], reward: { cheese: 1 }, money: 40 },
   tash: { name: 'Tash', team: [['scooter', 11], ['ristretto', 11]], reward: { croissant: 1 }, money: 45 },
   kostas: { name: 'Kostas', team: [['duck', 13], ['swan', 14]], reward: { sardine: 2 }, money: 45 },
-  bev: { name: 'Bev', team: [['trolley', 15], ['nonna', 15]], reward: { baklava: 1 }, money: 30 },
+  greco: { name: 'Greco', team: [['cravat', 15], ['beret', 16]], reward: { baklava: 1 }, money: 30, sendOut: 'Greco unknots {f} from his neck.' },
   inspector: { name: 'Myki Inspector', intro: 'He steps out from behind a pillar with a hand-held device.', team: [['myki', 16], ['reader', 17]], money: 70 },
   alison: { name: 'Alison', team: [['toastie', 12], ['boobpillows', 11], ['slugalison', 14]], sendOut: 'Alison whips out {f}.', reward: { cheese: 1 }, money: 50 },
 };

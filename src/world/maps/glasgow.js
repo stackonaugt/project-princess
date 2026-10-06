@@ -46,11 +46,12 @@ export function buildGlasgow() {
 
   b.exit(0, 13, 1, 2, 'lakepark', 'south', 'Lake Park');
   b.exit(47, 13, 1, 2, 'reservoir', 'west', 'Reservoir Station');
-  b.entry('west', 1, 14, 'right').entry('east', 46, 13, 'left');
+  b.exit(42, 25, 2, 1, 'murray', 'north', 'Murray Rd, Preston');
+  b.entry('southeast', 42, 24, 'up').entry('west', 1, 14, 'right').entry('east', 46, 13, 'left');
 
   b.npc('pina', 9, 15, { face: 'up' });
-  b.npc('tim', 23, 7, { face: 'down' });
-  b.npc('nicholas', 27, 7, { face: 'left' });
+  b.npc('tim', 23, 7, { face: 'down', at: 'glasgow' });
+  b.npc('nicholas', 27, 7, { face: 'left', at: 'glasgow' });
 
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 38, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-car-h-red'] });
 

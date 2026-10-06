@@ -1,6 +1,6 @@
 // BRUNSWICK BOUND, Sydney Rd: a long, narrow bookshop. Tall timber bookcases
 // down both walls, display tables of new releases and kids' books, a flock of
-// paper birds on the wall, and Wren at the counter by the door.
+// paper birds on the wall, and Shannon at the counter by the door.
 //
 //   y0-1  top wall (bird mural)   y2 bookcases along the back
 //   y4-10 bookcases down the sides, tables down the middle
@@ -21,9 +21,9 @@ export function buildBookShop() {
   b.put('plant', 16, 2, { v: 'fiddle' });
   b.put('shopcounter', 3, 11);
   b.put('doormat', 9, 12);
-  b.sign(13, 11, ['New releases.', 'Staff pick: whatever Wren is reading this week. Wren reads a book a day.']);
+  b.sign(13, 11, ['New releases.', 'Staff pick: whatever Shannon is reading this week. She has a fact about it.']);
 
-  b.npc('wren', 5, 12, { face: 'right' });
+  b.npc('shannon', 4, 10, { face: 'down', counter: true, at: 'shop', dwell: 25, path: [[4, 10], [12, 10], [12, 4], [4, 4], [4, 10]] });   // behind the counter, with the odd lap of the shelves
   b.exit(9, 13, 1, 1, 'sydney', 'bookshop', 'Sydney Rd');
   b.entry('door', 9, 12, 'up');
   b.noDress = true;

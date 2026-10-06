@@ -27,7 +27,7 @@ export function buildAlbion() {
   b.fenceV(0, 0, 5, 'brickwall');
   b.put('factory', 1, 2, { v: 'brick' });
   b.put('rollerdoor', 10, 4, { v: 'tagged' });
-  b.put('graffiti', 13, 5, { v: 'piece' });
+  b.graffiti(13, 5);
   b.put('rollerdoor', 16, 4, { v: 'green' });
   // The Edinburgh Castle's beer garden out the back, behind a brick wall
   b.fill(19, 0, 9, 6, 'k');
@@ -57,7 +57,7 @@ export function buildAlbion() {
   b.put('terrace', 46, 9, { v: 'brick' });
   b.fill(34, 0, 14, 8, '.');
   b.put('shed', 35, 3, { v: 'grey' });
-  b.put('graffiti', 41, 5, { v: 'paste' });
+  b.graffiti(41, 5, true);
   b.put('container', 43, 2, { v: 'green' });
   b.wildGrass(40, 6, 3, 1.5);
   b.put('table', 39, 12);
@@ -97,7 +97,13 @@ export function buildAlbion() {
   b.exit(47, 12, 1, 8, 'coburg', 'south', 'Bell St, Coburg');
   b.exit(28, 0, 6, 1, null, null, 'Brunswick West', ['Albion St heads off to Brunswick West.', 'Nothing to see there yet. The sign says "coming soon". Sydney Rd is right here.']);
   b.exit(28, 25, 6, 1, 'donald', 'albion', 'Donald St');
-  b.entry('south', 30, 24, 'up').entry('west', 1, 13, 'right').entry('east', 46, 13, 'left');
+  // Moreland Rd's start, heading south off Sydney Rd (closed to the north)
+  b.clear(41, 18, 6, 8).fill(41, 18, 1, 8, 'f').fill(42, 18, 3, 8, '#').fill(45, 18, 1, 8, 'f');
+  b.exit(42, 25, 3, 1, 'moreland', 'west', 'Moreland Rd');
+  // Out the front of the Edinburgh Castle of an evening (routines.js)
+  b.npc('mem', 24, 13, { face: 'left', at: 'pub' }); b.npc('corni', 25, 13, { face: 'left', at: 'pub' });
+  b.npc('pearman', 22, 13, { face: 'right', at: 'pub' });
+  b.entry('moreland', 43, 24, 'up').entry('south', 30, 24, 'up').entry('west', 1, 13, 'right').entry('east', 46, 13, 'left');
 
   b.lane({ axis: 'x', pos: 15.5, dir: 1, from: -6, to: 54, every: [25, 45], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 16.5, dir: -1, from: -6, to: 54, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });

@@ -13,7 +13,7 @@
 //   hoops      hoop earrings (colour)
 //   logo       a slogan printed across the chest (colour), e.g. Julie's Labor tee
 //   lips       lipstick (colour)
-//   shirtPattern / pantsPattern  'leopard' | 'plaid' | 'stripes' | 'gingham'
+//   shirtPattern / pantsPattern  'leopard' | 'plaid' | 'stripes' | 'gingham' | 'dots'
 //   shirtAccent / pantsAccent    pattern colour, or [colour, colour] for plaid
 //   pinafore   a pinafore dress over the shirt (colour); pinaforePattern, pinaforeAccent
 //   blazer     an open jacket over the shirt (colour); blazerPattern, blazerAccent
@@ -21,11 +21,12 @@
 //   bumbag     a bum bag on the waist (colour)
 //   gloves     work gloves (colour)
 //   hat        a broad brimmed hat (colour)
+//   beret      a floppy beret (colour)    headband  an alice band (colour)
 //   hood       a hoodie with the hood up (colour; set shirt to match)
 //   coat       a long open coat down to the knees (colour); tatters: true rips the hem
 //   rips       a torn shirt, skin showing through (true)
 //   holding    something in one hand: 'monkey' | 'teddy' (toys), 'pint' (a Guinness),
-//              'wine' (a glass of red), 'book', 'vape', 'bass' (a bass guitar)
+//              'wine' (a glass of red), 'book', 'vape', 'bass' (a bass guitar), 'mic'
 //   baby       true draws a toddler instead (see drawBaby). Toddlers also take
 //              motif (colour) + print ('teddy' | 'star' | 'heart', or a plain patch),
 //              and pants (+ pantsPattern) for a top and trousers instead of a onesie.
@@ -58,6 +59,13 @@ function headwear(p, L, dir, y) {
     else if (side) { p.r(c, 4, 3 + y, 8, 3); p.r(c, 8, 6 + y, 5, 10); p.r(l, 5, 3 + y, 4, 1); p.r(d, 11, 7 + y, 2, 8); }
     else { p.r(c, 2, 3 + y, 12, 3); p.r(c, 2, 6 + y, 2, 10); p.r(c, 12, 6 + y, 2, 10); p.r(l, 4, 3 + y, 7, 1); p.r(d, 12, 7 + y, 2, 8); p.r('#e8e4dc', 6, 16 + y, 1, 3); p.r('#e8e4dc', 9, 16 + y, 1, 3); }
   }
+  if (L.beret) {   // a floppy beret, slumped to one side
+    const c = L.beret, d = shade(c, -0.3), l = shade(c, 0.22);
+    p.r(c, 3, 1 + y, 11, 3); p.r(c, 2, 2 + y, 2, 2); p.r(l, 5, 1 + y, 5, 1); p.r(d, 3, 3 + y, 11, 1); p.r(c, 7, 0 + y, 1, 1);
+  }
+  if (L.headband && !back) {   // an alice band over the hair
+    p.r(L.headband, 3, 3 + y, 10, 1); if (!side) p.r(shade(L.headband, 0.25), 5, 3 + y, 4, 1);
+  }
   if (L.hat) {
     const c = L.hat, d = shade(c, -0.28), l = shade(c, 0.2);
     p.r(c, 3, 1 + y, 10, 4); p.r(l, 4, 1 + y, 6, 1); p.r(d, 3, 4 + y, 10, 1); // crown and band
@@ -82,6 +90,8 @@ function pattern(p, kind, base, acc, x, y, w, h, oy = 0) {
       const [c1, c2] = Array.isArray(acc) ? acc : [acc || shade(base, 0.35), shade(base, -0.3)];
       const hz = v % 4 === 1, vt = i % 4 === 2, hz2 = v % 4 === 3;
       if (hz && vt) c = mix(c1, c2); else if (hz) c = c1; else if (vt) c = c2; else if (hz2 && i % 2) c = shade(base, -0.15);
+    } else if (kind === 'dots') {
+      if ((i + (v % 4 < 2 ? 0 : 2)) % 4 === 0 && v % 2 === 0) c = acc || '#f4f4f0';
     } else if (kind === 'leopard') {
       const k = (i * 3 + v * 5) % 9;
       if (k === 0 || k === 4) c = acc || '#2a1a10'; else if (k === 1) c = shade(base, -0.3);
@@ -130,6 +140,7 @@ function toy(p, kind, x, y) {
   if (kind === 'wine') { p.r('#d8e0e8', x, y + 1, 4, 1); p.r('#6a1424', x + 1, y + 2, 2, 2); p.r('#d8e0e8', x + 1, y + 1, 2, 1); p.r('#d8e0e8', x + 2, y + 4, 1, 2); p.r('#d8e0e8', x + 1, y + 6, 3, 1); return; }
   if (kind === 'book') { p.r('#2a1a12', x, y + 1, 4, 6); p.r('#c8443a', x + 1, y + 2, 3, 4); p.r('#f4efe0', x + 3, y + 2, 1, 4); return; }
   if (kind === 'bass') { p.r('#d8dce4', x - 3, y + 2, 6, 4); p.r('#8a8e96', x - 2, y + 3, 4, 2); p.r('#c8a070', x + 2, y - 4, 1, 7); p.r('#2a2a2a', x + 2, y - 5, 2, 1); return; }
+  if (kind === 'mic') { p.r('#1e1a18', x + 1, y + 2, 2, 5); p.r('#8a8e96', x, y - 1, 4, 3); p.r('#c8ccd4', x + 1, y - 1, 1, 1); return; }
   if (kind === 'vape') { p.r('#3a3a44', x + 1, y + 2, 2, 4); p.r('#f06aa8', x + 1, y + 3, 2, 1); p.r('rgba(240,240,250,0.7)', x + 2, y, 2, 1); p.r('rgba(240,240,250,0.5)', x + 3, y - 1, 2, 1); return; }
   const fur = kind === 'teddy' ? '#b07a44' : '#7a4a26', face = kind === 'teddy' ? '#e0b888' : '#e8c89a', dk = shade(fur, -0.3);
   p.r(fur, x + 1, y, 3, 3); p.r(fur, x, y + 1, 1, 1); p.r(fur, x + 4, y + 1, 1, 1); // head and ears

@@ -67,9 +67,9 @@ export function buildLygon() {
   b.forage(22, 5, ['basil', 'tomato']);
   b.magpies([[60, 3], [21, 30]]);
 
-  b.exit(27, 0, 4, 1, 'brunswick', 'south', 'Brunswick');
-  b.exit(0, 12, 1, 10, 'gardens', 'south', 'Carlton Gardens');
-  b.exit(63, 12, 1, 10, 'eblygon', 'carlton', 'Lygon St, Brunswick East');
+  b.exit(27, 0, 4, 1, 'flemington', 'south', 'Flemington');
+  b.exit(0, 12, 1, 10, 'gardens', 'west', 'Carlton Gardens');
+  b.exit(63, 12, 1, 10, 'eblygon', 'west', 'Lygon St, Brunswick East');
   b.entry('north', 28, 2, 'down').entry('west', 1, 13, 'right').entry('east', 62, 13, 'left').entry('gelateria', 14, 13, 'down');
   liven(b, 0.01);
   b.noDress = true;

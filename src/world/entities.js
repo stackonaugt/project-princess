@@ -11,7 +11,7 @@ export const toWorld = (tx, ty) => ({ x: (tx + 0.5) * T, y: (ty + 0.75) * T });
 
 // Base: a physics sprite standing on its feet, with a shadow, a tall-grass
 // tuft and an optional emote bubble.
-class Actor extends Phaser.Physics.Arcade.Sprite {
+export class Actor extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, tex, slot = 16) {
     const t = scene.textures.get(tex);
     super(scene, x, y, tex, t.has(0) ? 0 : undefined);
@@ -39,7 +39,7 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
   syncExtras() {
     const top = this.y - this.displayHeight;
     this.setDepth(this.y);
-    this.shadow.setPosition(this.x, this.y).setDepth(this.y - 0.5).setAlpha(this.alpha).setVisible(this.visible);
+    this.shadow.setPosition(this.x, this.y).setDepth(this.y - 0.5).setAlpha(this.alpha).setVisible(this.visible && !this.seat);
     const inGrass = this.scene.groundAt(this.x, this.y - 2) === '"';
     this.tuft.setVisible(inGrass && this.visible).setPosition(this.x, this.y + 1).setDepth(this.y + 0.5);
     if (this.bubble.visible && this.scene.time.now > (this.bubbleUntil || 0)) this.bubble.setVisible(false);
@@ -50,7 +50,33 @@ class Actor extends Phaser.Physics.Arcade.Sprite {
     const bob = moving && Math.floor(this.scene.time.now / 1000 * rate) % 2 ? 1 : 0;
     if (bob !== this.bob) { this.bob = bob; this.setOrigin(0.5, 1 + bob / this.frame.realHeight); }
   }
-  destroy(fromScene) { this.shadow?.destroy(); this.tuft?.destroy(); this.bubble?.destroy(); super.destroy(fromScene); }
+  // Sitting on a seat (a bench, stool or armchair): the legs tuck out of view
+  // and you drop onto the seat with a little bounce. `slot` comes from
+  // scene.seats: { x, bottom (where the seat front is), taken }.
+  sit(slot) {
+    if (slot.taken && slot.taken !== this) return false;
+    this.seat = slot; slot.taken = this; this.satAt = this.scene.time.now;
+    this.standAt = { x: this.x, y: this.y };
+    this.setVelocity(0, 0); this.body.enable = false;
+    this.anims.stop(); this.setDir('down');
+    if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0);
+    const fw = this.frame.realWidth, fh = this.frame.realHeight;
+    this.setCrop(0, 0, fw, Math.round(fh * 0.8));
+    const y = slot.bottom + this.displayHeight * 0.2;
+    this.setPosition(slot.x, y - 3);
+    this.scene.tweens.add({ targets: this, y, duration: 160, ease: 'Bounce.Out' });
+    return true;
+  }
+  stand() {
+    if (!this.seat) return;
+    if (this.seat.taken === this) this.seat.taken = null;
+    this.seat = null;
+    this.scene.tweens.killTweensOf(this);
+    this.setCrop();
+    this.body.enable = true;
+    this.body.reset(this.standAt.x, this.standAt.y);
+  }
+  destroy(fromScene) { if (this.seat?.taken === this) this.seat.taken = null; this.shadow?.destroy(); this.tuft?.destroy(); this.bubble?.destroy(); super.destroy(fromScene); }
 }
 
 // ---------------------------------------------------------------- Player
@@ -76,6 +102,10 @@ export class Player extends Actor {
   update(input, blocked) {
     let { x, y, run, analog } = input;
     if (blocked) { x = 0; y = 0; this.target = null; }
+    if (this.seat) {   // sitting: any move (or a tap somewhere) gets you up
+      if (x || y || this.target) this.stand();
+      else { this.moving = false; this.syncExtras(); return; }
+    }
     if (!x && !y && this.target) {
       const dx = this.target.x - this.x, dy = this.target.y - this.y, d = Math.hypot(dx, dy);
       if (d < 3) this.target = null; else { x = dx / d; y = dy / d; analog = 1; run = d > 80; }
@@ -269,6 +299,11 @@ export class Npc extends Actor {
     this.path = spot.path ? spot.path.map(([x, y]) => toWorld(x, y)) : null;
     this.pathIndex = 0; this.speed = spot.speed || 34; this.wait = 0;
     this.setDir(spot.face || 'down');
+    // People standing about outdoors potter a few steps around their spot
+    // now and then (shopkeepers at counters and `still` spots stay put).
+    this.home = pos;
+    this.idle = !this.path && !spot.counter && !spot.still && !scene.region?.indoor ? 2 + Math.random() * 6 : null;
+    this.goal = null;
     this.setInteractive({ useHandCursor: true });
   }
   setDir(dir) {
@@ -283,22 +318,64 @@ export class Npc extends Actor {
     this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
   }
   pause(sec) { this.wait = sec; this.setVelocity(0, 0); }
+  potter(player, dt) {
+    if (!this.goal) {
+      this.setVelocity(0, 0);
+      if ((this.idle -= dt) > 0) return false;
+      this.idle = 3 + Math.random() * 7;
+      const away = Math.hypot(this.x - this.home.x, this.y - this.home.y) > 4;
+      const seat = !away && Math.random() < 0.3 && this.scene.freeSeatNear?.(this.home.x, this.home.y, 4 * 16);
+      if (seat) this.goal = { x: seat.x, y: seat.front, seat, t: 0 };
+      else if (away) this.goal = { x: this.home.x, y: this.home.y, back: true };
+      else {
+        // One to two steps in a straight line, only over open ground
+        const [dx, dy] = [[1, 0], [-1, 0], [0, 1], [0, -1]][Math.floor(Math.random() * 4)];
+        const n = 1 + Math.floor(Math.random() * 2);
+        for (let i = 1; i <= n; i++) if (this.scene.solidAt(this.home.x + dx * 16 * i, this.home.y - 4 + dy * 16 * i)) return false;
+        this.goal = { x: this.home.x + dx * 16 * n, y: this.home.y + dy * 16 * n };
+      }
+    }
+    const dx = this.goal.x - this.x, dy = this.goal.y - this.y, d = Math.hypot(dx, dy);
+    const ahead = d > 0 && Math.hypot(player.x - (this.x + dx / d * 12), player.y - (this.y + dy / d * 12)) < 12;
+    if (this.goal.seat) {
+      this.goal.t += dt;
+      if (d < 2 && this.sit(this.goal.seat)) { this.sitFor = 12 + Math.random() * 25; this.goal = null; return false; }
+      if (d < 2 || this.goal.t > 8) { this.goal = null; this.setVelocity(0, 0); return false; }   // taken, or can't get there
+    }
+    if (d < 2 || ahead) {
+      if (d < 2) { this.body.reset(this.goal.x, this.goal.y); if (this.goal.back) this.setDir(this.spot.face || 'down'); }
+      this.goal = null; this.setVelocity(0, 0); return false;
+    }
+    const sp = 22;
+    this.setVelocity(dx / d * sp, dy / d * sp);
+    this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    return true;
+  }
   update(player, dt, frozen) {
     let moving = false;
     this.wait -= dt;
+    if (this.seat) {   // having a sit: get up after a while and wander back
+      if (!frozen && (this.sitFor -= dt) <= 0) { this.stand(); this.idle = 1 + Math.random() * 3; }
+      this.syncExtras(); return;
+    }
     if (this.path && !frozen && this.wait <= 0) {
       const t = this.path[this.pathIndex];
       const dx = t.x - this.x, dy = t.y - this.y, d = Math.hypot(dx, dy);
       const ahead = Math.hypot(player.x - (this.x + dx / d * 12), player.y - (this.y + dy / d * 12)) < 12;
       if (d < 2 && this.spot.leave && this.pathIndex === this.path.length - 1) { this.setVelocity(0, 0); this.scene.npcLeft(this); return; }
-      if (d < 2) { this.pathIndex = (this.pathIndex + 1) % this.path.length; if (!this.spot.speed && !this.spot.leave) this.wait = 0.5 + Math.random() * 1.5; }
+      if (d < 2) {
+        this.pathIndex = (this.pathIndex + 1) % this.path.length;
+        if (!this.spot.speed && !this.spot.leave) this.wait = 0.5 + Math.random() * 1.5;
+        if (this.spot.dwell && this.pathIndex === 1) { this.wait = this.spot.dwell * (0.6 + Math.random() * 0.8); this.setDir(this.spot.face || 'down'); }   // a long stay at the first spot (behind the counter)
+      }
       else if (ahead) this.setVelocity(0, 0);
       else {
         this.setVelocity(dx / d * this.speed, dy / d * this.speed);
         this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
         moving = true;
       }
-    } else this.setVelocity(0, 0);
+    } else if (this.idle !== null && !frozen && this.wait <= 0) moving = this.potter(player, dt);
+    else this.setVelocity(0, 0);
     const anim = this.customArt ? `npc-${this.id}-walk` : `${this.texture.key}-walk`;
     if (moving && this.scene.anims.exists(anim)) { this.anims.play(anim, true); this.anims.timeScale = this.speed > 40 ? 1.5 : 1; }
     else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); }

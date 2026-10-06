@@ -203,6 +203,32 @@ MOVES.kelpiestare = { name: 'Kelpie Stare', type: 'psychic', power: 60, anim: 'b
 MOVES.heelnip = { name: 'Heel Nip', type: 'street', power: 50, anim: 'bite', text: '{u} nips at {t}\'s heels. Keep moving.' };
 MOVES.pubnap = { name: 'Pub Nap', type: 'old', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} climbs onto the bench seat and has a nap. Pub rules.' };
 
+// Ziggy and Emilio, and the Premier's lot
+Object.assign(MOVES, {
+  longlife:   { name: 'Long Life', type: 'fairy', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} stretches out. A long, long life. Very healing.' },
+  fortune:    { name: 'Fortune Told', type: 'psychic', power: 55, anim: 'beam', text: '{u} tells {t}\'s fortune. It is not a good one.' },
+  heartbreak: { name: 'Heartbreak', type: 'fairy', power: 60, anim: 'beam', text: '{u} reveals {t} will meet a tall, dark stranger. Who will leave. {t} is devastated.' },
+  foresee:    { name: 'Foresee', type: 'psychic', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} saw that coming. Literally.' },
+  rollup:     { name: 'Roll Up', type: 'steel', power: 60, anim: 'lunge', text: '{u} trundles across the green and stops right against {t}. Perfect weight.' },
+  spookyhowl: { name: 'Spooky Howl', type: 'ghost', power: 55, anim: 'shout', text: '{u} howls down the empty platform. The lights flicker.' },
+  phasebite:  { name: 'Phase Bite', type: 'ghost', power: 60, anim: 'bite', text: '{u} bites straight through {t}. Then through the wall.' },
+  talkingpoints:    { name: 'Talking Points', type: 'psychic', power: 55, anim: 'beam', text: '{u} repeats the same three sentences until {t} loses the will to live.' },
+  background:       { name: 'Background Briefing', type: 'psychic', power: 0, effect: { foeAtk: -1 }, anim: 'shout', text: '{u} leaks something unflattering about {t} to a friendly journalist.' },
+  questiononnotice: { name: 'Question On Notice', type: 'psychic', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} takes the question on notice. Nobody will ever hear the answer.' },
+  dorothy:          { name: 'Dorothy Dixer', type: 'old', power: 60, anim: 'shout', text: '{u} asks the Premier how good the Premier is. The answer goes on for twenty minutes. {t} is crushed.' },
+  toetheline:       { name: 'Toe The Line', type: 'steel', power: 0, effect: { selfDef: 2 }, anim: 'shout', text: '{u} votes exactly as told. Nothing can get through to it now.' },
+  announceable:     { name: 'Announceable', type: 'steel', power: 75, anim: 'beam', text: '{u} announces a brand new project in front of a hard hat and a hi-vis vest. It lands on {t}.' },
+  costblowout:      { name: 'Cost Blowout', type: 'plastic', power: 90, effect: { recoil: 0.2 }, recoilText: 'The bill lands on {u} too. Somebody always pays.', anim: 'lunge', text: '{u} goes ten billion dollars over budget, straight into {t}.' },
+  reboot:           { name: 'Reboot', type: 'steel', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} goes quiet, beeps twice and comes back on message.' },
+  zoomcat:      { name: 'Midnight Zoomies', type: 'speed', power: 60, anim: 'lunge', text: '{u} tears across the room at 3am speed and bowls straight into {t}.' },
+  barkziggy:    { name: 'Borrowed Bark', type: 'leather', power: 55, anim: 'shout', text: '{u} lets out a bark. A real dog bark. He learned it from the dogs. {t} is very confused.' },
+  helpfrommads: { name: 'Help from Mads', type: 'fairy', power: 0, effect: { heal: 0.5 }, anim: 'heal', text: 'A warm feeling settles over {u}, like a hand on his back. Help from Mads. He feels much better.' },
+  quack:        { name: 'Almighty Quack', type: 'water', power: 55, anim: 'shout', text: '{u} lets out a quack so loud the whole lake goes quiet.' },
+  hattip:       { name: 'Tip of the Hat', type: 'old', power: 0, effect: { selfDef: 1, selfAtk: 1 }, anim: 'shout', text: '{u} tips his little top hat. A gentleman is always ready.' },
+  paddle:       { name: 'Paddle Slap', type: 'water', power: 65, anim: 'lunge', text: '{u} slaps {t} with a big orange foot.' },
+  breadcrumbs:  { name: 'Breadcrumbs', type: 'park', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} finds some breadcrumbs in his hat. Delicious. He feels better.' },
+});
+
 export const PET_MOVES = {
   princess: ['growl', 'clawattack', 'humpbed', 'bite'],
   poppy: ['charge', 'scoot', 'dig', 'chew'],
@@ -212,6 +238,8 @@ export const PET_MOVES = {
   girlie: ['fetch', 'fountaindive', 'puppyeyes', 'benchsnack'],
   rusty: ['shakeleaf', 'jumponyou', 'clawrusty', 'runaway', 'barkrusty'],
   chloe: ['herd', 'kelpiestare', 'heelnip', 'pubnap'],
+  ziggy: ['zoomcat', 'scratch', 'barkziggy', 'helpfrommads'],
+  emilio: ['quack', 'hattip', 'paddle', 'breadcrumbs'],
 };
 
 Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston

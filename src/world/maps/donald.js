@@ -46,13 +46,13 @@ export function buildDonald() {
   b.put('rollerdoor', 0, 19, { v: 'tagged' });
   b.put('terrace', 3, 18, { v: 'brick' }); b.put('terrace', 6, 18, { v: 'cream' }); b.put('terrace', 9, 18, { v: 'sand' });
   b.fill(12, 17, 1, 5, 'b');
-  b.put('graffiti', 13, 20, { v: 'piece' });
+  b.graffiti(13, 20);
   b.put('streettree', 14, 16);
   b.put('terrace', 17, 18, { v: 'sage' }); b.put('terrace', 20, 18, { v: 'brick' });
   b.put('rollerdoor', 23, 19, { v: 'green' });
   b.put('redshop', 26, 18, { v: 'cream' });
   b.put('terrace', 30, 18, { v: 'sage' }); b.put('terrace', 33, 18, { v: 'cream' });
-  b.put('graffiti', 36, 20, { v: 'paste' });
+  b.graffiti(36, 20, true);
   b.put('powerpole', 8, 16); b.put('powerpole', 36, 16);
 
   // The bluestone lane behind, with back fences beyond
@@ -64,10 +64,10 @@ export function buildDonald() {
   b.put('car', 3, 15, { v: 'blue' }); b.put('car', 19, 14, { v: 'red' }); b.put('car', 34, 15, { v: 'white' });
 
   b.exit(27, 0, 2, 1, 'sydney', 'donald', 'Sydney Rd');
-  b.exit(39, 16, 1, 2, 'coburg', 'west', 'Bell St, Coburg');
+  b.exit(39, 16, 1, 2, 'eblygon', 'north', 'Lygon St, Brunswick East');
+  b.exit(0, 14, 1, 2, 'brunswick', 'east', 'Brunswick Station');
   b.exit(39, 0, 1, 2, 'albion', 'south', 'Albion St');
-  b.exit(39, 21, 1, 3, 'holmes', 'west', 'Holmes St, Brunswick East');
-  b.entry('albion', 39, 3, 'down').entry('north', 27, 2, 'down').entry('east', 38, 16, 'left').entry('holmes', 38, 22, 'left');
+  b.entry('albion', 39, 3, 'down').entry('north', 27, 2, 'down').entry('east', 38, 16, 'left').entry('west', 1, 14, 'right');
 
   b.npc('rose', 10, 11, { face: 'up' });
 

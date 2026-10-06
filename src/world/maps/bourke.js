@@ -43,15 +43,16 @@ export function buildBourke() {
   b.put('tramstop', 28, 23, { v: '86' }); b.put('bikehoop', 40, 24); b.put('bikehoop', 41, 24);
 
   b.npc('raelene', 56, 18, { face: 'down' });
+  b.npc('bencarroll', 48, 18, { face: 'down', still: true });   // the Premier, on the steps of Parliament
 
   b.forage(20, 12, ['feather', 'lemon']);
   b.forage(31, 2, ['sardine', 'croissant']);
   b.magpies([[8, 7], [27, 11]]);
 
   b.exit(34, 0, 6, 1, 'nicholson', 'south', 'Nicholson St');
-  b.exit(64, 45, 6, 1, 'swanston', 'bourke', 'Swanston St');
-  b.exit(0, 17, 1, 8, null, null, 'Bourke St Mall', ['Bourke St runs on down to the Mall.', 'The trams take it from here. Swanston St is down the hill.']);
-  b.entry('north', 36, 1, 'down').entry('south', 66, 44, 'up');
+  b.exit(64, 45, 6, 1, 'swanston', 'bourke', 'Swanston St', null, { gate: 'bencarroll' });
+  b.exit(0, 17, 1, 8, 'gardens', 'east', 'Carlton Gardens');
+  b.entry('north', 36, 1, 'down').entry('south', 66, 44, 'up').entry('west', 1, 20, 'right');
   liven(b, 0.006);
   b.noDress = true;
   return b.finish();

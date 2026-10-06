@@ -32,10 +32,10 @@ export function buildHope() {
 
   // East: a little car park, the bike co-op and an old tin shed
   b.fenceV(25, 0, 5, 'paling');
-  b.put('graffiti', 26, 4, { v: 'paste' });
-  b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 30, 6, { v: 'yellow' }); b.put('bin', 31, 6, { v: 'red' });
-  // THE LEASH YOU CAN DO, the pet shop, run by Ed (inside: src/world/maps/petshop.js)
-  b.put('petshop', 28, 8);
+  b.graffiti(26, 4, true);
+  b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 26, 8, { v: 'yellow' }); b.put('bin', 26, 9, { v: 'red' });
+  // THE LEASH YOU CAN DO, the pet shop, run by Romey (inside: src/world/maps/petshop.js)
+  b.put('petshop', 27, 8);
   b.put('doormat', 30, 11); b.put('doormat', 31, 11);
   b.exit(30, 11, 2, 1, 'petshop', 'door', 'The Leash You Can Do');
   b.put('factory', 32, 3, { v: 'brewery' });
@@ -48,7 +48,7 @@ export function buildHope() {
   b.fenceH(10, 26, 16, 'bluestone', [17, 18]).fenceV(10, 17, 23, 'bluestone').fenceV(26, 17, 23, 'bluestone').fenceH(11, 25, 23, 'bluestone');
   b.sign(17, 17, ['Vacant lot.', 'Coming soon: "luxury living". Currently: weeds, one shopping trolley, excellent cat hangout.']);
   b.put('trolley', 21, 20);
-  b.put('graffiti', 6, 17, { v: 'tags' });
+  b.graffiti(6, 17);
   b.fill(6, 20, 2, 2, '"');
   b.put('shed', 28, 18, { v: 'blue' });
   b.put('rollerdoor', 35, 19, { v: 'green' });
@@ -58,8 +58,8 @@ export function buildHope() {
   b.exit(39, 15, 1, 2, 'sydney', 'west', 'Sydney Rd');
   b.entry('south', 5, 21, 'up').entry('east', 38, 15, 'left').entry('petshop', 30, 12, 'down');
 
-  b.npc('mem', 16, 9, { face: 'down' });
-  b.npc('corni', 18, 9, { face: 'down' });
+  b.npc('mem', 16, 9, { face: 'down', at: 'home' });
+  b.npc('corni', 18, 9, { face: 'down', at: 'home' });
 
   b.lane({ axis: 'y', pos: 1.5, dir: 1, from: -14, to: 38, every: [35, 60], speed: 110, kinds: ['veh-train-v'], train: true });
   b.lane({ axis: 'y', pos: 2.5, dir: -1, from: -14, to: 38, every: [40, 70], speed: 110, kinds: ['veh-train-v'], train: true });

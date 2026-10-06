@@ -1,6 +1,7 @@
 // Shops: buy treats, gear, seeds, tools, house upgrades, presents and drinks,
 // and sell your crops.
 // Which tabs a shop has is set in src/data/shops.js.
+import { PRANKS } from '../data/story.js';
 import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { bus } from '../bus.js';
@@ -8,7 +9,7 @@ import { ITEMS, isTreat } from '../data/items.js';
 import { GEAR, GEAR_ORDER } from '../data/gear.js';
 import { CROPS, CROP_ORDER } from '../data/crops.js';
 import { UPGRADES, UPGRADE_ORDER, TOOL_ORDER, FISHING_ORDER } from '../data/upgrades.js';
-import { COUCHES, COUCH_ORDER } from '../data/furniture.js';
+import { FURNITURE, FURNITURE_ORDER, SLOTS } from '../data/furniture.js';
 import { HEROES } from '../data/heroes.js';
 import { SHOPS } from '../data/shops.js';
 import { SPELLS, SPELL_ORDER, spellPrice } from '../data/east.js';
@@ -16,7 +17,7 @@ import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Couches', sell: 'Sell', fish: 'Sell fish', party: 'Party' };
+const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -42,6 +43,8 @@ export function openShop(panel, close, shopId = 'petshop') {
     const itemRow = id => { const it = ITEMS[id]; return { name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }; };
     if (tab === 'treats') return (shop.treats || Object.keys(ITEMS).filter(id => !ITEMS[id].local)).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
     if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
+    if (tab === 'pranks') return Object.values(PRANKS).map(pr => pr.item).map(itemRow);
+    if (tab === 'remedies') return (shop.remedies || []).map(itemRow);
     if (tab === 'spells') return SPELL_ORDER.map(id => {
       const sp = SPELLS[id], price = spellPrice(id, state.data.day), on = state.data.spell?.id === id && state.data.spell.day === state.data.day;
       return { name: sp.name, desc: sp.desc, price, icon: itemIcon('gear-bandana', 32), owned: on, ownedLabel: 'Cast today ✓',
@@ -53,10 +56,10 @@ export function openShop(panel, close, shopId = 'petshop') {
     if (tab === 'party') return Object.keys(ITEMS).filter(id => ITEMS[id].deco).map(itemRow);
     if (tab === 'books') return Object.keys(ITEMS).filter(id => ITEMS[id].book).map(itemRow);
     if (tab === 'fishing') return [...upgradeRows(FISHING_ORDER), itemRow('bait')];
-    if (tab === 'furniture') return COUCH_ORDER.map(id => {
-      const c = COUCHES[id], f = state.data.furniture, owned = f.owned.includes(id), here = f.couch === id;
-      const place = () => { f.couch = id; if (!f.owned.includes(id)) f.owned.push(id); invalidateMap('home'); sfx.pickup(); state.save(); msg.textContent = `${c.name} is in the lounge now.`; render(); };
-      return { name: c.name, desc: c.desc, price: c.price, owned: here, ownedLabel: 'In the lounge ✓',
+    if (tab === 'furniture' || tab === 'plants') return FURNITURE_ORDER.filter(id => (FURNITURE[id].shop === 'bunnings') === (tab === 'plants')).map(id => {
+      const c = FURNITURE[id], f = state.data.furniture, owned = f.owned.includes(id), here = f[c.slot] === id;
+      const place = () => { state.placeFurniture(id); sfx.pickup(); msg.textContent = `${c.name} is in the house now.`; render(); };
+      return { name: c.name, desc: `${SLOTS[c.slot]}. ${c.desc}`, price: c.price, owned: here, ownedLabel: 'In the house ✓',
         btnLabel: owned ? 'Put it in' : null, free: owned,
         act: owned ? place : () => { if (!state.spend(c.price)) { sfx.bump(); return; } place(); } };
     });
@@ -114,7 +117,8 @@ export function openShop(panel, close, shopId = 'petshop') {
         tab === 'tools' ? h('p', { class: 'small' }, 'Garden tools work as soon as you buy them.') : null,
         tab === 'books' ? h('p', { class: 'small' }, 'Classics and the latest hits. Books make lovely presents. Some friends are big readers.') : null,
         tab === 'fishing' ? h('p', { class: 'small' }, 'With a rod, face the water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A.') : null,
-        tab === 'furniture' ? h('p', { class: 'small' }, 'Pick a couch for the lounge. It is delivered straight away. Megalo service!') : null,
+        tab === 'plants' ? h('p', { class: 'small' }, 'One kind of pot plant for the whole house. Olly delivers it on the way home.') : null,
+        tab === 'furniture' ? h('p', { class: 'small' }, 'Beds, couches, rugs, lamps and more. Delivered straight away. Things you own can go back in any time. Megalo service!') : null,
         tab === 'sell' ? h('p', { class: 'small' }, state.inParty('princess') ? 'Princess is charming the shopkeeper. You get 20% more.' : 'Crops sell well. Treats go for half what they cost.') : null,
         tab === 'fish' ? h('p', { class: 'small' }, 'Spiro pays better for fish than anyone in Melbourne. Catch them at Edwardes Lake, Edgars Creek or right here in Kororoit Creek.') : null,
         tab === 'fish' && !rows.length ? h('p', { class: 'center' }, '"No fish? Come back when you\'ve had a cast, mate."') : null,

@@ -12,7 +12,7 @@ export function buildVapeShop() {
   b.put('candyshelf', 12, 6);
   b.put('shopcounter', 2, 8);
   b.put('doormat', 8, 10);
-  b.npc('sam', 5, 8, { face: 'right' });
+  b.npc('sam', 3, 7, { face: 'down', counter: true });   // behind the counter
   b.exit(8, 11, 1, 1, 'preston', 'vapeshop', 'Plenty Rd');
   b.entry('door', 8, 10, 'up');
   b.noDress = true;

@@ -11,7 +11,7 @@ export function buildLohse() {
   b.fill(0, 0, 3, 24, '#').vline(3, 0, 23, 'f');
   b.fill(0, 24, 40, 2, '#').hline(3, 39, 23, 'f').hline(0, 39, 26, 'f');
   b.fill(18, 24, 2, 2, 'z');
-  b.fill(18, 27, 2, 1, 'f');
+  b.fill(0, 27, 40, 1, 'f');   // the footpath along the bottom, no trees in the way
 
   // Sandy paths: an X through the reserve, a plaza and the playground
   for (let i = 0; i <= 30; i++) {
@@ -39,6 +39,11 @@ export function buildLohse() {
   b.put('parkbin', 10, 17);
   b.put('gascage', 12, 20); b.put('gascage', 13, 20);
   b.put('bench', 15, 15);
+  // The dela Cruz family's karaoke by the shade (talk to them to sing)
+  b.npc('ramon', 8, 13, { face: 'down', at: 'karaoke', still: true, sing: true });
+  b.npc('liza', 10, 13, { face: 'down', at: 'karaoke', still: true, sing: true });
+  b.npc('migs', 7, 14, { face: 'right', at: 'karaoke', sing: true });
+  b.npc('bea', 11, 14, { face: 'left', at: 'karaoke', sing: true });
   b.sign(4, 12, ['Lohse St Reserve.', 'Toilets open 7am till dusk. The playground is open whenever you are brave enough.']);
 
   // Big gums, and backyard fences along the east side
@@ -50,12 +55,11 @@ export function buildLohse() {
   b.put('powerpole', 3, 6); b.put('powerpole', 30, 23);
   b.sign(21, 23, ['Maher Rd.', 'Cross here for Laverton Station.']);
 
-  b.exit(0, 0, 3, 1, 'woods', 'east', 'Woods St');
-  b.exit(24, 0, 2, 1, 'woods', 'east', 'Woods St');
+  b.exit(0, 0, 1, 26, 'woods', 'east', 'Woods St');   // Lohse St carries on into Woods St all the way along
   b.exit(18, 27, 2, 1, 'station', 'north', 'Laverton Station');
   b.exit(39, 24, 1, 2, 'civic', 'west', 'Civic Parade, Altona');
   b.put('waysign', 36, 22, { v: 'civic-right' }); b.put('waysign', 21, 22, { v: 'station-down' });
-  b.entry('east', 38, 26, 'left').entry('north', 1, 2, 'down').entry('path', 24, 2, 'down').entry('south', 18, 26, 'up');
+  b.entry('east', 38, 26, 'left').edgeEntry('west', 'y', 1, 0, 25, 'right').entry('south', 18, 26, 'up');
 
   // Council motions that change the reserve (data/council.js)
   if (state.motionPassed('bookswap')) { b.put('streetlibrary', 9, 14); b.forage(8, 14, ['paperback']); }

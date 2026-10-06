@@ -2,7 +2,8 @@
 // Brunswick, more pide. Knead to Know (Hakan's Turkish bakery, door inside),
 // Altar Ego and the other bridal shops Sydney Rd is famous for, a $2 shop,
 // a barber, a kebab shop and a spice grocer, with the 19 tram down the
-// middle. West along the Victoria St Mall to Coburg Station, east on to
+// middle. Pentridge's bluestone gatehouse on the far right, factories
+// opposite. West along the Victoria St Mall to Coburg Station, east on to
 // Coburg Lake, south back down to Bell St.
 //
 //   y0-1 back lane   y3-5 north shops   y6-7 footpath   y8 road   y9-10 tram   y11 road
@@ -29,7 +30,10 @@ export function buildCoburgSyd() {
   b.put('nshop', 14, 3, { v: 'barber' }); b.put('redshop', 18, 3, { v: 'red' }); b.put('nshop', 22, 3, { v: 'kebab' });
   b.put('nshop', 26, 3, { v: 'bridal' }); b.put('nshop', 30, 3, { v: 'phone' });
   b.put('decoshop', 34, 3, { v: 'lease' });
-  b.put('terrace', 38, 3, { v: 'cream' }); b.put('terrace', 41, 3, { v: 'brick' }); b.put('terrace', 44, 3, { v: 'sage' });
+  // HM Prison Pentridge's gatehouse on the far right, an apartment tower behind it
+  b.put('pentridgegate', 38, 3);
+  b.sign(37, 6, ['HM Prison Pentridge, 1850 to 1997.', 'Now it is apartments and a cafe. The bluestone walls stayed. The vibe is "heritage".']);
+  b.npc('merv', 43, 6, { face: 'down' });
   b.sign(8, 6, ['Altar Ego, bridal couture.', 'Sydney Rd has a bridal shop for every kind of wedding. Mostly the big kind.']);
   b.sign(25, 6, ['Altar Ego II.', 'Yes, there are two. The second one is for when the first one runs out of tulle.']);
   b.sign(37, 6, ['For Lease.', 'Ideal for a fourth bridal shop, a vape shop, or a cafe that will close in eight months.']);
@@ -43,13 +47,13 @@ export function buildCoburgSyd() {
   b.put('shop', 13, 14, { v: 'curry' });
   b.sign(16, 13, ['Sydney Rd, south.', 'Down to Bell St, the Pentridge wall and Coburg Town Hall.']);
   b.put('redshop', 23, 14, { v: 'cream' }); b.put('nshop', 27, 14, { v: 'kebab' }); b.put('shop', 31, 14, { v: 'books' });
-  b.put('cafe', 35, 14, { v: 'green' });
-  b.put('umbrella', 39, 13); b.put('table', 41, 13);
+  // opposite Pentridge: a tilt-up factory behind a wire fence, and a red brick house
+  b.put('factory', 35, 14, { v: 'tin' }); b.put('brickhouse', 43, 14, { v: 'red' });
 
   // The lane behind, then houses and a little pocket park
   b.fill(0, 17, 17, 2, 'b').fill(23, 17, 25, 2, 'b');
   b.put('bin', 3, 17, { v: 'red' }); b.put('bin', 4, 17, { v: 'yellow' }); b.put('crate', 11, 17, { v: 'blue' }); b.put('crate', 29, 17, { v: 'red' });
-  b.put('graffiti', 24, 18, { v: 'paste' });
+  b.graffiti(24, 18, true);
   b.fill(0, 19, 17, 7, '.').fill(23, 19, 25, 7, '.');
   b.put('weatherboard', 1, 20, { v: 'blue' }); b.put('brickhouse', 6, 20, { v: 'tan' }); b.put('weatherboard', 11, 20, { v: 'cream' });
   b.fenceH(0, 16, 19, 'picket', [3, 8, 13]);
@@ -72,10 +76,11 @@ export function buildCoburgSyd() {
 
   b.npc('layla', 7, 7, { face: 'down' });
 
-  b.exit(0, 6, 1, 8, 'coburgmall', 'east', 'Victoria St Mall');
+  b.exit(0, 6, 1, 8, 'coburg', 'north', 'Bell St');
+  b.exit(0, 0, 48, 1, 'coburgmall', 'south', 'Coburg Station');   // all along the top
   b.exit(47, 6, 1, 8, 'coburglake', 'south', 'Coburg Lake');
-  b.exit(17, 25, 6, 1, 'coburg', 'north', 'Bell St');
-  b.entry('west', 1, 7, 'right').entry('east', 46, 12, 'left').entry('south', 17, 24, 'up');
+  b.exit(17, 25, 6, 1, null, null, 'Sydney Rd', ['Sydney Rd carries on south. Bell St is the way back, off to the west.']);
+  b.entry('west', 1, 7, 'right').edgeEntry('north', 'x', 1, 0, 47, 'down').entry('east', 46, 13, 'left').entry('south', 17, 24, 'up');
 
   b.lane({ axis: 'x', pos: 9.5, dir: 1, from: -6, to: 54, every: [25, 45], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 10.5, dir: -1, from: -6, to: 54, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });

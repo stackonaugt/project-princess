@@ -46,7 +46,7 @@ export function buildSwanston() {
   b.sign(31, 34, ['Melbourne Central.', 'A glass cone over a shot tower from 1888. They made lead shot by dropping it fifty metres. Now it is a food court.']);
   // The alley down to the laneways
   b.fill(40, 35, 3, 13, 'b');
-  b.put('bin', 40, 38, { v: 'garbage' }); b.put('graffiti', 42, 41, { v: 'tags' });
+  b.put('bin', 40, 38, { v: 'garbage' }); b.graffiti(42, 41);
 
   b.npc('chesskev', 17, 21, { face: 'right' });
   b.npc('luca', 36, 28, { face: 'down' });
@@ -59,8 +59,8 @@ export function buildSwanston() {
   b.exit(60, 0, 6, 1, 'bourke', 'south', 'Bourke St');
   b.exit(71, 27, 1, 8, 'flinders', 'west', 'Flinders St');
   b.exit(40, 47, 3, 1, 'laneways', 'north', 'Hosier Lane');
-  b.exit(0, 27, 1, 8, null, null, 'Elizabeth St', ['Elizabeth St, and the Queen Vic Market beyond.', 'The market has moved its best stalls down to Fed Square for the season.']);
-  b.entry('bourke', 62, 1, 'down').entry('east', 70, 28, 'left').entry('south', 41, 46, 'up').entry('reading', 24, 17, 'down');
+  b.exit(0, 27, 1, 8, 'gardens', 'south', 'Carlton Gardens');
+  b.entry('bourke', 62, 1, 'down').entry('west', 1, 30, 'right').entry('east', 70, 28, 'left').entry('south', 41, 46, 'up').entry('reading', 24, 17, 'down');
   liven(b, 0.006);
   b.noDress = true;
   return b.finish();

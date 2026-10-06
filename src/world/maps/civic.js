@@ -4,10 +4,11 @@
 // three flagpoles, the clock tower and the pelican sign. Reached from Lohse St
 // Reserve along the road.
 //
-//   y1-8   car park (left), the chamber dome x10-17, the civic centre x22-31
+//   y1-8   car park (left), the chamber dome x8-18, the civic centre x21-32
 //   y9-19  lawn: rainbow path, field gun, flags, clock tower, paths to both doors
 //   y20-23 Civic Parade (footpath, road, footpath), west back to Lohse St Reserve
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildCivic() {
   const b = new MapBuilder({ id: 'civic', w: 40, h: 26, fill: '.', seed: 811 });
@@ -17,12 +18,12 @@ export function buildCivic() {
   b.fill(0, 24, 40, 2, '.');
 
   // Car park and the buildings along the top
-  b.fill(1, 1, 8, 8, 'P');
-  b.put('car', 2, 2, { v: 'white' }); b.put('car', 5, 2, { v: 'silver' }); b.put('car', 2, 6, { v: 'red' }); b.put('car', 6, 6, { v: 'blue' });
-  b.fill(9, 9, 24, 1, 'k');                        // a paved forecourt along the fronts
-  b.put('chamberdome', 10, 6);
-  b.put('civiccentre', 22, 6);
-  b.fill(18, 6, 4, 3, 'k');                        // the link between them
+  b.fill(1, 1, 7, 8, 'P');
+  b.put('car', 2, 2, { v: 'white' }); b.put('car', 5, 2, { v: 'silver' }); b.put('car', 2, 6, { v: 'red' }); b.put('car', 5, 6, { v: 'blue' });
+  b.fill(8, 9, 25, 1, 'k');                        // a paved forecourt along the fronts
+  b.put('chamberdome', 8, 5);
+  b.put('civiccentre', 21, 5);
+  b.fill(19, 6, 2, 3, 'k');                        // the link between them
   b.put('tallplant', 19, 7); b.put('bench', 20, 8);
   b.fill(10, 1, 22, 5, 'L');
   b.sign(20, 4, ['Altona City Theatre, out the back.', 'Tonight: a musical about the Westgate Bridge. Tickets selling slowly.']);
@@ -49,16 +50,17 @@ export function buildCivic() {
   b.wildGrass(20, 17, 2, 1);
   b.sign(29, 18, ['Hobsons Bay City Council.', 'Customer service open 8:30am to 5pm. Council meets Tuesdays at 6:30pm. All welcome.']);
   b.put('powerpole', 6, 20); b.put('powerpole', 34, 20); b.put('lamp', 18, 20);
-  b.put('waysign', 3, 19, { v: 'lohse-left' });
 
   b.forage(36, 18, ['tennis', 'snag']);
+  if (state.motionPassed('lemontree')) { b.put('tree', 16, 12, { v: 'lemon' }); b.forage(16, 14, ['lemon']); }   // a council motion
   b.fill(36, 24, 2, 2, 'f');                       // the path south to Kororoit Creek Rd
   b.exit(36, 25, 2, 1, 'altona', 'north', 'Kororoit Creek Rd');
   b.border(['gum', 'oak']);
+  b.clear(0, 24, 36, 2).clear(38, 24, 2, 2);         // no trees along the bottom
   b.magpies([[16, 17], [33, 14]]);
 
   b.exit(0, 20, 1, 4, 'lohse', 'east', 'Lohse St Reserve');
-  b.exit(39, 20, 1, 4, null, null, 'Pier St', ['Civic Parade carries on to Pier St and the beach.', 'Another day. Bring a towel.']);
+  b.exit(39, 20, 1, 4, 'footscray', 'west', 'Footscray');
   b.entry('west', 1, 20, 'right').entry('south', 36, 23, 'up');
   b.lane({ axis: 'x', pos: 21.5, dir: -1, from: -4, to: 44, every: [8, 16], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 22.5, dir: 1, from: -4, to: 44, every: [8, 16], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });

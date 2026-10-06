@@ -282,7 +282,48 @@ const evenrustier = [
   '..kk.....kk.....',
 ];
 
+// Ziggy: a very small black and white cat (a = black, w = white bib and socks)
+const kitten = [
+  '................',
+  '................',
+  '................',
+  '................',
+  '.a..............',
+  '.a.......a..a...',
+  '..a......aaaa...',
+  '..a......aeaea..',
+  '..a......awwaa..',
+  '...aaaaaaaww....',
+  '...aaaaaaaaw....',
+  '...awaaaaaw.....',
+  '....aw....aw....',
+  '....aw....aw....',
+  '....ww....ww....',
+  '................',
+];
+// Emilio: a big old duck in a little top hat (h = hat, b = band, o = bill and feet)
+const emilio = [
+  '..........hhh...',
+  '..........hhh...',
+  '.........bbbbb..',
+  '.........aaaa...',
+  '.........aeaaoo.',
+  '.........aaaaoo.',
+  '..........aa....',
+  '.ll......laa....',
+  '.lllllllllaa....',
+  '..lwwwwwwwwa....',
+  '..lwwwwwwwwa....',
+  '...wwwwwwww.....',
+  '....wwwwww......',
+  '......o..o......',
+  '......o..o......',
+  '.....oo.oo......',
+];
+
 export const PET_FRAMES = {
+  kitten:    [kitten, stride(kitten, 4)],
+  emilio:    [emilio, stride(emilio, 3)],
   sopressa:  [sopressa, stride(sopressa)],
   poltergeist: [poltergeist, stride(poltergeist, 3)],
   centurionely: [centurionely, stride(centurionely)],

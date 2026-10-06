@@ -1,7 +1,7 @@
 // PRESTON MARKET: rows of stalls on a concrete floor, the car park to the
 // north, and the fight to keep it. Stavros's deli, Linh's fruit and veg,
 // Marko's fish, a cake stall and a plant stall, plus a few shuttered ones
-// with SAVE PRESTON MARKET signs. Bev and her clipboard by the entrance.
+// with SAVE PRESTON MARKET signs. Greco and his clipboard by the entrance.
 // In the south-west corner, the fenced-off "redevelopment site", gone to
 // weeds (artist's impressions blow about in it). West to Murray Rd (Alison's),
 // east to Preston Station,
@@ -20,8 +20,11 @@ export function buildPrestonMkt() {
   b.put('ute', 40, 1, { v: 'silver' });
   b.put('trolley', 23, 2); b.put('trolley', 35, 6); b.put('trolley', 12, 6);
   b.fill(0, 8, 44, 2, 'f');
-  b.put('marketsign', 20, 8);
-  b.put('placard', 18, 9); b.put('placard', 23, 9);
+  // the painted mural walls either side of the entrance, the green arch between
+  b.put('marketmural', 1, 8, { v: 'left' }); b.put('marketmural', 29, 8, { v: 'right' });
+  b.put('marketarch', 19, 9);
+  b.put('marketsign', 16, 8);
+  b.put('placard', 17, 9); b.put('placard', 26, 9);
 
   // The market floor: three rows of stalls with aisles between
   b.fill(0, 10, 44, 15, 'k');
@@ -34,6 +37,7 @@ export function buildPrestonMkt() {
   b.put('placard', 13, 23); b.put('placard', 27, 13); b.put('placard', 38, 23);
   b.put('bench', 20, 14); b.put('bench', 20, 19); b.put('parkbin', 22, 14);
   b.put('crate', 3, 13, { v: 'blue' }); b.put('crate', 8, 18, { v: 'red' }); b.put('crate', 33, 13, { v: 'red' });
+  b.put('marketroof', 1, 10);   // the big open shed over it all
   b.sign(19, 10, ['Preston Market, since 1970.', 'Fruit, fish, fetta and forty languages. Every stallholder here signed the petition.']);
 
   // The "redevelopment site": fenced off and gone to weeds
@@ -50,12 +54,12 @@ export function buildPrestonMkt() {
   b.npc('stavros', 5, 13, { face: 'down' });
   b.npc('linh', 25, 13, { face: 'down' });
   b.npc('marko', 5, 18, { face: 'down' });
-  b.npc('bev', 21, 9, { face: 'down' });
+  b.npc('greco', 18, 10, { face: 'down' });
+  b.npc('sharma', 30, 13, { face: 'down', still: true });   // the palm reader's table by the deli hall
 
-  b.exit(43, 8, 1, 17, 'prestonhigh', 'west', 'Preston Station');
   b.exit(0, 10, 1, 15, 'murray', 'east', 'Murray Rd');
-  b.exit(38, 27, 2, 1, 'coburg', 'market', 'Bell St');
-  b.entry('east', 42, 12, 'left').entry('south', 38, 26, 'up').entry('west', 1, 12, 'right');
+  b.exit(0, 27, 44, 1, 'prestonhigh', 'west', 'Preston Station');   // all along the bottom
+  b.entry('east', 42, 12, 'left').edgeEntry('south', 'x', 26, 0, 43, 'up').entry('west', 1, 12, 'right');
 
   b.forage(41, 1, ['tennis', 'chicken']);
   b.forage(3, 26, ['fetta', 'sardine']);

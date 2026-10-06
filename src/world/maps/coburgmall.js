@@ -1,6 +1,6 @@
 // COBURG STATION and the VICTORIA ST MALL. The Upfield line now runs
-// overhead on a new skyrail (the level crossings are gone), with the station
-// underneath. The mall runs east to Sydney Rd: plane trees, benches and the
+// overhead on a new skyrail (the level crossings are gone), behind the old
+// red brick station building. The mall runs east to Sydney Rd: plane trees, benches and the
 // Coburg Library hub. The Upfield bike path runs north under the rail line
 // towards Coburg Lake. A car park and a few shops to the south.
 //
@@ -20,7 +20,7 @@ export function buildCoburgMall() {
   b.sign(5, 2, ['Upfield bike path.', 'North to Coburg Lake and the Merri Creek. Keep left. Ring your bell. Nobody will care.']);
 
   // Coburg Station and the library
-  b.put('skystation', 13, 7, { v: 'coburg' });
+  b.put('coburgstation', 13, 7);   // the old brick station building, the skyrail above
   b.put('myki', 17, 10, { travel: true });
   b.sign(23, 10, ['Coburg Station. Upfield line.', 'Up on the new skyrail. Tap your myki to catch a train to anywhere you have already been.']);
   b.put('bikerack', 8, 9); b.put('busshelter', 10, 10);
@@ -46,11 +46,12 @@ export function buildCoburgMall() {
   b.fill(0, 0, 2, 26, '.').ellipse(0, 20, 1.5, 4, '"', '.');
 
   b.npc('deb', 33, 11, { face: 'down' });
+  b.npc('fairy', 24, 12, { face: 'down', at: 'visit' });   // every third day
   b.npc('tash', 3, 14, { path: [[3, 14], [3, 22], [3, 6], [3, 14]], speed: 60 });
 
-  b.exit(43, 11, 1, 6, 'coburgsyd', 'west', 'Sydney Rd, Coburg');
+  b.exit(0, 25, 44, 1, 'coburgsyd', 'north', 'Sydney Rd, Coburg');   // all along the bottom
   b.exit(2, 0, 3, 1, 'coburglake', 'west', 'Coburg Lake');
-  b.entry('station', 18, 11, 'down').entry('east', 42, 13, 'left').entry('north', 3, 1, 'down');
+  b.entry('station', 18, 11, 'down').edgeEntry('south', 'x', 24, 0, 43, 'up').entry('north', 3, 1, 'down');
 
   b.lane({ axis: 'x', pos: 3.3, dir: 1, from: -12, to: 56, every: [40, 70], speed: 110, kinds: ['veh-train-h'], train: true, sky: true });
   b.lane({ axis: 'x', pos: 4.3, dir: -1, from: -12, to: 56, every: [45, 75], speed: 110, kinds: ['veh-train-h'], train: true, sky: true });

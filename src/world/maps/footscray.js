@@ -1,5 +1,5 @@
 // BARKLY ST, Footscray: halfway between Laverton and Brunswick. A row of
-// shops (pho, curry, a bakery), terraces, and the market's stalls and
+// shops (pho, banh mi, a bakery), terraces, and the market's stalls and
 // car park across the road.
 //
 //   y2-8 shops and terraces   y9 footpath   y10-11 road   y12 footpath   y13-24 market and a pocket park
@@ -12,9 +12,11 @@ export function buildFootscray() {
 
   // North: Barkly St shops
   b.fill(0, 0, 48, 3, 'b');
-  const row = [['shop', 'pho'], ['redshop', 'red'], ['bshop', 'laundro'], ['shop', 'curry'], null, null, null, ['bshop', 'opshop'], ['shop', 'bakery']];
+  const row = [['shop', 'pho'], ['redshop', 'red'], ['bshop', 'laundro'], ['shop', 'banh mi'], null, null, null, ['bshop', 'opshop'], ['shop', 'bakery']];
   row.forEach((s, i) => s && b.put(s[0], 1 + i * 4, 6, { v: s[1] }));
-  // Franco Cozzo: furniture for the house. Sal out the front does the selling.
+  // Trish and Gordon, out shopping on a Thursday (routines.js)
+  b.npc('trish', 30, 13, { face: 'down', at: 'footscray' }); b.npc('gordon', 31, 13, { face: 'down', at: 'footscray' });
+  // Franco Cozzo: furniture for the house. Franco himself does the selling.
   b.put('francocozzo', 17, 6);
   b.exit(22, 9, 1, 1, 'cozzo', 'door', 'Franco Cozzo');
   b.put('terrace', 38, 6, { v: 'sand' }); b.put('terrace', 41, 6, { v: 'brick' }); b.put('terrace', 44, 6, { v: 'cream' });
@@ -29,7 +31,7 @@ export function buildFootscray() {
   b.fill(0, 18, 20, 7, 'P');
   [[1, 19, 'red'], [5, 21, 'white'], [9, 19, 'blue'], [14, 21, 'silver']].forEach(([x, y, v]) => b.put('car', x, y, { v }));
   b.fill(20, 13, 2, 12, 'b');
-  b.put('graffiti', 22, 13, { v: 'paste' });
+  b.graffiti(22, 13, true);
   b.fill(22, 15, 26, 10, '.');
   b.wildGrass(29, 20, 4, 2);
   b.put('tall', 24, 16, { v: 'biggum' }); b.put('tall', 38, 17, { v: 'biggum' }); b.put('tall', 45, 22, { v: 'biggum' });

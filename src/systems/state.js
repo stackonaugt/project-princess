@@ -17,13 +17,14 @@ import { CROPS } from '../data/crops.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
 import { CHAPTERS } from '../data/story.js';
+import { FURNITURE, DEFAULT_FURNITURE } from '../data/furniture.js';
 
 const VERSION = 9;
 export const MAX_TEAM = 3;
 export const SLOT_COUNT = 3;
 const slotKey = n => `${SAVE_KEY}-slot${n}`;
 // Old npc ids -> new ones (the owner renamed some people).
-const RENAMED = { jules: 'pearman', busker: 'jordan', priya: 'abby', dimitri: 'james', wen: 'chris', kez: 'nathan' };
+const RENAMED = { jules: 'pearman', busker: 'jordan', priya: 'abby', dimitri: 'james', wen: 'chris', kez: 'nathan', marisol: 'ardi', commuter: 'jack', ed: 'ward', wren: 'shannon', sal: 'franco', bev: 'greco' };
 
 function fresh() {
   return {
@@ -41,14 +42,15 @@ function fresh() {
     seeds: {},         // crop id -> packets of seeds
     farm: {},          // plot id -> { crop, growth, watered (day), boost } (see data/crops.js)
     upgrades: {},      // upgrade id -> true (see data/upgrades.js)
+    matchups: [],      // type matchups seen in battle, 'fire>water' (the Petdex shows them)
     flags: {},         // one-off story flags, e.g. garden (Chris gave you plots)
     spell: null,       // today's protection spell from the milk bar: { id, day }
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
-    council: { given: {}, passed: [], lost: {} },   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
+    council: { given: {}, passed: [], lost: {}, silly: [] },   // silly: SILLY_MOTIONS indexes that passed   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
-    furniture: { couch: 'old', owned: ['old'] },    // what's in the house (Franco Cozzo, data/furniture.js)
+    furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
     settings: { sound: true },
     seenIntro: false,
@@ -88,10 +90,11 @@ function sanitise(raw) {
   if (raw.farm && typeof raw.farm === 'object') for (const [k, f] of Object.entries(raw.farm)) if (f && CROPS[f.crop]) d.farm[k] = f;
   if (raw.upgrades && typeof raw.upgrades === 'object') for (const k of Object.keys(raw.upgrades)) if (UPGRADES[k]) d.upgrades[k] = true;
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
+  if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
-  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {} };
+  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], metDay: raw.council.metDay };
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
-  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = ['old']; }
+  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); }
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
@@ -209,6 +212,15 @@ export const state = {
 
   // Money and gear
   addMoney(n) { this.data.money = Math.max(0, this.data.money + Math.round(n)); bus.emit('money:changed'); },
+  // Put a piece of furniture (or the pot plants) in the house; buying is up to the caller.
+  placeFurniture(id) {
+    const f = FURNITURE[id], furn = this.data.furniture;
+    if (!f) return;
+    furn[f.slot] = id;
+    if (!furn.owned.includes(id)) furn.owned.push(id);
+    invalidateMap('home');
+    this.save();
+  },
   spend(n) { if (this.data.money < n) return false; this.addMoney(-n); return true; },
   gearCount(id) { return this.data.gear[id] || 0; },
   addGear(id, n = 1) { this.data.gear[id] = this.gearCount(id) + n; bus.emit('bag:changed'); },
@@ -279,7 +291,7 @@ export const state = {
 
   // The requests board (data/requests.js)
   todaysRequests() {
-    const met = Object.entries(this.data.friends).filter(([, f]) => f.met).map(([id]) => id), key = `${this.data.day}:${met.length}`;
+    const met = Object.entries(this.data.friends).filter(([id, f]) => f.met && this.friendHearts(id) >= 1).map(([id]) => id), key = `${this.data.day}:${met.length}`;
     if (this._reqKey !== key) { this._reqKey = key; this._req = requestsFor(this.data.day, met); }   // cached: the bubbles ask every frame
     return this._req.map(q => ({ ...q, done: this.data.requests.day === this.data.day && this.data.requests.done.includes(q.id) }));
   },
@@ -291,7 +303,7 @@ export const state = {
   // Council motions (data/council.js)
   // Motions go up on the noticeboard one at a time as you settle in: the
   // first once you have found two pets, another with each pet after that.
-  motionUnlocked(id) { return this.motionPassed(id) || MOTION_ORDER.indexOf(id) < this.foundCount() - 1; },
+  motionUnlocked(id) { return this.motionPassed(id) || MOTION_ORDER.indexOf(id) < this.foundCount(); },   // one more motion per pet found
   motionPassed(id) { return this.data.council.passed.includes(id); },
   motionGiven(id) { return this.data.council.given[id] || (this.data.council.given[id] = {}); },
   motionReady(id) { return motionReady(id, this.data.council.given[id]); },
@@ -330,7 +342,7 @@ export const state = {
   passMotion(id) {
     if (this.motionPassed(id)) return;
     this.data.council.passed.push(id);
-    for (const z of { gardenplus: ['wetlands'], bookswap: ['lohse'], trees: ['allen'] }[id] || []) invalidateMap(z);
+    for (const z of { gardenplus: ['wetlands'], bookswap: ['lohse'], trees: ['allen'], lemontree: ['civic'] }[id] || []) invalidateMap(z);
     bus.emit('council:passed', id);
   },
 

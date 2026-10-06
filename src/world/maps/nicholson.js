@@ -51,7 +51,7 @@ export function buildNicholson() {
   b.forage(27, 7, ['feather', 'chicken']);
   b.magpies([[6, 32], [14, 27]]);
 
-  b.exit(30, 0, 6, 1, 'ebnicholson', 'carlton', 'Nicholson St, Brunswick East');
+  b.exit(30, 0, 6, 1, 'ebnicholson', 'west', 'Nicholson St, Brunswick East');
   b.exit(30, 39, 6, 1, 'bourke', 'north', 'Spring St');
   b.exit(18, 39, 4, 1, 'gardens', 'north', 'Carlton Gardens');
   b.entry('north', 32, 1, 'down').entry('south', 32, 38, 'up').entry('gardens', 19, 38, 'up');

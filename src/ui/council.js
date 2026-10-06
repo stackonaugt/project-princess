@@ -22,11 +22,13 @@ export function openCouncil(panel, close) {
       h('div', { class: 'm-head' }, h('h2', {}, 'Council motions'), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
       h('p', { class: 'dex-sum' }, `Today is ${weekday(state.data.day)}. Council meets Tuesdays at 6:30pm.`),
       h('div', { class: 'm-scroll' },
+        h('div', { class: 'note' }, h('h4', {}, 'How this board works'),
+          h('p', { class: 'small' }, 'Each card below is a motion: an idea for council to vote on. Chip in what it needs from your bag or your wallet. Once it has everything, it goes to the next Tuesday meeting at 6:30pm and council votes on it. If it passes, something in town changes.')),
         h('div', { class: 'note' },
           h('h4', {}, `If council voted now: ${v.yes.length} yes, ${v.no.length} no. ${v.passed ? 'Motions would pass.' : 'Motions would fail.'}`),
           state.paddyDeposed() ? h('p', { class: 'small' }, 'Paddy is not mayor right now, so the swing votes are twice as hard to win.') : null,
         h('p', { class: 'small' }, 'Paddy, Rayna and Deanna vote yes. Lesley and Malcolm vote no. The swing votes:'), ...swing),
-        state.foundCount() < 2 ? h('div', { class: 'note' }, h('p', {}, 'The noticeboard is empty apart from a flyer for a lost cockatoo. Council business can wait: go and find some more pets first.')) : null,
+        state.foundCount() < 1 ? h('div', { class: 'note' }, h('p', {}, 'The noticeboard is empty apart from a flyer for a lost cockatoo. Council business can wait: go and find some more pets first.')) : null,
         ...MOTION_ORDER.filter(id => state.motionUnlocked(id)).map(id => {
           const m = MOTIONS[id], given = state.motionGiven(id), passed = state.motionPassed(id), ready = state.motionReady(id);
           const needs = Object.entries(m.needs).map(([k, n]) => {
@@ -47,7 +49,7 @@ export function openCouncil(panel, close) {
             passed ? h('p', { class: 'meta' }, 'Passed ✓') : ready ? h('p', { class: 'meta' }, 'Ready for Tuesday\'s meeting.') : null,
             ...(passed ? [] : needs));
         }),
-        MOTION_ORDER.some(id => !state.motionUnlocked(id)) && state.foundCount() >= 2 ? h('p', { class: 'small center' }, 'More motions go up on the board as you find more pets.') : null,
+        MOTION_ORDER.some(id => !state.motionUnlocked(id)) && state.foundCount() >= 1 ? h('p', { class: 'small center' }, 'More motions go up on the board as you find more pets.') : null,
         msg));
   };
   render();

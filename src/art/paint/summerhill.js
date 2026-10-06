@@ -38,6 +38,25 @@ function sun(p, cx, cy, r) {
 
 const CREAM = '#ecdcbc', TERRA = '#c8643a';
 
+// The supermarket front: red COLES fascia, the windows full of stock, the
+// checkouts and an open doorway in the middle. texW is the texture width.
+function supermarket(p, texW) {
+  const sx = 2, W = texW - 4, top = 4, base = 75;
+  p.r(CREAM, sx, top, W, base - top);
+  box(p, sx, top, W, 14, '#d8202a'); big(p, 'COLES', sx + W / 2, top + 2, 2, '#f4f4f0');
+  p.r('#f4f4f0', sx, top + 14, W, 2);
+  glass(p, sx + 3, top + 20, W - 6, 30, '#3a3e44', '#c8dce4');
+  stock(p, sx + 6, top + 23, W - 12, 4, 21, 7);
+  // checkouts either side of the open doorway
+  const mid = sx + Math.round(W / 2), n = Math.max(2, Math.floor(W / 80));
+  for (let i = 0; i < n; i++) for (const side of [-1, 1]) { const x = mid + side * (30 + i * 26) - (side < 0 ? 16 : 0); box(p, x, top + 52, 16, 12, '#4a4e56'); p.r('#1e1e22', x + 2, top + 50, 5, 4); p.r('#e8302a', x + 4, top + 51, 1, 1); }
+  p.r('#d8d0c0', mid - 15, top + 50, 30, base - top - 50);
+  p.r('#3a3e44', mid - 17, top + 50, 2, base - top - 50); p.r('#3a3e44', mid + 15, top + 50, 2, base - top - 50);
+  if (W > 300) for (const x of [sx + 40, sx + W - 120]) { box(p, x, top + 2, 80, 10, '#f4f4f0'); big(p, x < mid ? 'FRESH' : 'DOWN DOWN', x + 40, top + 4, 1, '#d8202a'); }
+  p.r(shade(CREAM, -0.2), sx, base - 3, W, 3);
+  outline(p.ctx, 0, 0, texW, 76);
+}
+
 export const SUMMERHILL = {
   // The centre from the car park, from the owner's photo: two wings of
   // specialty shops under brown zigzag roofs with deep eaves, and the taller
@@ -139,29 +158,22 @@ export const SUMMERHILL = {
   // The supermarket front: green fascia, glass, aisles and checkouts behind.
   supermarket: {
     foot: [9, 3], tex: [148, 76], variants: ['fresh'], lined: true,
-    paint(p) {
-      const sx = 2, W = 144, top = 4, base = 75;
-      p.r(CREAM, sx, top, W, base - top);
-      box(p, sx, top, W, 14, '#d8202a'); big(p, 'COLES', sx + W / 2, top + 2, 2, '#f4f4f0');
-      p.r('#f4f4f0', sx, top + 14, W, 2);
-      glass(p, sx + 3, top + 20, W - 6, 30, '#3a3e44', '#c8dce4');
-      stock(p, sx + 6, top + 23, W - 12, 4, 21, 7);
-      // checkouts and the open doorway
-      for (const x of [8, 34, 98, 124]) { box(p, sx + x, top + 52, 16, 12, '#4a4e56'); p.r('#1e1e22', sx + x + 2, top + 50, 5, 4); p.r('#e8302a', sx + x + 4, top + 51, 1, 1); }
-      p.r('#d8d0c0', sx + 58, top + 50, 30, base - top - 50);
-      p.r('#3a3e44', sx + 56, top + 50, 2, base - top - 50); p.r('#3a3e44', sx + 88, top + 50, 2, base - top - 50);
-      p.r(shade(CREAM, -0.2), sx, base - 3, W, 3);
-      outline(p.ctx, 0, 0, 148, 76);
-    },
+    paint(p) { supermarket(p, 148); },
+  },
+  // Coles right across the back wall of the centre (the owner's note).
+  colesfront: {
+    foot: [42, 3], tex: [676, 76], variants: ['wide'], lined: true,
+    paint(p) { supermarket(p, 676); },
   },
   // Specialty shops along the concourse. Each variant has its own fascia and window.
   mallshop: {
-    foot: [5, 3], tex: [84, 68], variants: ['chemist', 'news', 'hotbread', 'twodollar', 'hair'], lined: true,
+    foot: [5, 3], tex: [84, 68], variants: ['chemist', 'news', 'hotbread', 'twodollar', 'hair', 'bakers', 'cafe'], lined: true,
     paint(p, v) {
       const sx = 2, W = 80, top = 4, base = 67;
       const look = {
         chemist: ['#3a9a5a', 'CHEMIST', '#f4efe0'], news: ['#2f6aa3', 'NEWSAGENCY', '#f4efe0'], hotbread: ['#e8c040', 'HOT BREAD', '#8a3a1a'],
         twodollar: ['#c8302a', 'EVERYTHING $2', '#f8d050'], hair: ['#2a2a30', 'CURL UP & DYE', '#f07ab0'],
+        bakers: ['#6a2a1a', 'BAKERS DELIGHT', '#f8d878'], cafe: ['#2a3a2a', 'CAFE CREMA', '#f4efe0'],
       }[v];
       p.r(CREAM, sx, top, W, base - top);
       box(p, sx, top, W, 12, look[0]); centred(p, look[1], sx + W / 2, top + 4, look[2]);
@@ -172,6 +184,16 @@ export const SUMMERHILL = {
       } else if (v === 'news') {
         for (let i = 0; i < 9; i++) for (let r = 0; r < 2; r++) p.r(['#c8302a', '#f4efe0', '#e8c040', '#2f6aa3', '#f07ab0'][(i + r * 2) % 5], sx + 6 + i * 8, top + 19 + r * 11, 6, 9);
         box(p, sx + 56, top + 46, 20, 9, '#e8c040'); centred(p, 'LOTTO', sx + 66, top + 48, '#c8302a');
+      } else if (v === 'bakers') {   // loaves on the racks, scrolls in the cabinet
+        for (let r = 0; r < 3; r++) for (let i = 0; i < 7; i++) { const x = sx + 8 + i * 9, y = top + 20 + r * 8; p.r('#c8843a', x, y, 7, 5); p.r('#e8b060', x + 1, y, 5, 2); p.r('#8a4a1a', x + 2, y + 2, 1, 1); p.r('#8a4a1a', x + 4, y + 2, 1, 1); }
+        box(p, sx + 4, top + 44, W - 8, 8, '#f4f4f0'); p.r('#d8e8f0', sx + 6, top + 45, W - 12, 5);
+        for (let i = 0; i < 6; i++) p.blob(sx + 12 + i * 11, top + 48, 2.5, ['#c8843a', '#f07ab0', '#f8e0a0'][i % 3]);
+      } else if (v === 'cafe') {   // a coffee machine, a cake cabinet and a chalkboard
+        p.r('#c8ccd0', sx + 8, top + 20, 22, 14); p.r('#8a8e96', sx + 10, top + 22, 18, 3); p.r('#1e1e22', sx + 12, top + 27, 3, 5); p.r('#1e1e22', sx + 22, top + 27, 3, 5);
+        p.r('#f4efe0', sx + 13, top + 31, 2, 2); p.r('#f4efe0', sx + 23, top + 31, 2, 2);
+        for (let i = 0; i < 4; i++) p.r(['#f07ab0', '#8a4a1a', '#f8e0a0', '#e8302a'][i], sx + 38 + i * 9, top + 24, 7, 5);
+        box(p, sx + 4, top + 44, 26, 10, '#1e2a1e'); p.text('FLAT', sx + 7, top + 46, '#f4efe0'); p.r('#f4efe0', sx + 7, top + 52, 12, 1);
+        p.r('#6a4a2a', sx + 36, top + 46, 6, 6); p.r('#6a4a2a', sx + 60, top + 46, 6, 6);   // little tables out the front
       } else if (v === 'hotbread') {
         for (let r = 0; r < 3; r++) for (let i = 0; i < 8; i++) p.blob(sx + 10 + i * 8, top + 21 + r * 8, 2.5, ['#d8923a', '#f0c070', '#f07ab0', '#c87a3a'][(i + r) % 4]);
         box(p, sx + 4, top + 44, W - 8, 8, '#f4f4f0'); p.r('#d8e8f0', sx + 6, top + 45, W - 12, 5);
@@ -187,17 +209,18 @@ export const SUMMERHILL = {
         p.blob(sx + 54, top + 24, 7, '#f07ab0'); p.r('#c8ccd0', sx + 53, top + 30, 2, 10);
         box(p, sx + 36, top + 45, 38, 8, '#f07ab0'); centred(p, 'WALK INS', sx + 55, top + 47, '#2a2a30');
       }
-      if (v !== 'hotbread' && v !== 'news' && v !== 'hair') p.r('#d8d0c0', sx + 30, top + 44, 20, base - top - 44);
+      if (!['hotbread', 'news', 'hair', 'bakers', 'cafe'].includes(v)) p.r('#d8d0c0', sx + 30, top + 44, 20, base - top - 44);
       p.r(shade(CREAM, -0.2), sx, base - 3, W, 3);
       outline(p.ctx, 0, 0, 84, 68);
     },
   },
   // Food court stalls: a menu board, a counter, a bain-marie.
   foodstall: {
-    foot: [4, 2], tex: [68, 54], variants: ['dimsum', 'kebab', 'sushi'], lined: true,
+    foot: [4, 2], tex: [68, 54], variants: ['dimsum', 'kebab', 'sushi', 'sandwich', 'boba'], lined: true,
     paint(p, v) {
       const sx = 2, W = 64, top = 2, base = 53;
-      const [c, name, fg] = { dimsum: ['#c8302a', 'DIM SUM', '#f8d050'], kebab: ['#e8823a', 'KEBABS', '#f4efe0'], sushi: ['#1e2a48', 'SUSHI', '#f4efe0'] }[v];
+      const [c, name, fg] = { dimsum: ['#c8302a', 'DIM SUM', '#f8d050'], kebab: ['#e8823a', 'KEBABS', '#f4efe0'], sushi: ['#1e2a48', 'SUSHI', '#f4efe0'],
+        sandwich: ['#3a8a3a', 'SANGA SHACK', '#f8d050'], boba: ['#f07ab0', 'BUBBLE TROUBLE', '#2a2a30'] }[v];
       box(p, sx, top, W, 10, c); centred(p, name, sx + W / 2, top + 3, fg);
       box(p, sx + 2, top + 11, W - 4, 14, '#1e1e22');
       for (let i = 0; i < 4; i++) { p.r(['#e8c040', '#f4efe0', '#e8823a', '#3a8a4a'][i], sx + 5 + i * 14, top + 13, 10, 6); p.r('#f4efe0', sx + 5 + i * 14, top + 20, 10, 1); }
@@ -205,6 +228,8 @@ export const SUMMERHILL = {
       box(p, sx, top + 30, W, 8, '#c8ccd0');
       if (v === 'dimsum') for (let i = 0; i < 5; i++) { p.blob(sx + 8 + i * 12, top + 32, 4, '#c8a060'); p.r('#f4efe0', sx + 6 + i * 12, top + 30, 5, 2); }
       else if (v === 'kebab') { p.r('#8a5a2e', sx + 10, top + 14, 6, 16); p.r('#a8703a', sx + 11, top + 15, 2, 14); for (let i = 0; i < 4; i++) p.r(['#e8302a', '#3a8a4a', '#f4efe0', '#e8c040'][i], sx + 24 + i * 9, top + 32, 7, 3); }
+      else if (v === 'sandwich') for (let i = 0; i < 5; i++) { const x = sx + 6 + i * 12; p.r('#e8c070', x, top + 31, 9, 2); p.r(['#3a8a3a', '#e8302a', '#f8d050'][i % 3], x, top + 33, 9, 1); p.r('#e8c070', x, top + 34, 9, 2); }
+      else if (v === 'boba') for (let i = 0; i < 6; i++) { const x = sx + 5 + i * 10; p.r(['#e8c8a0', '#c8a0e8', '#a0e8c8', '#f8b0c8'][i % 4], x, top + 30, 6, 8); p.r('#2a1a1a', x + 1, top + 35, 4, 2); p.r('#f4f4f0', x + 3, top + 27, 1, 4); }
       else for (let i = 0; i < 12; i++) { p.r('#f4f4f0', sx + 4 + i * 5, top + 32, 4, 3); p.r(['#e8823a', '#2a2a30', '#f07ab0'][i % 3], sx + 5 + i * 5, top + 32, 2, 1); }
       p.r(shade(c, -0.3), sx, base - 3, W, 3);
       outline(p.ctx, 0, 0, 68, 54);

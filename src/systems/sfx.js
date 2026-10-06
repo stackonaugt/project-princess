@@ -37,6 +37,7 @@ export const sfx = {
   bump: () => tone(140, 0.12, { type: 'sawtooth', vol: 0.05, slide: -60 }),
   yap: () => { tone(900, 0.05, { slide: 300 }); tone(950, 0.05, { slide: 300, delay: 0.12 }); },
   ding: () => { tone(1320, 0.25, { type: 'triangle', vol: 0.05 }); tone(1320, 0.25, { type: 'triangle', vol: 0.05, delay: 0.3 }); },
+  bell: () => { tone(2100, 0.12, { type: 'sine', vol: 0.05 }); tone(2100, 0.18, { type: 'sine', vol: 0.04, delay: 0.14 }); },
   honk: () => { tone(330, 0.18, { type: 'square', vol: 0.04 }); tone(415, 0.18, { type: 'square', vol: 0.03 }); },
   myki: () => { tone(1568, 0.07, { vol: 0.05 }); tone(1568, 0.07, { vol: 0.05, delay: 0.12 }); },
   quack: () => tone(480, 0.09, { type: 'sawtooth', vol: 0.04, slide: -200 }),

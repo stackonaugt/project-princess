@@ -237,10 +237,11 @@ export const BRUNSEAST = {
     },
   },
 
-  // Brick bungalows: tile roof, deep eaves, bay windows. red: 199 Nicholson
-  // St; cream: the cream brick one on the corner; deco: cream brick with dark
-  // bands and a stepped parapet; corner: the old red brick house on Mitchell
-  // St with its chimney and striped window awning.
+  // Brick bungalows: tile roof, deep eaves, bay windows. red: red brick (199
+  // Nicholson St itself is house199); cream: the cream brick one on the
+  // corner; deco: cream brick with dark bands and a stepped parapet; corner:
+  // the old red brick house on Mitchell St with its chimney and striped
+  // window awning.
   bungalow: {
     foot: [5, 3], tex: [80, 66], variants: ['red', 'cream', 'deco', 'corner'], lined: true,
     paint(p, v) {
@@ -258,7 +259,6 @@ export const BRUNSEAST = {
       p.r('#3a2a22', 12, top + 8, 14, H - top - 9); door(p, 15, top + 12, 8, H - top - 15, '#5a3a2a', false);
       window_(p, 34, top + 10, 16, 20, { curtain: '#f0e8d8' }); window_(p, 56, top + 10, 18, 20, { curtain: '#f0e8d8' });
       if (v === 'corner' || v === 'deco') for (let i = 0; i < 18; i += 3) p.r(i % 6 ? '#f4efe0' : '#5a7a5a', 56 + i, top + 6, 3, 5);   // striped awning
-      if (v === 'red') { p.text('199', 4, top + 4, '#f4f0e6'); }
       outline(p.ctx, 0, 0, 80, H);
     },
   },
@@ -313,6 +313,65 @@ export const BRUNSEAST = {
       p.r('#2a1a10', dx - 1, top + 36, 14, H - top - 37); p.r('#3a4a5a', dx, top + 37, 12, H - top - 38); p.r('#a8d0e4', dx + 2, top + 39, 8, 8);
       if (v === 'milkbar') { p.r('#f4f4f0', dx + 3, top + 49, 6, 3); p.text('OPEN', dx - 1, top + 54, '#f0d040'); }
       outline(p.ctx, 0, 0, 64, H);
+    },
+  },
+
+  // The milk bar, double the length of the shops beside it (the owner's
+  // note): the same graffitied parapet and blue awning, two windows of
+  // drinks and lollies, the POTATO CAKES board and the door on the right.
+  nichmilkbar: {
+    foot: [8, 3], tex: [128, 80], variants: ['long'], lined: true,
+    paint(p) {
+      const H = 80, top = 14, W = 128;
+      p.shadow(64, H - 1, 126);
+      bricks(p, 1, top, W - 2, 22, '#a8503a', 7);
+      for (const [x, w] of [[4, 12], [30, 16], [62, 20], [96, 14]]) { p.r('#a8503a', x, top - 4, w, 4); p.r('#c8705a', x, top - 4, w, 1); }
+      tags(p, 2, top + 2, W - 6, 18, 35);
+      p.r('#f4f4f0', 74, 0, 34, 14); p.text('ICECREAM', 75, 4, '#2f6ab8'); p.r('#c8302a', 76, 10, 30, 2); p.r('#8a8e96', 90, 14, 2, 2);   // the ice cream sign up top
+      p.r(shade('#2f6ab8', -0.3), 0, top + 22, W, 12); p.r('#2f6ab8', 0, top + 23, W, 9); p.r('#c8302a', 0, top + 32, W, 2);
+      centred(p, 'TAKE AWAY & MILK BAR', W / 2, top + 25, '#f4f4f0');
+      p.r('#e8e4dc', 1, top + 34, W - 2, H - top - 35);
+      for (const x0 of [4, 46]) { p.r('#2a2e33', x0, top + 37, 38, H - top - 41); p.r('#a8d0e4', x0 + 1, top + 38, 36, H - top - 43); }
+      p.r('#c8302a', 7, top + 40, 14, 6); p.text('COLD', 8, top + 41, '#f4f4f0');
+      for (let i = 0; i < 8; i++) p.r(['#e8c040', '#3fa38f', '#e77fb8', '#f4f4f0', '#c8302a'][i % 5], 24 + i * 2, H - 16, 1, 8);
+      p.r('#f0d040', 7, H - 12, 12, 6); p.text('ICE', 8, H - 12, '#c8302a');
+      for (let r = 0; r < 2; r++) for (let i = 0; i < 8; i++) p.r(['#e77fb8', '#f0d040', '#3fa38f', '#e8823a'][(i + r) % 4], 49 + i * 4, top + 40 + r * 6, 3, 4);   // lolly jars
+      p.r('#1e1e24', 50, H - 13, 30, 8); p.text('POTATO', 51, H - 12, '#f4f4f0');
+      const dx = 96;
+      p.r('#2a1a10', dx - 1, top + 36, 14, H - top - 37); p.r('#3a4a5a', dx, top + 37, 12, H - top - 38); p.r('#a8d0e4', dx + 2, top + 39, 8, 8);
+      p.r('#f4f4f0', dx + 3, top + 49, 6, 3); p.text('OPEN', dx - 1, top + 54, '#f0d040');
+      p.r('#c8302a', 112, top + 40, 12, 20); p.r('#f4f4f0', 113, top + 42, 10, 3); p.r('#f4f4f0', 113, top + 47, 10, 3); p.r('#f4f4f0', 113, top + 52, 10, 3);   // a drinks fridge by the door
+      outline(p.ctx, 0, 0, W, H);
+    },
+  },
+
+  // 199 Nicholson St, bigger and from the owner's photo: a wide red brick
+  // California bungalow, low terracotta roof, a gable over the front porch
+  // with cream rendered pillars, leadlight windows and a brick chimney.
+  house199: {
+    foot: [7, 4], tex: [112, 100], variants: ['red'], lined: true,
+    paint(p) {
+      const W = 112, H = 100, wall = 46;
+      p.shadow(56, H - 1, 110);
+      bricks(p, 20, 0, 10, 20, '#8a4030', 4); p.r('#6a3020', 19, 0, 12, 2);                          // chimney
+      tileRoof(p, -1, 10, W + 2, 38, '#b8583a', { hipL: true, hipR: true });
+      for (let j = 0; j < 30; j++) { const half = Math.round(j * 0.8); p.r(j % 3 ? '#b8583a' : '#9a4830', 84 - half, 18 + j, half * 2 + 2, 1); }   // the porch gable
+      p.r('#f0e8d8', 70, 42, 30, 6); for (let x = 72; x < 98; x += 4) p.r('#c8b898', x, 42, 1, 6);    // timber battens in the gable
+      bricks(p, 2, wall, W - 4, H - wall - 1, '#9a4a38', 5);
+      p.r('#f4f0e6', 0, wall - 1, W, 2);
+      // the porch: dark recess, rendered pillars on brick bases, the front door
+      p.r('#3a2a22', 64, wall + 4, 42, H - wall - 5);
+      for (const x of [62, 100]) { p.r('#ece4d0', x, wall + 2, 8, 34); p.r('#d8ccb0', x + 6, wall + 2, 2, 34); bricks(p, x - 1, wall + 36, 10, H - wall - 37, '#8a4030', x); }
+      door(p, 80, wall + 12, 12, H - wall - 15, '#6a3a1a', false);
+      p.r('#c8a040', 85, wall + 16, 2, 6); p.r('#a8d0e4', 82, wall + 14, 8, 1);
+      p.text('199', 79, 43, '#6a3a1a');   // on the gable
+      // the big front windows with leadlight across the top
+      for (const x of [8, 34]) {
+        window_(p, x, wall + 10, 22, 30, { curtain: '#f0e8d8' });
+        for (let i = 0; i < 5; i++) p.r(['#c8302a', '#3fa38f', '#f0d040', '#3fa38f', '#c8302a'][i], x + 1 + i * 4, wall + 11, 3, 4);
+      }
+      p.r('#8a4030', 4, wall + 42, 54, 3);                                                         // a brick sill course
+      outline(p.ctx, 0, 0, W, H);
     },
   },
 

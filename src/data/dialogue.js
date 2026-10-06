@@ -118,46 +118,45 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Gaz lobs a snag in bread. Perfect spiral. Energy restored.',
   },
-  marisol: {
-    role: 'Forklift driver',
+  ardi: {
+    role: 'Mechanic. Lives round the corner from the station',
     lines: [
-      ['Just knocked off a ten hour shift. My feet have opinions.'],
-      [
-        'We won our new agreement last month. Proper breaks, a heat policy, and pay that keeps up with rent.',
-        'Turns out when everyone signs up to the union at once, the boss suddenly finds the money.',
-      ],
-      ['Mind the forklifts. They beep for a reason.'],
+      ['Hi neighbour, how are you? Good? Good. Your car making that noise again? No? Lucky.'],
+      ['Hi neighbour, how are you? I just did a timing belt on a Corolla. Two hundred thousand k and still going. Toyotas never die.'],
+      ['Hi neighbour! You hear a squeal when you brake, you come see me. Do not wait. Waiting is how a $90 job becomes a $900 job.'],
+      ['Everyone wants an EV now. Fine. Less oil on my hands. But who fixes the aircon? Still me.'],
+      ['Back home in Surabaya my uncle fixed scooters on the footpath. Now I have a hoist. He thinks I am a king.'],
     ],
     hints: {
-      princess: 'If you are looking for animals, try Allen St. There is a poodle there who thinks she runs Laverton. Honestly, she might.',
+      princess: 'Looking for animals? Try Allen St. There is a poodle there who thinks she runs Laverton. Honestly, she might.',
     },
   },
-  commuter: {
-    role: 'Waiting for the Werribee line',
+  jack: {
+    role: 'Jack McPherson. Paddy\'s cousin. Waiting for the Werribee line',
     lines: [
+      ['G\'day! You\'re with Paddy, aren\'t you? My cousin. Tell him he still owes me twenty bucks from the footy tipping.'],
+      [
+        'See that green myki machine? Tap on there and you can go to any station you\'ve been to before. Saves the legs.',
+      ],
+      ['How\'s Paddy going as Mayor? Still wearing the big gold chain to the shops? Tell him I said hi. And to get a haircut.'],
       ['Train is delayed. Again. I have read the whole timetable twice for fun.'],
-      [
-        'Tip: tap your myki at the green reader and you can catch a train to any station you have already visited.',
-      ],
-      [
-        'Replacement buses this weekend. Replacement buses every weekend. I have made friends with the bus driver.',
-      ],
+      ['Replacement buses this weekend. Replacement buses every weekend. I have made friends with the bus driver.'],
     ],
   },
   pearman: {
-    role: 'Barista',
+    role: 'Sydney Rd regular. Golf tragic. North Melbourne for life',
     lines: [
-      ['Oat flat white? We also do a pour-over that tastes like a bushfire, in a good way.'],
-      ['My rent went up again. I make the coffee for the guy who owns my flat. He tips in exposure.'],
-      [
-        'If you see a tabby in the lane, that is Salami. She gets the milk froth on Fridays. Do not tell my manager.',
-      ],
+      ['Ever wonder why they call me Pearman? Year 7. A dare. A pear. Down the pants. Kept it there all of fourth period. Legend was born.'],
+      ['Shot a 94 at Royal Park on Sunday. Would have been an 89 but a magpie took my ball. Fair enough, it was nesting season.'],
+      ['North Melbourne. Yes, still. Somebody has to. The Kangas will be back. Any decade now.'],
+      ['If you find a golf ball, it\'s mine. Even if it isn\'t. Especially if it isn\'t.'],
+      ['I might duck up to the Edinburgh Castle for one. Just the one. Okay, two.'],
     ],
     hints: {
       salami: 'There is a stripy menace in the bluestone lane behind the terraces. Watch your ankles.',
       spooky: 'Night shift staff say there is a black bunny in the park that turns see-through. I think they need more sleep.',
     },
-    giftLine: 'We have a spare almond croissant. Take it before I eat it.',
+    giftLine: 'Here, have a pear. Fresh. Not THAT pear. A new one. Different pear.',
   },
   jordan: {
     role: 'Plays bass in a band. Busks outside the op shop',
@@ -238,6 +237,12 @@ export const PEOPLE = {
       2: ['Chris: "The garden belongs to everyone who turns up. That\'s the whole idea."'],
       4: ['Chris shows you the seed library. People leave seeds, take seeds. Nobody owns it.'],
       6: ['Chris: "Working bee on Saturday. Bring the twins. Bring the dogs. Bring the ghost bunny."'],
+      10: [
+        'Chris looks around, then leans in. "Can I tell you a secret? The lake\'s secret."',
+        '"There\'s an old duck called Emilio. Older than the steam engine. Wears a little top hat. Nobody believes me."',
+        '"Get a fishing rod, and instead of bait, cast in a bit of stale bread. James sells it at the milk bar. Then wait."',
+        '"Don\'t tell anyone. He\'s very private. Very distinguished."',
+      ],
     },
     helpsInBattle: 'Chris chucks a handful of compost. Rich, warm, and devastating.',
   },
@@ -327,7 +332,7 @@ export const PEOPLE = {
     hints: {
       spooky: 'Spooky goes see-through when she is shy. Come back after dark, when she is solid. And bring a carrot. She is not made of stone.',
     },
-    giftLine: 'Have a carrot. I carry them everywhere now. My bag is basically a crisper.',
+    giftLine: 'Here, a manoush from the Lebanese bakery up the road. Za\'atar. I bought two. I always buy two.',
     heartScenes: {
       2: [
         'Slinks: "Public service. Policy. I write briefs that ministers do not read." She pours a glass. "Spooky reads them. She has notes."',
@@ -363,6 +368,9 @@ export const PEOPLE = {
       ],
       ['Corni and I run the creek trail most mornings. I think about muscle loss. He thinks about Guinness.'],
       ['Third year of the PhD. My supervisor says I am nearly done. My supervisor has said that for a year.'],
+      ['Just did 12k along the Merri Creek before breakfast. Corni did 5 and then found a bakery. We each have our strengths.'],
+      ['Just got back from Bangkok! Pad kra pao for breakfast every day. Now everything in Brunswick tastes a little shy.'],
+      ['My brother Jules is doing really well, by the way. New job, new flat, new haircut. He seems happy. It\'s nice.'],
     ],
     hints: {
       salami: 'The tabby on Donald St? That is Rose\'s. Rose will want a battle. Rose always wants a battle.',
@@ -386,9 +394,7 @@ export const PEOPLE = {
       [
         'Guten Tag! You want a Guinness? It is always a good time for a Guinness. Except before the run. After the run.',
       ],
-      [
-        'The mullet is a commitment. Business at the front, Sydney Rd at the back. In Germany they did not understand.',
-      ],
+      ['Mem and I go up to the Edinburgh Castle most nights. Seven o\'clock. One Guinness. Then another. Then home.'],
       ['Mem and I run along the Merri Creek. She talks about mouse muscles. I look for the pub at the end.'],
       [
         'In Germany the trams have timetables you can trust. Here the 19 is more of a suggestion. I love it anyway.',
@@ -760,6 +766,39 @@ export const PEOPLE = {
       ['If the motion helps actual residents, I\'m in. If it\'s about the font on the agenda, I\'m going home.'],
     ],
   },
+  ramon: {
+    role: 'Karaoke king of Lohse St Reserve. Dad of Migs and Bea',
+    lines: [
+      ['Kumusta, neighbour! You sing? Everybody sings. Come, the mic is warm!'],
+      ['My wife says I sing like Martin Nievera. My kids say I sing like a car alarm. Both are true.'],
+      ['Every Sunday at Tita Baby\'s house we sing until the neighbours join in. Here, the magpies join in.'],
+    ],
+  },
+  liza: {
+    role: 'Tita Liza. Nurse at Werribee Mercy, karaoke legend on her day off',
+    lines: [
+      ['Kain na! Have some pancit, then you sing. That is the rule.'],
+      ['Twelve-hour shift yesterday. Today, karaoke. You need balance, anak.'],
+      ['Ramon picks the same song every time. I let him. It is love.'],
+    ],
+  },
+  migs: {
+    role: 'Migs. Six and three quarters. Plays air guitar',
+    lines: [['I can do the high note! Listen! ...That was the high note.'], ['Papa says if I practise I can be on The Voice. Or Bunnings. Same thing.']],
+  },
+  bea: {
+    role: 'Bea. Four. Backup dancer',
+    lines: [['I am DANCING. Do you want to dance? You are dancing now.'], ['Mama sings the best. Papa sings the LOUDEST.']],
+  },
+  narelle: {
+    role: 'Civic centre reception. Knows where everything is',
+    lines: [
+      ['Welcome to Hobsons Bay City Council. Take a number. There\'s nobody else here, but take a number.'],
+      ['Council meets Tuesdays at 6:30pm, through the doors on the left. The biscuits go by 6:45.'],
+      ['The noticeboard is for motions. Chip in and they go to the next meeting. Very democratic. Very slow.'],
+      ['Cr Bentleigh has complained about the pot plants again. They are plastic. She says they look "smug".'],
+    ],
+  },
   rayna: {
     role: 'Councillor. Paddy\'s ally',
     lines: [
@@ -778,12 +817,16 @@ export const PEOPLE = {
     ],
     helpsInBattle: 'Deanna plants a tree right in front of the foe. It is very confused.',
   },
-  wren: {
-    role: 'Bookseller at Brunswick Bound, Sydney Rd',
+  shannon: {
+    role: 'Bookseller at Brunswick Bound, Sydney Rd. Knows a fact about everything',
     lines: [
+      ['Fun fact: Australia was one of the first places in the world where women could vote AND stand for parliament. 1902. South Australia even earlier.'],
+      ['Fun fact: compulsory voting means about 90 per cent of us vote. In the US it\'s more like two thirds. And their elections are on a Tuesday. A Tuesday!'],
+      ['Fun fact: the US Senate filibuster record is over 24 hours. Strom Thurmond, 1957, against civil rights. He had a bucket. Don\'t ask about the bucket.'],
+      ['Fun fact: the Australian ballot, the secret one, was invented in Victoria in 1856. The Americans literally call it "the Australian ballot". You\'re welcome, world.'],
+      ['Fun fact: our upper house uses preferences, so a senator can get in on two per cent of the primary vote. Ask Rose about it. Actually, don\'t. She\'ll tell you for an hour.'],
+      ['Fun fact: in 1975 the Governor-General sacked the Prime Minister. Nobody has ever really calmed down about it. Least of all my dad.'],
       ['Welcome to Brunswick Bound! Classics up the back, new releases on the tables, picture books at toddler height.'],
-      ['Rose from Donald St comes in every Saturday and leaves with a stack taller than Salami.'],
-      ['I read a book a day. Mostly on the 19 tram. It is the only quiet place in Brunswick.'],
       ['Buying a present? Monkey Grip for a Melbourne person. Cloudstreet for a crier. Fourth Wing for anyone who likes dragons.'],
     ],
   },
@@ -806,13 +849,14 @@ export const PEOPLE = {
       ['Your mate from the units on Plenty Rd? Mango Ice. I know everyone by flavour. It is a gift and a curse.'],
     ],
   },
-  sal: {
-    role: 'Sells furniture at Franco Cozzo, Footscray',
+  franco: {
+    role: 'Franco Cozzo himself, Footscray',
     lines: [
-      ['Footscray! Brunswick! Come on down! Megalo sale! Very cheap price! You will be very happy!'],
-      ['This couch? Imported. From the warehouse. Out the back. Still counts.'],
+      ['Footscray! Brunswick! Come on down! Megalo sale! Megalo! Very cheap price! You will be very happy!'],
+      ['This couch? Hand carved. Italian. Very beautiful. Your nonna will cry. In a good way.'],
       ['The banana couch. It is not a couch, it is a lifestyle. Your back will thank you. Your guests will stare.'],
       ['Leather, my friend. Real leather. In summer it sticks to your legs. That is how you know it is real.'],
+      ['Grazie, grazie! You walk past, you look, you come back. Everybody comes back to Franco.'],
     ],
   },
   // ---- Carlton and the city
@@ -1096,46 +1140,118 @@ export const PEOPLE = {
     ],
     giftLine: 'Strawberries, a bit squashed. Still sweet. Like me.',
   },
-  macca: {
-    role: 'Runs the Edinburgh Castle bottle shop',
+  ward: {
+    role: 'Runs the Edinburgh Castle bottle shop. Betty\'s partner. Knows his beer',
     lines: [
-      ['G\'day. Beers in the fridges, wine on the racks, goon down the bottom where it belongs.'],
-      ['Corni from Hope St comes in every Friday. Guinness. Always Guinness. I keep a slab aside.'],
-      ['Buying for a mate? Good on ya. Everyone\'s got a favourite. Ask around.'],
-      [
-        'Slinks from the public service bought the Penfolds again. Said it was a "Senate Estimates week". Fair enough.',
-      ],
+      ['VB? No. Put it down. Try this: a hazy pale from a garage in Thornbury. Three people brew it. Two of them are twins.'],
+      ['This week it\'s sours. A raspberry gose from Ballarat. It tastes like a picnic that got a bit wild.'],
+      ['Wine people are coming round to orange wine. Beer people are coming round to anything with a cartoon on the can.'],
+      ['Mountain Goat? Classic. But have you tried their small batch? No. Nobody has. That\'s the point.'],
+      ['Betty sends me to work with leftovers every day. The whole of Sydney Rd knows when it\'s lasagne Monday.'],
     ],
     heartScenes: {
-      3: [
-        'Macca: "Thirty years behind this counter. Seen Brunswick go from sheds to sourdough. The Guinness drinkers never change."',
-      ],
-      5: [
-        'Macca slips you a can of something from a tiny brewery in Coburg. "On the house. Don\'t tell the boss. I\'m the boss."',
-      ],
+      2: ['Ward: "I used to run a pet shop, you know. I still miss the animals. That\'s why I say hello to everyone\'s dog. Every single one."'],
+      4: ['Ward slips you a can with a hand-drawn label. "Coburg nano-brewery. Only forty cans exist. Thirty-nine now."'],
+      6: ['Ward: "Betty and I have been together nineteen years. She cooks, I bring the beer. It\'s a good system."'],
     },
-    helpsInBattle: 'Macca rolls a keg out the side door. It thunders past the foe, who dives out of the way.',
+    helpsInBattle: 'Ward rolls a keg out the side door. It thunders past the foe, who dives out of the way.',
   },
-  ed: {
+  romey: {
     role: 'Runs The Leash You Can Do, Hope St',
     lines: [
       ['Welcome to The Leash You Can Do! Treats, gear, and a goldfish called Kevin who is not for sale.'],
-      [
-        'Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.',
-      ],
-      [
-        'Mem and Corni pop in most days. Corni always asks if we sell dog treats shaped like pretzels. We do not. Yet.',
-      ],
-      ['Rent on this place went up again. Kevin and I are thinking of moving into the aquarium.'],
+      ['Free Palestine. I\'ll keep saying it. Every bag that goes out of here has a little watermelon sticker on it now.'],
+      ['My dad\'s got a farm out near Ballarat. Sheep, two dogs, one very rude goose. I learned everything about animals from that goose.'],
+      ['My boyfriend Bryan works at the Ballarat Courier. Last week he put his work shirts in with the bleach. Half his wardrobe is now "vintage". He wore it to work.'],
+      ['Bryan got in trouble at the Courier again. He ran a photo of a prize-winning pumpkin. Upside down. On the front page.'],
+      ['Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.'],
     ],
     heartScenes: {
-      2: ['Ed: "Twenty years selling leads. I can tell what a dog is like by how its human picks a collar."'],
-      4: ['Ed polishes his glasses, slowly. "You treat those pets right. I can tell. Have a sample." He winks.'],
-      6: [
-        'Ed: "If I ever retire, the shop goes to someone who cares. Not a chain. Someone like you." He means it.',
-      ],
+      2: ['Romey: "Dad says you can tell a lot about a person by how their dog looks at them. Yours look at you like you\'re the sun."'],
+      4: ['Romey: "Bryan tried to make me dinner. He set off the smoke alarm, then the neighbour\'s, then the one at the servo. Three alarms. A personal best."'],
+      6: ['Romey: "If I ever get my own place out at Dad\'s, there\'ll be room for every animal nobody wants. You\'ll visit. That\'s an order."'],
     },
-    helpsInBattle: 'Ed slides over a free sample from the counter jar. "Shh."',
+    helpsInBattle: 'Romey slides over a free sample from the counter jar. "Shh."',
+  },
+  sharma: {
+    role: 'Palm reader, Preston Market. Gives readings by the deli hall',
+    lines: [
+      ['Your palm, please. Ah. A long life line. A short attention span. And a very strong craving for borek.'],
+      ['I see a journey. Possibly on the 86 tram. Possibly delayed. The lines are never clear about the 86.'],
+      ['Palm reading is an ancient art. Also, ten dollars. Card is fine. The spirits accept tap.'],
+    ],
+    battle: {
+      challenge: ['Mr Sharma takes your hand and gasps. "I see... a battle! Right now! With me!"', '"And if you lose, the reading costs one hundred dollars. The spirits are very clear about that."'],
+      ask: 'Battle Mr Sharma?', yes: 'Show me my future', no: 'Close my hand',
+      win: ['"I did not see that coming. Which is, professionally, embarrassing."', '"No charge today. Please do not leave a review."'],
+      lose: ['"As foretold! One hundred dollars, please. The spirits also accept tap."'],
+      again: ['"Back so soon? I knew you would be. I am, after all, a professional."'],
+    },
+  },
+  crazyjeff: {
+    role: 'President of the Brunswick Bowls Club. Has never once been called "Jeff"',
+    lines: [
+      ['They call me Crazy Jeff because in 1987 I bowled barefoot in a hailstorm. And won. And then did it again.'],
+      ['The jack is the little white ball. Get closer than the other bloke. That\'s it. That\'s the whole game. Fifty years and it never gets old.'],
+      ['Barefoot bowls Friday nights. Young people come for the cheap jugs, stay for the glory.'],
+    ],
+    battle: {
+      challenge: ['Crazy Jeff cracks his knuckles. "You\'ve got the look of a bowler. Let\'s see if you\'ve got the weight."'],
+      ask: 'Battle Crazy Jeff?', yes: 'Roll up', no: 'Maybe on Friday',
+      win: ['"Ha! Toucher! Lovely weight. You can have a membership. Pay the treasurer. She\'s terrifying."'],
+      lose: ['"Short again! You\'ll get there. Bend the knees."'],
+      again: ['"Back for another end? Good on ya."'],
+    },
+  },
+  bowler1: { role: 'Bowls every day. Has opinions on the green', lines: [['Green\'s running fast today. Too fast. Crazy Jeff had it shaved. Don\'t tell him I said.'], ['Forty years at this club. Seen four presidents. Jeff\'s the only one who\'s bowled in a hailstorm.']] },
+  bowler2: { role: 'Bowls every day. Mostly for the afternoon tea', lines: [['I don\'t come for the bowls. I come for the scones at three o\'clock. The bowls is just what happens between.'], ['Mind the ditch. I fell in it in 2003 and they still bring it up.']] },
+  ghost: {
+    role: 'Haunts Reservoir Station after dark',
+    lines: [
+      ['Oooooo. I have been waiting for the last train since 1987. Is it here yet? No? Oooooo.'],
+      ['They put the trains up on the skyrail. Do you know how hard it is to haunt a skyrail? Very windy.'],
+      ['My dog and cat came with me. Into the afterlife. They are very loyal. And very see-through.'],
+    ],
+    battle: {
+      challenge: ['A pale figure drifts out from behind the pillars. "Oooooo. You can see me? Then you can battle me."'],
+      ask: 'Battle the ghost?', yes: 'Bring it', no: 'Run for the train',
+      win: ['"Oooo... well played. You may pass. The next train is in... forever."'],
+      lose: ['"Ooooo! The ghost wins! Again! I have a lot of practice."'],
+      again: ['"Back again after dark? Ooooo. Brave."'],
+    },
+  },
+  fairy: {
+    role: 'A real fairy. Only visits Coburg Station every few days',
+    lines: [
+      ['Oh! You can see me? Most people only see a pigeon.'],
+      ['I come down to Coburg every few days for the cannoli. Don\'t tell the other fairies.'],
+    ],
+  },
+  bencarroll: {
+    role: 'Premier of Victoria. Allegedly',
+    lines: [
+      ['I\'m not blocking the city. I\'m activating a temporary pause on pedestrian access. Press release went out at 4:59 on a Friday.'],
+      ['Kinder? Rest assured, it\'s a priority. It\'s in the forward estimates. Way, way forward. Past the horizon, basically.'],
+      ['The Suburban Rail Loop is fully funded. Until about 2050. Don\'t look at the cost. Look at the hi-vis. Isn\'t it bright?'],
+      ['Rent too high? Have you tried owning a house instead? I have. Several times. Highly recommend it.'],
+      ['The western suburbs? We love you. Every four years. Like clockwork.'],
+      ['I\'ll take that on notice. I\'ll get back to you. I won\'t.'],
+    ],
+    battle: {
+      challenge: [
+        'The Premier looks at you like you\'re a bad poll. "Ah. Constituents. I\'ve been briefed on you. Very briefly."',
+        '"Nobody gets into the city today. Not without a meeting with my office. The next opening is March. Next March. Probably."',
+        '"Of course, you could always try to beat me. Many have. Well. None have. I have a very good media unit."',
+      ],
+      ask: 'Battle the Premier?', yes: 'Hold him to account', no: 'Write a strongly worded letter',
+      win: [
+        'The Premier\'s smile flickers. "SYSTEM... ERROR. ANNOUNCEABLE NOT... FOUND."',
+        'His face slides off to show a tangle of wires and a laminated card of talking points. The Premier was a robot all along!',
+        'The police line packs up quietly. The way into the city is open.',
+      ],
+      lose: ['"That\'ll be two hundred dollars. Call it a congestion levy. On you, specifically."', '"Now off you go. And remember: we\'re getting on with it."'],
+      again: ['"You again. I\'ve had my face reattached and the talking points updated. Let\'s go."'],
+    },
   },
   ...SH_PEOPLE,
 };
@@ -1318,7 +1434,47 @@ export const PET_TEXT = {
   },
 };
 
+PET_TEXT.ziggy = {
+  bio: 'A tiny black and white cat, very fast. He was Mads\'s cat. He grew up with dogs and picked up a bark along the way.',
+  clue: 'Something small and black and white darts along the bluestone lane behind the Carlton terraces.',
+  funFact: 'Ziggy grew up with dogs. He knows one bark, and he uses it.',
+  favouriteSpot: 'The end of the lane, in the sun, where Mads used to call him in.',
+  lines: {
+    0: ['Ziggy watches you from the end of the lane, tail up. He might let you closer. He might not.'],
+    3: ['Ziggy winds round your ankles, then barks. One bark. He looks very pleased with himself.'],
+    6: ['Ziggy curls up in your lap. He is tiny, warm and purring like a little engine.'],
+    9: ['Ziggy sleeps on your pillow tonight, just like he used to with Mads. You keep very still so you don\'t wake him.'],
+  },
+  night: ['Ziggy\'s eyes shine in the dark. He has been out patrolling.'],
+  rain: ['Ziggy is not going out in that. He is watching the rain from the window sill.'],
+  asleep: ['Ziggy is asleep in a sunny patch, paws tucked in.'],
+};
+PET_TEXT.emilio = {
+  bio: 'A big old duck in a little top hat. Nobody knows how old he is, or where the hat came from. He will not say.',
+  clue: 'Chris says the old ducks at Edwardes Lake know a secret. Something about bread.',
+  funFact: 'Emilio has lived at Edwardes Lake longer than the steam engine has been in Lake Park.',
+  favouriteSpot: 'The paddling pool, if you have one. Otherwise, the bath. Otherwise, a puddle.',
+  lines: {
+    0: ['Emilio looks at you over the brim of his hat. "Quack," he says, gravely.'],
+    3: ['Emilio waddles a slow lap of you, then tips his hat. You have been approved.'],
+    6: ['Emilio settles down next to you and quacks softly, like he is telling you a long story about the lake.'],
+    9: ['Emilio lets you hold his top hat. Just for a moment. It is the greatest honour a duck can give.'],
+  },
+  night: ['Emilio is asleep with his head tucked under his wing. The hat stays on.'],
+  rain: ['Emilio is delighted. Finally, proper weather.'],
+  asleep: ['Emilio is asleep standing on one leg. His hat has slipped over one eye.'],
+};
+
 export const FOE_TEXT = {
+  lifeline: { appear: 'A long, curling Life Line peels off Mr Sharma\'s palm!', leave: 'curls back into his hand. A long life, but a short battle.' },
+  heartline: { appear: 'A Heart Line flutters up, all swoops and sighs!', leave: 'goes back to the palm to think about someone special.' },
+  crystalball: { appear: 'A crystal ball rolls out from under the table, glowing!', leave: 'clouds over. Reply hazy. Try again later.' },
+  jack_: { appear: 'The jack, the little white bowl, rolls across the green on its own!', leave: 'rolls into the ditch. Dead jack.' },
+  ghostdog: { appear: 'A see-through dog bounds through the ticket barrier!', leave: 'fades into the night with a ghostly wag.' },
+  ghostcat: { appear: 'A ghost cat drops down from the skyrail, glowing faintly!', leave: 'walks through a wall, very smug.' },
+  staffer: { appear: 'A media staffer bursts out of a side door, phone in each hand!', leave: 'gets a call from the Premier\'s office and sprints off.' },
+  juniormp: { appear: 'A junior MP shuffles out, clutching a list of approved answers!', leave: 'is sent to the backbench to think about what it did.' },
+  robocarroll: { appear: 'The Premier himself steps up. His eyes flash a little bit blue.', leave: 'powers down mid-sentence. It was still on message.' },
   bag: {
     appear: 'A plastic bag blows in on the wind!',
     leave: 'blows away over the rooftops.',

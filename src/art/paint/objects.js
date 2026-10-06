@@ -348,10 +348,10 @@ const BASE = {
     },
   },
   shop: {
-    foot: [4, 3], tex: [64, 56], variants: ['milk bar', 'records', 'bakery', 'pho', 'books', 'curry', 'pizza', 'signs'],
+    foot: [4, 3], tex: [64, 56], variants: ['milk bar', 'records', 'bakery', 'pho', 'books', 'curry', 'pizza', 'signs', 'banh mi'],
     paint(p, v) {
       const { sx, sy, W, H } = frame(this);
-      const col = { 'milk bar': ['#e8dcc2', '#2f6aa3'], records: ['#3a3a48', '#e77fb8'], bakery: ['#f0d9a8', '#a0582a'], pho: ['#c8443a', '#f5d63a'], books: ['#e8dcc2', '#3f6a4a'], curry: ['#f4efe0', '#c8643a'], pizza: ['#f4efe0', '#3f8a3e'], signs: ['#e8ecef', '#2a5aa8'] }[v];
+      const col = { 'milk bar': ['#e8dcc2', '#2f6aa3'], records: ['#3a3a48', '#e77fb8'], bakery: ['#f0d9a8', '#a0582a'], pho: ['#c8443a', '#f5d63a'], books: ['#e8dcc2', '#3f6a4a'], curry: ['#f4efe0', '#c8643a'], pizza: ['#f4efe0', '#3f8a3e'], signs: ['#e8ecef', '#2a5aa8'], 'banh mi': ['#f5d63a', '#c8302a'] }[v];
       p.r('rgba(30,50,20,.22)', sx + 2, sy + H - 2, W - 2, 4);
       p.r(col[0], sx, sy + 6, W, H - 6);
       p.r('#4a4e56', sx, sy - 2, W, 9); p.r('#5d616a', sx, sy - 2, W, 2);
@@ -363,6 +363,7 @@ const BASE = {
       if (v === 'records') { [[7, 30], [17, 30], [27, 30]].forEach(([x, y]) => { p.blob(sx + x + 3, sy + y + 4, 4, '#1e1e24'); p.px('#e77fb8', sx + x + 3, sy + y + 4); }); }
       if (v === 'bakery') { [[7, 38], [16, 38], [25, 38]].forEach(([x, y]) => { p.r('#c8823a', sx + x, sy + y, 7, 4); p.r('#e8b060', sx + x + 1, sy + y, 5, 1); }); }
       if (v === 'pho') { p.blob(sx + 18, sy + 37, 6, '#f4efe0'); p.r('#c8823a', sx + 13, sy + 35, 10, 2); p.r('#3a2412', sx + 20, sy + 29, 1, 7); }
+      if (v === 'banh mi') { [[6, 36], [16, 33], [26, 37]].forEach(([x, y]) => { p.r('#c8823a', sx + x, sy + y, 9, 4); p.r('#e8b060', sx + x + 1, sy + y, 7, 1); p.r('#5aa83a', sx + x + 2, sy + y + 3, 5, 1); }); }
       if (v === 'books') { for (let i = 0; i < 7; i++) p.r(['#c8443a', '#2f6aa3', '#e8c030', '#3f8a4e'][i % 4], sx + 6 + i * 4, sy + 33, 3, 10); }
       p.r('#3d2a1a', sx + 42, sy + 26, 14, 22); p.r('#7b4a24', sx + 43, sy + 27, 12, 21); p.r('#a8d4e8', sx + 45, sy + 29, 8, 8); p.r('#f0c040', sx + 53, sy + 39, 1, 2);
     },
@@ -415,6 +416,42 @@ const BASE = {
     },
   },
 
+  // Bunnings Warehouse, Altona North, big (the owner's note): a long grey
+  // roof running back, dark green tilt-up walls, the big red sign, the
+  // entry under its canopy, the timber yard doors and the garden centre
+  // under shade cloth.
+  bunningsbig: {
+    foot: [11, 4], tex: [180, 124], variants: ['altona'],
+    paint(p) {
+      const W = 180, H = 124, wall = 50, green = '#1f4a32';
+      p.r('rgba(30,50,20,.22)', 2, H - 2, W - 2, 4);
+      // the roof running back, ribbed, with skylights and vents
+      p.r('#6a6f76', 2, 0, W - 4, wall - 6); for (let x = 4; x < W - 4; x += 4) p.r('#5e6369', x, 1, 1, wall - 8);
+      p.r('#82878d', 2, 0, W - 4, 2);
+      for (const [x, y] of [[20, 8], [60, 14], [100, 8], [140, 14]]) { p.r('#a8c8d8', x, y, 18, 6); p.r('#c8dce4', x, y, 18, 1); }
+      for (const x of [40, 120]) { p.r('#9aa0a6', x, 26, 8, 8); p.r('#b8bcc0', x, 26, 8, 2); }
+      p.r('#4a4f56', 0, wall - 8, W, 8); p.r('#5b6066', 0, wall - 8, W, 2);
+      // the walls
+      p.r(green, 0, wall, W, H - wall - 1); for (let x = 0; x < W; x += 18) p.r('#173a26', x, wall, 1, H - wall - 1);
+      // the sign
+      p.r('#c8302a', 26, wall + 3, 128, 22); p.r('#e04a3a', 26, wall + 3, 128, 1); p.r('#9a2420', 26, wall + 24, 128, 1);
+      p.r('#f4f4f0', 32, wall + 6, 14, 10); p.r('#c8302a', 35, wall + 9, 8, 7); p.r('#f4f4f0', 38, wall + 3, 2, 4);   // the roof logo
+      p.ctx.save(); p.ctx.translate(52, wall + 8); p.ctx.scale(2, 2); p.text('BUNNINGS', 0, 0, '#ffffff'); p.ctx.restore();
+      p.r(green, 58, wall + 27, 64, 8); p.text('WAREHOUSE', 72, wall + 28, '#f4f4f0');
+      // the timber yard roller door on the left
+      p.r('#2a2e33', 6, wall + 36, 40, H - wall - 37); p.r('#c3c8cb', 7, wall + 37, 38, H - wall - 38); for (let y = 0; y < H - wall - 38; y += 3) p.r('#a9afb2', 7, wall + 38 + y, 38, 1);
+      p.r('#f0d040', 6, wall + 29, 40, 7); p.text('TIMBER', 14, wall + 30, '#1f4a32');
+      // the entry: glass doors under a red canopy, trolleys beside
+      p.r('#c8302a', 58, wall + 38, 52, 5); p.r('#e04a3a', 58, wall + 38, 52, 1);
+      p.r('#2a2e33', 64, wall + 43, 40, H - wall - 44); p.r('#a8d4e8', 65, wall + 44, 38, H - wall - 45); p.r('#2a2e33', 83, wall + 44, 2, H - wall - 45);
+      for (let i = 0; i < 4; i++) { p.r('#9aa0a8', 50 + i * 2, H - 12, 6, 8); p.r('#c8302a', 50 + i * 2, H - 13, 6, 2); }
+      // the garden centre on the right, under green shade cloth, plants out the front
+      p.r('#2a2e33', 118, wall + 30, 58, H - wall - 31); p.r('#3a6a3a', 119, wall + 31, 56, H - wall - 32);
+      for (let x = 120; x < 176; x += 3) p.r('#4a7a4a', x, wall + 31, 1, H - wall - 32);
+      p.r('#f4f4f0', 128, wall + 34, 40, 7); p.text('GARDEN', 136, wall + 35, green);
+      for (let i = 0; i < 9; i++) { p.blob(124 + i * 6, H - 12, 3, ['#3f8a3e', '#57a84a', '#c8443a', '#e77fb8', '#2f7a37', '#f5d63a'][i % 6]); p.r('#8a4a2a', 122 + i * 6, H - 9, 5, 5); }
+    },
+  },
   warehouse: {
     foot: [8, 4], tex: [128, 72], variants: ['hardware', 'bunnings'],
     paint(p, v) {

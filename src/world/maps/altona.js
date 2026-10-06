@@ -13,20 +13,23 @@ export function buildAltona() {
 
   // North side: factories and the container yard
   b.fill(0, 0, 48, 2, 'g');
+  // the buildings run a long way back: rooftops behind each one
+  b.fill(1, 0, 8, 4, 'R'); b.fill(40, 0, 6, 6, 'R');
   b.put('factory', 1, 6, { v: 'tin' });
   // Bunnings Warehouse: doors into the store (Olly is inside), and Gaz's
   // sausage sizzle out the front.
-  b.put('warehouse', 10, 4, { v: 'bunnings' });
-  b.exit(13, 8, 2, 1, 'bunnings', 'door', 'Bunnings Warehouse');
-  b.put('sizzle', 10, 8);
-  b.npc('gaz', 12, 9, { face: 'up' });
-  b.put('shed', 19, 6, { v: 'grey' });
+  b.fill(11, 0, 11, 1, 'R');
+  b.put('bunningsbig', 11, 4);
+  b.exit(15, 8, 2, 1, 'bunnings', 'door', 'Bunnings Warehouse');
+  b.put('sizzle', 19, 8);
+  b.npc('gaz', 18, 9, { face: 'up' });
+  b.put('skip', 23, 7); b.put('crate', 24, 8, { v: 'blue' }); b.put('crate', 25, 8, { v: 'red' });
   b.fill(26, 2, 12, 7, 'g');
   b.fenceH(26, 37, 2, 'metal'); b.fenceV(26, 3, 8, 'metal', [7]); b.fenceV(37, 3, 8, 'metal', [7]);
   [[27, 3, 'red'], [31, 3, 'blue'], [27, 5, 'green'], [33, 5, 'orange'], [29, 7, 'blue']].forEach(([x, y, v]) => b.put('container', x, y, { v }));
   b.put('trolley', 35, 7);
   b.put('shed', 40, 6, { v: 'blue' });
-  furnish(b, 9, { skip: [1, 9, 12, 14, 26, 37], seed: 3 });
+  furnish(b, 9, { skip: [1, 9, 12, 15, 16, 17, 18, 26, 37], seed: 3 });
 
   // South: truck parking, the creek, a weedy lot with billboards
   b.fill(0, 13, 18, 5, 'P');
@@ -61,6 +64,6 @@ export function buildAltona() {
   b.exit(9, 0, 1, 1, 'civic', 'south', 'Civic Parade, Altona');
   b.exit(0, 9, 1, 1, 'station', 'east', 'Laverton Station');
   b.exit(47, 12, 1, 1, 'footscray', 'west', 'Footscray');
-  b.entry('bunnings', 14, 9, 'up').entry('north', 9, 2, 'down').entry('west', 1, 9, 'right').entry('east', 46, 12, 'left');
+  b.entry('bunnings', 15, 9, 'down').entry('north', 9, 2, 'down').entry('west', 1, 9, 'right').entry('east', 46, 12, 'left');
   return b.finish();
 }

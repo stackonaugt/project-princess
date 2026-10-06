@@ -159,7 +159,18 @@ export const ZONES = {
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'holmes', 'fleming', 'bowls', 'eblygon', 'ebnicholson', 'ebmilkbar', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'bourke', 'laneways', 'flinders'];
+// Tram stops you can catch a tram from (the tramstop object in each zone).
+// Tapping your myki at a stop takes you to any stop in a zone you have visited.
+export const TRAM_STOPS = {
+  flemington: 'Racecourse Rd', sydney: 'Sydney Rd, Brunswick', albion: 'Albion St', coburgsyd: 'Sydney Rd, Coburg',
+  prestonhigh: 'High St, Preston', eblygon: 'Lygon St, Brunswick East', ebnicholson: 'Nicholson St, Brunswick East',
+  lygon: 'Lygon St, Carlton', nicholson: 'Nicholson St, Carlton', bourke: 'Bourke St', swanston: 'Swanston St', flinders: 'Flinders St',
+};
+
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'station', 'civic', 'civiccentre', 'chamber', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'holmes', 'fleming', 'bowls', 'eblygon', 'ebnicholson', 'ebmilkbar', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'bourke', 'laneways', 'flinders'];
+
+// Zones with tram stops (the Map app marks them once you've been there).
+export const TRAM_ZONES = ['sydney', 'albion', 'flemington', 'holmes', 'eblygon', 'ebnicholson', 'coburgsyd', 'preston', 'prestonhigh', 'lygon', 'nicholson', 'bourke', 'swanston', 'flinders'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;

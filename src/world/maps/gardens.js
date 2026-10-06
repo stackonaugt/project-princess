@@ -65,8 +65,10 @@ export function buildGardens() {
   b.magpies([[12, 24], [50, 31]]);
 
   b.exit(22, 0, 2, 1, 'nicholson', 'gardens', 'Nicholson St');
-  b.exit(40, 45, 2, 1, 'lygon', 'west', 'Lygon St');
-  b.entry('north', 22, 1, 'down').entry('south', 40, 44, 'up');
+  b.exit(40, 45, 2, 1, 'swanston', 'west', 'Swanston St', null, { gate: 'bencarroll' });
+  b.exit(0, 28, 1, 2, 'lygon', 'west', 'Lygon St');
+  b.exit(63, 28, 1, 2, 'bourke', 'west', 'Spring St');
+  b.entry('north', 22, 1, 'down').entry('south', 40, 44, 'up').entry('west', 1, 28, 'right').entry('east', 62, 28, 'left');
   b.border(['oak', 'gum']);
   b.scatter([0, 30, b.w, 16], 0.02, [['bush', 3, ['green', 'rose', 'hydrangea']], ['agapanthus', 2, ['purple', 'white']], ['rock', 1]], { clearance: 1 });
   return b.finish();

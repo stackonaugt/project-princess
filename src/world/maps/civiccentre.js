@@ -23,10 +23,15 @@ export function buildCivicCentre() {
   b.put('tallplant', 1, 3); b.put('tallplant', 24, 13); b.put('tallplant', 17, 13);
   b.put('picture', 12, 1, { v: 'beach', onWall: true }); b.put('picture', 18, 1, { v: 'family', onWall: true });
   b.put('doormat', 13, 14);
+  b.put('plaque', 4, 1, { onWall: true, text: ['COUNCIL CHAMBERS.', 'Hobsons Bay City Council meets here on Tuesdays at 6:30pm. All welcome.'] });
+  // Tables where people sit and eat their lunch
+  b.put('table', 15, 12); b.put('pouf', 14, 12, { v: 'orange' }); b.put('pouf', 16, 12, { v: 'pink' });
+  b.put('table', 20, 13); b.put('pouf', 19, 13, { v: 'pink' }); b.put('pouf', 21, 13, { v: 'orange' });
 
   // Paddy at reception on weekdays; councillors drop in on their days (routines.js)
+  b.npc('narelle', 13, 3, { face: 'down', counter: true });   // behind the reception desk
   b.npc('paddy', 12, 6, { face: 'down', at: 'reception' });
-  b.npc('lesley', 19, 10, { face: 'left', at: 'foyer' });
+  b.npc('lesley', 21, 9, { face: 'right', at: 'foyer', still: true });   // at her booth, lunch on the table
   b.npc('malcolm', 20, 11, { face: 'left', at: 'foyer' });
   b.npc('kirsty', 5, 12, { face: 'right', at: 'foyer' });
   b.npc('dahlia', 16, 7, { face: 'down', at: 'foyer' });

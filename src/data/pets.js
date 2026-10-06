@@ -131,6 +131,27 @@ export const PETS = [
     loves: ['prosciutto', 'chicken', 'tennis'], likes: ['cheese', 'snag', 'sardine', 'egg'], dislikes: ['lemon', 'basil', 'kombucha'],
     stats: { hp: 68, attack: 82, defence: 58, speed: 104, special: 60 },
   },
+  {
+    // Ziggy was Mads's cat. Nobody owns him now: win a play-fight with him
+    // and he comes home with you (challenge: true).
+    id: 'ziggy', name: 'Ziggy', species: 'Black and white cat', type: ['speed', 'street'], sprite: 'kitten',
+    pal: { a: '#1a1a1e', w: '#f4f4f0', e: '#c8e040', n: '#1a1010' },
+    owner: 'Mads', region: 'carlton', zone: 'nicholson', home: [4, 6], range: 2, challenge: true,
+    homeSpot: { zone: 'home', x: 6, y: 6 },
+    behaviour: 'wander', sleeps: [12 * 60, 14 * 60],
+    loves: ['sardine', 'chicken', 'cheese'], likes: ['redfin', 'prosciutto', 'snag'], dislikes: ['lemon', 'chilli'],
+    stats: { hp: 58, attack: 74, defence: 52, speed: 120, special: 64 },
+  },
+  {
+    // Emilio only turns up if you fish Edwardes Lake with bread (see goFishing).
+    id: 'emilio', name: 'Emilio', species: 'Big old duck (top hat)', type: 'water', sprite: 'emilio',
+    pal: { a: '#2a6a3a', l: '#8a6a4a', w: '#e8dcc0', o: '#e8a030', h: '#1e1e22', b: '#c8302a', e: '#1a1010' },
+    owner: 'Nobody (Edwardes Lake)', region: 'reservoir', zone: 'secret', home: [20, 20], range: 2,
+    homeSpot: { zone: 'yard', x: 20, y: 14 },
+    behaviour: 'wander', sleeps: [21 * 60, 26 * 60],
+    loves: ['bread', 'redfin', 'tomato'], likes: ['carrot', 'zucchini', 'strawberry'], dislikes: ['chilli', 'lemon'],
+    stats: { hp: 90, attack: 62, defence: 80, speed: 44, special: 76 },
+  },
 ];
 
 

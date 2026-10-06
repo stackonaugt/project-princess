@@ -2,19 +2,25 @@
 // whenever you walk to another suburb or catch a train.
 
 import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
-import { ZONES, SUBURBS, SUBURB_ORDER, getMap } from '../data/regions.js';
+import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS } from '../data/regions.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
-import { isAt, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
+import { isAt, onDuty, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
-import { MOTIONS, MOTION_ORDER } from '../data/council.js';
+import { MOTIONS, MOTION_ORDER, ALLIES, AGAINST, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
+const COUNCILLORS = ['paddy', ...ALLIES, ...AGAINST, ...Object.keys(SWING)];
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, CH2_RECIPE, CH4 } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
+// What blocks a gated exit until you beat its keeper (`gate` on an exit).
+const GATES = {
+  bencarroll: ['A police officer steps out, arms wide. "Sorry, folks. This way into the city is closed by order of the Premier."', '"He\'s just up at Parliament on Spring St, if you want to take it up with him. Good luck with that."'],
+};
+
 // People you can't invite to the party (Chapter 4).
-const NO_INVITE = ['stranger', 'julie', 'commuter', 'binman', 'hipster', 'golfer'];
+const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
 
 // What you can catch where: [item, weight, junk?]. Bait halves the junk.
 const FISH_TABLES = {
@@ -28,17 +34,19 @@ const FISH_ZONE = { redfin: 0.18, carp: 0.3, eel: 0.12, yabby: 0.24, oldboot: 0.
 import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
-import { TRAINERS, PRIZE_TRAINER } from '../data/enemies.js';
+import { TRAINERS, PRIZE_TRAINER, fineFor } from '../data/enemies.js';
 import { rollEncounter, readyTeam, START_LEVEL } from '../systems/battle.js';
 import { form, canEvolve, evolve } from '../systems/forms.js';
 import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
 import { CROPS } from '../data/crops.js';
 import { typeName } from '../data/types.js';
 import { flavourFor } from '../data/flavour.js';
+import { FURNITURE } from '../data/furniture.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
 import { custom, objectTexture, tuftTexture, fitScale, cropTexture, exitSignTexture } from '../art/textures.js';
+import { Crowd } from '../world/crowd.js';
 import { Player, Pet, Npc, toWorld } from '../world/entities.js';
 import { Traffic } from '../world/traffic.js';
 import { state } from '../systems/state.js';
@@ -48,7 +56,8 @@ import { sfx } from '../systems/sfx.js';
 import { ui } from '../ui/ui.js';
 import { setImageScene, petPortrait, npcIcon, itemIcon } from '../ui/images.js';
 import { bus } from '../bus.js';
-import { hash, pick, clamp } from '../util.js';
+import { hash, pick, clamp, rng } from '../util.js';
+const SEATS = ['bench', 'stool', 'armchair'];   // objects you (and people nearby) can sit on
 
 export class WorldScene extends Phaser.Scene {
   constructor() { super('World'); }
@@ -56,6 +65,7 @@ export class WorldScene extends Phaser.Scene {
   init(data) {
     this.regionId = data.region || state.data.region;
     this.entryName = data.entry || null;
+    this.entryFrac = data.frac ?? null;   // how far along a long edge you left, for `span` entries
     this.newDay = !!data.newDay;
     this.news = data.news || [];
     this.firstLoad = !!data.firstLoad;
@@ -108,7 +118,13 @@ export class WorldScene extends Phaser.Scene {
       this.pets.push(pet);
     }
     // People with a routine (routines.js) only appear while they are here.
-    this.npcs = this.map.npcs.filter(n => NPCS[n.id] && isAt(n.id, n.at, state.data)).map(n => this.spawnNpc(n));
+    this.offDuty = new Set();   // spots whose person has gone home for the night (or their shop is shut)
+    this.npcs = this.map.npcs.filter(n => {
+      if (!NPCS[n.id] || !isAt(n.id, n.at, state.data)) return false;
+      if (onDuty(n, NPCS[n.id], state.data, this.region.home)) return true;
+      this.offDuty.add(n); return false;
+    }).map(n => this.spawnNpc(n));
+    this.crowd = new Crowd(this);
     this.routineTick = Math.floor(state.data.minutes / 10);
     this.traffic = new Traffic(this, this.map.lanes);
 
@@ -118,6 +134,13 @@ export class WorldScene extends Phaser.Scene {
     this.tapMarker = this.add.image(0, 0, 'fx-sparkle').setDepth(9600).setVisible(false).setScale(2);
 
     this.setupCamera();
+    // Singers (the Lohse St karaoke) have music notes floating up from them.
+    this.time.addEvent({ delay: 700, loop: true, callback: () => {
+      for (const n of this.npcs) if (n.spot?.sing && !n.gone && n.visible && Math.random() < 0.6) {
+        const t = this.add.text(n.x + (Math.random() * 12 - 6), n.y - 30, ['♪', '♫', '♬'][Math.floor(Math.random() * 3)], { fontSize: '10px', color: ['#e2506a', '#3a7ad8', '#f5c83a'][Math.floor(Math.random() * 3)], stroke: '#1e1a18', strokeThickness: 2 }).setOrigin(0.5).setDepth(9500);
+        this.tweens.add({ targets: t, y: t.y - 18, x: t.x + (Math.random() * 10 - 5), alpha: 0, duration: 1400, onComplete: () => t.destroy() });
+      }
+    } });
     this.input.on('pointerdown', p => this.onTap(p));
     ui.worldAction = () => this.interact();
 
@@ -222,6 +245,7 @@ export class WorldScene extends Phaser.Scene {
 
   buildObjects() {
     this.interactables = [];
+    this.seats = [];
     this.lights = [];
     this.roofs = [];
     for (const o of this.map.objects) {
@@ -234,8 +258,18 @@ export class WorldScene extends Phaser.Scene {
       if (def.flat) img.setDepth(-900 + y / 1000);
       if (def.deck) img.setDepth(-990);
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
-      if (o.kind === 'sign' && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
+      if (SEATS.includes(o.kind) && !o.forSale) {   // somewhere to sit: one place per tile of a bench
+        const n = o.kind === 'bench' ? o.w : 1, slots = [];
+        for (let i = 0; i < n; i++) slots.push({ x: (o.x + (n > 1 ? i + 0.5 : o.w / 2)) * T, bottom: (o.y + o.h) * T - ({ stool: 7, armchair: 6 }[o.kind] || 3), front: (o.y + o.h) * T + 12, taken: null });
+        this.seats.push(...slots);
+        this.interactables.push({ kind: 'seat', slots, x, y: y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots', quiet: true });
+        continue;
+      }
+      if (o.forSale) this.interactables.push({ kind: 'forsale', id: o.forSale, x, y: def.flat ? (o.y + o.h / 2) * T : y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots' });
+      else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (o.kind === 'tramstop' && TRAM_STOPS[this.regionId]) this.interactables.push({ kind: 'tram', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (o.kind === 'agendaboard') this.interactables.push({ kind: 'agenda', x, y: y - 6, r: 20, bubble: 'fx-bubble-read' });
       else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
       else if (this.region.home && o.kind === 'counter' && o.v === 'stove') this.interactables.push({ kind: 'cook', x, y: y - 6, r: 20, bubble: 'fx-bubble-dots' });
       else if (this.region.home && ['bed', 'single', 'cot'].includes(o.kind)) this.interactables.push({ kind: 'sleep', x, y: y - 4, r: Math.max(18, o.w * 9), bubble: 'fx-bubble-zzz', cot: o.kind === 'cot' });
@@ -257,6 +291,8 @@ export class WorldScene extends Phaser.Scene {
   buildExitMarkers() {
     const W = this.map.w, H = this.map.h;
     const free = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && !this.map.solid[y * W + x];
+    // Way signs only outdoors: inside and in the yard the way out is obvious.
+    const signs = !this.region.indoor && !this.region.home;
     for (const e of this.map.exits) {
       const dir = e.x === 0 && e.w === 1 ? 'left' : e.x + e.w === W && e.w === 1 ? 'right' : e.y === 0 && e.h === 1 ? 'up' : e.y + e.h === H && e.h === 1 ? 'down' : null;
       if (!dir) continue;   // doors in the middle of a map are easy to spot
@@ -266,17 +302,27 @@ export class WorldScene extends Phaser.Scene {
         const n = vertical ? e.h : e.w;
         for (let i = 0; i < n; i++) {
           const tx = vertical ? inX : e.x + i, ty = vertical ? e.y + i : inY;
+          if ('#+xzP'.includes(this.map.ground[ty]?.[tx])) continue;   // cones stay on the footpath, off the road
           const x = (tx + 0.5) * T, y = (ty + 0.7) * T;
           this.add.image(x, y, 'fx-cone').setOrigin(0.5, 1).setDepth(y);
         }
         continue;
       }
-      if (!e.label) continue;
+      if (!e.label || !signs) continue;
+      // Beside the exit if there's room; for a long exit (a whole edge), on the
+      // first free spot along it, nearest the middle.
       const spots = vertical ? [[inX, e.y - 1], [inX, e.y + e.h], [inX + (dir === 'left' ? 1 : -1), e.y - 1]] : [[e.x - 1, inY], [e.x + e.w, inY], [e.x - 1, inY + (dir === 'up' ? 1 : -1)]];
-      const [sx, sy] = spots.find(([x, y]) => free(x, y)) || spots[0];
+      const n = vertical ? e.h : e.w, mid = Math.floor(n / 2);
+      for (let k = 0; k < n; k++) {
+        const i = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2), j = inX + (dir === 'left' ? 1 : dir === 'right' ? -1 : 0), kk = inY + (dir === 'up' ? 1 : dir === 'down' ? -1 : 0);
+        if (i >= 0 && i < n) spots.push(vertical ? [j, e.y + i] : [e.x + i, kk]);
+      }
+      const [sx, sy] = spots.find(([x, y]) => free(x, y) && !'#+xzP'.includes(this.map.ground[y]?.[x])) || spots.find(([x, y]) => free(x, y)) || spots[0];
       const key = exitSignTexture(this, e.label, dir);
-      const x = (sx + 0.5) * T, y = (sy + 1) * T - 2;
-      this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y);
+      const tw = this.textures.get(key).getSourceImage().width, th = this.textures.get(key).getSourceImage().height;
+      // Keep the whole sign on the map so it can be read
+      const x = Phaser.Math.Clamp((sx + 0.5) * T, tw / 2 + 1, W * T - tw / 2 - 1), y = Phaser.Math.Clamp((sy + 1) * T - 2, th + 1, H * T - 1);
+      this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y + 8);
     }
   }
 
@@ -405,7 +451,25 @@ export class WorldScene extends Phaser.Scene {
     if (!entry && !this.entryName && state.data.pos && state.data.region === this.regionId && !this.solidAt(state.data.pos.x, state.data.pos.y)) {
       return { ...state.data.pos, dir: state.data.dir };
     }
+    if (!entry && this.entryName === 'tram') {   // off the tram: step down beside the stop
+      const st = this.map.objects.find(o => o.kind === 'tramstop');
+      if (st) for (const [dx, dy] of [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, 2], [1, 2], [-1, 2], [0, -1]]) {
+        const x = st.x + dx, y = st.y + dy;
+        if (x >= 0 && y >= 0 && x < this.map.w && y < this.map.h && !this.map.solid[y * this.map.w + x]) return { ...toWorld(x, y), dir: 'down' };
+      }
+    }
     entry = entry || e.start || e.station || Object.values(e)[0];
+    // A long edge entry (`span`): arrive the same way along it as you left the
+    // other map, on the nearest open tile.
+    if (entry.span) {
+      const [a, b] = entry.span, vert = entry.axis === 'y';
+      const want = Math.round(a + (b - a) * (this.entryFrac ?? 0.5));
+      for (let k = 0; k <= Math.abs(b - a); k++) for (const v of [want - k, want + k]) {
+        if (v < Math.min(a, b) || v > Math.max(a, b)) continue;
+        const x = vert ? entry.x : v, y = vert ? v : entry.y;
+        if (!this.map.solid[y * this.map.w + x]) return { ...toWorld(x, y), dir: entry.dir };
+      }
+    }
     return { ...toWorld(entry.x, entry.y), dir: entry.dir };
   }
 
@@ -448,6 +512,16 @@ export class WorldScene extends Phaser.Scene {
     const cam = this.cameras.main;
     cam.setBounds(0, 0, this.map.w * T, this.map.h * T);
     cam.setRoundPixels(true);
+    // Past the bottom of the map is plain black (it shows on tall phones),
+    // and the last tile fades into it rather than stopping dead.
+    cam.setBackgroundColor('#000000');
+    if (!this.textures.exists('fx-edgefade')) {
+      const t = this.textures.createCanvas('fx-edgefade', 4, T), c = t.getContext();
+      const g = c.createLinearGradient(0, 0, 0, T);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.85)');
+      c.fillStyle = g; c.fillRect(0, 0, 4, T); t.refresh();
+    }
+    this.add.image(0, this.map.h * T, 'fx-edgefade').setOrigin(0, 1).setDisplaySize(this.map.w * T, T).setDepth(8990);
     cam.startFollow(this.player, true, 0.2, 0.2);
     this.onResize();
   }
@@ -479,7 +553,8 @@ export class WorldScene extends Phaser.Scene {
   candidates() {
     return [
       ...this.pets.map(p => ({ kind: 'pet', ref: p, x: p.x, y: p.y - 4 })),
-      ...this.npcs.filter(n => !n.gone).map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4 })),
+      ...this.npcs.filter(n => !n.gone).map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4, r: n.spot.counter ? 30 : 16 })),   // shopkeepers reach across the counter
+      ...this.crowd.candidates(),
       ...this.forage,
       ...this.interactables,
     ];
@@ -543,6 +618,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   async interact(t = this.findTarget()) {
+    if (this.player.seat) { if (!ui.blocking() && this.time.now - this.player.satAt > 300) this.player.stand(); return; }
     if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.goFishing();
     if (!t || ui.blocking() || this.leaving) return;
     this.player.target = null; this.pending = null;
@@ -552,13 +628,36 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'npc') return this.talkToNpc(t.ref);
     if (t.kind === 'item') return this.pickUp(t);
     if (t.kind === 'travel') return this.travel();
+    if (t.kind === 'tram') return this.tram();
+    if (t.kind === 'seat') return this.sitDown(t);
+    if (t.kind === 'crowd') { t.ref.wait = 5; t.ref.setVelocity(0, 0); t.ref.faceTowards(this.player.x, this.player.y); return ui.say([this.crowd.line()], { name: 'Passer-by' }); }
     if (t.kind === 'council') { ui.openModal('council'); return; }
+    if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
     if (t.kind === 'look') return ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
     if (t.kind === 'plot') return this.usePlot(t);
     if (t.kind === 'cook') return this.cook();
     if (t.kind === 'lunch') return this.lunch(t);
+    if (t.kind === 'forsale') return this.forSale(t);
+  }
+
+  // ------------------------------------------------------------ furniture
+  // A piece in Franco Cozzo's showroom or a pot plant at Bunnings: its name and
+  // price, and the option to buy it. Delivered to the house straight away.
+  async forSale(t) {
+    const f = FURNITURE[t.id], furn = state.data.furniture;
+    const who = f.shop === 'bunnings' ? 'Olly' : 'Franco';
+    const text = `${f.name}. $${f.price}. ${f.desc}`;
+    if (furn[f.slot] === t.id) return ui.say([text, 'You already have this one at home.']);
+    const owned = furn.owned.includes(t.id);
+    const go = await ui.say({ text, choices: [owned ? { label: 'Put it back in the house', value: true } : { label: `Buy it ($${f.price})`, value: true }, { label: 'Not now', value: false }] }, { cancelValue: false });
+    if (!go) return;
+    if (!owned && !state.spend(f.price)) { sfx.bump(); return ui.say([`You need $${f.price}. You have $${state.data.money}.`]); }
+    state.placeFurniture(t.id);
+    sfx.pickup();
+    ui.toast(`${f.name} is in the house`);
+    return ui.say([who === 'Franco' ? `Franco claps his hands. "Megalo! I deliver it today. Myself. In the van."` : `Olly nods. "Good choice. I'll drop them round on my way home. Swap the old ones out for you."`]);
   }
 
   // ------------------------------------------------------------ fishing
@@ -570,6 +669,14 @@ export class WorldScene extends Phaser.Scene {
   }
   async goFishing() {
     if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
+    // The lake's secret (Chris tells you at 10 hearts): cast stale bread at Edwardes Lake.
+    if (this.regionId === 'lake' && state.count('bread') > 0 && !state.isFound('emilio')) {
+      state.removeItem('bread');
+      state.data.minutes += 10;
+      await ui.say(['You tear off some stale bread and toss it in.', 'The water goes very still. Then a big old duck glides out of the reeds, wearing a little top hat.', '"Quack," he says, gravely. He eats the bread, tips his hat, and climbs out after you.']);
+      await this.winPet('emilio');
+      return this.save();
+    }
     const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
     const bait = state.count('bait') > 0;
     if (bait) state.removeItem('bait');
@@ -595,6 +702,18 @@ export class WorldScene extends Phaser.Scene {
     pet.pause(5); pet.facePoint(this.player.x);
     this.heartsFx(pet, 2);
 
+    // Ziggy has nobody to battle for him: you play-fight him yourself.
+    if (!rec.found && d.challenge) {
+      await ui.say([`${d.name} stops at the end of the lane and stares you down.`, 'He wants a play-fight. If you win, he might come home with you.'], opts);
+      if (!readyTeam().length) return ui.say(['You need a pet with you for that.'], opts);
+      const go = await ui.say({ text: `Play-fight ${d.name}?`, choices: [{ label: 'Let\'s go', value: true }, { label: 'Not now', value: false }] }, { ...opts, cancelValue: false });
+      if (!go) return;
+      const t = TRAINERS[d.id];
+      const result = await this.startBattle({ trainer: d.id });
+      if (result.outcome === 'win') { await ui.say(t.win, opts); await this.winPet(d.id); this.save(); }
+      else { if (result.outcome === 'lose') await ui.say(t.lose, opts); if (result.outcome === 'lose') await this.lostBattle(); }
+      return;
+    }
     if (!rec.found && PRIZE_TRAINER[d.id]) {
       const owner = TRAINERS[PRIZE_TRAINER[d.id]].name;
       return ui.say([`${d.name} sizes you up.`, `${owner} is keeping an eye on things nearby. Win a friendly play-fight with ${owner}, and ${d.name} might come home with you.`], opts);
@@ -755,22 +874,23 @@ export class WorldScene extends Phaser.Scene {
     if (!f.met) { f.met = true; bus.emit('friends:changed'); }
     // Chris hands out the community garden plots the first time you chat
     if (npc.id === 'chris' && !state.data.flags.garden) await this.chrisGarden(opts);
-    // A menu: chat, give a gift, shop, or a rematch. Just one thing to do? Straight to it.
-    const greet = ['"Oh, hi!"', '"G\'day!"', '"Hey, you."', '"Hiya!"', '"Oh, it\'s you!"'][Math.floor(hash(npc.id.length, npc.id.charCodeAt(0)) * 5)];
-    for (let first = true; ; first = false) {
-      const choices = [{ label: 'Chat', value: 'chat' }];
+    // Talking starts the chat straight away; then a menu of anything else
+    // (a gift, the shop, a rematch...), if there is anything else.
+    await this.chatNpc(npc, opts);
+    for (;;) {
+      const choices = [];
       const giftable = state.bagItems().filter(id => !ITEMS[id].story && !ITEMS[id].deco);
       if (f.giftedDay !== day && giftable.length) choices.push({ label: 'Give a gift', value: 'gift' });
       // The story: pranks (Chapter 3) and party invitations (Chapter 4)
       if (inChapter(3) && PRANKS[npc.id] && !story().pranks.includes(npc.id)) choices.push({ label: `Prank: ${PRANKS[npc.id].label}`, value: 'prank' });
       if (inChapter(4) && !NO_INVITE.includes(npc.id) && !story().invited.includes(npc.id)) choices.push({ label: 'Invite to the party', value: 'invite' });
       if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
+      if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
+      if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
+      if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
-      let act = 'chat';
-      if (choices.length > 1 || !first) {
-        if (!first && choices.length === 1) break;
-        act = await ui.say({ text: first ? `${info.name}: ${greet}` : 'Anything else?', choices: [...choices, { label: 'Bye', value: null }] }, { ...opts, cancelValue: null });
-      }
+      if (!choices.length) break;
+      const act = await ui.say({ text: 'Anything else?', choices: [...choices, { label: 'Goodbye', value: null }] }, { ...opts, cancelValue: null });
       if (!act) break;
       if (act === 'chat') await this.chatNpc(npc, opts);
       if (act === 'gift') {
@@ -781,12 +901,61 @@ export class WorldScene extends Phaser.Scene {
         if (choice) await this.giveFriendGift(npc, choice, opts);
       }
       if (act === 'shop') { await ui.shop(info.shop); }
+      if (act === 'karaoke') { await this.karaoke(npc, opts); break; }
+      if (act === 'bowls') { await this.bowls(npc, opts); break; }
+      if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'prank') await this.prank(npc, opts);
       if (act === 'invite') await this.invite(npc, opts);
       if (act === 'fight') { await this.challenge(npc, trainer, opts); break; }
       this.save();
     }
     this.save();
+  }
+
+  // Karaoke with the dela Cruz family (ui/karaoke.js). A good song makes friends.
+  async karaoke(npc, opts) {
+    const r = await ui.karaoke();
+    if (!r) return;
+    const fam = ['ramon', 'liza', 'migs', 'bea'];
+    if (r.stars) fam.forEach(id => state.addFriendPoints(id, r.stars * 4));
+    if (r.stars >= 2 && state.data.flags.karaokeDay !== state.data.day) {
+      state.data.flags.karaokeDay = state.data.day;
+      state.addItem('pancit'); sfx.pickup();
+      await ui.say(['Tita Liza: "Ang galing! Here, take some pancit home. For long life. And for your voice."', 'You got a plate of pancit.'], { name: 'Tita Liza', portrait: npcIcon('liza') });
+    }
+    this.save();
+  }
+
+  // Lawn bowls at the Brunswick Bowls Club (ui/bowls.js). Close to the jack
+  // makes friends with the old blokes; really close (once a day) gets you ten
+  // bucks from the honesty tin.
+  async bowls(npc, opts) {
+    const r = await ui.bowls();
+    if (!r || r.best === null) return;
+    const pts = r.best <= 15 ? 15 : r.best <= 50 ? 8 : 3;
+    ['crazyjeff', 'bowler1', 'bowler2'].forEach(id => state.addFriendPoints(id, pts));
+    if (r.best <= 30 && state.data.flags.bowlsDay !== state.data.day) {
+      state.data.flags.bowlsDay = state.data.day;
+      state.addMoney(10); sfx.pickup();
+      await ui.say(['Crazy Jeff: "Now THAT is bowls! Here, ten bucks from the honesty tin. Do not tell the committee."', 'You got $10.'], { name: 'Crazy Jeff', portrait: npcIcon('crazyjeff') });
+    }
+    this.save();
+  }
+
+  // Councillors: their view on the next motion, and whether they'll back Paddy.
+  async askCouncillor(npc, act, opts) {
+    const id = npc.id, next = MOTION_ORDER.find(m => state.motionUnlocked(m) && !state.motionPassed(m));
+    const ally = ALLIES.includes(id), against = AGAINST.includes(id);
+    const need = SWING[id] ? state.swingHearts(SWING[id]) : 0, won = !SWING[id] || state.friendHearts(id) >= need;
+    const words = COUNCIL_VIEWS[id];
+    if (act === 'vote') {
+      if (!next) return ui.say([words.nothing], opts);
+      return ui.say([`"${MOTIONS[next].title}?"`, ally ? words.yes : against ? words.no : won ? words.yes : words.unsure], opts);
+    }
+    if (ally) return ui.say([words.backYes], opts);
+    if (against) return ui.say([words.backNo], opts);
+    if (won) return ui.say([words.backYes], opts);
+    return ui.say([words.backMaybe, `(${NPCS[id].name} would need ${need} hearts to back Paddy. You have ${state.friendHearts(id)}. Gifts help.)`], opts);
   }
 
   async chatNpc(npc, opts) {
@@ -807,6 +976,11 @@ export class WorldScene extends Phaser.Scene {
         lines = pool[i];
       }
       if (npc.spot.leave && info.leaving) lines = info.leaving;
+      // Ward says hello to every pet on your team, by name.
+      if (info.greetsPets && state.data.party.length) {
+        const names = state.data.party.map(id => form(id).name);
+        lines = [`${info.name} crouches down. "${names.join('! ')}! Hello, hello! Who\'s a good team? You are. All of you."`, ...lines];
+      }
       // Paddy's advice once a day, before anything else.
       if (npc.id === 'paddy' && f.talkedDay !== day && !npc.spot.leave) lines = [...lines, this.paddyAdvice()];
       await ui.say(lines, opts);
@@ -816,6 +990,13 @@ export class WorldScene extends Phaser.Scene {
       f.talkedDay = day;
       const r = state.addFriendPoints(npc.id, FRIEND_POINTS.talk + (HEROES[state.data.hero]?.perk.talkBonus ? 5 : 0));
       if (r.after > r.before) { sfx.heart(); this.heartsFx(npc, 3); ui.toast(`${info.name}: ${r.after} ${r.after === 1 ? 'heart' : 'hearts'}`); }
+    }
+    // The fairy at Coburg Station gives you a fairy collar, once.
+    if (npc.id === 'fairy' && !state.data.flags.fairyCollar) {
+      state.data.flags.fairyCollar = true;
+      state.data.gear.fairycollar = (state.data.gear.fairycollar || 0) + 1;
+      sfx.found();
+      await ui.say(['The fairy taps your nose with a wand. "For your fairy friends. Princess will look lovely in it."', 'You got: Fairy collar. Put it on a fairy type pet from your Bag.'], opts);
     }
     if (info.gift && state.data.npcDay[npc.id] !== day) {
       // A list of gifts takes turns, one a day (Betty's cooking).
@@ -834,7 +1015,7 @@ export class WorldScene extends Phaser.Scene {
     if (!state.foundIds().length) return A.noPets;
     if (!d.party.length) return A.oneTeam;
     if (!d.flags.garden) return A.noGarden;
-    if (state.foundCount() >= 2 && !Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
+    if (state.foundCount() >= 1 && !Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
     const rest = [A.swing, A.train, A.friends, A.types, A.rest];
     return rest[d.day % rest.length];
   }
@@ -926,11 +1107,21 @@ export class WorldScene extends Phaser.Scene {
         sfx.pickup();
         await ui.say(`You got: ${Object.entries(t.reward).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ')}.`, opts);
       }
+      if (t.prize && !state.isFound(t.prize)) {
+        state.addMoney(SCHOOL_FEE);
+        sfx.pickup();
+        await ui.say(SCHOOL_LINES[npc.id] || `${t.name}: ${SCHOOL_DEFAULT}`, opts);
+      }
       if (t.prize) await this.winPet(t.prize);
       this.save();
-    } else if (result.outcome === 'lose') {
-      await ui.say(t.lose, opts);
-      await this.lostBattle();
+    } else {
+      const fine = Math.min(fineFor(npc.id, t), state.data.money);
+      if (result.outcome === 'lose') await ui.say(t.lose, opts);
+      if (fine > 0 && (result.outcome === 'lose' || result.outcome === 'forfeit' || result.outcome === 'run')) {
+        state.addMoney(-fine);
+        await ui.say(`${t.name} holds out a hand. You hand over $${fine}.`, opts);
+      }
+      if (result.outcome === 'lose') await this.lostBattle();
     }
   }
 
@@ -1027,7 +1218,33 @@ export class WorldScene extends Phaser.Scene {
     if (choice) this.goTo(SUBURBS[choice].station, 'station', 25);
   }
 
-  goTo(region, entry, minutes = 20) {
+  // Sit on a bench, stool or armchair: the free place nearest you.
+  sitDown(t) {
+    const free = t.slots.filter(s => !s.taken).sort((a, b) => Math.abs(a.x - this.player.x) - Math.abs(b.x - this.player.x));
+    if (!free.length) return ui.say(['Someone is already sitting there.']);
+    this.player.sit(free[0]);
+  }
+  // A free seat near a spot whose front is open ground (for people pottering about).
+  freeSeatNear(x, y, r) {
+    const near = this.seats.filter(s => !s.taken && Math.hypot(s.x - x, s.front - y) < r && !this.solidAt(s.x, s.front - 2));
+    return near.length ? near[Math.floor(Math.random() * near.length)] : null;
+  }
+
+  // Tram stops: tap your myki and ride to any tram stop in a zone you have visited.
+  async tram() {
+    sfx.myki();
+    const options = Object.keys(TRAM_STOPS).filter(z => z !== this.regionId && state.data.visited.includes(z));
+    if (!options.length) {
+      return ui.say(['You tap your myki at the tram stop. Beep beep.', 'Trams only go to stops you have already found. Walk to another tram stop first, then you can ride back and forth.']);
+    }
+    const choice = await ui.say({
+      text: 'You tap your myki. A tram dings round the corner. Where to?',
+      choices: [...options.map(z => ({ label: TRAM_STOPS[z], value: z })), { label: 'Stay here', value: null }],
+    }, { cancelValue: null });
+    if (choice) this.goTo(choice, 'tram', ZONES[choice].suburb === this.region.suburb ? 5 : 15);
+  }
+
+  goTo(region, entry, minutes = 20, frac = null) {
     if (this.leaving) return;
     this.leaving = true;
     state.data.minutes += minutes;
@@ -1035,7 +1252,7 @@ export class WorldScene extends Phaser.Scene {
     state.save();
     controls.release();
     this.cameras.main.fadeOut(350, 20, 30, 18);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region, entry }));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region, entry, frac }));
   }
 
   // Leaving the house: pick up to three pets to bring along.
@@ -1106,9 +1323,16 @@ export class WorldScene extends Phaser.Scene {
       this.lockedExit = ex;
       return this.bounceBack(ex, ['I really should get Princess before I go...', 'She is usually doing laps of the court.']);
     }
+    // Gated ways (the Premier's police line into the city) until you beat whoever holds them.
+    if (ex.to && ex.gate && !state.data.beaten[ex.gate]) {
+      if (this.lockedExit === ex) return;
+      this.lockedExit = ex;
+      return this.bounceBack(ex, GATES[ex.gate] || ['The way is closed.']);
+    }
     if (ex.to && ex.team && state.foundIds().length) return this.chooseTeamThenGo(ex);
     // Walking into another suburb takes 20 minutes, 10 once the bike lane motion passes.
-    if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : state.motionPassed('bikelane') ? 10 : 20);
+    const frac = ex.w > 1 && (ex.y === 0 || ex.y + ex.h === this.map.h) ? (tx - ex.x) / (ex.w - 1) : ex.h > 1 ? (ty - ex.y) / (ex.h - 1) : null;
+    if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : state.motionPassed('bikelane') ? 10 : 20, frac);
     if (this.lockedExit === ex) return;
     this.lockedExit = ex;
     this.bounceBack(ex, ex.label ? ex.lines || [`The way to ${ex.label} is closed for now.`] : ['The way is closed.']);
@@ -1191,12 +1415,24 @@ export class WorldScene extends Phaser.Scene {
     if (npc.id === 'paddy') state.data.flags.paddyLeft = state.data.day;
     this.removeNpc(npc);
   }
+  // The agenda on the easel in the chamber: the next meeting's business.
+  agendaLines() {
+    const d = state.data;
+    let day = d.day;
+    while (!isMeetingDay(day) || (day === d.day && d.council.metDay === day)) day++;
+    const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id)).map(id => MOTIONS[id].title);
+    const silly = sillyFor(day, d.council.silly).map(i => SILLY_MOTIONS[i]);
+    const items = ['Acknowledgement of Country', ...ready, ...silly, 'General business (Cr Bentleigh has 14 points of order)'];
+    return [`AGENDA: Council meeting, ${day === d.day ? 'tonight' : `${weekday(day)}, day ${day}`}, 6:30pm.`, ...items.map((t, i) => `${i + 1}. ${t}.`).reduce((a, l) => { const last = a[a.length - 1]; if (last && last.length + l.length < 130) a[a.length - 1] = `${last} ${l}`; else a.push(l); return a; }, [])];
+  }
+
   // Council meets in the chamber on Tuesday nights. Be there to watch.
   async maybeMeeting() {
     const d = state.data;
     if (this.regionId !== 'chamber' || !inMeeting(d) || d.council.metDay === d.day || ui.blocking() || this.meetingNow) return;
     this.meetingNow = true;
     const say = (who, lines) => ui.say(lines, { name: NPCS[who].name, portrait: npcIcon(who) });
+    const audience = this.meetingAudience();
     if (state.paddyDeposed()) await say('lesley', ['ORDER! I declare this meeting open. I am the MAYOR now. Paddy will be taking the minutes.', 'I acknowledge the Bunurong people, the Traditional Owners of this land.']);
     else await say('paddy', ['Order, order. I declare this meeting of Hobsons Bay City Council open.', 'I acknowledge the Bunurong people, the Traditional Owners of this land.']);
     // The spill (Chapter 2), if the fish pie never happened
@@ -1210,9 +1446,17 @@ export class WorldScene extends Phaser.Scene {
     const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id));
     if (!ready.length) {
       await say('lesley', ['POINT OF ORDER! The agenda is in the WRONG FONT!']);
-      await say('paddy', ['Noted, Councillor. Again. No motions are ready tonight. Chip in on the noticeboard in the foyer, everyone.', 'Meeting closed. Thank you all.']);
+      await say('paddy', ['Noted, Councillor. Again. No community motions are ready tonight. Chip in on the noticeboard in the foyer, everyone.', 'On to general business.']);
     }
+    const silly = sillyFor(d.day, d.council.silly);
     const results = state.holdMeeting(d.day);
+    for (const i of silly) {
+      const who = pick(['rayna', 'deanna', 'kirsty', 'dahlia', 'malcolm']), yes = sillyYes(d.day, i);
+      await say(who, [`I move that we ${SILLY_MOTIONS[i][0].toLowerCase()}${SILLY_MOTIONS[i].slice(1)}.`]);
+      await ui.say([`Cr ${pick(['Hawley', 'Grimes', 'Bishopp', 'Kellandra'])}: ${pick(SILLY_DEBATE.yes)}`, `Cr ${pick(['Bentleigh', 'Dismay'])}: ${pick(SILLY_DEBATE.no)}`]);
+      if (yes >= 4) { d.council.silly.push(i); sfx.found(); await say('paddy', [`${yes} for, ${7 - yes} against. CARRIED! Someone tell the newsletter.`]); }
+      else { sfx.sad(); await say('paddy', [`${yes} for, ${7 - yes} against. Lost. It goes back in the pile for another week.`]); }
+    }
     for (const r of results) {
       const m = MOTIONS[r.id];
       await say(m.sponsor, [`I move: "${m.title}".`]);
@@ -1221,8 +1465,38 @@ export class WorldScene extends Phaser.Scene {
       if (r.passed) { sfx.found(); await say('paddy', ['The motion is CARRIED!', m.effect]); }
       else { sfx.sad(); await say('lesley', ['HA! DEFEATED!']); await say('paddy', ['The motion is lost. We go again next week. Maybe bring Kirsty or Dahlia some flowers.']); }
     }
+    await say('paddy', ['That concludes tonight\'s business. Meeting closed. Drive safely, and mind the pelicans.']);
     this.save();
+    this.meetingWalkOut(audience);
     this.meetingNow = false;
+  }
+
+  // 3 or 4 locals in the public gallery: no shopkeepers, pet owners or battlers.
+  meetingAudience() {
+    const busy = new Set(this.npcs.map(n => n.id));
+    const pool = Object.keys(NPCS).filter(id => !busy.has(id) && !NPCS[id].shop && !TRAINERS[id] && !COUNCILLORS.includes(id) && !NPCS[id].look?.baby && !['stranger', 'julie', 'ghost', 'fairy', 'narelle'].includes(id));
+    const seats = [[2, 13], [6, 13], [10, 13], [14, 13], [18, 13], [4, 15], [8, 15], [16, 15]];
+    const r = rng(state.data.day * 31 + 7), n = 3 + Math.floor(r() * 2), out = [];
+    for (let k = 0; k < n && pool.length; k++) {
+      const id = pool.splice(Math.floor(r() * pool.length), 1)[0], [x, y] = seats.splice(Math.floor(r() * seats.length), 1)[0];
+      if (this.solidAt((x + 0.5) * T, (y + 0.75) * T)) continue;
+      const npc = this.spawnNpc({ id, x, y, face: 'up', still: true });
+      npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400 });
+      this.npcs.push(npc); out.push(npc);
+    }
+    return out;
+  }
+  // When it's over, everyone files out the foyer door, a few at a time.
+  meetingWalkOut(audience) {
+    const door = toWorld(17, 16);
+    const leaving = [...this.npcs.filter(n => COUNCILLORS.includes(n.id)), ...audience];
+    leaving.forEach((npc, i) => this.time.delayedCall(400 + i * 700, () => {
+      if (npc.gone) return;
+      npc.spot = { ...npc.spot, still: true };
+      const dist = Phaser.Math.Distance.Between(npc.x, npc.y, door.x, door.y);
+      npc.faceTowards?.(door.x, door.y);
+      this.tweens.add({ targets: npc, x: door.x, y: door.y, duration: dist * 22, onComplete: () => this.removeNpc(npc) });
+    }));
   }
 
   // ------------------------------------------------------------ the story (data/story.js)
@@ -1241,6 +1515,10 @@ export class WorldScene extends Phaser.Scene {
     if (n === 4) {
       if (s.heroBefore) { d.hero = s.heroBefore; s.heroBefore = null; this.player.refreshLook(); }
       await ui.news({ lines: NEWS_OPEN(s.ch2.deposed) });
+    }
+    if (n === 1) {
+      await ui.paper(CH1_PAPER);
+      await ui.say(CH1_HELEN, { name: 'Helen' });
     }
     sfx.found();
     await ui.card({ kicker: `Chapter ${n}`, title: CHAPTERS[n].title, lines: CHAPTERS[n].intro, button: 'Let\'s go' });
@@ -1274,7 +1552,13 @@ export class WorldScene extends Phaser.Scene {
 
   // Chapters 1 and 3 finish by themselves once their objectives are done.
   async checkStory() {
-    const n = story().chapter;
+    const n = story().chapter, f = state.data.flags;
+    if (!this.storyBusy && inChapter(1) && !f.enrolled && state.foundCount() >= CH1.find) {
+      f.enrolled = true; this.storyBusy = true;
+      sfx.found();
+      await ui.say(CH1_ENROLLED, { name: 'Helen' });
+      this.save(); this.storyBusy = false;
+    }
     if (this.storyBusy || !chapterFinished(n)) return;
     this.storyBusy = true;
     await this.finishChapter(n);
@@ -1292,8 +1576,8 @@ export class WorldScene extends Phaser.Scene {
   buildStoryBits() {
     this.lunchSpot = null;
     if (this.regionId === 'civiccentre' && inChapter(2) && !story().ch2.swapped) {
-      const pos = toWorld(18, 9);
-      const sprite = this.add.image(pos.x, pos.y - 4, 'item-lunchbowl').setOrigin(0.5, 1).setDepth(pos.y).setScale(fitScale(this, 'item-lunchbowl', 12));
+      const pos = toWorld(22.5, 9);
+      const sprite = this.add.image(pos.x, pos.y - 8, 'item-fishpie').setOrigin(0.5, 1).setDepth(pos.y + 8).setScale(fitScale(this, 'item-fishpie', 12));
       this.lunchSpot = { kind: 'lunch', x: pos.x, y: pos.y - 4, r: 18, sprite, bubble: 'fx-bubble-alert' };
       this.interactables.push(this.lunchSpot);
     }
@@ -1306,8 +1590,8 @@ export class WorldScene extends Phaser.Scene {
     const r = RECIPES.fishpie;
     const pick = await ui.say({ text: 'The new oven. It still has the plastic on the dials. Cook something?', choices: [{ label: r.name, value: 'fishpie', note: r.needs }, { label: 'Not now', value: null }] }, { cancelValue: null });
     if (!pick) return;
-    if (!fish || state.count('lemon') < CH2_RECIPE.lemon) return ui.say([`You need ${r.needs}. Catch a fish at Edwardes Lake, Edgars Creek or Kororoit Creek. Lemons grow on every second tree in Melbourne.`]);
-    state.removeItem(fish); state.removeItem('lemon');
+    if (!fish || state.count('lemon') < CH2_RECIPE.lemon || state.count('laxatives') < CH2_RECIPE.laxatives) return ui.say([`You need ${r.needs}. Catch a fish at Edwardes Lake, Edgars Creek or Kororoit Creek. Lemons grow on every second tree in Melbourne.`, 'Laxatives: Stavros\'s deli at Preston Market has some behind the counter, and so does the milk bar on Nicholson St, Brunswick East.']);
+    state.removeItem(fish); state.removeItem('lemon'); state.removeItem('laxatives');
     state.addItem('fishpie');
     story().ch2.pie = true;
     sfx.found();
@@ -1346,13 +1630,59 @@ export class WorldScene extends Phaser.Scene {
 
   // Chapter 3: a prank on one of Helen's friends.
   async prank(npc, opts) {
-    const s = story();
-    await ui.say(PRANKS[npc.id].lines, opts);
+    const s = story(), pr = PRANKS[npc.id];
+    if (pr.item && !state.count(pr.item)) return ui.say([PRANK_NEED(pr.label, ITEMS[pr.item].name.toLowerCase())], opts);
+    if (pr.item) state.removeItem(pr.item);
+    const [setup, ...rest] = pr.lines;
+    await ui.say([setup], opts);
+    await this.reactFx(npc, pr.react);
+    await ui.say(rest, opts);
     s.pranks.push(npc.id);
     state.addFriendPoints(npc.id, 5);
     sfx.heart(); this.heartsFx(npc, 4);
     ui.toast(PRANK_AFTER(s.pranks.length));
     this.save();
+  }
+
+  // A big animated reaction: a "!" pops up, then they jump, shake or spin.
+  reactFx(npc, kind = 'jump') {
+    sfx.bump();
+    const bub = this.add.image(npc.x, npc.y - 36, 'fx-bubble-alert').setOrigin(0.5, 1).setDepth(9600).setScale(0);
+    this.tweens.add({ targets: bub, scale: 1.4, duration: 180, ease: 'Back.out' });
+    this.cameras.main.shake(220, 0.004);
+    const y0 = npc.y, x0 = npc.x;
+    return new Promise(done => {
+      const end = () => { npc.x = x0; npc.y = y0; npc.angle = 0; this.tweens.add({ targets: bub, alpha: 0, duration: 300, onComplete: () => bub.destroy() }); done(); };
+      if (kind === 'shake') this.tweens.add({ targets: npc, x: x0 + 3, duration: 50, yoyo: true, repeat: 7, onComplete: end });
+      else if (kind === 'spin') this.tweens.add({ targets: npc, angle: 360, duration: 500, repeat: 1, onComplete: end });
+      else this.tweens.add({ targets: npc, y: y0 - 10, duration: 140, yoyo: true, repeat: 2, ease: 'Quad.out', onComplete: end });
+    });
+  }
+
+  // Chapter 4: the decorations you bought go up in the backyard for the party.
+  partyDecor(decos) {
+    const g = this.add.graphics().setDepth(8500), W = this.map.w * T;
+    const cols = [0xe2506a, 0xf5d63a, 0x3a8ad8, 0x5aa83a];
+    const string = (x0, y0, x1, y1, sag, every, draw) => {
+      g.lineStyle(1, 0x3a2a1a, 1).beginPath();
+      const pts = [];
+      for (let i = 0; i <= 24; i++) { const t = i / 24, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t + Math.sin(t * Math.PI) * sag; pts.push([x, y]); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.strokePath();
+      pts.forEach(([x, y], i) => { if (i % every === 0 && i && i < 24) draw(x, y, i); });
+    };
+    if (decos.includes('bunting')) for (const y of [4.5, 9.5]) string(2 * T, y * T, 19 * T, y * T, 10, 1, (x, y, i) => { g.fillStyle(cols[i % 4], 1).fillTriangle(x - 4, y, x + 4, y, x, y + 7); });
+    if (decos.includes('fairylights')) for (const y of [6.5, 12.5]) string(2 * T, y * T, 19 * T, y * T, 6, 1, (x, y) => {
+      const l = this.add.circle(x, y + 1, 2, 0xfff3a0).setDepth(9001);
+      this.add.circle(x, y + 1, 6, 0xfff3a0, 0.25).setDepth(9001);
+      this.tweens.add({ targets: l, alpha: 0.4, duration: 600 + Math.random() * 600, yoyo: true, repeat: -1 });
+    });
+    if (decos.includes('balloons')) [[3, 7], [18, 7], [10, 13], [17, 13]].forEach(([tx, ty], k) => [-5, 0, 5].forEach((dx, j) => {
+      const x = tx * T + 8 + dx, y = ty * T - 6 - (j === 1 ? 6 : 0);
+      g.lineStyle(1, 0x5a5a5a, 1).lineBetween(x, y + 6, tx * T + 8, ty * T + 12);
+      const b = this.add.ellipse(x, y, 9, 11, cols[(k + j) % 4]).setStrokeStyle(1, 0x1e1a18).setDepth(8500);
+      this.tweens.add({ targets: b, y: y - 2, duration: 900 + j * 150, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
+    }));
+    if (!decos.length) string(2 * T, 5 * T, 19 * T, 5 * T, 8, 2, (x, y, i) => { g.fillStyle(cols[i % 4], 1).fillTriangle(x - 4, y, x + 4, y, x, y + 7); });
   }
 
   // Chapter 4: invite a friend to the party. They come if you're close enough.
@@ -1387,9 +1717,24 @@ export class WorldScene extends Phaser.Scene {
       npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400, delay: i * 120 });
       this.npcs.push(npc);
     });
+    const decos = Object.keys(ITEMS).filter(k => ITEMS[k].deco && state.count(k));
+    this.partyDecor(decos);
     ui.banner('The September Babies Bash', `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'}`);
     await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.', 'Helen: "Right! Party games!"']);
     const score = await ui.party(guests);
+    // Stories round the fire pit, then Helen has had a big night.
+    for (const id of guests.slice(0, 4)) {
+      const npc = this.npcs.find(n => n.id === id);
+      if (npc) { this.facePlayerTo(npc.x, npc.y); this.heartsFx(npc, 2); }
+      await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), { name: NPCS[id]?.name, portrait: npcIcon(id) });
+    }
+    state.data.minutes = Math.max(state.data.minutes, 23 * 60);
+    await ui.say(PARTY_END.slice(0, 3), { name: 'Helen' });
+    this.tweens.add({ targets: this.player, angle: { from: -12, to: 12 }, duration: 350, yoyo: true, repeat: 3 });
+    await new Promise(r => this.time.delayedCall(1500, r));
+    this.player.angle = 90;
+    await ui.say(PARTY_END.slice(3));
+    this.player.angle = 0;
     // The drinks and decorations get used up.
     let need = CH4.drinks;
     for (const id of Object.keys(ITEMS).filter(k => ITEMS[k].drink)) while (need > 0 && state.count(id)) { state.removeItem(id); need--; }
@@ -1400,7 +1745,7 @@ export class WorldScene extends Phaser.Scene {
     s.party = { score, attendees: guests, votes, won };
     s.done[4] = d.day;
     this.save();
-    await ui.say(['The party winds down at 1am. Somebody is asleep in the paddling pool. It is Corni.', 'A week later, Hobsons Bay votes.']);
+    await ui.say(['A week later, Hobsons Bay votes.']);
     this.cameras.main.fadeOut(500, 0, 0, 0);
     await new Promise(r => this.cameras.main.once('camerafadeoutcomplete', r));
     await ui.news({ lines: NEWS_RESULT(votes, won, s.ch2.deposed), votes });
@@ -1414,7 +1759,13 @@ export class WorldScene extends Phaser.Scene {
 
   syncRoutines() {
     for (const n of this.map.npcs) {
-      if (!n.at || !NPCS[n.id]) continue;
+      if (!NPCS[n.id] || this.region.home) continue;
+      if (!n.at) {   // everyday hours (onDuty): only bring back people their hours sent home
+        const on = onDuty(n, NPCS[n.id], state.data), live = this.npcs.find(x => x.spot === n && !x.gone);
+        if (!on && live && !ui.blocking()) { this.offDuty.add(n); this.removeNpc(live); }
+        else if (on && this.offDuty.delete(n)) { const npc = this.spawnNpc(n); npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 500 }); this.npcs.push(npc); }
+        continue;
+      }
       const here = isAt(n.id, n.at, state.data), live = this.npcs.find(x => x.spot === n && !x.gone);
       if (here && !live) { const npc = this.spawnNpc(n); npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 500 }); this.npcs.push(npc); }
       else if (!here && live && !n.leave) this.removeNpc(live);
@@ -1452,9 +1803,10 @@ export class WorldScene extends Phaser.Scene {
     }
     for (const p of this.pets) p.update(this.player, dt, blocked);
     for (const n of this.npcs) if (!n.gone) n.update(this.player, dt, blocked);
+    this.crowd.update(this.player, dt, blocked);
     const tick = Math.floor(state.data.minutes / 10);
     if (tick !== this.routineTick) { this.routineTick = tick; this.syncRoutines(); this.maybeMeeting(); }
-    this.traffic.update(dt, this.player, blocked);
+    this.traffic.update(dt, this.player, blocked, this.crowd.list);
     this.updateDecor(dt, blocked);
     this.updateLighting();
     this.updateRain();

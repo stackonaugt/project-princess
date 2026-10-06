@@ -8,6 +8,7 @@
 import { ART_PATH } from '../config.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
+import { CROWD } from '../data/crowd.js';
 import { painter, outline, textWidth } from './paint/painter.js';
 import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
@@ -102,6 +103,8 @@ export function buildTextures(scene) {
     if (custom.has(`npc-${id}`)) continue;
     for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, npc.look, dir, STEPS[i]), true);
   }
+  // The crowd (data/crowd.js): unnamed passers-by
+  for (const c of CROWD) for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${c.id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, c.look, dir, STEPS[i]), true);
   // Things you battle
   for (const [id, [w, h, draw]] of Object.entries({ ...FOE_ART, ...EAST_FOE_ART })) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
   // Items
@@ -214,6 +217,7 @@ function createAnims(scene) {
     }
     for (const dir of ['down', 'up', 'left']) make(`npc-${id}-${dir}-walk`, `npc-${id}-${dir}`, [1, 0, 2, 0], 7);
   }
+  for (const c of CROWD) for (const dir of ['down', 'up', 'left']) make(`npc-${c.id}-${dir}-walk`, `npc-${c.id}-${dir}`, [1, 0, 2, 0], 7);
   make('fx-duck-swim', 'fx-duck', [0, 1], 2);
   make('fx-magpie-hop', 'fx-magpie', [0, 1], 4);
 }

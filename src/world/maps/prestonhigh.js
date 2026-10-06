@@ -61,9 +61,10 @@ export function buildPrestonHigh() {
   b.npc('dimi', 17, 13, { face: 'down' });
   b.npc('nell', 34, 10, { face: 'down' });
 
-  b.exit(0, 10, 1, 7, 'prestonmkt', 'east', 'Preston Market');
+  b.exit(0, 10, 1, 7, 'prestonmkt', 'south', 'Preston Market');
+  b.exit(43, 18, 1, 4, 'murray', 'middle', 'Murray Rd');
   b.exit(19, 27, 5, 1, 'preston', 'north', 'Plenty Rd');
-  b.entry('station', 8, 11, 'down').entry('west', 1, 12, 'right').entry('south', 20, 26, 'up');
+  b.entry('station', 8, 11, 'down').entry('east', 42, 19, 'left').entry('west', 1, 12, 'right').entry('south', 20, 26, 'up');
 
   b.lane({ axis: 'x', pos: 3.3, dir: 1, from: -12, to: 56, every: [30, 55], speed: 120, kinds: ['veh-train-h'], train: true, sky: true });
   b.lane({ axis: 'x', pos: 4.3, dir: -1, from: -12, to: 56, every: [35, 60], speed: 120, kinds: ['veh-train-h'], train: true, sky: true });

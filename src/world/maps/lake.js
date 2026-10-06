@@ -34,9 +34,13 @@ export function buildLake() {
   b.ellipse(8, 27, 3.5, 2, '"', '.').ellipse(41, 27, 2.5, 2.5, '"', '.').ellipse(6, 4, 2, 3, '"', '.');
 
   b.exit(20, 29, 3, 1, 'track', 'north', 'Athletics Track');
+  b.exit(1, 29, 2, 1, 'track', 'northwest', 'Athletics Track');
   b.exit(43, 12, 1, 3, 'wetlands', 'west', 'Edgars Creek Wetlands');
-  b.entry('south', 21, 27, 'up').entry('east', 41, 13, 'left');
+  b.entry('south', 21, 27, 'up').entry('southwest', 2, 27, 'up').entry('east', 41, 13, 'left');
 
+  // Tim and Nicholas walk Stanley round the lake of an evening (routines.js)
+  b.npc('tim', 32, 24, { face: 'left', at: 'lake', path: [[32, 24], [38, 23], [42, 14], [38, 5], [32, 5], [38, 5], [42, 14], [38, 23]] });
+  b.npc('nicholas', 31, 24, { face: 'left', at: 'lake', path: [[31, 24], [37, 23], [41, 14], [37, 5], [31, 5], [37, 5], [41, 14], [37, 23]] });
   b.npc('abby', 10, 15, { path: [[10, 15], [10, 24], [20, 24.5], [20, 25], [36, 23], [40, 14], [36, 4], [12, 4]] });
 
   b.lane({ axis: 'y', pos: 1.5, dir: 1, from: -3, to: 33, every: [8, 16], speed: 60, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });

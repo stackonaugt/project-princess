@@ -169,6 +169,17 @@ export function paintDrink(p, a) {
     p.r(k, 3, 7, 10, 8); p.r(a.body, 4, 8, 8, 6); p.r(a.cap, 6, 10, 4, 2);
   } else if (a.kind === 'jar') {
     p.r(k, 4, 3, 8, 12); p.r(a.body, 5, 5, 6, 9); p.r(a.cap, 5, 3, 6, 2); p.r(a.label, 5, 8, 6, 3); p.blob(7, 12, 1, shadeHex(a.body)); p.r(glint, 6, 5, 1, 3);
+  } else if (a.kind === 'plate') {
+    // a home-cooked dish on a plate: body is the food, label a garnish, cap the plate
+    p.blob(8, 10, 6, k); p.blob(8, 10, 5, a.cap || '#f4f0e6'); p.blob(8, 9, 3, a.body); p.r(a.label, 6, 8, 2, 1); p.r(a.label, 9, 10, 2, 1); p.r(glint, 6, 8, 1, 1);
+  } else if (a.kind === 'cake') {
+    // a slice or a loaf: body is the crumb, cap the icing or crust, label a topping
+    p.r(k, 3, 6, 11, 9); p.r(a.body, 4, 8, 9, 6); p.r(a.cap, 4, 7, 9, 2); p.r(a.label, 6, 6, 2, 1); p.r(a.label, 10, 6, 2, 1); p.r(shadeHex(a.body), 4, 13, 9, 1);
+  } else if (a.kind === 'pear') {
+    p.blob(8, 10, 4, k); p.blob(8, 6, 2, k); p.blob(8, 10, 3, a.body); p.blob(8, 6, 1, a.body); p.r(a.body, 7, 7, 3, 2);
+    p.r('#6a4a2a', 8, 2, 1, 3); p.r(a.label, 9, 2, 2, 1); p.r(glint, 6, 9, 1, 2);
+  } else if (a.kind === 'ball') {
+    p.blob(8, 9, 4, k); p.blob(8, 9, 3, a.body); p.r(a.label, 7, 8, 1, 1); p.r(a.label, 9, 8, 1, 1); p.r(a.label, 8, 10, 1, 1); p.r(a.label, 10, 10, 1, 1); p.r(glint, 6, 7, 1, 1);
   } else if (a.kind === 'globe') {
     p.r(k, 4, 12, 8, 3); p.r(a.cap, 5, 12, 6, 2); p.blob(8, 7, 5, k); p.blob(8, 7, 4, a.body); p.r(a.label, 6, 8, 5, 2); p.r('#f4f4f0', 6, 4, 1, 1); p.r('#f4f4f0', 10, 6, 1, 1); p.r(glint, 6, 5, 1, 1);
   } else if (a.kind === 'koala') {
@@ -194,6 +205,9 @@ export function paintBook(p, a) {
 
 // Gear icons (pet shop), same format. Texture keys: item-gear-<id>.
 export const GEAR_ART = {
+  fairycollar: { pal: { a: '#f0a0d0', b: '#f8d0e8', m: '#a0e8f0', k: '#8a3a6a', g: '#f0e070' }, rows: [
+    '............', '............', '...kkkkkk...', '.kkaaaaaakk.', 'kamabamabmak', 'kaaaaaaaaaak',
+    '.kkaaaaaakk.', '...kkggkk...', '....gggg....', '...gggggg...', '....g..g....', '............'] },
   lead: { pal: { a: '#c8443a', b: '#e8705f', k: '#7a2018', m: '#b8b8c0' }, rows: [
     '....kkkk....', '...kaaaak...', '..ka....ak..', '..ka....ak..', '...kaaaak...', '....kabk....',
     '.....ka.....', '.....ka.....', '.....kak....', '......kak...', '.......mm...', '.......mm...'] },
