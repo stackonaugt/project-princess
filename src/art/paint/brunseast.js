@@ -239,8 +239,9 @@ export const BRUNSEAST = {
 
   // Brick bungalows: tile roof, deep eaves, bay windows. red: red brick (199
   // Nicholson St itself is house199); cream: the cream brick one on the
-  // corner; deco: cream brick with dark bands and a stepped parapet; corner: the old red brick house on Mitchell
-  // St with its chimney and striped window awning.
+  // corner; deco: cream brick with dark bands and a stepped parapet; corner:
+  // the old red brick house on Mitchell St with its chimney and striped
+  // window awning.
   bungalow: {
     foot: [5, 3], tex: [80, 66], variants: ['red', 'cream', 'deco', 'corner'], lined: true,
     paint(p, v) {
