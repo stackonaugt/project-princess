@@ -125,6 +125,13 @@ export class WorldScene extends Phaser.Scene {
     this.tapMarker = this.add.image(0, 0, 'fx-sparkle').setDepth(9600).setVisible(false).setScale(2);
 
     this.setupCamera();
+    // Singers (the Lohse St karaoke) have music notes floating up from them.
+    this.time.addEvent({ delay: 700, loop: true, callback: () => {
+      for (const n of this.npcs) if (n.spot?.sing && !n.gone && n.visible && Math.random() < 0.6) {
+        const t = this.add.text(n.x + (Math.random() * 12 - 6), n.y - 30, ['♪', '♫', '♬'][Math.floor(Math.random() * 3)], { fontSize: '10px', color: ['#e2506a', '#3a7ad8', '#f5c83a'][Math.floor(Math.random() * 3)], stroke: '#1e1a18', strokeThickness: 2 }).setOrigin(0.5).setDepth(9500);
+        this.tweens.add({ targets: t, y: t.y - 18, x: t.x + (Math.random() * 10 - 5), alpha: 0, duration: 1400, onComplete: () => t.destroy() });
+      }
+    } });
     this.input.on('pointerdown', p => this.onTap(p));
     ui.worldAction = () => this.interact();
 
@@ -826,6 +833,7 @@ export class WorldScene extends Phaser.Scene {
       if (inChapter(3) && PRANKS[npc.id] && !story().pranks.includes(npc.id)) choices.push({ label: `Prank: ${PRANKS[npc.id].label}`, value: 'prank' });
       if (inChapter(4) && !NO_INVITE.includes(npc.id) && !story().invited.includes(npc.id)) choices.push({ label: 'Invite to the party', value: 'invite' });
       if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
+      if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
       if (!choices.length) break;
@@ -840,11 +848,26 @@ export class WorldScene extends Phaser.Scene {
         if (choice) await this.giveFriendGift(npc, choice, opts);
       }
       if (act === 'shop') { await ui.shop(info.shop); }
+      if (act === 'karaoke') { await this.karaoke(npc, opts); break; }
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'prank') await this.prank(npc, opts);
       if (act === 'invite') await this.invite(npc, opts);
       if (act === 'fight') { await this.challenge(npc, trainer, opts); break; }
       this.save();
+    }
+    this.save();
+  }
+
+  // Karaoke with the dela Cruz family (ui/karaoke.js). A good song makes friends.
+  async karaoke(npc, opts) {
+    const r = await ui.karaoke();
+    if (!r) return;
+    const fam = ['ramon', 'liza', 'migs', 'bea'];
+    if (r.stars) fam.forEach(id => state.addFriendPoints(id, r.stars * 4));
+    if (r.stars >= 2 && state.data.flags.karaokeDay !== state.data.day) {
+      state.data.flags.karaokeDay = state.data.day;
+      state.addItem('pancit'); sfx.pickup();
+      await ui.say(['Tita Liza: "Ang galing! Here, take some pancit home. For long life. And for your voice."', 'You got a plate of pancit.'], { name: 'Tita Liza', portrait: npcIcon('liza') });
     }
     this.save();
   }

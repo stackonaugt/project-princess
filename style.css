@@ -410,6 +410,23 @@ body.touch .bt-btn { min-height: 52px; }
 .set-mail { padding: 8px 0; text-align: center; } .set-mail p { margin: 4px 0 0; } .set-mail a { text-decoration: none; display: inline-block; }
 .set-help { background: #fff; border-radius: 8px; margin: 8px 0; padding: 4px 10px; }
 .set-help summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+/* Karaoke */
+.kara-song { display: flex; flex-direction: column; align-items: center; }
+.kara { display: grid; gap: 6px; }
+.kara-stage { position: relative; height: 110px; border-radius: 8px; overflow: hidden; background: radial-gradient(circle at 50% 120%, #f5c83a 0, #e2506a 35%, #3a1a4a 75%); }
+.kara-singer { position: absolute; left: 50%; bottom: 0; height: 100px; transform: translateX(-50%); animation: kara-bob .5s ease-in-out infinite alternate; }
+@keyframes kara-bob { from { transform: translateX(-50%) translateY(0) rotate(-3deg); } to { transform: translateX(-50%) translateY(-4px) rotate(3deg); } }
+.kara-notes span { position: absolute; bottom: 30px; font-size: 22px; color: #fff; text-shadow: 0 2px 0 #1e1a18; animation: kara-note 1.4s ease-out forwards; }
+@keyframes kara-note { to { transform: translateY(-70px); opacity: 0; } }
+.kara-line { margin: 0; text-align: center; min-height: 1.3em; }
+.kara-line.prev, .kara-line.next { font-size: 14px; opacity: .55; }
+.kara-line.cur { font-size: 20px; font-weight: 700; background: linear-gradient(90deg, #e2506a var(--fill, 0%), var(--ink) var(--fill, 0%)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.kara-lane { position: relative; height: 26px; background: #2a1a3a; border-radius: 13px; overflow: hidden; }
+.kara-now { position: absolute; left: 15%; top: 0; bottom: 0; width: 3px; background: #f5d63a; box-shadow: 0 0 6px #f5d63a; }
+.kara-cue { position: absolute; top: 5px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: #fff; border: 2px solid #1e1a18; }
+.kara-cue.perfect { background: #f5d63a; } .kara-cue.good { background: #5aa83a; } .kara-cue.miss { background: #6a6e78; opacity: .5; }
+.kara-fb { margin: 0; font-weight: 700; min-height: 1.3em; } .kara-fb.perfect { color: #c8302a; } .kara-fb.good { color: #3a8a2a; } .kara-fb.miss { color: #6a6e78; }
+.kara-btn { font-size: 22px; min-width: 50%; touch-action: manipulation; }
 /* Friendsgram */
 .insta-stats { display: flex; justify-content: space-around; padding: 8px 10px; border-bottom: 1px solid #eee; }
 .insta-stats div { display: grid; text-align: center; } .insta-stats b { font-size: 18px; } .insta-stats span { font-size: 12px; }

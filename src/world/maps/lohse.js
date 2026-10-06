@@ -39,6 +39,11 @@ export function buildLohse() {
   b.put('parkbin', 10, 17);
   b.put('gascage', 12, 20); b.put('gascage', 13, 20);
   b.put('bench', 15, 15);
+  // The dela Cruz family's karaoke by the shade (talk to them to sing)
+  b.npc('ramon', 8, 13, { face: 'down', at: 'karaoke', still: true, sing: true });
+  b.npc('liza', 10, 13, { face: 'down', at: 'karaoke', still: true, sing: true });
+  b.npc('migs', 7, 14, { face: 'right', at: 'karaoke', sing: true });
+  b.npc('bea', 11, 14, { face: 'left', at: 'karaoke', sing: true });
   b.sign(4, 12, ['Lohse St Reserve.', 'Toilets open 7am till dusk. The playground is open whenever you are brave enough.']);
 
   // Big gums, and backyard fences along the east side

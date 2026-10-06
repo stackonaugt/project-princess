@@ -86,6 +86,19 @@ export const NPCS = {
     name: 'Spiro', shop: 'fishvan', look: { hair: '#d8d4cc', hairStyle: 'short', skin: '#e0b088', shirt: '#f4f4f0', apron: '#2f6aa3', pants: '#2a2e3a', shoes: '#2a2a2a', moustache: '#d8d4cc' },
     gift: 'sardine',
   },
+  // The dela Cruz family: karaoke at Lohse St Reserve every day (Lohse St, the shade by the toilets)
+  ramon: {
+    name: 'Tito Ramon', look: { hair: '#1a1614', hairStyle: 'short', skin: '#b07a52', shirt: '#f4f4f0', shirtPattern: 'stripes', shirtAccent: '#2a5ab8', pants: '#3a3a44', shoes: '#f4f4f0', moustache: true, holding: 'mic' },
+  },
+  liza: {
+    name: 'Tita Liza', look: { hair: '#1a1614', hairStyle: 'long', skin: '#c08a5e', shirt: '#e8507a', pants: '#2a2a38', shoes: '#f4c83a', hoops: '#f4c83a', holding: 'mic' },
+  },
+  migs: {
+    name: 'Migs', look: { baby: true, hair: '#1a1614', hairStyle: 'short', skin: '#b88660', shirt: '#2a8ac8', motif: '#f4c83a', print: 'star', pants: '#3a3a44', shoes: '#e8e8e8' },
+  },
+  bea: {
+    name: 'Bea', look: { baby: true, hair: '#1a1614', hairStyle: 'long', skin: '#c08a5e', shirt: '#f08ab0', motif: '#ffffff', print: 'heart', shoes: '#e8e8e8' },
+  },
   narelle: {
     name: 'Narelle', look: { hair: '#c8b8a8', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#6a4a8a', pants: '#2a2a38', shoes: '#1e1a18', glasses: true },
   },

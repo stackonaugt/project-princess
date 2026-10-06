@@ -766,6 +766,30 @@ export const PEOPLE = {
       ['If the motion helps actual residents, I\'m in. If it\'s about the font on the agenda, I\'m going home.'],
     ],
   },
+  ramon: {
+    role: 'Karaoke king of Lohse St Reserve. Dad of Migs and Bea',
+    lines: [
+      ['Kumusta, neighbour! You sing? Everybody sings. Come, the mic is warm!'],
+      ['My wife says I sing like Martin Nievera. My kids say I sing like a car alarm. Both are true.'],
+      ['Every Sunday at Tita Baby\'s house we sing until the neighbours join in. Here, the magpies join in.'],
+    ],
+  },
+  liza: {
+    role: 'Tita Liza. Nurse at Werribee Mercy, karaoke legend on her day off',
+    lines: [
+      ['Kain na! Have some pancit, then you sing. That is the rule.'],
+      ['Twelve-hour shift yesterday. Today, karaoke. You need balance, anak.'],
+      ['Ramon picks the same song every time. I let him. It is love.'],
+    ],
+  },
+  migs: {
+    role: 'Migs. Six and three quarters. Plays air guitar',
+    lines: [['I can do the high note! Listen! ...That was the high note.'], ['Papa says if I practise I can be on The Voice. Or Bunnings. Same thing.']],
+  },
+  bea: {
+    role: 'Bea. Four. Backup dancer',
+    lines: [['I am DANCING. Do you want to dance? You are dancing now.'], ['Mama sings the best. Papa sings the LOUDEST.']],
+  },
   narelle: {
     role: 'Civic centre reception. Knows where everything is',
     lines: [
