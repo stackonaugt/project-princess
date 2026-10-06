@@ -2,7 +2,7 @@
 // whenever you walk to another suburb or catch a train.
 
 import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
-import { ZONES, SUBURBS, SUBURB_ORDER, getMap } from '../data/regions.js';
+import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS } from '../data/regions.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
@@ -252,6 +252,7 @@ export class WorldScene extends Phaser.Scene {
       if (o.forSale) this.interactables.push({ kind: 'forsale', id: o.forSale, x, y: def.flat ? (o.y + o.h / 2) * T : y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots' });
       else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (o.kind === 'tramstop' && TRAM_STOPS[this.regionId]) this.interactables.push({ kind: 'tram', x, y: y - 6, bubble: 'fx-bubble-read' });
       else if (o.kind === 'agendaboard') this.interactables.push({ kind: 'agenda', x, y: y - 6, r: 20, bubble: 'fx-bubble-read' });
       else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
       else if (this.region.home && o.kind === 'counter' && o.v === 'stove') this.interactables.push({ kind: 'cook', x, y: y - 6, r: 20, bubble: 'fx-bubble-dots' });
@@ -434,6 +435,13 @@ export class WorldScene extends Phaser.Scene {
     if (!entry && !this.entryName && state.data.pos && state.data.region === this.regionId && !this.solidAt(state.data.pos.x, state.data.pos.y)) {
       return { ...state.data.pos, dir: state.data.dir };
     }
+    if (!entry && this.entryName === 'tram') {   // off the tram: step down beside the stop
+      const st = this.map.objects.find(o => o.kind === 'tramstop');
+      if (st) for (const [dx, dy] of [[0, 1], [1, 1], [-1, 1], [1, 0], [-1, 0], [0, 2], [1, 2], [-1, 2], [0, -1]]) {
+        const x = st.x + dx, y = st.y + dy;
+        if (x >= 0 && y >= 0 && x < this.map.w && y < this.map.h && !this.map.solid[y * this.map.w + x]) return { ...toWorld(x, y), dir: 'down' };
+      }
+    }
     entry = entry || e.start || e.station || Object.values(e)[0];
     // A long edge entry (`span`): arrive the same way along it as you left the
     // other map, on the nearest open tile.
@@ -602,6 +610,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'npc') return this.talkToNpc(t.ref);
     if (t.kind === 'item') return this.pickUp(t);
     if (t.kind === 'travel') return this.travel();
+    if (t.kind === 'tram') return this.tram();
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
@@ -1187,6 +1196,20 @@ export class WorldScene extends Phaser.Scene {
       choices: [...options.map(s => ({ label: SUBURBS[s].stationName || `${SUBURBS[s].name} Station`, value: s })), { label: 'Stay here', value: null }],
     }, { cancelValue: null });
     if (choice) this.goTo(SUBURBS[choice].station, 'station', 25);
+  }
+
+  // Tram stops: tap your myki and ride to any tram stop in a zone you have visited.
+  async tram() {
+    sfx.myki();
+    const options = Object.keys(TRAM_STOPS).filter(z => z !== this.regionId && state.data.visited.includes(z));
+    if (!options.length) {
+      return ui.say(['You tap your myki at the tram stop. Beep beep.', 'Trams only go to stops you have already found. Walk to another tram stop first, then you can ride back and forth.']);
+    }
+    const choice = await ui.say({
+      text: 'You tap your myki. A tram dings round the corner. Where to?',
+      choices: [...options.map(z => ({ label: TRAM_STOPS[z], value: z })), { label: 'Stay here', value: null }],
+    }, { cancelValue: null });
+    if (choice) this.goTo(choice, 'tram', ZONES[choice].suburb === this.region.suburb ? 5 : 15);
   }
 
   goTo(region, entry, minutes = 20, frac = null) {
