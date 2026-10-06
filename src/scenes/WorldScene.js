@@ -1653,13 +1653,23 @@ export class WorldScene extends Phaser.Scene {
     const go = await ui.say({ text: `Send ${form(pet.id).name} to cause a distraction?`, choices: [{ label: 'Go on, cause chaos', value: true }, { label: 'Not yet', value: false }] }, { cancelValue: false });
     if (!go) return;
     const lesley = this.npcs.find(n => n.id === 'lesley' && !n.gone);
-    pet.pause?.(3); this.heartsFx(pet, 4); sfx.encounter();
-    await ui.say(LUNCH.distract(form(pet.id).name), { name: 'Cr Lesley Bentleigh', portrait: npcIcon('lesley') });
-    lesley?.setVisible(false);
+    // The pet tears round the reception desk, past the booths and back, three times
+    const P = (x, y) => [(x + 0.5) * T, (y + 0.75) * T], start = [pet.x, pet.y], lap = [P(8, 3), P(14, 3), P(15, 5), P(20, 7), P(20, 10), P(14, 8), P(8, 5)];
+    sfx.encounter(); this.heartsFx(pet, 4);
+    const running = pet.scriptTo([...lap, ...lap, ...lap, start], 150);
+    const watch = this.time.addEvent({ delay: 120, loop: true, callback: () => lesley?.active && lesley.faceTowards(pet.x, pet.y) });
+    const [line1, ...yell] = LUNCH.distract(form(pet.id).name);
+    await ui.say([line1]);
+    await ui.say(yell.slice(0, -1), { name: 'Cr Lesley Bentleigh', portrait: npcIcon('lesley') });
+    // ...and she storms off out the front door to find a ranger
+    watch.remove();
+    if (lesley) { await lesley.scriptTo([P(20, 11), P(13, 13), P(13, 14)], 70); lesley.setVisible(false); }
+    await running;
+    await ui.say(yell.slice(-1));
     state.removeItem('fishpie');
     t.sprite.setTint(0xc8a050);
     await ui.say(LUNCH.swap);
-    lesley?.setVisible(true);
+    if (lesley) { lesley.setVisible(true); await lesley.scriptTo([P(13, 13), P(20, 11), P(21, 9)], 70); lesley.setDir('right'); }
     await ui.say(LUNCH.eat, { name: 'Cr Lesley Bentleigh', portrait: npcIcon('lesley') });
     c2.swapped = true; c2.sickUntil = state.data.day + 7;
     if (lesley) this.removeNpc(lesley);
