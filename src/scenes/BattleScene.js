@@ -698,7 +698,7 @@ export class BattleScene extends Phaser.Scene {
       }
       if (canEvolve(m.petId, m.level)) await this.evolveFighter(m);
     }
-    if (!this.trainer) {
+    if (!this.trainer && ENEMIES[f.id].tall) {   // only people have pockets
       const cash = R.wildMoney(f);
       state.addMoney(cash);
       await this.say(`You find $${cash} in loose change where ${f.name} was.`);

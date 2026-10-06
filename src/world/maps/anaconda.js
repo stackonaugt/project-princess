@@ -13,7 +13,7 @@ export function buildAnaconda() {
   b.put('shopcounter', 2, 12);
   b.sign(15, 11, ['PLAY MORE, PAY LESS.', 'A rod, some bait, and Edwardes Lake. That is the whole plan.']);
   b.put('doormat', 12, 14);
-  b.npc('bazza', 5, 12, { face: 'right' });
+  b.npc('bazza', 3, 11, { face: 'down', counter: true });   // behind the counter
   b.exit(12, 15, 1, 1, 'preston', 'anaconda', 'Plenty Rd');
   b.entry('door', 12, 14, 'up');
   b.noDress = true;

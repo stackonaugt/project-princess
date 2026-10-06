@@ -28,7 +28,7 @@ const FISH_ZONE = { redfin: 0.18, carp: 0.3, eel: 0.12, yabby: 0.24, oldboot: 0.
 import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
-import { TRAINERS, PRIZE_TRAINER } from '../data/enemies.js';
+import { TRAINERS, PRIZE_TRAINER, fineFor } from '../data/enemies.js';
 import { rollEncounter, readyTeam, START_LEVEL } from '../systems/battle.js';
 import { form, canEvolve, evolve } from '../systems/forms.js';
 import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
@@ -257,6 +257,8 @@ export class WorldScene extends Phaser.Scene {
   buildExitMarkers() {
     const W = this.map.w, H = this.map.h;
     const free = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && !this.map.solid[y * W + x];
+    // Way signs only outdoors: inside and in the yard the way out is obvious.
+    const signs = !this.region.indoor && !this.region.home;
     for (const e of this.map.exits) {
       const dir = e.x === 0 && e.w === 1 ? 'left' : e.x + e.w === W && e.w === 1 ? 'right' : e.y === 0 && e.h === 1 ? 'up' : e.y + e.h === H && e.h === 1 ? 'down' : null;
       if (!dir) continue;   // doors in the middle of a map are easy to spot
@@ -266,12 +268,13 @@ export class WorldScene extends Phaser.Scene {
         const n = vertical ? e.h : e.w;
         for (let i = 0; i < n; i++) {
           const tx = vertical ? inX : e.x + i, ty = vertical ? e.y + i : inY;
+          if ('#+xzP'.includes(this.map.ground[ty]?.[tx])) continue;   // cones stay on the footpath, off the road
           const x = (tx + 0.5) * T, y = (ty + 0.7) * T;
           this.add.image(x, y, 'fx-cone').setOrigin(0.5, 1).setDepth(y);
         }
         continue;
       }
-      if (!e.label) continue;
+      if (!e.label || !signs) continue;
       const spots = vertical ? [[inX, e.y - 1], [inX, e.y + e.h], [inX + (dir === 'left' ? 1 : -1), e.y - 1]] : [[e.x - 1, inY], [e.x + e.w, inY], [e.x - 1, inY + (dir === 'up' ? 1 : -1)]];
       const [sx, sy] = spots.find(([x, y]) => free(x, y)) || spots[0];
       const key = exitSignTexture(this, e.label, dir);
@@ -448,6 +451,16 @@ export class WorldScene extends Phaser.Scene {
     const cam = this.cameras.main;
     cam.setBounds(0, 0, this.map.w * T, this.map.h * T);
     cam.setRoundPixels(true);
+    // Past the bottom of the map is plain black (it shows on tall phones),
+    // and the last tile fades into it rather than stopping dead.
+    cam.setBackgroundColor('#000000');
+    if (!this.textures.exists('fx-edgefade')) {
+      const t = this.textures.createCanvas('fx-edgefade', 4, T), c = t.getContext();
+      const g = c.createLinearGradient(0, 0, 0, T);
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.85)');
+      c.fillStyle = g; c.fillRect(0, 0, 4, T); t.refresh();
+    }
+    this.add.image(0, this.map.h * T, 'fx-edgefade').setOrigin(0, 1).setDisplaySize(this.map.w * T, T).setDepth(8990);
     cam.startFollow(this.player, true, 0.2, 0.2);
     this.onResize();
   }
@@ -479,7 +492,7 @@ export class WorldScene extends Phaser.Scene {
   candidates() {
     return [
       ...this.pets.map(p => ({ kind: 'pet', ref: p, x: p.x, y: p.y - 4 })),
-      ...this.npcs.filter(n => !n.gone).map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4 })),
+      ...this.npcs.filter(n => !n.gone).map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4, r: n.spot.counter ? 30 : 16 })),   // shopkeepers reach across the counter
       ...this.forage,
       ...this.interactables,
     ];
@@ -755,10 +768,11 @@ export class WorldScene extends Phaser.Scene {
     if (!f.met) { f.met = true; bus.emit('friends:changed'); }
     // Chris hands out the community garden plots the first time you chat
     if (npc.id === 'chris' && !state.data.flags.garden) await this.chrisGarden(opts);
-    // A menu: chat, give a gift, shop, or a rematch. Just one thing to do? Straight to it.
-    const greet = ['"Oh, hi!"', '"G\'day!"', '"Hey, you."', '"Hiya!"', '"Oh, it\'s you!"'][Math.floor(hash(npc.id.length, npc.id.charCodeAt(0)) * 5)];
-    for (let first = true; ; first = false) {
-      const choices = [{ label: 'Chat', value: 'chat' }];
+    // Talking starts the chat straight away; then a menu of anything else
+    // (a gift, the shop, a rematch...), if there is anything else.
+    await this.chatNpc(npc, opts);
+    for (;;) {
+      const choices = [];
       const giftable = state.bagItems().filter(id => !ITEMS[id].story && !ITEMS[id].deco);
       if (f.giftedDay !== day && giftable.length) choices.push({ label: 'Give a gift', value: 'gift' });
       // The story: pranks (Chapter 3) and party invitations (Chapter 4)
@@ -766,11 +780,8 @@ export class WorldScene extends Phaser.Scene {
       if (inChapter(4) && !NO_INVITE.includes(npc.id) && !story().invited.includes(npc.id)) choices.push({ label: 'Invite to the party', value: 'invite' });
       if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
-      let act = 'chat';
-      if (choices.length > 1 || !first) {
-        if (!first && choices.length === 1) break;
-        act = await ui.say({ text: first ? `${info.name}: ${greet}` : 'Anything else?', choices: [...choices, { label: 'Bye', value: null }] }, { ...opts, cancelValue: null });
-      }
+      if (!choices.length) break;
+      const act = await ui.say({ text: 'Anything else?', choices: [...choices, { label: 'Goodbye', value: null }] }, { ...opts, cancelValue: null });
       if (!act) break;
       if (act === 'chat') await this.chatNpc(npc, opts);
       if (act === 'gift') {
@@ -928,9 +939,14 @@ export class WorldScene extends Phaser.Scene {
       }
       if (t.prize) await this.winPet(t.prize);
       this.save();
-    } else if (result.outcome === 'lose') {
-      await ui.say(t.lose, opts);
-      await this.lostBattle();
+    } else {
+      const fine = Math.min(fineFor(npc.id, t), state.data.money);
+      if (result.outcome === 'lose') await ui.say(t.lose, opts);
+      if (fine > 0 && (result.outcome === 'lose' || result.outcome === 'forfeit' || result.outcome === 'run')) {
+        state.addMoney(-fine);
+        await ui.say(`${t.name} holds out a hand. You hand over $${fine}.`, opts);
+      }
+      if (result.outcome === 'lose') await this.lostBattle();
     }
   }
 

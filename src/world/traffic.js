@@ -15,6 +15,9 @@ export class Traffic {
     const start = (lane.dir > 0 ? lane.from : lane.to) * T;
     const pos = lane.pos * T;
     const s = this.scene.add.image(horiz ? start : pos, horiz ? pos : start, key);
+    // Side-on cars sit with their wheels on the bottom of their lane, not
+    // centred on it, so the near lane never spills onto the footpath.
+    if (horiz && !lane.tram && !lane.train) s.y = pos + T / 2 - 1 - s.height / 2;
     s.setOrigin(0.5, 0.5);
     if (horiz) s.setFlipX(lane.dir < 0); else s.setFlipY(lane.dir < 0);
     s.honked = false; s.stopped = 0;

@@ -14,7 +14,7 @@ export function buildBunnings() {
   b.put('shopcounter', 2, 12);
   b.sign(9, 11, ['Aisle 4: Hinges.', 'All of them. Every hinge ever made. Olly knows where each one is.']);
   b.put('doormat', 12, 14);
-  b.npc('olly', 5, 12, { face: 'right' });
+  b.npc('olly', 3, 11, { face: 'down', counter: true });   // behind the counter
   b.exit(12, 15, 1, 1, 'altona', 'bunnings', 'Kororoit Creek Rd');
   b.entry('door', 12, 14, 'up');
   b.noDress = true;

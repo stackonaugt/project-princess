@@ -269,6 +269,11 @@ export class Npc extends Actor {
     this.path = spot.path ? spot.path.map(([x, y]) => toWorld(x, y)) : null;
     this.pathIndex = 0; this.speed = spot.speed || 34; this.wait = 0;
     this.setDir(spot.face || 'down');
+    // People standing about outdoors potter a few steps around their spot
+    // now and then (shopkeepers at counters and `still` spots stay put).
+    this.home = pos;
+    this.idle = !this.path && !spot.counter && !spot.still && !scene.region?.indoor ? 2 + Math.random() * 6 : null;
+    this.goal = null;
     this.setInteractive({ useHandCursor: true });
   }
   setDir(dir) {
@@ -283,6 +288,32 @@ export class Npc extends Actor {
     this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
   }
   pause(sec) { this.wait = sec; this.setVelocity(0, 0); }
+  potter(player, dt) {
+    if (!this.goal) {
+      this.setVelocity(0, 0);
+      if ((this.idle -= dt) > 0) return false;
+      this.idle = 3 + Math.random() * 7;
+      const away = Math.hypot(this.x - this.home.x, this.y - this.home.y) > 4;
+      if (away) this.goal = { x: this.home.x, y: this.home.y, back: true };
+      else {
+        // One to two steps in a straight line, only over open ground
+        const [dx, dy] = [[1, 0], [-1, 0], [0, 1], [0, -1]][Math.floor(Math.random() * 4)];
+        const n = 1 + Math.floor(Math.random() * 2);
+        for (let i = 1; i <= n; i++) if (this.scene.solidAt(this.home.x + dx * 16 * i, this.home.y - 4 + dy * 16 * i)) return false;
+        this.goal = { x: this.home.x + dx * 16 * n, y: this.home.y + dy * 16 * n };
+      }
+    }
+    const dx = this.goal.x - this.x, dy = this.goal.y - this.y, d = Math.hypot(dx, dy);
+    const ahead = d > 0 && Math.hypot(player.x - (this.x + dx / d * 12), player.y - (this.y + dy / d * 12)) < 12;
+    if (d < 2 || ahead) {
+      if (d < 2) { this.body.reset(this.goal.x, this.goal.y); if (this.goal.back) this.setDir(this.spot.face || 'down'); }
+      this.goal = null; this.setVelocity(0, 0); return false;
+    }
+    const sp = 22;
+    this.setVelocity(dx / d * sp, dy / d * sp);
+    this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    return true;
+  }
   update(player, dt, frozen) {
     let moving = false;
     this.wait -= dt;
@@ -298,7 +329,8 @@ export class Npc extends Actor {
         this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
         moving = true;
       }
-    } else this.setVelocity(0, 0);
+    } else if (this.idle !== null && !frozen && this.wait <= 0) moving = this.potter(player, dt);
+    else this.setVelocity(0, 0);
     const anim = this.customArt ? `npc-${this.id}-walk` : `${this.texture.key}-walk`;
     if (moving && this.scene.anims.exists(anim)) { this.anims.play(anim, true); this.anims.timeScale = this.speed > 40 ? 1.5 : 1; }
     else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); }

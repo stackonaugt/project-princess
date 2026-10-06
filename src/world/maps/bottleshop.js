@@ -27,7 +27,7 @@ export function buildBottleShop() {
   b.put('barcounter', 2, 12);
   b.put('doormat', 9, 13);
 
-  b.npc('macca', 5, 12, { face: 'right' });
+  b.npc('macca', 3, 11, { face: 'down', counter: true });   // behind the counter
   b.exit(9, 14, 1, 1, 'albion', 'bottleshop', 'Sydney Rd');
   b.entry('door', 9, 13, 'up');
   return b.finish();

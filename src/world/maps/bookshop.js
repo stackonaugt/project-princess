@@ -23,7 +23,7 @@ export function buildBookShop() {
   b.put('doormat', 9, 12);
   b.sign(13, 11, ['New releases.', 'Staff pick: whatever Wren is reading this week. Wren reads a book a day.']);
 
-  b.npc('wren', 5, 12, { face: 'right' });
+  b.npc('wren', 4, 10, { face: 'down', counter: true });   // behind the counter
   b.exit(9, 13, 1, 1, 'sydney', 'bookshop', 'Sydney Rd');
   b.entry('door', 9, 12, 'up');
   b.noDress = true;

@@ -360,6 +360,11 @@ Object.assign(ENEMIES, NORTH_ENEMIES);
 Object.assign(TRAINERS, NORTH_TRAINERS);
 
 // Who owns which pet you have to win (Princess has no trainer: she is free).
+// Trainers who aren't friends: lose to them or give up and they take their
+// prize money off you (or `fine` if set).
+export const HOSTILE = new Set(['hipster', 'golfer', 'spruiker', 'spray', 'officer', 'inspector']);
+export const fineFor = (id, t) => t.fine ?? (HOSTILE.has(id) ? t.money || 0 : 0);
+
 export const PRIZE_TRAINER = Object.fromEntries(Object.entries(TRAINERS).filter(([, t]) => t.prize).map(([id, t]) => [t.prize, id]));
 
 // Brunswick East

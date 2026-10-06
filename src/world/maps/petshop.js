@@ -29,7 +29,7 @@ export function buildPetShop() {
   b.put('rug', 9, 11, { v: 'red' });
   b.put('doormat', 11, 17);
 
-  b.npc('ed', 5, 15, { face: 'right' });
+  b.npc('ed', 3, 14, { face: 'down', counter: true });   // behind the counter
   b.exit(11, 18, 1, 1, 'hope', 'petshop', 'Hope St');
   b.entry('door', 11, 17, 'up');
   return b.finish();
