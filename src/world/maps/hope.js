@@ -33,9 +33,9 @@ export function buildHope() {
   // East: a little car park, the bike co-op and an old tin shed
   b.fenceV(25, 0, 5, 'paling');
   b.graffiti(26, 4, true);
-  b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 30, 6, { v: 'yellow' }); b.put('bin', 31, 6, { v: 'red' });
+  b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 26, 8, { v: 'yellow' }); b.put('bin', 26, 9, { v: 'red' });
   // THE LEASH YOU CAN DO, the pet shop, run by Romey (inside: src/world/maps/petshop.js)
-  b.put('petshop', 28, 8);
+  b.put('petshop', 27, 8);
   b.put('doormat', 30, 11); b.put('doormat', 31, 11);
   b.exit(30, 11, 2, 1, 'petshop', 'door', 'The Leash You Can Do');
   b.put('factory', 32, 3, { v: 'brewery' });

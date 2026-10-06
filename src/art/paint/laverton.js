@@ -514,25 +514,38 @@ export const LAVERTON = {
   },
 
   // THE LEASH YOU CAN DO: the pet shop on Hope St, Brunswick (Romey's).
+  // Bigger (the owner's note): two storeys of red brick, a painted dog and
+  // cat on the upper wall, the big blue sign, a striped awning and wide
+  // windows full of goods either side of the door.
   petshop: {
-    foot: [6, 3], tex: [96, 72], variants: ['laverton'],
+    foot: [8, 3], tex: [128, 112], variants: ['laverton'],
     paint(p) {
-      p.shadow(48, 71, 92);
-      bricks(p, 2, 14, 92, 56, '#b86a4a', 7);
-      p.r('#e8e0d0', 0, 8, 96, 8); p.r('#ffffff', 0, 8, 96, 1); p.r('#b8b0a0', 0, 15, 96, 1);   // parapet
-      p.r('#2f6aa3', 6, 18, 84, 11); p.r('#4a8ac8', 6, 18, 84, 1); p.r('#1e4a7a', 6, 28, 84, 1);
-      p.text('THE LEASH YOU CAN DO', 9, 21, '#fff4c0');
-      for (let i = 0; i < 12; i++) p.r(i % 2 ? '#f4f4f0' : '#c8443a', 4 + i * 7.5, 30, 7.5, 5);  // striped awning
-      p.r('#8a2a20', 4, 35, 90, 1);
-      // windows with goods
-      for (const x of [8, 62]) {
-        p.r('#f4f0e6', x, 39, 26, 22); p.r('#9ad0e8', x + 2, 41, 22, 18); p.r('#c8e8f4', x + 2, 41, 22, 3);
-        p.r('#c8823a', x + 4, 52, 5, 6); p.r('#e8c040', x + 11, 54, 4, 4); p.r('#e77fb8', x + 17, 51, 5, 7);
-        p.r('#ffffff', x + 19, 43, 1, 4);
+      const W = 128, H = 112;
+      p.shadow(64, H - 1, 124);
+      bricks(p, 2, 10, W - 4, H - 11, '#b86a4a', 7);
+      p.r('#e8e0d0', 0, 4, W, 8); p.r('#ffffff', 0, 4, W, 1); p.r('#b8b0a0', 0, 11, W, 1);   // parapet
+      for (const [x, w] of [[44, 40]]) { p.r('#e8e0d0', x, 0, w, 5); p.r('#ffffff', x, 0, w, 1); }
+      // the upper floor: windows and a painted dog and cat
+      for (const x of [8, 100]) { p.r('#f4f0e6', x, 16, 20, 22); p.r('#7a9ab0', x + 2, 18, 16, 18); p.r('#a8c4d4', x + 3, 19, 4, 3); p.r('#f4f0e6', x + 2, 26, 16, 1); }
+      p.r('#f0e4c8', 34, 16, 60, 26);
+      p.blob(52, 30, 8, '#c8823a'); p.blob(46, 22, 3, '#a8622a'); p.blob(58, 22, 3, '#a8622a'); p.r('#1e1a18', 49, 28, 2, 2); p.r('#1e1a18', 54, 28, 2, 2); p.r('#1e1a18', 51, 32, 3, 2); p.r('#e77fb8', 52, 35, 2, 3);   // the dog
+      p.blob(76, 31, 7, '#5a5a62'); p.r('#5a5a62', 70, 22, 3, 5); p.r('#5a5a62', 80, 22, 3, 5); p.r('#f0d040', 73, 29, 2, 2); p.r('#f0d040', 78, 29, 2, 2); p.r('#e77fb8', 76, 33, 1, 1);   // the cat
+      p.r('#c8443a', 86, 20, 4, 4); p.r('#c8443a', 87, 24, 2, 4);   // a little heart
+      // the sign and the awning
+      p.r('#2f6aa3', 6, 46, W - 12, 13); p.r('#4a8ac8', 6, 46, W - 12, 1); p.r('#1e4a7a', 6, 58, W - 12, 1);
+      p.ctx.save(); p.ctx.translate(14, 48); p.ctx.scale(1.25, 1.6); p.text('THE LEASH YOU CAN DO', 0, 0, '#fff4c0'); p.ctx.restore();
+      for (let i = 0; i < 17; i++) p.r(i % 2 ? '#f4f4f0' : '#c8443a', 4 + i * 7.1, 60, 7.1, 6);   // striped awning
+      p.r('#8a2a20', 4, 66, W - 8, 1);
+      // windows with goods, either side of the door
+      for (const x of [8, 78]) {
+        p.r('#f4f0e6', x, 70, 42, 30); p.r('#9ad0e8', x + 2, 72, 38, 26); p.r('#c8e8f4', x + 2, 72, 38, 3);
+        for (let i = 0; i < 5; i++) p.r(['#c8823a', '#e8c040', '#e77fb8', '#3fa38f', '#c8443a'][i], x + 4 + i * 7, 86 + (i % 2) * 2, 5, 10 - (i % 2) * 2);   // bags of food, toys
+        p.r('#8a5a3a', x + 4, 80, 34, 1); p.blob(x + 10, 77, 2, '#f4f4f0'); p.blob(x + 28, 77, 2, '#e77fb8');
+        p.r('#ffffff', x + 34, 74, 1, 5);
       }
-      p.r('#3a2a1e', 40, 38, 16, 30); p.r('#9ad0e8', 42, 40, 12, 14); p.r('#f4f4f0', 42, 56, 12, 2); p.r('#e8c040', 52, 58, 1, 2);
-      p.r('#e8e0d0', 38, 68, 20, 3);
-      p.r('#f4f4f0', 64, 63, 20, 5); p.text('OPEN', 66, 63, '#c8443a');
+      p.r('#3a2a1e', 54, 69, 20, H - 70); p.r('#9ad0e8', 56, 71, 16, 16); p.r('#f4f4f0', 56, 89, 16, 2); p.r('#e8c040', 70, 92, 1, 2);
+      p.r('#e8e0d0', 52, H - 3, 24, 3);
+      p.r('#f4f4f0', 86, 101, 20, 6); p.text('OPEN', 88, 102, '#c8443a');
     },
   },
 };
