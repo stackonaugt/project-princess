@@ -4,7 +4,7 @@
 // three flagpoles, the clock tower and the pelican sign. Reached from Lohse St
 // Reserve along the road.
 //
-//   y1-8   car park (left), the chamber dome x10-17, the civic centre x22-31
+//   y1-8   car park (left), the chamber dome x8-18, the civic centre x21-32
 //   y9-19  lawn: rainbow path, field gun, flags, clock tower, paths to both doors
 //   y20-23 Civic Parade (footpath, road, footpath), west back to Lohse St Reserve
 import { MapBuilder } from '../MapBuilder.js';
@@ -18,12 +18,12 @@ export function buildCivic() {
   b.fill(0, 24, 40, 2, '.');
 
   // Car park and the buildings along the top
-  b.fill(1, 1, 8, 8, 'P');
-  b.put('car', 2, 2, { v: 'white' }); b.put('car', 5, 2, { v: 'silver' }); b.put('car', 2, 6, { v: 'red' }); b.put('car', 6, 6, { v: 'blue' });
-  b.fill(9, 9, 24, 1, 'k');                        // a paved forecourt along the fronts
-  b.put('chamberdome', 10, 6);
-  b.put('civiccentre', 22, 6);
-  b.fill(18, 6, 4, 3, 'k');                        // the link between them
+  b.fill(1, 1, 7, 8, 'P');
+  b.put('car', 2, 2, { v: 'white' }); b.put('car', 5, 2, { v: 'silver' }); b.put('car', 2, 6, { v: 'red' }); b.put('car', 5, 6, { v: 'blue' });
+  b.fill(8, 9, 25, 1, 'k');                        // a paved forecourt along the fronts
+  b.put('chamberdome', 8, 5);
+  b.put('civiccentre', 21, 5);
+  b.fill(19, 6, 2, 3, 'k');                        // the link between them
   b.put('tallplant', 19, 7); b.put('bench', 20, 8);
   b.fill(10, 1, 22, 5, 'L');
   b.sign(20, 4, ['Altona City Theatre, out the back.', 'Tonight: a musical about the Westgate Bridge. Tickets selling slowly.']);

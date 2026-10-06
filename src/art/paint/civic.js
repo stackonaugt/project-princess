@@ -22,41 +22,70 @@ const FLAGS = {
 };
 
 export const CIVIC = {
-  // The domed council chamber: a tan brick drum with a big dark grey dome.
+  // The council chamber, from the owner's photo: a huge dark shell roof that
+  // curves right down to the ground on both sides, over an arched front wall
+  // of pale brick with COUNCIL CHAMBER across it, pilasters and glass doors.
   chamberdome: {
-    foot: [8, 3], tex: [144, 96], variants: ['dome'],
+    foot: [11, 4], tex: [200, 130], variants: ['dome'],
     paint(p) {
-      const sx = 8, W = 128, H = 96, base = 58;
-      // the dome: a wide ellipse, darker at the edges, with seams
-      for (let y = 0; y < base - 4; y++) {
-        const t = (base - 4 - y) / (base - 4), half = Math.round(Math.sqrt(Math.max(0, 1 - t * t)) * (W / 2 + 8));
-        p.r(y < 6 ? '#5a6068' : '#40464e', sx + W / 2 - half, y + 4, half * 2, 1);
+      const W = 200, H = 130, cx = 100;
+      p.shadow(cx, H - 1, 196);
+      // the shell: a half ellipse from ground to ground, seams running up it
+      for (let y = 8; y < H; y++) {
+        const t = (H - y) / (H - 8), half = Math.round(Math.sqrt(Math.max(0, 1 - t * t)) * 98);
+        p.r(y < 16 ? '#5a6068' : y < 40 ? '#4a5058' : '#40464e', cx - half, y, half * 2, 1);
       }
-      for (let i = -3; i <= 3; i++) for (let y = 10; y < base - 6; y += 2) { const half = Math.sqrt(Math.max(0, 1 - ((base - 4 - y) / (base - 4)) ** 2)) * (W / 2 + 8); p.r('#34393f', Math.round(sx + W / 2 + i / 3.6 * half), y + 4, 1, 1); }
-      p.r('#6a7078', sx + W / 2 - 20, 8, 40, 2);   // a soft highlight
-      p.r('#2a2e34', sx - 8, base - 2, W + 16, 3);  // the eave
-      // the brick drum and COUNCIL CHAMBER
-      bricks(p, sx, base, W, H - base - 1, '#d8c098', 11);
-      centred(p, 'COUNCIL CHAMBER', sx + W / 2, base + 8, '#5a4a3a');
-      p.r('#2a2e33', sx + W / 2 - 9, base + 16, 18, H - base - 17); p.r('#a8c8d8', sx + W / 2 - 8, base + 17, 16, H - base - 18); p.r('#2a2e33', sx + W / 2, base + 17, 1, H - base - 18);
-      outline(p.ctx, 0, 0, 144, H);
+      for (let i = -5; i <= 5; i++) for (let y = 14; y < H - 4; y += 2) { const t = (H - y) / (H - 8), half = Math.sqrt(Math.max(0, 1 - t * t)) * 98; p.r('#353a40', Math.round(cx + i / 5.6 * half), y, 1, 1); }
+      p.r('#6a7078', cx - 30, 11, 60, 2); p.r('#5e646c', cx - 50, 16, 100, 1);   // a soft highlight on top
+      // the arched front wall, set into the shell, with a pale rim
+      for (let y = 56; y < H; y++) {
+        const t = (H - y) / (H - 56), half = Math.round(Math.sqrt(Math.max(0, 1 - t * t)) * 80);
+        p.r('#7a8088', cx - half - 3, y, half * 2 + 6, 1);
+      }
+      for (let y = 59; y < H; y++) {
+        const t = (H - y) / (H - 59), half = Math.round(Math.sqrt(Math.max(0, 1 - t * t)) * 77);
+        p.r(y % 4 === 0 ? '#c8b894' : '#e0d2b0', cx - half, y, half * 2, 1);
+        for (let x = cx - half + ((y >> 2) % 2) * 4; x < cx + half; x += 8) p.r('#c8b894', x, y, 1, 1);
+      }
+      for (const x of [-56, -36, 36, 56]) p.r('#cbbb96', cx + x, 92, 4, H - 93);                    // pilasters
+      centred(p, 'COUNCIL CHAMBER', cx, 82, '#4a3a2a');
+      p.r('#2a2e33', cx - 14, 98, 28, H - 99); p.r('#a8c8d8', cx - 13, 99, 26, H - 100);             // glass doors
+      p.r('#2a2e33', cx, 99, 1, H - 100); p.r('#d8e8f0', cx - 11, 101, 4, 6); p.r('#d8e8f0', cx + 3, 101, 4, 6);
+      p.r('#9a8a6a', cx - 30, H - 3, 60, 2);                                                        // the step
+      outline(p.ctx, 0, 0, W, H);
     },
   },
-  // The civic centre: a low brick building, flat grey fascia, a glass entry canopy.
+  // The civic centre, bigger, from the owner's photo: a long low building of
+  // pale brick under a dark flat roof with a deep overhang, a big flat canopy
+  // over the entry on square columns, glass behind, and the council's name on
+  // a dark feature wall.
   civiccentre: {
-    foot: [10, 3], tex: [164, 72], variants: ['brick'],
+    foot: [12, 4], tex: [196, 110], variants: ['brick'],
     paint(p) {
-      const sx = 2, W = 160, H = 72, top = 18;
-      bricks(p, sx, top, W, H - top - 1, '#c8b08a', 4);
-      p.r('#8a8e96', sx - 2, top - 8, W + 4, 9); p.r('#a8acb4', sx - 2, top - 8, W + 4, 2);   // flat roof fascia
-      for (const x of [8, 34, 108, 134]) { p.r('#2a2e33', sx + x - 1, top + 12, 20, 18); p.r('#7a9ab0', sx + x, top + 13, 18, 16); p.r('#a8c4d4', sx + x + 1, top + 14, 4, 3); }
-      // glass entry under a flat canopy on posts
-      p.r('#2a2e33', sx + 62, top + 10, 38, H - top - 11); p.r('#a8d0e0', sx + 63, top + 11, 36, H - top - 12);
-      for (const x of [72, 81, 90]) p.r('#2a2e33', sx + x, top + 11, 1, H - top - 12);
-      p.r('#d8dcdf', sx + 54, top + 2, 54, 6); p.r('#f4f4f0', sx + 54, top + 2, 54, 1); p.r('#9a9ea6', sx + 54, top + 7, 54, 1);
-      p.r('#8a8e96', sx + 56, top + 8, 2, H - top - 9); p.r('#8a8e96', sx + 104, top + 8, 2, H - top - 9);
-      centred(p, 'CIVIC CENTRE', sx + 81, top - 6, '#f4f4f0');
-      outline(p.ctx, 0, 0, 164, H);
+      const sx = 2, W = 192, H = 110, top = 40;
+      p.shadow(98, H - 1, 194);
+      // the roof from above, a deep dark overhang and the fascia
+      p.r('#5a5e66', sx + 4, 10, W - 8, top - 18); for (let x = sx + 8; x < sx + W - 8; x += 6) p.r('#4e525a', x, 11, 1, top - 20);
+      p.r('#6e727a', sx + 4, 10, W - 8, 2);
+      for (const [x, w] of [[30, 10], [140, 14]]) { p.r('#8a8e96', sx + x, 13, w, 6); p.r('#a8acb4', sx + x, 13, w, 1); }   // plant on the roof
+      p.r('#2a2e34', sx - 2, top - 8, W + 4, 8); p.r('#3a3e46', sx - 2, top - 8, W + 4, 2);
+      bricks(p, sx, top, W, H - top - 1, '#d8c8a4', 4);
+      // windows along the left wing
+      for (let i = 0; i < 4; i++) { const x = sx + 6 + i * 22; p.r('#2a2e33', x, top + 14, 18, 26); p.r('#7a9ab0', x + 1, top + 15, 16, 24); p.r('#a8c4d4', x + 2, top + 16, 4, 3); p.r('#2a2e33', x + 1, top + 26, 16, 1); }
+      // the dark feature wall with the council's name
+      p.r('#3a3e46', sx + 94, top, 30, H - top - 1); p.r('#4a4e56', sx + 94, top, 30, 2);
+      p.text('HOBSONS', sx + 96, top + 8, '#f4f4f0'); p.text('BAY', sx + 104, top + 15, '#f4f4f0'); p.text('CITY', sx + 102, top + 22, '#f4f4f0');
+      p.r('#3aa0c8', sx + 98, top + 32, 22, 2);
+      // the entry: glass behind a big flat canopy on square columns
+      p.r('#2a2e33', sx + 128, top + 10, 58, H - top - 11); p.r('#a8d0e0', sx + 129, top + 11, 56, H - top - 12);
+      for (const x of [140, 152, 164, 176]) p.r('#2a2e33', sx + x, top + 11, 1, H - top - 12);
+      p.r('#5a5e66', sx + 150, top + 34, 14, H - top - 35); p.r('#a8d0e0', sx + 151, top + 35, 12, H - top - 36); p.r('#2a2e33', sx + 157, top + 35, 1, H - top - 36);
+      p.r('#d8dcdf', sx + 122, top + 2, 72, 8); p.r('#f4f4f0', sx + 122, top + 2, 72, 1); p.r('#9a9ea6', sx + 122, top + 9, 72, 1);   // the canopy
+      for (const x of [124, 186]) { p.r('#c8ccd0', sx + x, top + 10, 5, H - top - 11); p.r('#9a9ea6', sx + x + 4, top + 10, 1, H - top - 11); }
+      centred(p, 'CIVIC CENTRE', sx + 158, top + 3, '#3a3e46');
+      // planter boxes along the front
+      for (const x of [8, 52]) { p.r('#8a8e96', sx + x, H - 9, 34, 8); for (let i = 0; i < 6; i++) p.blob(sx + x + 4 + i * 5, H - 10, 3, i % 2 ? '#3a7a3a' : '#4a8a3a'); }
+      outline(p.ctx, 0, 0, 196, H);
     },
   },
   clocktower: {
