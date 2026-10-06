@@ -48,9 +48,9 @@ export function buildCoburgMall() {
   b.npc('deb', 33, 11, { face: 'down' });
   b.npc('tash', 3, 14, { path: [[3, 14], [3, 22], [3, 6], [3, 14]], speed: 60 });
 
-  b.exit(43, 11, 1, 6, 'coburgsyd', 'west', 'Sydney Rd, Coburg');
+  b.exit(0, 25, 44, 1, 'coburgsyd', 'north', 'Sydney Rd, Coburg');   // all along the bottom
   b.exit(2, 0, 3, 1, 'coburglake', 'west', 'Coburg Lake');
-  b.entry('station', 18, 11, 'down').entry('east', 42, 13, 'left').entry('north', 3, 1, 'down');
+  b.entry('station', 18, 11, 'down').edgeEntry('south', 'x', 24, 0, 43, 'up').entry('north', 3, 1, 'down');
 
   b.lane({ axis: 'x', pos: 3.3, dir: 1, from: -12, to: 56, every: [40, 70], speed: 110, kinds: ['veh-train-h'], train: true, sky: true });
   b.lane({ axis: 'x', pos: 4.3, dir: -1, from: -12, to: 56, every: [45, 75], speed: 110, kinds: ['veh-train-h'], train: true, sky: true });

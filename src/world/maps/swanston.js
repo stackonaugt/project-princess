@@ -59,8 +59,8 @@ export function buildSwanston() {
   b.exit(60, 0, 6, 1, 'bourke', 'south', 'Bourke St');
   b.exit(71, 27, 1, 8, 'flinders', 'west', 'Flinders St');
   b.exit(40, 47, 3, 1, 'laneways', 'north', 'Hosier Lane');
-  b.exit(0, 27, 1, 8, null, null, 'Elizabeth St', ['Elizabeth St, and the Queen Vic Market beyond.', 'The market has moved its best stalls down to Fed Square for the season.']);
-  b.entry('bourke', 62, 1, 'down').entry('east', 70, 28, 'left').entry('south', 41, 46, 'up').entry('reading', 24, 17, 'down');
+  b.exit(0, 27, 1, 8, 'gardens', 'south', 'Carlton Gardens');
+  b.entry('bourke', 62, 1, 'down').entry('west', 1, 30, 'right').entry('east', 70, 28, 'left').entry('south', 41, 46, 'up').entry('reading', 24, 17, 'down');
   liven(b, 0.006);
   b.noDress = true;
   return b.finish();

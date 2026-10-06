@@ -48,6 +48,16 @@ export class MapBuilder {
     return true;
   }
 
+  // Take away any objects overlapping a rectangle (to lay a road through).
+  clear(x, y, w, h) {
+    this.objects = this.objects.filter(o => {
+      const hit = o.x < x + w && o.x + o.w > x && o.y < y + h && o.y + o.h > y;
+      if (hit) for (let j = o.y; j < o.y + o.h; j++) for (let i = o.x; i < o.x + o.w; i++) if (this.inside(i, j)) this.occ[j][i] = false;
+      return !hit;
+    });
+    return this;
+  }
+
   // Place an object with its footprint's top-left at tile x,y.
   // opts: v (variant), text (sign text), id, interact
   put(kind, x, y, opts = {}) {
@@ -107,6 +117,12 @@ export class MapBuilder {
   // to = null makes a locked exit that shows `lines` instead.
   exit(x, y, w, h, to, entry, label, lines = null, extra = {}) { this.exits.push({ x, y, w, h, to, entry, label, lines, ...extra }); return this; }
   entry(name, x, y, dir = 'down') { this.entries[name] = { x, y, dir }; return this; }
+  // An entry along a whole edge: you arrive as far along it (0..1) as you
+  // left the other map's exit. axis 'y' runs down a left/right edge.
+  edgeEntry(name, axis, at, from, to, dir) {
+    this.entries[name] = axis === 'y' ? { x: at, y: from, dir, axis, span: [from, to] } : { x: from, y: at, dir, axis, span: [from, to] };
+    return this;
+  }
   // A garden plot you can plant in (see systems state.farm). Walkable soil.
   plot(id, x, y, label = '') { this.set(x, y, 'd'); this.plots.push({ id, x, y, label: label || `Plot ${this.plots.length + 1}` }); this.reserve(x, y, 0.5); return this; }
   forage(x, y, items) { this.spawns.push({ x, y, items }); this.reserve(x, y, 0.5); return this; }

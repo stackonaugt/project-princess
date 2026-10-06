@@ -13,6 +13,11 @@ import { REQUEST_BONUS } from '../data/requests.js';
 import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, CH2_RECIPE, CH4 } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
+// What blocks a gated exit until you beat its keeper (`gate` on an exit).
+const GATES = {
+  bencarroll: ['A police officer steps out, arms wide. "Sorry, folks. This way into the city is closed by order of the Premier."', '"He\'s just up at Parliament on Spring St, if you want to take it up with him. Good luck with that."'],
+};
+
 // People you can't invite to the party (Chapter 4).
 const NO_INVITE = ['stranger', 'julie', 'commuter', 'binman', 'hipster', 'golfer'];
 
@@ -56,6 +61,7 @@ export class WorldScene extends Phaser.Scene {
   init(data) {
     this.regionId = data.region || state.data.region;
     this.entryName = data.entry || null;
+    this.entryFrac = data.frac ?? null;   // how far along a long edge you left, for `span` entries
     this.newDay = !!data.newDay;
     this.news = data.news || [];
     this.firstLoad = !!data.firstLoad;
@@ -409,6 +415,17 @@ export class WorldScene extends Phaser.Scene {
       return { ...state.data.pos, dir: state.data.dir };
     }
     entry = entry || e.start || e.station || Object.values(e)[0];
+    // A long edge entry (`span`): arrive the same way along it as you left the
+    // other map, on the nearest open tile.
+    if (entry.span) {
+      const [a, b] = entry.span, vert = entry.axis === 'y';
+      const want = Math.round(a + (b - a) * (this.entryFrac ?? 0.5));
+      for (let k = 0; k <= Math.abs(b - a); k++) for (const v of [want - k, want + k]) {
+        if (v < Math.min(a, b) || v > Math.max(a, b)) continue;
+        const x = vert ? entry.x : v, y = vert ? v : entry.y;
+        if (!this.map.solid[y * this.map.w + x]) return { ...toWorld(x, y), dir: entry.dir };
+      }
+    }
     return { ...toWorld(entry.x, entry.y), dir: entry.dir };
   }
 
@@ -1043,7 +1060,7 @@ export class WorldScene extends Phaser.Scene {
     if (choice) this.goTo(SUBURBS[choice].station, 'station', 25);
   }
 
-  goTo(region, entry, minutes = 20) {
+  goTo(region, entry, minutes = 20, frac = null) {
     if (this.leaving) return;
     this.leaving = true;
     state.data.minutes += minutes;
@@ -1051,7 +1068,7 @@ export class WorldScene extends Phaser.Scene {
     state.save();
     controls.release();
     this.cameras.main.fadeOut(350, 20, 30, 18);
-    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region, entry }));
+    this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region, entry, frac }));
   }
 
   // Leaving the house: pick up to three pets to bring along.
@@ -1122,9 +1139,16 @@ export class WorldScene extends Phaser.Scene {
       this.lockedExit = ex;
       return this.bounceBack(ex, ['I really should get Princess before I go...', 'She is usually doing laps of the court.']);
     }
+    // Gated ways (the Premier's police line into the city) until you beat whoever holds them.
+    if (ex.to && ex.gate && !state.data.beaten[ex.gate]) {
+      if (this.lockedExit === ex) return;
+      this.lockedExit = ex;
+      return this.bounceBack(ex, GATES[ex.gate] || ['The way is closed.']);
+    }
     if (ex.to && ex.team && state.foundIds().length) return this.chooseTeamThenGo(ex);
     // Walking into another suburb takes 20 minutes, 10 once the bike lane motion passes.
-    if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : state.motionPassed('bikelane') ? 10 : 20);
+    const frac = ex.w > 1 && (ex.y === 0 || ex.y + ex.h === this.map.h) ? (tx - ex.x) / (ex.w - 1) : ex.h > 1 ? (ty - ex.y) / (ex.h - 1) : null;
+    if (ex.to) return this.goTo(ex.to, ex.entry, ZONES[ex.to].suburb === this.region.suburb ? 3 : state.motionPassed('bikelane') ? 10 : 20, frac);
     if (this.lockedExit === ex) return;
     this.lockedExit = ex;
     this.bounceBack(ex, ex.label ? ex.lines || [`The way to ${ex.label} is closed for now.`] : ['The way is closed.']);

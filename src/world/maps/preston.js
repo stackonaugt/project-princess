@@ -60,7 +60,7 @@ export function buildPreston() {
   b.magpies([[5, 23], [30, 23]]);
 
   b.exit(0, 9, 1, 1, 'coburg', 'east', 'Bell St');
-  b.exit(47, 14, 1, 1, 'loddon', 'west', 'Loddon Ave, Reservoir');
+  b.exit(47, 14, 1, 1, 'loddon', 'southeast', 'Loddon Ave, Reservoir');
   b.exit(41, 0, 3, 1, 'prestonhigh', 'south', 'Preston Station');
   b.entry('vapeshop', 22, 9, 'down').entry('anaconda', 32, 9, 'down').entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('north', 41, 1, 'down');
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });

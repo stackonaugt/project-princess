@@ -34,8 +34,9 @@ export function buildLake() {
   b.ellipse(8, 27, 3.5, 2, '"', '.').ellipse(41, 27, 2.5, 2.5, '"', '.').ellipse(6, 4, 2, 3, '"', '.');
 
   b.exit(20, 29, 3, 1, 'track', 'north', 'Athletics Track');
+  b.exit(1, 29, 2, 1, 'track', 'northwest', 'Athletics Track');
   b.exit(43, 12, 1, 3, 'wetlands', 'west', 'Edgars Creek Wetlands');
-  b.entry('south', 21, 27, 'up').entry('east', 41, 13, 'left');
+  b.entry('south', 21, 27, 'up').entry('southwest', 2, 27, 'up').entry('east', 41, 13, 'left');
 
   b.npc('abby', 10, 15, { path: [[10, 15], [10, 24], [20, 24.5], [20, 25], [36, 23], [40, 14], [36, 4], [12, 4]] });
 

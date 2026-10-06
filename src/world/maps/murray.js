@@ -43,9 +43,12 @@ export function buildMurray() {
   b.fill(0, 15, 4, 11, '.'); b.put('tree', 1, 18, { v: 'gum' });
 
   b.exit(43, 11, 1, 4, 'prestonmkt', 'west', 'Preston Market');
-  b.exit(4, 25, 6, 1, null, null, 'St Georges Rd', ['St Georges Rd and the 11 tram head south towards Thornbury.', 'Not today. Alison says it is "too far to walk". It is not.']);
+  b.exit(4, 25, 6, 1, 'coburg', 'market', 'Bell St, Coburg');
   b.exit(0, 11, 1, 4, null, null, 'Murray Rd', ['Murray Rd heads west to Coburg.', 'Too far for today. Bell St is the quicker way.']);
-  b.entry('east', 42, 11, 'left');
+  // A street running north up the east side, to Glasgow Ave
+  b.clear(36, 0, 4, 11).fill(36, 0, 1, 11, 'f').fill(37, 0, 2, 11, '#').fill(39, 0, 1, 11, 'f');
+  b.exit(37, 0, 2, 1, 'glasgow', 'southeast', 'Glasgow Ave');
+  b.entry('north', 38, 1, 'down').entry('east', 42, 11, 'left').entry('south', 6, 24, 'up').entry('middle', 22, 12, 'down');
 
   b.lane({ axis: 'x', pos: 12.5, dir: -1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });

@@ -57,9 +57,9 @@ export function buildSummerhill() {
   b.sign(42, 21, ['Summerhill Rd.', 'East to Reservoir East and Bundoora. Not today. The car park has everything you need.']);
   b.wildGrass(12, 26.5, 3, 0.8); b.wildGrass(34, 26.5, 3, 0.8);
 
-  b.exit(0, 0, 1, 28, 'loddon', 'summerhill', 'Loddon Ave');
+  b.exit(0, 27, 44, 1, 'loddon', 'east', 'Loddon Ave');   // all along the bottom
   b.exit(43, 22, 1, 4, null, null, 'Summerhill Rd', ['Summerhill Rd heads east, towards Reservoir East. Not today.']);
-  b.entry('west', 1, 12, 'right').entry('door', 24, 10, 'down');
+  b.edgeEntry('south', 'x', 26, 0, 43, 'up').entry('door', 24, 10, 'down');
 
   b.lane({ axis: 'x', pos: 23.5, dir: -1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-white', 'veh-car-h-red', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 24.5, dir: 1, from: -3, to: 47, every: [8, 15], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });
@@ -71,6 +71,7 @@ export function buildSummerhill() {
   b.forage(5, 26, ['snag', 'feather']);
   b.magpies([[40, 19], [20, 26]]);
   b.border(['gum', 'oak']);
+  b.clear(1, 27, 43, 1);   // no trees along the bottom, it's the way to Loddon Ave
   b.scatter([0, 0, b.w, b.h], 0.01, [['potplant', 2, ['succulent', 'fern']], ['bike', 1, ['blue', 'red']]], { clearance: 0, on: 'c' });
   return b.finish();
 }

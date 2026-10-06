@@ -72,10 +72,11 @@ export function buildCoburgSyd() {
 
   b.npc('layla', 7, 7, { face: 'down' });
 
-  b.exit(0, 6, 1, 8, 'coburgmall', 'east', 'Victoria St Mall');
+  b.exit(0, 6, 1, 8, 'coburg', 'north', 'Bell St');
+  b.exit(0, 0, 48, 1, 'coburgmall', 'south', 'Coburg Station');   // all along the top
   b.exit(47, 6, 1, 8, 'coburglake', 'south', 'Coburg Lake');
-  b.exit(17, 25, 6, 1, 'coburg', 'north', 'Bell St');
-  b.entry('west', 1, 7, 'right').entry('east', 46, 12, 'left').entry('south', 17, 24, 'up');
+  b.exit(17, 25, 6, 1, null, null, 'Sydney Rd', ['Sydney Rd carries on south. Bell St is the way back, off to the west.']);
+  b.entry('west', 1, 7, 'right').edgeEntry('north', 'x', 1, 0, 47, 'down').entry('east', 46, 13, 'left').entry('south', 17, 24, 'up');
 
   b.lane({ axis: 'x', pos: 9.5, dir: 1, from: -6, to: 54, every: [25, 45], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 10.5, dir: -1, from: -6, to: 54, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });

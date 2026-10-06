@@ -65,9 +65,9 @@ export function buildHolmes() {
   b.fill(41, 0, 3, 6, 'g').fill(41, 2, 2, 2, '"');
   b.wildGrass(42, 24, 2, 2); b.wildGrass(19, 24, 2, 1.2);
 
-  b.exit(0, 10, 1, 8, 'donald', 'east', 'Donald St, Brunswick');
-  b.exit(43, 10, 1, 8, 'ebnicholson', 'west', 'Nicholson St');
-  b.exit(26, 25, 2, 1, 'fleming', 'north', 'Fleming Park');
+  b.exit(0, 10, 1, 8, 'eblygon', 'east', 'Lygon St');
+  b.exit(43, 10, 1, 8, 'moreland', 'south', 'Moreland Rd, Coburg');
+  b.exit(26, 25, 2, 1, 'ebnicholson', 'east', 'Nicholson St');
   b.entry('west', 1, 11, 'right').entry('east', 42, 11, 'left').entry('south', 26, 23, 'up');
 
   b.npc('adam', 8, 10, { face: 'down' });

@@ -49,11 +49,11 @@ export function buildEbLygon() {
   b.put('bin', 10, 22, { v: 'red' }); b.put('bin', 11, 22, { v: 'yellow' }); b.put('crate', 28, 22, { v: 'blue' });
   b.fenceH(0, 43, 25, 'colorbond');
 
-  b.exit(0, 7, 1, 8, 'ebnicholson', 'west', 'Nicholson St');
+  b.exit(0, 7, 1, 8, 'lygon', 'east', 'Lygon St, Carlton');
   b.exit(0, 22, 1, 3, 'bowls', 'west', 'Brunswick Bowls Club');
-  b.exit(43, 7, 1, 8, 'lygon', 'east', 'Lygon St, Carlton');
-  b.exit(30, 0, 4, 1, null, null, 'Moreland Rd, Coburg', ['Lygon St carries on north towards Moreland Rd.', 'Not today. Bring Betty back some coffee beans when you do.']);
-  b.entry('east', 1, 8, 'right').entry('bowls', 2, 23, 'right').entry('north', 31, 2, 'down').entry('carlton', 42, 10, 'left');
+  b.exit(43, 7, 1, 8, 'holmes', 'west', 'Holmes St');
+  b.exit(30, 0, 4, 1, 'donald', 'east', 'Donald St, Brunswick');
+  b.entry('west', 1, 10, 'right').entry('bowls', 2, 23, 'right').entry('north', 31, 2, 'down').entry('east', 42, 10, 'left');
 
   b.npc('mrwilkinson', 9, 7, { face: 'down' });
   b.npc('abbysaunt', 20, 14, { face: 'up' });

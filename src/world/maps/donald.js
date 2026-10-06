@@ -64,10 +64,10 @@ export function buildDonald() {
   b.put('car', 3, 15, { v: 'blue' }); b.put('car', 19, 14, { v: 'red' }); b.put('car', 34, 15, { v: 'white' });
 
   b.exit(27, 0, 2, 1, 'sydney', 'donald', 'Sydney Rd');
-  b.exit(39, 16, 1, 2, 'coburg', 'west', 'Bell St, Coburg');
+  b.exit(39, 16, 1, 2, 'eblygon', 'north', 'Lygon St, Brunswick East');
+  b.exit(0, 14, 1, 2, 'brunswick', 'east', 'Brunswick Station');
   b.exit(39, 0, 1, 2, 'albion', 'south', 'Albion St');
-  b.exit(39, 21, 1, 3, 'holmes', 'west', 'Holmes St, Brunswick East');
-  b.entry('albion', 39, 3, 'down').entry('north', 27, 2, 'down').entry('east', 38, 16, 'left').entry('holmes', 38, 22, 'left');
+  b.entry('albion', 39, 3, 'down').entry('north', 27, 2, 'down').entry('east', 38, 16, 'left').entry('west', 1, 14, 'right');
 
   b.npc('rose', 10, 11, { face: 'up' });
 

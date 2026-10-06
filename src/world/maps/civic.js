@@ -49,16 +49,16 @@ export function buildCivic() {
   b.wildGrass(20, 17, 2, 1);
   b.sign(29, 18, ['Hobsons Bay City Council.', 'Customer service open 8:30am to 5pm. Council meets Tuesdays at 6:30pm. All welcome.']);
   b.put('powerpole', 6, 20); b.put('powerpole', 34, 20); b.put('lamp', 18, 20);
-  b.put('waysign', 3, 19, { v: 'lohse-left' });
 
   b.forage(36, 18, ['tennis', 'snag']);
   b.fill(36, 24, 2, 2, 'f');                       // the path south to Kororoit Creek Rd
   b.exit(36, 25, 2, 1, 'altona', 'north', 'Kororoit Creek Rd');
   b.border(['gum', 'oak']);
+  b.clear(0, 24, 36, 2).clear(38, 24, 2, 2);         // no trees along the bottom
   b.magpies([[16, 17], [33, 14]]);
 
   b.exit(0, 20, 1, 4, 'lohse', 'east', 'Lohse St Reserve');
-  b.exit(39, 20, 1, 4, null, null, 'Pier St', ['Civic Parade carries on to Pier St and the beach.', 'Another day. Bring a towel.']);
+  b.exit(39, 20, 1, 4, 'footscray', 'west', 'Footscray');
   b.entry('west', 1, 20, 'right').entry('south', 36, 23, 'up');
   b.lane({ axis: 'x', pos: 21.5, dir: -1, from: -4, to: 44, every: [8, 16], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 22.5, dir: 1, from: -4, to: 44, every: [8, 16], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });

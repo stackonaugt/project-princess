@@ -52,10 +52,9 @@ export function buildPrestonMkt() {
   b.npc('marko', 5, 18, { face: 'down' });
   b.npc('bev', 21, 9, { face: 'down' });
 
-  b.exit(43, 8, 1, 17, 'prestonhigh', 'west', 'Preston Station');
   b.exit(0, 10, 1, 15, 'murray', 'east', 'Murray Rd');
-  b.exit(38, 27, 2, 1, 'coburg', 'market', 'Bell St');
-  b.entry('east', 42, 12, 'left').entry('south', 38, 26, 'up').entry('west', 1, 12, 'right');
+  b.exit(0, 27, 44, 1, 'prestonhigh', 'west', 'Preston Station');   // all along the bottom
+  b.entry('east', 42, 12, 'left').edgeEntry('south', 'x', 26, 0, 43, 'up').entry('west', 1, 12, 'right');
 
   b.forage(41, 1, ['tennis', 'chicken']);
   b.forage(3, 26, ['fetta', 'sardine']);

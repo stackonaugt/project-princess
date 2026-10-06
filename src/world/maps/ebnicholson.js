@@ -65,12 +65,11 @@ export function buildEbNicholson() {
 
   b.put('car', 4, 17, { v: 'white' }); b.put('car', 30, 17, { v: 'blue' }); b.put('car', 15, 9, { v: 'red' });
 
-  b.exit(0, 9, 1, 9, 'holmes', 'east', 'Holmes St');
-  b.exit(45, 9, 1, 9, 'eblygon', 'east', 'Lygon St');
-  b.exit(14, 25, 3, 1, 'fleming', 'nicholson', 'Fleming Park');
-  b.exit(32, 25, 3, 1, 'nicholson', 'north', 'Nicholson St, Carlton');
-  b.entry('east', 1, 10, 'right').entry('west', 44, 10, 'left').entry('station', 21, 16, 'down')
-    .entry('park', 15, 23, 'up').entry('carlton', 33, 24, 'up').entry('milkbar', 9, 24, 'down');
+  b.exit(0, 9, 1, 9, 'nicholson', 'north', 'Nicholson St, Carlton');
+  b.exit(45, 9, 1, 9, 'holmes', 'south', 'Holmes St');
+  b.exit(0, 0, 46, 1, 'fleming', 'south', 'Fleming Park');   // the whole top edge, back to the park
+  b.entry('west', 1, 10, 'right').entry('east', 44, 10, 'left').entry('station', 21, 16, 'down')
+    .edgeEntry('north', 'x', 1, 0, 45, 'down').entry('milkbar', 9, 24, 'down');
 
   b.npc('concetta', 36, 7, { face: 'down' });
   b.npc('hatman', 13, 24, { face: 'up' });

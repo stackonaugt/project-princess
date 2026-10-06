@@ -67,12 +67,11 @@ export function buildCoburg() {
   b.lane({ axis: 'y', pos: 26.5, dir: 1, from: -3, to: 29, every: [9, 18], speed: 56, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
   b.lane({ axis: 'y', pos: 29.5, dir: -1, from: -3, to: 29, every: [10, 20], speed: 56, kinds: ['veh-car-v-yellow', 'veh-car-v-silver'] });
 
-  b.exit(0, 9, 1, 1, 'donald', 'east', 'Donald St, Brunswick');
+  b.exit(0, 9, 1, 1, null, null, 'Essendon', ['Bell St heads west to Essendon.', 'A long way on foot. Another day.']);
   b.exit(47, 14, 1, 1, 'preston', 'west', 'Plenty Rd, Preston');
   b.exit(25, 25, 6, 1, 'albion', 'east', 'Sydney Rd, Brunswick');
-  b.exit(25, 0, 6, 1, 'coburgsyd', 'south', 'Sydney Rd, Coburg');
-  b.exit(39, 0, 2, 1, 'prestonmkt', 'south', 'Preston Market');
-  b.exit(36, 25, 4, 1, 'moreland', 'north', 'Moreland Rd');
+  b.exit(25, 0, 6, 1, 'coburgsyd', 'west', 'Sydney Rd, Coburg');
+  b.exit(39, 0, 2, 1, 'murray', 'south', 'Murray Rd');
   b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('south', 25, 24, 'up')
     .entry('north', 25, 1, 'down').entry('market', 39, 1, 'down').entry('lygon', 36, 24, 'up');
   // Lived-in touches: pot plants and bikes outside shops (walk-through)
