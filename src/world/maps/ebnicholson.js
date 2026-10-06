@@ -2,8 +2,8 @@
 // north side, from the left: the black FORAGING shopfront, the sandwich
 // parlour and the long East Brunswick Take Away and Milk Bar (where the
 // Sorceress works), wall to wall; then a side street running up, one house,
-// and 199 Nicholson St, the big red brick bungalow where Helen and Paddy used
-// to live, then Nonna Concetta's with her chooks. Back yards fill the space
+// and 199 Nicholson St, the big red brick bungalow where Seb and Sinead used
+// to live (the first September Babies parties), then Nonna Concetta's with her chooks. Back yards fill the space
 // behind. On the south side, houses, the new green apartments and the 96 tram
 // stop (the myki reader). The 96 runs down the middle.
 //
@@ -43,7 +43,7 @@ export function buildEbNicholson() {
   b.put('bungalow', 36, 5, { v: 'cream' });
   b.fenceH(20, 45, 8, 'brickwall', [22, 30, 38]);
   b.fill(26, 8, 7, 1, '.'); b.put('tall', 27, 8, { v: 'cypress' }); b.put('tree', 32, 8, { v: 'lemon' }); b.fill(28, 8, 2, 1, '"');
-  b.sign(31, 9, ['199 Nicholson St.', 'Helen and Paddy lived here before the twins, the mayoring and the house out west. The lemon tree is still going.']);
+  b.sign(31, 9, ['199 Nicholson St.', 'Seb and Sinead lived here. The very first September Babies parties happened in this backyard. The lemon tree survived them all.']);
   b.put('letterbox', 29, 8);
   // back yards behind the houses: paling fences, a Hills hoist, a shed, a trampoline
   b.fenceH(20, 45, 3, 'paling', [24, 33, 41]);

@@ -55,7 +55,7 @@ export function objectives(n = chapterNow()) {
       { text: `Swap it for Cr Bentleigh's lunch in the civic centre foyer before the spill vote on ${weekday(c.deadline || 1)}, day ${c.deadline || '?'}`, done: !!c.swapped },
     ];
   }
-  if (n === 3) return [{ text: `Prank ${CH3_PRANKS} of Helen's friends: Paddy, Corni, Mem, Rose, Slinks, Tim or Nicholas${count(s.pranks.length, CH3_PRANKS)}`, done: s.pranks.length >= CH3_PRANKS }];
+  if (n === 3) return [{ text: `Prank ${CH3_PRANKS} of Helen's friends: Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim or Nicholas${count(s.pranks.length, CH3_PRANKS)}`, done: s.pranks.length >= CH3_PRANKS }];
   if (n === 4) {
     const rooms = CH4.rooms.filter(id => state.hasUpgrade(id)).length;
     return [
