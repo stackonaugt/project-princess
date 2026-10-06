@@ -15,9 +15,8 @@ import { openPetdex } from './petdex.js';
 import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
 import { openShop } from './shop.js';
-import { openPhone } from './phone.js';
+import { openPhone, PHONE_APPS, phoneClosed } from './phone.js';
 import { openCouncil } from './council.js';
-import { openRequests } from './requests.js';
 import { openCalendar } from './calendar.js';
 import { openStoryApp, openCard, openNews, openPaper, openParty } from './story.js';
 import { openCheats } from './cheats.js';
@@ -223,7 +222,7 @@ export const ui = {
   openModal(which) {
     const panel = $('modalPanel');
     panel.replaceChildren();
-    panel.className = `panel panel-${which}`;
+    panel.className = `panel panel-${which}` + (PHONE_APPS.includes(which) ? ` in-phone app-${which}` : '');
     const close = () => this.closeModal();
     if (which === 'dex') openPetdex(panel, close);
     if (which === 'bag') openBag(panel, close);
@@ -234,7 +233,6 @@ export const ui = {
     if (which === 'map') openMap(panel, close);
     if (which === 'garden') openGarden(panel, close);
     if (which === 'council') openCouncil(panel, close);
-    if (which === 'requests') openRequests(panel, close);
     if (which === 'calendar') openCalendar(panel, close);
     if (which === 'cheats') openCheats(panel, close);
     if (which === 'story') openStoryApp(panel, close);
@@ -255,6 +253,7 @@ export const ui = {
     // Apps opened from the phone go back to the phone.
     if (this._fromPhone && this.modalOpen !== 'phone') { this._fromPhone = false; sfx.close(); this.openModal('phone'); return; }
     this._fromPhone = false;
+    phoneClosed();
     this.modalAction = null;
     if (this._fishCleanup) { const c = this._fishCleanup; this._fishCleanup = null; c(); }
     $('modal').hidden = true;

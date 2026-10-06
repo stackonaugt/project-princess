@@ -60,6 +60,9 @@ export const CHAPTERS = {
   },
 };
 
+// What each chapter is called in the To Do app (no chapter numbers there).
+export const GOALS = { 1: 'Start Helen\'s Pet School', 2: 'Stop Paddy being ousted as Mayor', 3: 'Prank Helen\'s friends while she\'s away', 4: 'Win the election for Paddy' };
+
 // The objectives each chapter needs (checked in systems/story.js).
 export const CH1 = { find: 6, level: 10, trained: 3 }; // any six pets, then three at level 10, and one evolved
 

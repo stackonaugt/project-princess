@@ -5,32 +5,46 @@ import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { bus } from '../bus.js';
 import { sfx } from '../systems/sfx.js';
-import { CHAPTERS, TRIVIA } from '../data/story.js';
+import { CHAPTERS, TRIVIA, GOALS } from '../data/story.js';
+import { ZONES, npcZone } from '../data/regions.js';
 import { objectives, partyReady, chapterNow } from '../systems/story.js';
 import { itemIcon, npcIcon } from './images.js';
 import { ITEMS } from '../data/items.js';
 import { NPCS } from '../data/npcs.js';
 import { FRIENDS } from '../data/friends.js';
 
-// The Story app: this chapter's objectives.
+// The To Do app: the story's jobs, and today's requests from friends.
+let todoTab = 'todo';
 export function openStoryApp(panel, close) {
   const s = state.data.story, n = chapterNow();
-  const ch = CHAPTERS[n];
   const body = [];
-  if (!n) body.push(h('div', { class: 'note' }, h('p', {}, 'The story starts soon. Head outside and find Princess first.')));
-  else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'The end, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time.'}`), h('p', { class: 'small' }, 'More chapters are planned. Keep playing in the meantime.')));
-  else {
-    body.push(h('div', { class: 'note' }, h('h4', {}, `Chapter ${n}: ${ch.title}`), ...ch.intro.slice(-1).map(t => h('p', { class: 'small' }, t))));
-    if (s.done[n]) body.push(h('div', { class: 'note' }, h('p', {}, `Chapter ${n} is done${s.ch2.deposed && n === 2 ? ' (Paddy was rolled)' : ''}. The next one starts tomorrow morning.`)));
-    else body.push(h('div', { class: 'note' }, h('h4', {}, 'To do'), ...objectives(n).map(o => h('p', { class: 'small' + (o.done ? ' meta' : '') }, `${o.done ? '✓' : '○'} ${o.text}`))));
+  if (todoTab === 'todo') {
+    if (!n) body.push(todoNote('Find Princess', [{ text: 'She has got out again. Head outside and find her on Allen St.', done: false }]));
+    else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
+    else if (s.done[n]) body.push(h('div', { class: 'note' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
+    else body.push(todoNote(GOALS[n], objectives(n)));
     if (partyReady()) body.push(h('div', { class: 'center' }, h('button', { class: 'wood-btn', onclick: () => { close(); bus.emit('story:party'); } }, 'Throw the party!')));
+    const past = Object.keys(s.done).map(Number).filter(k => k < n || (k === n && n > 4));
+    if (past.length) body.push(h('div', { class: 'note' }, h('h4', {}, 'Done'), ...past.map(k => h('p', { class: 'todo-item done' }, h('span', { class: 'todo-box' }, '✓'), GOALS[k]))));
+  } else {
+    const reqs = state.todaysRequests();
+    body.push(h('p', { class: 'small' }, 'Friends ask for things each morning. Give them what they want as their gift for the day.'));
+    body.push(...reqs.map(q => h('div', { class: 'friend-card note' },
+      h('div', { class: 'gear-row' },
+        h('img', { class: 'pix', src: npcIcon(q.who), alt: '', width: 32, height: 32 }),
+        h('div', {}, h('b', {}, NPCS[q.who].name), h('p', { class: 'small' }, q.text),
+          h('p', { class: 'meta small' }, q.done ? 'Done ✓' : `Reward: $${q.money} and extra friendship. Usually at ${ZONES[npcZone(q.who)]?.name || 'around town'}. You have ${state.count(q.item)}.`)),
+        h('img', { class: 'pix', src: itemIcon(q.item, 32), alt: ITEMS[q.item].name, width: 32, height: 32 })))));
+    if (!reqs.length) body.push(h('p', { class: 'center' }, 'No requests today. Make some friends around town first: chat to people until they like you.'));
   }
-  const past = Object.keys(s.done).map(Number).filter(k => k < n);
-  if (past.length) body.push(h('div', { class: 'note' }, h('h4', {}, 'So far'), ...past.map(k => h('p', { class: 'small meta' }, `Chapter ${k}: ${CHAPTERS[k].title} ✓`))));
+  const tab = (id, label) => h('button', { class: 'tab' + (todoTab === id ? ' on' : ''), onclick: () => { todoTab = id; sfx.select(); openStoryApp(panel, close); } }, label);
   panel.replaceChildren(
-    h('div', { class: 'm-head' }, h('h2', {}, 'Story'), h('button', { class: 'wood-btn small', onclick: close }, 'Close')),
+    h('div', { class: 'm-head' }, h('h2', {}, 'To Do'), h('button', { class: 'wood-btn small', onclick: close }, 'Close')),
+    h('div', { class: 'tabs' }, tab('todo', 'My To Do List'), tab('requests', 'Requests')),
     h('div', { class: 'm-scroll' }, ...body));
 }
+const todoNote = (title, list) => h('div', { class: 'note' }, h('h4', {}, title),
+  ...list.map(o => h('p', { class: 'todo-item' + (o.done ? ' done' : '') }, h('span', { class: 'todo-box' }, o.done ? '✓' : ''), o.text)));
 
 // A big title card: { kicker, title, lines, button }.
 export function openCard(panel, close, { kicker, title, lines, button = 'Continue' }) {

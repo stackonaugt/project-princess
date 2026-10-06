@@ -159,7 +159,10 @@ export const ZONES = {
 for (const [id, z] of Object.entries(ZONES)) z.tagline = PLACES[id];
 
 // The whole route in walking order (the Map app draws this).
-export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'civic', 'civiccentre', 'chamber', 'station', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'holmes', 'fleming', 'bowls', 'eblygon', 'ebnicholson', 'ebmilkbar', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'bourke', 'laneways', 'flinders'];
+export const ROUTE = ['home', 'yard', 'allen', 'woods', 'lohse', 'station', 'civic', 'civiccentre', 'chamber', 'altona', 'bunnings', 'footscray', 'cozzo', 'flemington', 'brunswick', 'hope', 'petshop', 'sydney', 'bookshop', 'albion', 'bottleshop', 'donald', 'holmes', 'fleming', 'bowls', 'eblygon', 'ebnicholson', 'ebmilkbar', 'coburg', 'moreland', 'coburgsyd', 'pidebakery', 'coburgmall', 'coburglake', 'prestonmkt', 'murray', 'prestonhigh', 'preston', 'vapeshop', 'anaconda', 'loddon', 'summerhill', 'summerhillmall', 'track', 'lake', 'lakepark', 'wetlands', 'glasgow', 'reservoir', 'lygon', 'gelateria', 'gardens', 'nicholson', 'swanston', 'reading', 'bourke', 'laneways', 'flinders'];
+
+// Zones with tram stops (the Map app marks them once you've been there).
+export const TRAM_ZONES = ['sydney', 'albion', 'flemington', 'holmes', 'eblygon', 'ebnicholson', 'coburgsyd', 'preston', 'prestonhigh', 'lygon', 'nicholson', 'bourke', 'swanston', 'flinders'];
 
 // Kept for the Petdex tabs: pets are grouped by suburb.
 export const REGIONS = SUBURBS;

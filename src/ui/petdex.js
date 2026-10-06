@@ -2,8 +2,8 @@
 import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { PETS } from '../data/pets.js';
-import { TYPES, weaknessesOf, strengthsOf, typeList, typeName } from '../data/types.js';
-import { form, evolutionHint } from '../systems/forms.js';
+import { TYPES, typeList, typeName, effectiveness } from '../data/types.js';
+import { form, evolutionHint, isEvolved, canEvolve } from '../systems/forms.js';
 import { GEAR } from '../data/gear.js';
 import { MOVES, PET_MOVES } from '../data/moves.js';
 import { petLevel, petFighter, xpToNext } from '../systems/battle.js';
@@ -13,7 +13,7 @@ import { MAX_HEARTS } from '../config.js';
 import { petIcon, petPortrait, hasPhoto, itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-let tab = 'all';
+let tab = 'all', detailTab = 'stats';
 
 export function openPetdex(panel, close) {
   renderList(panel, close);
@@ -76,6 +76,16 @@ function renderDetail(panel, close, p) {
       : h('span', { class: 'pref unknown' }, '?')) : [h('span', { class: 'pref none' }, 'Nothing!')]));
   const statBar = (label, v) => h('div', { class: 'stat' }, h('span', {}, label), h('div', { class: 'bar' }, h('span', { style: { width: Math.min(100, v) + '%' } })), h('b', {}, v));
   const photo = hasPhoto(p.id);
+  const evo = isEvolved(p.id) || canEvolve(p.id) ? evolutionHint(p.id) : null;
+  const tabs = { stats: 'Stats', moves: 'Moves', prefs: 'Preferences' };
+  const content = detailTab === 'stats' ? battleNote(p, f, statBar)
+    : detailTab === 'moves' ? movesNote(f)
+    : h('div', {},
+      h('div', { class: 'note' }, h('h4', {}, 'Treats'), pref(p.loves, 'Loves'), pref(p.likes, 'Likes'), pref(p.dislikes, 'Dislikes'),
+        h('p', { class: 'small' }, 'Give treats to discover what they like. One treat per pet per day.')),
+      h('div', { class: 'note' }, h('h4', {}, 'Favourite spot'), h('p', {}, p.favouriteSpot)),
+      hc >= 2 ? h('div', { class: 'note' }, h('h4', {}, 'Fun fact'), h('p', {}, p.funFact))
+        : h('div', { class: 'note locked' }, h('h4', {}, 'Fun fact'), h('p', {}, 'Reach 2 hearts to unlock.')));
   panel.replaceChildren(
     header(panel, close, f.name, back),
     h('div', { class: 'm-scroll detail' },
@@ -88,16 +98,27 @@ function renderDetail(panel, close, p) {
           hearts(hc),
           h('p', { class: 'meta small' }, `First met on day ${rec.day}. Chats: ${rec.chats}.`))),
       h('p', { class: 'bio' }, f.bio),
-      evolutionHint(p.id) ? h('div', { class: 'note' }, h('h4', {}, 'Evolution'), h('p', {}, evolutionHint(p.id))) : null,
-      h('div', { class: 'note' }, h('h4', {}, 'Favourite spot'), h('p', {}, p.favouriteSpot)),
-      hc >= 2 ? h('div', { class: 'note' }, h('h4', {}, 'Fun fact'), h('p', {}, p.funFact))
-        : h('div', { class: 'note locked' }, h('h4', {}, 'Fun fact'), h('p', {}, 'Reach 2 hearts to unlock.')),
-      h('div', { class: 'note' }, h('h4', {}, 'Treats'), pref(p.loves, 'Loves'), pref(p.likes, 'Likes'), pref(p.dislikes, 'Dislikes'),
-        h('p', { class: 'small' }, 'Give treats to discover what they like. One treat per pet per day.')),
-      battleNote(p, f, statBar),
-      h('div', { class: 'note' }, h('h4', {}, `${typeName(f.type)} type`), ...typeList(f.type).map(t => h('p', {}, TYPES[t].blurb)),
-        h('p', { class: 'small' }, `Strong against: ${strengthsOf(f.type).map(t => TYPES[t].name).join(', ')}.`),
-        h('p', { class: 'small' }, `Watch out for: ${weaknessesOf(f.type).map(t => TYPES[t].name).join(', ')}.`))));
+      evo ? h('div', { class: 'note' }, h('h4', {}, 'Evolution'), h('p', {}, evo)) : null,
+      h('div', { class: 'tabs dex-tabs' }, ...Object.entries(tabs).map(([id, label]) => h('button', { class: 'tab' + (detailTab === id ? ' on' : ''), onclick: () => { detailTab = id; sfx.select(); renderDetail(panel, close, p); } }, label))),
+      content));
+}
+
+// Moves, and the type matchups you've actually seen in battle.
+function movesNote(f) {
+  const seen = state.data.matchups, mine = typeList(f.type);
+  const strong = [...new Set(seen.filter(k => mine.includes(k.split('>')[0]) && effectiveness(...k.split('>')) > 1).map(k => k.split('>')[1]))];
+  const weak = [...new Set(seen.filter(k => mine.includes(k.split('>')[1]) && effectiveness(...k.split('>')) > 1).map(k => k.split('>')[0]))];
+  const list = ts => ts.length ? ts.map(t => TYPES[t].name).join(', ') : '??? (battle to find out)';
+  return h('div', {},
+    h('div', { class: 'note' }, h('h4', {}, 'Moves'), ...f.moves.map(id => {
+      const m = MOVES[id];
+      const hits = [...new Set(seen.filter(k => k.startsWith(m.type + '>') && effectiveness(...k.split('>')) > 1).map(k => TYPES[k.split('>')[1]].name))];
+      return h('div', {}, h('div', { class: 'move-row' }, h('span', {}, m.name), h('span', { class: 'type', style: { background: TYPES[m.type].colour } }, TYPES[m.type].name), h('small', {}, m.power ? `Power ${m.power}` : 'Special')),
+        m.power && hits.length ? h('p', { class: 'small meta' }, `Super effective on ${hits.join(', ')}`) : null);
+    })),
+    h('div', { class: 'note' }, h('h4', {}, `${typeName(f.type)} type`), ...mine.map(t => h('p', { class: 'small' }, TYPES[t].blurb)),
+      h('p', { class: 'small' }, `Strong against: ${list(strong)}`),
+      h('p', { class: 'small' }, `Watch out for: ${list(weak)}`)));
 }
 
 function battleNote(p, d, statBar) {
@@ -105,10 +126,5 @@ function battleNote(p, d, statBar) {
   const hp = rec.hp === 0 ? 'Resting at home' : `${f.hp} / ${f.maxHp} HP`;
   return h('div', { class: 'note battle' }, h('h4', {}, `Level ${petLevel(p.id)} `, h('small', {}, `${hp} · ${rec.xp || 0} / ${xpToNext(petLevel(p.id))} XP`)),
     statBar('HP', d.stats.hp), statBar('Attack', d.stats.attack), statBar('Defence', d.stats.defence), statBar('Speed', d.stats.speed), statBar('Special', d.stats.special),
-    h('p', { class: 'small' }, rec.gear ? `Wearing: ${GEAR[rec.gear].name}. ${GEAR[rec.gear].desc}` : 'No gear. Buy some at the pet shop on Hope St, Brunswick.'),
-    h('h4', { style: { marginTop: '8px' } }, 'Moves'),
-    ...d.moves.map(id => {
-      const m = MOVES[id];
-      return h('div', { class: 'move-row' }, h('span', {}, m.name), h('span', { class: 'type', style: { background: TYPES[m.type].colour } }, TYPES[m.type].name), h('small', {}, m.power ? `Power ${m.power}` : 'Special'));
-    }));
+    h('p', { class: 'small' }, rec.gear ? `Wearing: ${GEAR[rec.gear].name}. ${GEAR[rec.gear].desc}` : 'No gear. Buy some at the pet shop on Hope St, Brunswick.'));
 }

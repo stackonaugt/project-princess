@@ -41,6 +41,7 @@ function fresh() {
     seeds: {},         // crop id -> packets of seeds
     farm: {},          // plot id -> { crop, growth, watered (day), boost } (see data/crops.js)
     upgrades: {},      // upgrade id -> true (see data/upgrades.js)
+    matchups: [],      // type matchups seen in battle, 'fire>water' (the Petdex shows them)
     flags: {},         // one-off story flags, e.g. garden (Chris gave you plots)
     spell: null,       // today's protection spell from the milk bar: { id, day }
     inventory: {},     // item id -> count
@@ -88,6 +89,7 @@ function sanitise(raw) {
   if (raw.farm && typeof raw.farm === 'object') for (const [k, f] of Object.entries(raw.farm)) if (f && CROPS[f.crop]) d.farm[k] = f;
   if (raw.upgrades && typeof raw.upgrades === 'object') for (const k of Object.keys(raw.upgrades)) if (UPGRADES[k]) d.upgrades[k] = true;
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
+  if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {} };
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
@@ -279,7 +281,7 @@ export const state = {
 
   // The requests board (data/requests.js)
   todaysRequests() {
-    const met = Object.entries(this.data.friends).filter(([, f]) => f.met).map(([id]) => id), key = `${this.data.day}:${met.length}`;
+    const met = Object.entries(this.data.friends).filter(([id, f]) => f.met && this.friendHearts(id) >= 1).map(([id]) => id), key = `${this.data.day}:${met.length}`;
     if (this._reqKey !== key) { this._reqKey = key; this._req = requestsFor(this.data.day, met); }   // cached: the bubbles ask every frame
     return this._req.map(q => ({ ...q, done: this.data.requests.day === this.data.day && this.data.requests.done.includes(q.id) }));
   },

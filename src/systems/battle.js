@@ -108,12 +108,22 @@ export function damage(user, target, move) {
   const A = (special ? user.stats.special : user.stats.attack) * stageMult(user.stages.atk);
   const D = (special ? (target.stats.special + target.stats.defence) / 2 : target.stats.defence) * stageMult(target.stages.def);
   const eff = effectiveness(move.type, target.type);
+  if (eff !== 1) learnMatchups(move.type, target.type);
   const stab = typeList(user.type).includes(move.type) ? 1.5 : 1;
   const critChance = 1 / 16 + (user.side === 'mine' ? user.hearts * 0.012 + (gearBonus(user).crit || 0) : 0);
   const crit = Math.random() < critChance;
   const mult = BALANCE.damage * stab * eff * (crit ? 1.5 : 1) * (user.charged ? 2 : 1) * (0.85 + Math.random() * 0.15);
   const dmg = Math.max(1, Math.floor(((2 * user.level / 5 + 2) * move.power * A / D / 50 + 2) * mult));
   return { dmg, eff, crit };
+}
+
+// Type matchups you've seen in battle show up in the Petdex (state.data.matchups).
+function learnMatchups(atk, defType) {
+  const seen = state.data.matchups;
+  for (const t of typeList(defType)) {
+    const key = `${atk}>${t}`;
+    if (effectiveness(atk, t) !== 1 && !seen.includes(key)) seen.push(key);
+  }
 }
 
 // Close friends sometimes refuse to give up (hang on with 1 HP).

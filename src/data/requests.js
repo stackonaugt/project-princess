@@ -10,7 +10,6 @@ import { rng } from '../util.js';
 
 export const REQUESTS_PER_DAY = 2;
 export const REQUEST_BONUS = { money: [12, 30], points: 20 };
-const STARTERS = ['trish', 'gordon', 'gaz'];
 const ASKS = [
   '{who} would really love {item}.',
   '{who} is after {item}. Today, if possible.',
@@ -20,7 +19,7 @@ const ASKS = [
 // Today's requests: [{ id, who, item, money, text }]
 export function requestsFor(day, metIds) {
   const r = rng(day * 977 + 13);
-  const pool = (metIds.length >= 3 ? metIds : [...new Set([...metIds, ...STARTERS])]).filter(id => NPCS[id] && !['stranger'].includes(id));
+  const pool = metIds.filter(id => NPCS[id] && !['stranger'].includes(id));
   const out = [];
   for (let tries = 0; out.length < REQUESTS_PER_DAY && tries < 30; tries++) {
     const who = pool[Math.floor(r() * pool.length)];
