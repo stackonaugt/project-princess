@@ -52,7 +52,7 @@ function fresh() {
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
-    settings: { sound: true },
+    settings: { sound: true, dayLength: 1, paused: false },
     seenIntro: false,
     story: freshStory(),   // the chapters (systems/story.js)
   };

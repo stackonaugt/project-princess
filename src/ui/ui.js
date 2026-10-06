@@ -72,7 +72,7 @@ export const ui = {
     const d = state.data;
     const z = ZONES[region], sub = SUBURBS[z.suburb].name;
     $('hudRegion').textContent = z.name === sub ? z.name : `${z.name}, ${sub}`;
-    $('hudClock').textContent = `Day ${d.day} · ${timeLabel(d.minutes)}`;
+    $('hudClock').textContent = `Day ${d.day} · ${timeLabel(d.minutes)}${d.settings.paused ? ' (paused)' : ''}`;
     $('hudWeather').textContent = state.isRaining() ? '☂' : (d.minutes >= 20 * 60 ? '☾' : '☀');
     $('hudWeather').title = state.isRaining() ? 'Raining' : 'Clear';
   },

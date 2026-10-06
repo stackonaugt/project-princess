@@ -1797,11 +1797,11 @@ export class WorldScene extends Phaser.Scene {
     const dt = Math.min(0.05, delta / 1000);
     const blocked = ui.blocking() || this.leaving;
 
-    if (!blocked) {
-      state.data.minutes += delta / MS_PER_GAME_MINUTE;
+    if (!blocked && !state.data.settings.paused) {
+      state.data.minutes += delta / (MS_PER_GAME_MINUTE * (state.data.settings.dayLength || 1));   // Settings: longer days
       if (state.data.minutes >= DAY_END) this.endDay();
     }
-    const label = `${state.data.day}${timeLabel(state.data.minutes)}${state.isRaining()}`;
+    const label = `${state.data.day}${timeLabel(state.data.minutes)}${state.isRaining()}${state.data.settings.paused}`;
     if (label !== this.lastLabel) { this.lastLabel = label; ui.updateHud(this.regionId); }
 
     this.player.update(controls.vector(), blocked);
