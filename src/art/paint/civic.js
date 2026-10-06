@@ -164,6 +164,16 @@ export const CIVIC = {
     foot: [1, 1], tex: [16, 16], variants: ['orange', 'pink'],
     paint(p, v) { const c = v === 'pink' ? '#e8b098' : '#c8643a'; box(p, 3, 5, 10, 10, c); p.r('#f4ece0', 3, 4, 10, 2); },
   },
+  // The agenda on an easel at the back of the public gallery.
+  agendaboard: {
+    foot: [1, 1], tex: [20, 30], variants: ['easel'], lined: true,
+    paint(p) {
+      p.r('#5e3a1a', 3, 18, 2, 12); p.r('#5e3a1a', 15, 18, 2, 12); p.r('#5e3a1a', 9, 18, 2, 10);
+      p.r('#3a2412', 1, 1, 18, 19); p.r('#f4efe0', 2, 2, 16, 17);
+      p.r('#1e3a6a', 3, 3, 14, 3);
+      for (let i = 0; i < 4; i++) p.r('#6a6e78', 4, 8 + i * 3, 8 + (i % 2) * 4, 1);
+    },
+  },
   // A brass plaque on the wall by the chamber doors.
   plaque: {
     foot: [2, 1], tex: [32, 10], variants: ['chambers'], solid: false, lined: true,

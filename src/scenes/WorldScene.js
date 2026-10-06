@@ -8,7 +8,7 @@ import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
 import { isAt, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
-import { MOTIONS, MOTION_ORDER, ALLIES, AGAINST, SWING, COUNCIL_VIEWS } from '../data/council.js';
+import { MOTIONS, MOTION_ORDER, ALLIES, AGAINST, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
 const COUNCILLORS = ['paddy', ...ALLIES, ...AGAINST, ...Object.keys(SWING)];
 import { REQUEST_BONUS } from '../data/requests.js';
 import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
@@ -54,7 +54,7 @@ import { sfx } from '../systems/sfx.js';
 import { ui } from '../ui/ui.js';
 import { setImageScene, petPortrait, npcIcon, itemIcon } from '../ui/images.js';
 import { bus } from '../bus.js';
-import { hash, pick, clamp } from '../util.js';
+import { hash, pick, clamp, rng } from '../util.js';
 
 export class WorldScene extends Phaser.Scene {
   constructor() { super('World'); }
@@ -250,6 +250,7 @@ export class WorldScene extends Phaser.Scene {
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
       if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (o.kind === 'agendaboard') this.interactables.push({ kind: 'agenda', x, y: y - 6, r: 20, bubble: 'fx-bubble-read' });
       else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
       else if (this.region.home && o.kind === 'counter' && o.v === 'stove') this.interactables.push({ kind: 'cook', x, y: y - 6, r: 20, bubble: 'fx-bubble-dots' });
       else if (this.region.home && ['bed', 'single', 'cot'].includes(o.kind)) this.interactables.push({ kind: 'sleep', x, y: y - 4, r: Math.max(18, o.w * 9), bubble: 'fx-bubble-zzz', cot: o.kind === 'cot' });
@@ -600,6 +601,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'item') return this.pickUp(t);
     if (t.kind === 'travel') return this.travel();
     if (t.kind === 'council') { ui.openModal('council'); return; }
+    if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
     if (t.kind === 'look') return ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
@@ -1319,12 +1321,24 @@ export class WorldScene extends Phaser.Scene {
     if (npc.id === 'paddy') state.data.flags.paddyLeft = state.data.day;
     this.removeNpc(npc);
   }
+  // The agenda on the easel in the chamber: the next meeting's business.
+  agendaLines() {
+    const d = state.data;
+    let day = d.day;
+    while (!isMeetingDay(day) || (day === d.day && d.council.metDay === day)) day++;
+    const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id)).map(id => MOTIONS[id].title);
+    const silly = sillyFor(day, d.council.silly).map(i => SILLY_MOTIONS[i]);
+    const items = ['Acknowledgement of Country', ...ready, ...silly, 'General business (Cr Bentleigh has 14 points of order)'];
+    return [`AGENDA: Council meeting, ${day === d.day ? 'tonight' : `${weekday(day)}, day ${day}`}, 6:30pm.`, ...items.map((t, i) => `${i + 1}. ${t}.`).reduce((a, l) => { const last = a[a.length - 1]; if (last && last.length + l.length < 130) a[a.length - 1] = `${last} ${l}`; else a.push(l); return a; }, [])];
+  }
+
   // Council meets in the chamber on Tuesday nights. Be there to watch.
   async maybeMeeting() {
     const d = state.data;
     if (this.regionId !== 'chamber' || !inMeeting(d) || d.council.metDay === d.day || ui.blocking() || this.meetingNow) return;
     this.meetingNow = true;
     const say = (who, lines) => ui.say(lines, { name: NPCS[who].name, portrait: npcIcon(who) });
+    const audience = this.meetingAudience();
     if (state.paddyDeposed()) await say('lesley', ['ORDER! I declare this meeting open. I am the MAYOR now. Paddy will be taking the minutes.', 'I acknowledge the Bunurong people, the Traditional Owners of this land.']);
     else await say('paddy', ['Order, order. I declare this meeting of Hobsons Bay City Council open.', 'I acknowledge the Bunurong people, the Traditional Owners of this land.']);
     // The spill (Chapter 2), if the fish pie never happened
@@ -1338,9 +1352,17 @@ export class WorldScene extends Phaser.Scene {
     const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id));
     if (!ready.length) {
       await say('lesley', ['POINT OF ORDER! The agenda is in the WRONG FONT!']);
-      await say('paddy', ['Noted, Councillor. Again. No motions are ready tonight. Chip in on the noticeboard in the foyer, everyone.', 'Meeting closed. Thank you all.']);
+      await say('paddy', ['Noted, Councillor. Again. No community motions are ready tonight. Chip in on the noticeboard in the foyer, everyone.', 'On to general business.']);
     }
+    const silly = sillyFor(d.day, d.council.silly);
     const results = state.holdMeeting(d.day);
+    for (const i of silly) {
+      const who = pick(['rayna', 'deanna', 'kirsty', 'dahlia', 'malcolm']), yes = sillyYes(d.day, i);
+      await say(who, [`I move that we ${SILLY_MOTIONS[i][0].toLowerCase()}${SILLY_MOTIONS[i].slice(1)}.`]);
+      await ui.say([`Cr ${pick(['Hawley', 'Grimes', 'Bishopp', 'Kellandra'])}: ${pick(SILLY_DEBATE.yes)}`, `Cr ${pick(['Bentleigh', 'Dismay'])}: ${pick(SILLY_DEBATE.no)}`]);
+      if (yes >= 4) { d.council.silly.push(i); sfx.found(); await say('paddy', [`${yes} for, ${7 - yes} against. CARRIED! Someone tell the newsletter.`]); }
+      else { sfx.sad(); await say('paddy', [`${yes} for, ${7 - yes} against. Lost. It goes back in the pile for another week.`]); }
+    }
     for (const r of results) {
       const m = MOTIONS[r.id];
       await say(m.sponsor, [`I move: "${m.title}".`]);
@@ -1349,8 +1371,38 @@ export class WorldScene extends Phaser.Scene {
       if (r.passed) { sfx.found(); await say('paddy', ['The motion is CARRIED!', m.effect]); }
       else { sfx.sad(); await say('lesley', ['HA! DEFEATED!']); await say('paddy', ['The motion is lost. We go again next week. Maybe bring Kirsty or Dahlia some flowers.']); }
     }
+    await say('paddy', ['That concludes tonight\'s business. Meeting closed. Drive safely, and mind the pelicans.']);
     this.save();
+    this.meetingWalkOut(audience);
     this.meetingNow = false;
+  }
+
+  // 3 or 4 locals in the public gallery: no shopkeepers, pet owners or battlers.
+  meetingAudience() {
+    const busy = new Set(this.npcs.map(n => n.id));
+    const pool = Object.keys(NPCS).filter(id => !busy.has(id) && !NPCS[id].shop && !TRAINERS[id] && !COUNCILLORS.includes(id) && !NPCS[id].look?.baby && !['stranger', 'julie', 'ghost', 'fairy', 'narelle'].includes(id));
+    const seats = [[2, 13], [6, 13], [10, 13], [14, 13], [18, 13], [4, 15], [8, 15], [16, 15]];
+    const r = rng(state.data.day * 31 + 7), n = 3 + Math.floor(r() * 2), out = [];
+    for (let k = 0; k < n && pool.length; k++) {
+      const id = pool.splice(Math.floor(r() * pool.length), 1)[0], [x, y] = seats.splice(Math.floor(r() * seats.length), 1)[0];
+      if (this.solidAt((x + 0.5) * T, (y + 0.75) * T)) continue;
+      const npc = this.spawnNpc({ id, x, y, face: 'up', still: true });
+      npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400 });
+      this.npcs.push(npc); out.push(npc);
+    }
+    return out;
+  }
+  // When it's over, everyone files out the foyer door, a few at a time.
+  meetingWalkOut(audience) {
+    const door = toWorld(17, 16);
+    const leaving = [...this.npcs.filter(n => COUNCILLORS.includes(n.id)), ...audience];
+    leaving.forEach((npc, i) => this.time.delayedCall(400 + i * 700, () => {
+      if (npc.gone) return;
+      npc.spot = { ...npc.spot, still: true };
+      const dist = Phaser.Math.Distance.Between(npc.x, npc.y, door.x, door.y);
+      npc.faceTowards?.(door.x, door.y);
+      this.tweens.add({ targets: npc, x: door.x, y: door.y, duration: dist * 22, onComplete: () => this.removeNpc(npc) });
+    }));
   }
 
   // ------------------------------------------------------------ the story (data/story.js)

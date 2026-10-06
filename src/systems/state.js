@@ -47,7 +47,7 @@ function fresh() {
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
-    council: { given: {}, passed: [], lost: {} },   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
+    council: { given: {}, passed: [], lost: {}, silly: [] },   // silly: SILLY_MOTIONS indexes that passed   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { couch: 'old', owned: ['old'] },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
@@ -91,7 +91,7 @@ function sanitise(raw) {
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
-  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {} };
+  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], metDay: raw.council.metDay };
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
   if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = ['old']; }
   if (raw.stats) Object.assign(d.stats, raw.stats);

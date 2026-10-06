@@ -23,7 +23,7 @@ export function buildChamber() {
   for (let x = 2; x <= 21; x += 2) b.put('chamberchair', x, 12);
   for (let x = 3; x <= 20; x += 2) if (x !== 9 && x !== 17) b.put('chamberchair', x, 14);
   b.put('tallplant', 1, 3); b.put('tallplant', 22, 3);
-  b.sign(21, 11, ['Public gallery.', 'Council meets Tuesdays, 6:30pm. Please do not heckle. Lesley heckles enough for everyone.']);
+  b.put('agendaboard', 12, 15);   // tonight's agenda (WorldScene fills in the words)
 
   // Council in session (routines.js: Tuesday 6:30pm to 9:30pm)
   b.npc('paddy', 9.5, 3, { face: 'down', at: 'chamber' });

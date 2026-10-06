@@ -27,7 +27,7 @@ export const ROUTINES = {
     const m = d.minutes;
     if (isWeekend(d.day)) return m < 18 * 60 ? 'yard' : 'home';
     if (m < 8 * 60) return d.flags.paddyLeft === d.day ? null : 'leaving';
-    if (inMeeting(d)) return 'chamber';
+    if (inMeeting(d) && d.council?.metDay !== d.day) return 'chamber';
     if (m < (isMeetingDay(d.day) ? MEETING[0] : 17 * 60 + 30)) return 'reception';
     if (isMeetingDay(d.day) && m < MEETING[1] + 30) return null;   // walking home after the meeting
     return 'home';
@@ -42,7 +42,7 @@ const ch = (d, n) => st(d).chapter === n && !st(d).done?.[n];
 for (const id of COUNCILLORS) {
   ROUTINES[id] = d => (id === 'rayna' && ch(d, 2)) || (id === 'lesley' && st(d).ch2?.sickUntil >= d.day) ? null
     : id === 'lesley' && ch(d, 2) && !isWeekend(d.day) && d.minutes >= 11 * 60 && d.minutes < 15 * 60 && !inMeeting(d) ? 'foyer'
-    : inMeeting(d) ? 'chamber'
+    : inMeeting(d) && d.council?.metDay !== d.day ? 'chamber'
     : FOYER_DAYS[id].includes(weekday(d.day)) && d.minutes >= 10 * 60 && d.minutes < 16 * 60 ? 'foyer' : null;
 }
 
