@@ -75,7 +75,7 @@ export function buildSydney() {
   b.exit(27, 25, 2, 1, 'donald', 'north', 'Donald St');
   b.entry('west', 1, 13, 'right').entry('east', 42, 13, 'left').entry('donald', 27, 23, 'up');
 
-  b.npc('pearman', 16, 13, { face: 'down' });
+  b.npc('pearman', 16, 13, { face: 'down', at: 'sydney' });
   b.npc('jordan', 20, 12, { face: 'down' });
   b.npc('slinks', 13, 13, { face: 'left' });
   b.npc('hipster', 27, 13, { face: 'down' });

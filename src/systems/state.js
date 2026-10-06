@@ -23,7 +23,7 @@ export const MAX_TEAM = 3;
 export const SLOT_COUNT = 3;
 const slotKey = n => `${SAVE_KEY}-slot${n}`;
 // Old npc ids -> new ones (the owner renamed some people).
-const RENAMED = { jules: 'pearman', busker: 'jordan', priya: 'abby', dimitri: 'james', wen: 'chris', kez: 'nathan' };
+const RENAMED = { jules: 'pearman', busker: 'jordan', priya: 'abby', dimitri: 'james', wen: 'chris', kez: 'nathan', marisol: 'ardi', commuter: 'jack', ed: 'ward', wren: 'shannon', sal: 'franco', bev: 'greco' };
 
 function fresh() {
   return {

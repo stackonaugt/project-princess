@@ -34,7 +34,7 @@ export function buildHope() {
   b.fenceV(25, 0, 5, 'paling');
   b.put('graffiti', 26, 4, { v: 'paste' });
   b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 30, 6, { v: 'yellow' }); b.put('bin', 31, 6, { v: 'red' });
-  // THE LEASH YOU CAN DO, the pet shop, run by Ed (inside: src/world/maps/petshop.js)
+  // THE LEASH YOU CAN DO, the pet shop, run by Romey (inside: src/world/maps/petshop.js)
   b.put('petshop', 28, 8);
   b.put('doormat', 30, 11); b.put('doormat', 31, 11);
   b.exit(30, 11, 2, 1, 'petshop', 'door', 'The Leash You Can Do');
@@ -58,8 +58,8 @@ export function buildHope() {
   b.exit(39, 15, 1, 2, 'sydney', 'west', 'Sydney Rd');
   b.entry('south', 5, 21, 'up').entry('east', 38, 15, 'left').entry('petshop', 30, 12, 'down');
 
-  b.npc('mem', 16, 9, { face: 'down' });
-  b.npc('corni', 18, 9, { face: 'down' });
+  b.npc('mem', 16, 9, { face: 'down', at: 'home' });
+  b.npc('corni', 18, 9, { face: 'down', at: 'home' });
 
   b.lane({ axis: 'y', pos: 1.5, dir: 1, from: -14, to: 38, every: [35, 60], speed: 110, kinds: ['veh-train-v'], train: true });
   b.lane({ axis: 'y', pos: 2.5, dir: -1, from: -14, to: 38, every: [40, 70], speed: 110, kinds: ['veh-train-v'], train: true });

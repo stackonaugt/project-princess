@@ -1,5 +1,5 @@
 // MORELAND RD at LYGON ST, Coburg (from the owner's Street View shots).
-// Betty and Ed's townhouse sits on the north-east corner: a red brick pier,
+// Betty and Ward's townhouse sits on the north-east corner: a red brick pier,
 // white render, glass balconies and a taupe front wall with lattice and ivy.
 // Betty stands out the front with something she has just cooked. Next door,
 // a catering kitchen and a cafe; across Moreland Rd, red-roofed brick houses
@@ -17,10 +17,11 @@ export function buildMoreland() {
   b.vline(19, 0, 25, 'f').fill(20, 0, 2, 26, '#').vline(22, 0, 25, 'f');
   b.fill(20, 12, 2, 1, 'z'); b.fill(20, 15, 2, 1, 'z');
 
-  // North-east corner: Betty and Ed's place
+  // North-east corner: Betty and Ward's place
   b.put('bettyhouse', 24, 9, { v: 'moreland' });
-  b.sign(23, 12, ['Betty and Ed\'s.', 'You can smell the berbere from the tram stop. Ed works at the pet shop on Hope St.']);
+  b.sign(23, 12, ['Betty and Ward\'s.', 'You can smell the cooking from the tram stop. Ward runs the bottle shop on Sydney Rd.']);
   b.npc('betty', 28, 12, { face: 'down' });
+  b.npc('ward', 30, 12, { face: 'down', at: 'home' });   // home from the bottle shop
   b.put('tree', 23, 8, { v: 'gum' });
   b.put('factory', 32, 9, { v: 'brick' });
   b.sign(31, 12, ['A catering kitchen.', 'Trays of food go out the roller door all day. Betty says hers is better. She is right.']);

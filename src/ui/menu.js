@@ -45,7 +45,7 @@ export function openMenu(panel, close) {
           h('li', {}, 'Some pets keep odd hours. Try visiting at different times of day.'),
           h('li', {}, 'Battles: with a team, wild things jump out of tall grass. Pick moves that suit their type. A pet who has had enough runs home; everyone rests up at home.'),
           h('li', {}, 'Most pets have owners. Talk to them for a friendly play-fight, and win to befriend their pet. Princess is free.'),
-          h('li', {}, 'Battles earn experience and a bit of money. Spend it at The Leash You Can Do, Ed\'s pet shop on Hope St, Brunswick: treats, and gear to put on your pets from the bag.'),
+          h('li', {}, 'Battles earn experience and a bit of money. Spend it at The Leash You Can Do, Romey\'s pet shop on Hope St, Brunswick: treats, and gear to put on your pets from the bag.'),
           h('li', {}, 'Some pets evolve once they reach a high enough level AND like you enough. Check the Petdex for hints.'),
           h('li', {}, 'Townsfolk have hearts too. Chat daily and bring gifts. Good friends sometimes turn up to help in battles near where they live.'),
           h('li', {}, 'Farming: Chris at the Edgars Creek community garden gives you plots. Water once a day (rain counts), then sell crops at James\'s milk bar.'),

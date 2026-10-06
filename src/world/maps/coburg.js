@@ -52,7 +52,7 @@ export function buildCoburg() {
   b.put('brickhouse', 32, 16, { v: 'red' });
   // Lygon St, south to Moreland Rd
   b.vline(36, 15, 25, 'f').fill(37, 14, 2, 12, '#').vline(39, 15, 25, 'f');
-  b.sign(35, 21, ['Lygon St, south.', 'Down to Moreland Rd. Betty and Ed live on the corner. Bring an appetite.']);
+  b.sign(35, 21, ['Lygon St, south.', 'Down to Moreland Rd. Betty and Ward live on the corner. Bring an appetite.']);
   b.put('weatherboard', 40, 16, { v: 'lemon' });
   b.put('tall', 44, 16, { v: 'cypress' }); b.put('tall', 46, 16, { v: 'cypress' });
   b.fenceH(31, 35, 19, 'brickwall', [34]); b.fenceH(40, 47, 19, 'brickwall', [42]);

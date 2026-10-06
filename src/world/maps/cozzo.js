@@ -1,5 +1,5 @@
 // Inside FRANCO COZZO, Barkly St, Footscray: a showroom of couches (the
-// banana couch front and centre), armchairs, dining sets and lamps. Sal at
+// banana couch front and centre), armchairs, dining sets and lamps. Franco at
 // the counter. Megalo!
 import { MapBuilder } from '../MapBuilder.js';
 
@@ -15,7 +15,7 @@ export function buildCozzo() {
   b.put('shopcounter', 2, 11);
   b.sign(7, 11, ['MEGALO SALE!', 'Every couch, every day, forever. The sale never ends. It has never ended.']);
   b.put('doormat', 11, 13);
-  b.npc('sal', 3, 10, { face: 'down', counter: true });   // behind the counter
+  b.npc('franco', 3, 10, { face: 'down', counter: true });   // behind the counter
   b.exit(11, 14, 1, 1, 'footscray', 'cozzo', 'Barkly St');
   b.entry('door', 11, 13, 'up');
   b.noDress = true;

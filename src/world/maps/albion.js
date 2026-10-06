@@ -100,6 +100,9 @@ export function buildAlbion() {
   // Moreland Rd's start, heading south off Sydney Rd (closed to the north)
   b.clear(41, 18, 6, 8).fill(41, 18, 1, 8, 'f').fill(42, 18, 3, 8, '#').fill(45, 18, 1, 8, 'f');
   b.exit(42, 25, 3, 1, 'moreland', 'west', 'Moreland Rd');
+  // Out the front of the Edinburgh Castle of an evening (routines.js)
+  b.npc('mem', 24, 13, { face: 'left', at: 'pub' }); b.npc('corni', 25, 13, { face: 'left', at: 'pub' });
+  b.npc('pearman', 22, 13, { face: 'right', at: 'pub' });
   b.entry('moreland', 43, 24, 'up').entry('south', 30, 24, 'up').entry('west', 1, 13, 'right').entry('east', 46, 13, 'left');
 
   b.lane({ axis: 'x', pos: 15.5, dir: 1, from: -6, to: 54, every: [25, 45], speed: 50, kinds: ['veh-tram-h'], tram: true });

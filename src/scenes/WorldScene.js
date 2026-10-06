@@ -19,7 +19,7 @@ const GATES = {
 };
 
 // People you can't invite to the party (Chapter 4).
-const NO_INVITE = ['stranger', 'julie', 'commuter', 'binman', 'hipster', 'golfer'];
+const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
 
 // What you can catch where: [item, weight, junk?]. Bait halves the junk.
 const FISH_TABLES = {
@@ -835,6 +835,11 @@ export class WorldScene extends Phaser.Scene {
         lines = pool[i];
       }
       if (npc.spot.leave && info.leaving) lines = info.leaving;
+      // Ward says hello to every pet on your team, by name.
+      if (info.greetsPets && state.data.party.length) {
+        const names = state.data.party.map(id => form(id).name);
+        lines = [`${info.name} crouches down. "${names.join('! ')}! Hello, hello! Who\'s a good team? You are. All of you."`, ...lines];
+      }
       // Paddy's advice once a day, before anything else.
       if (npc.id === 'paddy' && f.talkedDay !== day && !npc.spot.leave) lines = [...lines, this.paddyAdvice()];
       await ui.say(lines, opts);

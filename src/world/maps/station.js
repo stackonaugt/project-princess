@@ -78,8 +78,8 @@ export function buildStation() {
   b.exit(43, 24, 1, 2, 'altona', 'west', 'Altona North');
   b.entry('allen', 1, 2, 'right').entry('north', 18, 3, 'down').entry('station', 21, 12, 'down').entry('east', 42, 25, 'left');
 
-  b.npc('commuter', 31, 12, { face: 'down' });
-  b.npc('marisol', 22, 16, { face: 'up' });
+  b.npc('jack', 31, 12, { face: 'down' });
+  b.npc('ardi', 22, 16, { face: 'up' });
 
   const train = { axis: 'x', from: -12, to: 56, speed: 120, kinds: ['veh-train-h'], train: true, under: true };
   b.lane({ ...train, pos: 9.5, dir: 1, every: [30, 55] });

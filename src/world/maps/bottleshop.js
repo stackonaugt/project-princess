@@ -1,6 +1,6 @@
 // The Edinburgh Castle bottle shop, out the back of the hotel on Sydney Rd.
 // Fridges of cans along the back, wine racks, stacked slabs, the wall of beer
-// coasters, an old sideboard with the fancy bottles, and Macca at the counter.
+// coasters, an old sideboard with the fancy bottles, and Ward at the counter.
 // Talk to him to buy beers and wines for your friends (see src/ui/shop.js).
 //
 //   y0-1  top wall (coasters)   y2 fridges   y6, y9 wine racks and slabs
@@ -27,7 +27,7 @@ export function buildBottleShop() {
   b.put('barcounter', 2, 12);
   b.put('doormat', 9, 13);
 
-  b.npc('macca', 3, 11, { face: 'down', counter: true });   // behind the counter
+  b.npc('ward', 3, 11, { face: 'down', counter: true, at: 'shop' });   // behind the counter
   b.exit(9, 14, 1, 1, 'albion', 'bottleshop', 'Sydney Rd');
   b.entry('door', 9, 13, 'up');
   return b.finish();

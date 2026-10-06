@@ -1,6 +1,7 @@
 // Things you can inspect around town. Keyed by object kind (and variant).
 // Each entry is a list of possible conversations; one is picked at random.
 export const FLAVOUR = {
+  reunion: [['A big green sculpture outside the station. Apparently it\'s called Reunion. No idea what it\'s supposed to mean, but Helen LOVES it.']],
   brickhouse: [['Nobody is home. A sticker on the letterbox says NO JUNK MAIL, which has been ignored by everyone.'], ['You can hear a TV through the window. It is the footy replay. It is always the footy replay.']],
   weatherboard: [['The verandah has a cane chair, a pot plant and a sleeping cat that is definitely not a pet in this game.'], ['Someone inside is cooking with a lot of garlic. You are not invited, but you are tempted.']],
   terrace: [['A Victorian terrace, about 130 years old. Rent: astronomical. Insulation: none.'], ['A sign in the window says "Brunswick says NO to the new development". Another window says "YES". Neighbours.']],

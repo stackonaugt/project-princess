@@ -10,7 +10,7 @@
 //   weir         the old bluestone weir at Coburg Lake, with water going over
 //   rotunda      a little heritage band rotunda at Coburg Lake
 //   woodoven, bakecase   inside the Turkish bakery on Sydney Rd
-//   bettyhouse   Betty and Ed's townhouse on Moreland Rd: red brick pier, white render, glass balconies, a taupe front wall
+//   bettyhouse   Betty and Ward's townhouse on Moreland Rd: red brick pier, white render, glass balconies, a taupe front wall
 //   alisonapts   Alison's block on Murray Rd, Preston: dark brown cladding, white box frames, a red stripe
 // Plus item icons (NORTH_ITEM_ART) and battle foes (NORTH_FOE_ART).
 // Same format as objects.js.
@@ -270,7 +270,7 @@ export const NORTH = {
       for (let i = 0; i < 5; i++) { p.blob(5 + i * 9, 8, 2.5, '#b8702a'); p.r('#c8e0ec', 5 + i * 9, 8, 1, 1); }
     },
   },
-  // Betty and Ed's place, Moreland Rd at Lygon St (from the owner's Street View
+  // Betty and Ward's place, Moreland Rd at Lygon St (from the owner's Street View
   // shots): two storeys, a red brick pier up the corner, white render, glass
   // balconies under a flat roof, and a taupe rendered front wall with lattice.
   bettyhouse: {
@@ -370,6 +370,16 @@ function face(p, x, y, gap = 4) {
   p.r('#1a1010', x + 2, y + 3, gap - 2, 1);
 }
 export const NORTH_FOE_ART = {
+  cravat: [16, 16, p => {                                   // a silk cravat, knotted
+    p.r('#d86a1a', 4, 2, 8, 3); p.r('#f09040', 5, 2, 6, 1); p.r('#a84a10', 6, 5, 4, 3);
+    p.r('#d86a1a', 4, 8, 4, 7); p.r('#d86a1a', 8, 8, 4, 6); p.r('#f0b060', 5, 9, 1, 4); p.r('#a84a10', 11, 8, 1, 6);
+    face(p, 5, 3, 4);
+  }],
+  beret: [16, 16, p => {                                    // a black beret with eyes
+    p.r('#1e1e22', 1, 6, 14, 5); p.r('#1e1e22', 3, 4, 10, 2); p.r('#3a3a42', 4, 4, 6, 1); p.r('#1e1e22', 7, 2, 2, 2);
+    p.r('#2a2a30', 2, 11, 12, 2); p.r('#c8302a', 2, 11, 12, 1);
+    face(p, 5, 7, 4);
+  }],
   myki: [16, 16, p => {                                     // a myki card, cross
     p.r('#1e1e22', 1, 3, 14, 10); p.r('#2a2a30', 1, 3, 14, 1);
     p.r('#9ac83a', 1, 9, 14, 2); p.r('#c8e86a', 1, 9, 14, 1);

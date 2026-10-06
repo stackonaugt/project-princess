@@ -49,7 +49,7 @@ export function openNews(panel, close, { lines, votes = null }) {
   const bar = votes === null ? null : h('div', { class: 'vote-bar' }, fill, h('div', { class: 'vote-half' }), label);
   panel.replaceChildren(h('div', { class: 'news' },
     h('div', { class: 'news-head' }, h('span', { class: 'news-live' }, 'LIVE'), h('b', {}, 'WEST IS BEST NEWS'), h('span', {}, 'Hobsons Bay')),
-    h('div', { class: 'news-anchor' }, h('img', { class: 'pix', src: npcIcon('commuter'), alt: '' }), h('div', {}, ...lines.map(t => h('p', {}, t)))),
+    h('div', { class: 'news-anchor' }, h('img', { class: 'pix', src: npcIcon('jack'), alt: '' }), h('div', {}, ...lines.map(t => h('p', {}, t)))),
     bar ? h('div', {}, h('p', { class: 'small center' }, 'Paddy McPherson, share of the vote'), bar) : null,
     h('div', { class: 'news-ticker' }, h('span', {}, 'TRAFFIC: Westgate Bridge slow, as is tradition  ·  WEATHER: four seasons, one day  ·  SPORT: the Seagulls are up and about  ·  ')),
     h('div', { class: 'center' }, go)));

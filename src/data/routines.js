@@ -46,7 +46,20 @@ for (const id of COUNCILLORS) {
     : FOYER_DAYS[id].includes(weekday(d.day)) && d.minutes >= 10 * 60 && d.minutes < 16 * 60 ? 'foyer' : null;
 }
 
-ROUTINES.trish = ROUTINES.gordon = d => (ch(d, 3) ? null : 'woods');
+// Trish and Gordon: in the garden by day, inside at night, and Thursday
+// mornings shopping in Footscray.
+ROUTINES.trish = ROUTINES.gordon = d => ch(d, 3) || d.minutes >= 19 * 60 ? null
+  : weekday(d.day) === 'Thursday' && d.minutes >= 10 * 60 && d.minutes < 14 * 60 ? 'footscray' : 'woods';
+// Mem and Corni: up to the Edinburgh Castle at 7pm, home at 11pm.
+ROUTINES.mem = ROUTINES.corni = d => (d.minutes >= 19 * 60 && d.minutes < 23 * 60 ? 'pub' : 'home');
+// Pearman ducks up to the Edinburgh Castle on Friday and Saturday evenings.
+ROUTINES.pearman = d => (['Friday', 'Saturday'].includes(weekday(d.day)) && d.minutes >= 17 * 60 && d.minutes < 21 * 60 ? 'pub' : 'sydney');
+// Ward: the bottle shop till 7pm, then home to Betty on Moreland Rd.
+ROUTINES.ward = d => (d.minutes < 19 * 60 ? 'shop' : 'home');
+// Shannon closes Brunswick Bound at 8pm and heads home.
+ROUTINES.shannon = d => (d.minutes < 20 * 60 ? 'shop' : null);
+// Tim and Nicholas walk Stanley round Edwardes Lake every evening.
+ROUTINES.tim = ROUTINES.nicholas = d => (d.minutes >= 17 * 60 + 30 && d.minutes < 19 * 60 ? 'lake' : 'glasgow');
 
 // Is this person at this place right now? People without a routine always are.
 export function isAt(id, place, d) {

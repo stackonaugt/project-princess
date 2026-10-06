@@ -136,7 +136,7 @@ export const TRIVIA = [
   { q: 'What does Gordon love?', a: ['Monster trucks', 'Byzantine art, plants and trees', 'Reality TV'], right: 1 },
   { q: 'Which flavour does Sinead vape?', a: ['Grape Ice', 'Watermelon', 'Mango Ice'], right: 2 },
   { q: 'What does Tim love, apart from trains?', a: ['Rome', 'Golf', 'Cricket'], right: 0 },
-  { q: 'Who runs the garden centre at Bunnings?', a: ['Gaz', 'Olly', 'Ed'], right: 1 },
+  { q: 'Who runs the garden centre at Bunnings?', a: ['Gaz', 'Olly', 'Romey'], right: 1 },
   { q: 'What does Rose do for work?', a: ['Works for a senator', 'Drives a tram', 'Sells couches'], right: 0 },
   { q: 'What did Nicholas used to do?', a: ['Play footy', 'Dance', 'Juggle'], right: 1 },
   { q: 'Where is Paddy mayor of?', a: ['Moreland', 'Hobsons Bay', 'Wyndham'], right: 1 },

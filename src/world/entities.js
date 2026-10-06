@@ -322,7 +322,11 @@ export class Npc extends Actor {
       const dx = t.x - this.x, dy = t.y - this.y, d = Math.hypot(dx, dy);
       const ahead = Math.hypot(player.x - (this.x + dx / d * 12), player.y - (this.y + dy / d * 12)) < 12;
       if (d < 2 && this.spot.leave && this.pathIndex === this.path.length - 1) { this.setVelocity(0, 0); this.scene.npcLeft(this); return; }
-      if (d < 2) { this.pathIndex = (this.pathIndex + 1) % this.path.length; if (!this.spot.speed && !this.spot.leave) this.wait = 0.5 + Math.random() * 1.5; }
+      if (d < 2) {
+        this.pathIndex = (this.pathIndex + 1) % this.path.length;
+        if (!this.spot.speed && !this.spot.leave) this.wait = 0.5 + Math.random() * 1.5;
+        if (this.spot.dwell && this.pathIndex === 1) { this.wait = this.spot.dwell * (0.6 + Math.random() * 0.8); this.setDir(this.spot.face || 'down'); }   // a long stay at the first spot (behind the counter)
+      }
       else if (ahead) this.setVelocity(0, 0);
       else {
         this.setVelocity(dx / d * this.speed, dy / d * this.speed);

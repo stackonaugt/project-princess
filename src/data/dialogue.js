@@ -118,46 +118,45 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Gaz lobs a snag in bread. Perfect spiral. Energy restored.',
   },
-  marisol: {
-    role: 'Forklift driver',
+  ardi: {
+    role: 'Mechanic. Lives round the corner from the station',
     lines: [
-      ['Just knocked off a ten hour shift. My feet have opinions.'],
-      [
-        'We won our new agreement last month. Proper breaks, a heat policy, and pay that keeps up with rent.',
-        'Turns out when everyone signs up to the union at once, the boss suddenly finds the money.',
-      ],
-      ['Mind the forklifts. They beep for a reason.'],
+      ['Hi neighbour, how are you? Good? Good. Your car making that noise again? No? Lucky.'],
+      ['Hi neighbour, how are you? I just did a timing belt on a Corolla. Two hundred thousand k and still going. Toyotas never die.'],
+      ['Hi neighbour! You hear a squeal when you brake, you come see me. Do not wait. Waiting is how a $90 job becomes a $900 job.'],
+      ['Everyone wants an EV now. Fine. Less oil on my hands. But who fixes the aircon? Still me.'],
+      ['Back home in Surabaya my uncle fixed scooters on the footpath. Now I have a hoist. He thinks I am a king.'],
     ],
     hints: {
-      princess: 'If you are looking for animals, try Allen St. There is a poodle there who thinks she runs Laverton. Honestly, she might.',
+      princess: 'Looking for animals? Try Allen St. There is a poodle there who thinks she runs Laverton. Honestly, she might.',
     },
   },
-  commuter: {
-    role: 'Waiting for the Werribee line',
+  jack: {
+    role: 'Jack McPherson. Paddy\'s cousin. Waiting for the Werribee line',
     lines: [
+      ['G\'day! You\'re with Paddy, aren\'t you? My cousin. Tell him he still owes me twenty bucks from the footy tipping.'],
+      [
+        'See that green myki machine? Tap on there and you can go to any station you\'ve been to before. Saves the legs.',
+      ],
+      ['How\'s Paddy going as Mayor? Still wearing the big gold chain to the shops? Tell him I said hi. And to get a haircut.'],
       ['Train is delayed. Again. I have read the whole timetable twice for fun.'],
-      [
-        'Tip: tap your myki at the green reader and you can catch a train to any station you have already visited.',
-      ],
-      [
-        'Replacement buses this weekend. Replacement buses every weekend. I have made friends with the bus driver.',
-      ],
+      ['Replacement buses this weekend. Replacement buses every weekend. I have made friends with the bus driver.'],
     ],
   },
   pearman: {
-    role: 'Barista',
+    role: 'Sydney Rd regular. Golf tragic. North Melbourne for life',
     lines: [
-      ['Oat flat white? We also do a pour-over that tastes like a bushfire, in a good way.'],
-      ['My rent went up again. I make the coffee for the guy who owns my flat. He tips in exposure.'],
-      [
-        'If you see a tabby in the lane, that is Salami. She gets the milk froth on Fridays. Do not tell my manager.',
-      ],
+      ['Ever wonder why they call me Pearman? Year 7. A dare. A pear. Down the pants. Kept it there all of fourth period. Legend was born.'],
+      ['Shot a 94 at Royal Park on Sunday. Would have been an 89 but a magpie took my ball. Fair enough, it was nesting season.'],
+      ['North Melbourne. Yes, still. Somebody has to. The Kangas will be back. Any decade now.'],
+      ['If you find a golf ball, it\'s mine. Even if it isn\'t. Especially if it isn\'t.'],
+      ['I might duck up to the Edinburgh Castle for one. Just the one. Okay, two.'],
     ],
     hints: {
       salami: 'There is a stripy menace in the bluestone lane behind the terraces. Watch your ankles.',
       spooky: 'Night shift staff say there is a black bunny in the park that turns see-through. I think they need more sleep.',
     },
-    giftLine: 'We have a spare almond croissant. Take it before I eat it.',
+    giftLine: 'Here, have a pear. Fresh. Not THAT pear. A new one. Different pear.',
   },
   jordan: {
     role: 'Plays bass in a band. Busks outside the op shop',
@@ -327,7 +326,7 @@ export const PEOPLE = {
     hints: {
       spooky: 'Spooky goes see-through when she is shy. Come back after dark, when she is solid. And bring a carrot. She is not made of stone.',
     },
-    giftLine: 'Have a carrot. I carry them everywhere now. My bag is basically a crisper.',
+    giftLine: 'Here, a manoush from the Lebanese bakery up the road. Za\'atar. I bought two. I always buy two.',
     heartScenes: {
       2: [
         'Slinks: "Public service. Policy. I write briefs that ministers do not read." She pours a glass. "Spooky reads them. She has notes."',
@@ -363,6 +362,9 @@ export const PEOPLE = {
       ],
       ['Corni and I run the creek trail most mornings. I think about muscle loss. He thinks about Guinness.'],
       ['Third year of the PhD. My supervisor says I am nearly done. My supervisor has said that for a year.'],
+      ['Just did 12k along the Merri Creek before breakfast. Corni did 5 and then found a bakery. We each have our strengths.'],
+      ['Just got back from Bangkok! Pad kra pao for breakfast every day. Now everything in Brunswick tastes a little shy.'],
+      ['My brother Jules is doing really well, by the way. New job, new flat, new haircut. He seems happy. It\'s nice.'],
     ],
     hints: {
       salami: 'The tabby on Donald St? That is Rose\'s. Rose will want a battle. Rose always wants a battle.',
@@ -386,9 +388,7 @@ export const PEOPLE = {
       [
         'Guten Tag! You want a Guinness? It is always a good time for a Guinness. Except before the run. After the run.',
       ],
-      [
-        'The mullet is a commitment. Business at the front, Sydney Rd at the back. In Germany they did not understand.',
-      ],
+      ['Mem and I go up to the Edinburgh Castle most nights. Seven o\'clock. One Guinness. Then another. Then home.'],
       ['Mem and I run along the Merri Creek. She talks about mouse muscles. I look for the pub at the end.'],
       [
         'In Germany the trams have timetables you can trust. Here the 19 is more of a suggestion. I love it anyway.',
@@ -778,12 +778,16 @@ export const PEOPLE = {
     ],
     helpsInBattle: 'Deanna plants a tree right in front of the foe. It is very confused.',
   },
-  wren: {
-    role: 'Bookseller at Brunswick Bound, Sydney Rd',
+  shannon: {
+    role: 'Bookseller at Brunswick Bound, Sydney Rd. Knows a fact about everything',
     lines: [
+      ['Fun fact: Australia was one of the first places in the world where women could vote AND stand for parliament. 1902. South Australia even earlier.'],
+      ['Fun fact: compulsory voting means about 90 per cent of us vote. In the US it\'s more like two thirds. And their elections are on a Tuesday. A Tuesday!'],
+      ['Fun fact: the US Senate filibuster record is over 24 hours. Strom Thurmond, 1957, against civil rights. He had a bucket. Don\'t ask about the bucket.'],
+      ['Fun fact: the Australian ballot, the secret one, was invented in Victoria in 1856. The Americans literally call it "the Australian ballot". You\'re welcome, world.'],
+      ['Fun fact: our upper house uses preferences, so a senator can get in on two per cent of the primary vote. Ask Rose about it. Actually, don\'t. She\'ll tell you for an hour.'],
+      ['Fun fact: in 1975 the Governor-General sacked the Prime Minister. Nobody has ever really calmed down about it. Least of all my dad.'],
       ['Welcome to Brunswick Bound! Classics up the back, new releases on the tables, picture books at toddler height.'],
-      ['Rose from Donald St comes in every Saturday and leaves with a stack taller than Salami.'],
-      ['I read a book a day. Mostly on the 19 tram. It is the only quiet place in Brunswick.'],
       ['Buying a present? Monkey Grip for a Melbourne person. Cloudstreet for a crier. Fourth Wing for anyone who likes dragons.'],
     ],
   },
@@ -806,13 +810,14 @@ export const PEOPLE = {
       ['Your mate from the units on Plenty Rd? Mango Ice. I know everyone by flavour. It is a gift and a curse.'],
     ],
   },
-  sal: {
-    role: 'Sells furniture at Franco Cozzo, Footscray',
+  franco: {
+    role: 'Franco Cozzo himself, Footscray',
     lines: [
-      ['Footscray! Brunswick! Come on down! Megalo sale! Very cheap price! You will be very happy!'],
-      ['This couch? Imported. From the warehouse. Out the back. Still counts.'],
+      ['Footscray! Brunswick! Come on down! Megalo sale! Megalo! Very cheap price! You will be very happy!'],
+      ['This couch? Hand carved. Italian. Very beautiful. Your nonna will cry. In a good way.'],
       ['The banana couch. It is not a couch, it is a lifestyle. Your back will thank you. Your guests will stare.'],
       ['Leather, my friend. Real leather. In summer it sticks to your legs. That is how you know it is real.'],
+      ['Grazie, grazie! You walk past, you look, you come back. Everybody comes back to Franco.'],
     ],
   },
   // ---- Carlton and the city
@@ -1096,46 +1101,38 @@ export const PEOPLE = {
     ],
     giftLine: 'Strawberries, a bit squashed. Still sweet. Like me.',
   },
-  macca: {
-    role: 'Runs the Edinburgh Castle bottle shop',
+  ward: {
+    role: 'Runs the Edinburgh Castle bottle shop. Betty\'s partner. Knows his beer',
     lines: [
-      ['G\'day. Beers in the fridges, wine on the racks, goon down the bottom where it belongs.'],
-      ['Corni from Hope St comes in every Friday. Guinness. Always Guinness. I keep a slab aside.'],
-      ['Buying for a mate? Good on ya. Everyone\'s got a favourite. Ask around.'],
-      [
-        'Slinks from the public service bought the Penfolds again. Said it was a "Senate Estimates week". Fair enough.',
-      ],
+      ['VB? No. Put it down. Try this: a hazy pale from a garage in Thornbury. Three people brew it. Two of them are twins.'],
+      ['This week it\'s sours. A raspberry gose from Ballarat. It tastes like a picnic that got a bit wild.'],
+      ['Wine people are coming round to orange wine. Beer people are coming round to anything with a cartoon on the can.'],
+      ['Mountain Goat? Classic. But have you tried their small batch? No. Nobody has. That\'s the point.'],
+      ['Betty sends me to work with leftovers every day. The whole of Sydney Rd knows when it\'s lasagne Monday.'],
     ],
     heartScenes: {
-      3: [
-        'Macca: "Thirty years behind this counter. Seen Brunswick go from sheds to sourdough. The Guinness drinkers never change."',
-      ],
-      5: [
-        'Macca slips you a can of something from a tiny brewery in Coburg. "On the house. Don\'t tell the boss. I\'m the boss."',
-      ],
+      2: ['Ward: "I used to run a pet shop, you know. I still miss the animals. That\'s why I say hello to everyone\'s dog. Every single one."'],
+      4: ['Ward slips you a can with a hand-drawn label. "Coburg nano-brewery. Only forty cans exist. Thirty-nine now."'],
+      6: ['Ward: "Betty and I have been together nineteen years. She cooks, I bring the beer. It\'s a good system."'],
     },
-    helpsInBattle: 'Macca rolls a keg out the side door. It thunders past the foe, who dives out of the way.',
+    helpsInBattle: 'Ward rolls a keg out the side door. It thunders past the foe, who dives out of the way.',
   },
-  ed: {
+  romey: {
     role: 'Runs The Leash You Can Do, Hope St',
     lines: [
       ['Welcome to The Leash You Can Do! Treats, gear, and a goldfish called Kevin who is not for sale.'],
-      [
-        'Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.',
-      ],
-      [
-        'Mem and Corni pop in most days. Corni always asks if we sell dog treats shaped like pretzels. We do not. Yet.',
-      ],
-      ['Rent on this place went up again. Kevin and I are thinking of moving into the aquarium.'],
+      ['Free Palestine. I\'ll keep saying it. Every bag that goes out of here has a little watermelon sticker on it now.'],
+      ['My dad\'s got a farm out near Ballarat. Sheep, two dogs, one very rude goose. I learned everything about animals from that goose.'],
+      ['My boyfriend Bryan works at the Ballarat Courier. Last week he put his work shirts in with the bleach. Half his wardrobe is now "vintage". He wore it to work.'],
+      ['Bryan got in trouble at the Courier again. He ran a photo of a prize-winning pumpkin. Upside down. On the front page.'],
+      ['Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.'],
     ],
     heartScenes: {
-      2: ['Ed: "Twenty years selling leads. I can tell what a dog is like by how its human picks a collar."'],
-      4: ['Ed polishes his glasses, slowly. "You treat those pets right. I can tell. Have a sample." He winks.'],
-      6: [
-        'Ed: "If I ever retire, the shop goes to someone who cares. Not a chain. Someone like you." He means it.',
-      ],
+      2: ['Romey: "Dad says you can tell a lot about a person by how their dog looks at them. Yours look at you like you\'re the sun."'],
+      4: ['Romey: "Bryan tried to make me dinner. He set off the smoke alarm, then the neighbour\'s, then the one at the servo. Three alarms. A personal best."'],
+      6: ['Romey: "If I ever get my own place out at Dad\'s, there\'ll be room for every animal nobody wants. You\'ll visit. That\'s an order."'],
     },
-    helpsInBattle: 'Ed slides over a free sample from the counter jar. "Shh."',
+    helpsInBattle: 'Romey slides over a free sample from the counter jar. "Shh."',
   },
   ...SH_PEOPLE,
 };

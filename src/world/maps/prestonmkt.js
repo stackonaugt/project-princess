@@ -1,7 +1,7 @@
 // PRESTON MARKET: rows of stalls on a concrete floor, the car park to the
 // north, and the fight to keep it. Stavros's deli, Linh's fruit and veg,
 // Marko's fish, a cake stall and a plant stall, plus a few shuttered ones
-// with SAVE PRESTON MARKET signs. Bev and her clipboard by the entrance.
+// with SAVE PRESTON MARKET signs. Greco and his clipboard by the entrance.
 // In the south-west corner, the fenced-off "redevelopment site", gone to
 // weeds (artist's impressions blow about in it). West to Murray Rd (Alison's),
 // east to Preston Station,
@@ -50,7 +50,7 @@ export function buildPrestonMkt() {
   b.npc('stavros', 5, 13, { face: 'down' });
   b.npc('linh', 25, 13, { face: 'down' });
   b.npc('marko', 5, 18, { face: 'down' });
-  b.npc('bev', 21, 9, { face: 'down' });
+  b.npc('greco', 21, 9, { face: 'down' });
 
   b.exit(0, 10, 1, 15, 'murray', 'east', 'Murray Rd');
   b.exit(0, 27, 44, 1, 'prestonhigh', 'west', 'Preston Station');   // all along the bottom

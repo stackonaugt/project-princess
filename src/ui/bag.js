@@ -38,7 +38,7 @@ function gearNote(render) {
   const owned = GEAR_ORDER.filter(id => state.gearCount(id));
   const pets = state.foundIds();
   const wearing = pets.filter(id => state.pet(id).gear);
-  if (!owned.length && !wearing.length) return h('div', { class: 'note' }, h('h4', {}, 'Gear'), h('p', { class: 'small' }, 'No gear yet. Ed\'s pet shop on Hope St, Brunswick sells leads, collars and more.'));
+  if (!owned.length && !wearing.length) return h('div', { class: 'note' }, h('h4', {}, 'Gear'), h('p', { class: 'small' }, 'No gear yet. Romey\'s pet shop on Hope St, Brunswick sells leads, collars and more.'));
   return h('div', { class: 'note' }, h('h4', {}, 'Gear'),
     ...owned.map(g => h('div', {},
       h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: itemIcon(`gear-${g}`, 32), alt: '', width: 24, height: 24 }), h('b', {}, `${GEAR[g].name} ×${state.gearCount(g)}`), h('span', { class: 'small' }, GEAR[g].desc)),

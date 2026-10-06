@@ -27,6 +27,9 @@ export const ITEMS = {
   tennis:    { name: 'Tennis ball', price: 4,        desc: 'Slightly damp. Nobody knows why.' },
   ribbon:    { name: 'Pink ribbon', price: 8,        desc: 'Perfect for a pom-pom.' },
   feather:   { name: 'Magpie feather', price: 6,     desc: 'Dropped mid-swoop. A trophy of survival.' },
+  pear:      { name: 'Pear', price: 3, art: { kind: 'pear', body: '#c8d050', label: '#3f8a3e' }, desc: 'From Pearman. Do not ask where he has been keeping it. Actually, he will tell you anyway.' },
+  manoush:   { name: 'Manoush', price: 6, gift: true, art: { kind: 'plate', body: '#d8a850', label: '#3f8a3e', cap: '#e8d8b0' }, desc: 'Lebanese flatbread with za\'atar and oil, still warm, from Sydney Rd. Slinks swears by it.' },
+  golfball:  { name: 'Golf ball', price: 5, gift: true, art: { kind: 'ball', body: '#f4f4f0', label: '#c8c8c0' }, desc: 'Found in the long grass. Pearman will want it. Pearman always wants one more.' },
   // Crops you grow (crop: true). Sold at James's; see data/crops.js. Carrot above is also a crop.
   basil:      { name: 'Basil', crop: true,      desc: 'A fragrant bunch. Smells like summer and Nonna.' },
   zucchini:   { name: 'Zucchini', crop: true,   desc: 'One of many. So, so many.' },
@@ -65,7 +68,7 @@ export const ITEMS = {
   fourthwing:     { name: 'Fourth Wing', price: 28, gift: true, book: true, art: { cover: '#1e1e24', band: '#e8a030' }, desc: 'Rebecca Yarros. Dragons. Romance. More dragons.' },
 
   // Carlton and the city. Treats with local: true are only sold at their own shop
-  // (not Ed's pet shop). Their icons are drawn from art (kinds: cone, donut, cup, chips, packet).
+  // (not Romey's pet shop). Their icons are drawn from art (kinds: cone, donut, cup, chips, packet).
   gelato:     { name: 'Dog gelato', price: 6, local: true, art: { kind: 'cone', body: '#e8c870', label: '#d8a050', cap: '#8a5a32' }, desc: 'Gina\'s pup-safe gelato. Peanut butter and banana, no sugar. The dogs do not know.' },
   jamdonut:   { name: 'Hot jam donut', price: 4, local: true, art: { kind: 'donut', body: '#d8a050', label: '#c8302a', cap: '#f4f0e6' }, desc: 'From the van at Queen Vic. The jam is the temperature of the sun.' },
   hotchips:   { name: 'Hot chips', price: 5, local: true, art: { kind: 'chips', body: '#c8302a', label: '#f4d070', cap: '#f4f0e6' }, desc: 'Chicken salt, obviously. Guard them from seagulls with your life.' },

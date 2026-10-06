@@ -513,7 +513,7 @@ export const LAVERTON = {
     },
   },
 
-  // THE LEASH YOU CAN DO: the pet shop on Hope St, Brunswick (Ed's).
+  // THE LEASH YOU CAN DO: the pet shop on Hope St, Brunswick (Romey's).
   petshop: {
     foot: [6, 3], tex: [96, 72], variants: ['laverton'],
     paint(p) {
