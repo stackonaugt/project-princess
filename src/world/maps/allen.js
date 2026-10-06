@@ -56,6 +56,10 @@ export function buildAllen() {
     [[2, 9], [7, 14], [11, 14], [16, 22], [23, 23], [16, 13]].forEach(([x, y]) => b.put('tall', x, y, { v: 'pear' }));
     [[2, 10], [9, 13]].forEach(([x, y]) => b.put('flowerbed', x, y, { v: 'natives' }));
   }
+  // Three councillors live in the street (routines.js: out the front mornings and evenings)
+  b.npc('lesley', 30, 8, { face: 'down', at: 'house' });    // just up the street from the Mayor. Of course.
+  b.npc('kirsty', 32, 17, { face: 'down', at: 'house' });
+  b.npc('dahlia', 4, 18, { face: 'down', at: 'house' });
   b.exit(18, 29, 4, 1, 'woods', 'west', 'Woods St');
   b.exit(0, 11, 1, 2, 'station', 'allen', 'Laverton Station');
   b.exit(13, 1, 3, 1, 'yard', 'gate', 'Backyard');

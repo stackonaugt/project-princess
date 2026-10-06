@@ -53,6 +53,10 @@ export function buildWoods() {
   // The Bin Man and his three bins, out on the nature strip for bin night
   b.put('bin', 36, 15, { v: 'yellow' }); b.put('bin', 37, 15, { v: 'garbage' }); b.put('bin', 38, 15, { v: 'compost' });
   b.npc('binman', 37, 14, { face: 'down' });
+  // Three councillors live along Woods St (routines.js: out the front mornings and evenings)
+  b.npc('malcolm', 34, 9, { face: 'down', at: 'house' });
+  b.npc('rayna', 7, 9, { face: 'down', at: 'house' });
+  b.npc('deanna', 4, 19, { face: 'down', at: 'house' });
 
   b.lane({ axis: 'x', pos: 12.5, dir: -1, from: -3, to: 47, every: [9, 18], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 47, every: [10, 20], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });

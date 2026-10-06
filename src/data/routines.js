@@ -39,11 +39,17 @@ export const ROUTINES = {
 //   Chapter 3: Trish and Gordon are in bed with gastro (Helen is looking after them).
 const st = d => d.story || {};
 const ch = (d, n) => st(d).chapter === n && !st(d).done?.[n];
+// Each councillor has a house in Laverton (allen.js, woods.js): out the front
+// first thing (7 to 9:30am) and home again in the evening (5 to 10pm, or
+// after the Tuesday meeting till 11pm). Lesley stays home while she is sick.
+const atHouse = d => (d.minutes >= 7 * 60 && d.minutes < 9.5 * 60) || (d.minutes >= 17 * 60 && d.minutes < (isMeetingDay(d.day) ? 23 : 22) * 60 && !inMeeting(d));
 for (const id of COUNCILLORS) {
-  ROUTINES[id] = d => (id === 'rayna' && ch(d, 2)) || (id === 'lesley' && st(d).ch2?.sickUntil >= d.day) ? null
+  ROUTINES[id] = d => (id === 'rayna' && ch(d, 2)) ? null
+    : (id === 'lesley' && st(d).ch2?.sickUntil >= d.day) ? (d.minutes < 22 * 60 ? 'house' : null)
     : id === 'lesley' && ch(d, 2) && !isWeekend(d.day) && d.minutes >= 11 * 60 && d.minutes < 15 * 60 && !inMeeting(d) ? 'foyer'
     : inMeeting(d) && d.council?.metDay !== d.day ? 'chamber'
-    : FOYER_DAYS[id].includes(weekday(d.day)) && d.minutes >= 10 * 60 && d.minutes < 16 * 60 ? 'foyer' : null;
+    : FOYER_DAYS[id].includes(weekday(d.day)) && d.minutes >= 10 * 60 && d.minutes < 16 * 60 ? 'foyer'
+    : atHouse(d) ? 'house' : null;
 }
 
 // Trish and Gordon: in the garden by day, inside at night, and Thursday
