@@ -197,6 +197,39 @@ export const NORTH = {
     },
   },
 
+  // Coburg Station, from the owner's photo: the old red brick station
+  // building, cream render around arched windows, a central gable with a
+  // tall ornate chimney, and the skyrail deck running above behind it.
+  coburgstation: {
+    foot: [10, 3], tex: [164, 112], variants: ['heritage'],
+    paint(p) {
+      const W = 164, H = 112, wall = 56, cream = '#ece0c0', cd = shade(cream, -0.16), brick = '#a04a34';
+      p.r('rgba(30,50,20,.25)', 4, H - 2, W - 4, 3);
+      // the skyrail deck behind
+      p.r('#b8bcb8', 0, 8, W, 12); p.r('#d0d4d0', 0, 8, W, 2); p.r('#8a8e8a', 0, 18, W, 2);
+      // slate roof, with the central gable rising through it
+      for (let j = 0; j < 22; j++) p.r(j % 3 ? '#5a5e66' : '#4a4e56', 4 + j, wall - 22 + j, W - 8 - j * 2, 1);
+      p.r('#3a3e46', 2, wall - 1, W - 4, 2);
+      for (let j = 0; j < 30; j++) p.r(j < 2 ? cd : brick, 82 - j, wall - 30 + j, j * 2, 1);                 // the gable
+      p.r(cream, 64, wall - 4, 36, 3);
+      p.blob(82, wall - 14, 5, cream); p.blob(82, wall - 14, 4, '#4a5a6a');                                  // round vent
+      bricks(p, 76, wall - 56, 12, 28, brick, 3); p.r(cream, 74, wall - 58, 16, 3); p.r(cream, 76, wall - 44, 12, 2);   // the tall chimney
+      p.r('#8a3a2a', 79, wall - 62, 6, 4);
+      // the brick walls with cream bands
+      bricks(p, 4, wall, W - 8, H - wall - 1, brick, 9);
+      p.r(cream, 4, wall + 2, W - 8, 3); p.r(cd, 4, wall + 5, W - 8, 1); p.r(cream, 4, H - 12, W - 8, 2);
+      // arched windows in cream surrounds, and the central arched doorway
+      const arch = (x, y, w, h) => { p.r(cream, x - 2, y, w + 4, h + 2); p.blob(x + w / 2, y, w / 2 + 2, cream); p.r('#4a5a6a', x, y, w, h); p.blob(x + w / 2, y, w / 2, '#4a5a6a'); p.r('#7a9ab0', x + 1, y + 1, 2, 3); p.r(cream, x, y + h / 2, w, 1); };
+      for (const x of [14, 34, 54, 104, 124, 144]) arch(x, wall + 18, 10, 22);
+      p.r(cream, 70, wall + 10, 24, H - wall - 11); p.blob(82, wall + 14, 12, cream);
+      p.r('#3a2a1a', 74, wall + 16, 16, H - wall - 17); p.blob(82, wall + 16, 8, '#3a2a1a'); p.blob(82, wall + 16, 6, '#a8c8d8'); p.r('#6a4a2a', 75, wall + 22, 14, H - wall - 23);
+      p.r('#f0c040', 86, wall + 38, 2, 2);
+      centred(p, 'COBURG', 82, wall + 6, '#6a2a1a');
+      // the myki panel by the door
+      p.r('#f4f4f0', 96, H - 30, 22, 14); p.r('#1e3a8a', 97, H - 29, 20, 12); p.text('MYKI', 99, H - 26, '#f4f4f0');
+    },
+  },
+
   // The Coburg Library hub: glass, timber fins and a green roof edge.
   library: {
     foot: [8, 3], tex: [128, 72], variants: ['coburg'],
