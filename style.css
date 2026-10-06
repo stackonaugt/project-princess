@@ -427,6 +427,10 @@ body.touch .bt-btn { min-height: 52px; }
 .kara-cue.perfect { background: #f5d63a; } .kara-cue.good { background: #5aa83a; } .kara-cue.miss { background: #6a6e78; opacity: .5; }
 .kara-fb { margin: 0; font-weight: 700; min-height: 1.3em; } .kara-fb.perfect { color: #c8302a; } .kara-fb.good { color: #3a8a2a; } .kara-fb.miss { color: #6a6e78; }
 .kara-btn { font-size: 22px; min-width: 50%; touch-action: manipulation; }
+/* Lawn bowls */
+.bowls { display: grid; gap: 6px; }
+.bowls-green { width: 220px; height: 360px; max-width: 70vw; max-height: 52vh; object-fit: contain; border: 3px solid #5a3a1a; border-radius: 6px; touch-action: manipulation; }
+.bowls-tip { margin: 0; min-height: 2.6em; }
 /* Friendsgram */
 .insta-stats { display: flex; justify-content: space-around; padding: 8px 10px; border-bottom: 1px solid #eee; }
 .insta-stats div { display: grid; text-align: center; } .insta-stats b { font-size: 18px; } .insta-stats span { font-size: 12px; }

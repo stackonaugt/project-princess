@@ -16,6 +16,7 @@ import { openBag } from './bag.js';
 import { openMenu } from './menu.js';
 import { openShop } from './shop.js';
 import { openKaraoke } from './karaoke.js';
+import { openBowls } from './bowls.js';
 import { openPhone, PHONE_APPS, phoneClosed } from './phone.js';
 import { openCouncil } from './council.js';
 import { openCalendar } from './calendar.js';
@@ -198,6 +199,7 @@ export const ui = {
   // Story screens (ui/story.js). Each resolves when it's closed.
   card(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('card'); }); },
   karaoke() { return new Promise(resolve => { this._storyOpts = { done: resolve }; this.openModal('karaoke'); }); },
+  bowls() { return new Promise(resolve => { this._storyOpts = { done: resolve }; this.openModal('bowls'); }); },
   paper(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('paper'); }); },
   news(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('news'); }); },
   // The party games. Resolves with the score.
@@ -216,7 +218,7 @@ export const ui = {
 
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing', 'card', 'news', 'paper', 'party', 'karaoke'].includes(this.modalOpen)) return;
+    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing', 'card', 'news', 'paper', 'party', 'karaoke', 'bowls'].includes(this.modalOpen)) return;
     if (this.modalOpen === which) return this.closeModal();
     this._fromPhone = false;
     this.openModal(which);
@@ -243,6 +245,7 @@ export const ui = {
     if (which === 'news') this.modalAction = openNews(panel, close, this._storyOpts).action;
     if (which === 'party') { const f = openParty(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'karaoke') { const f = openKaraoke(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
+    if (which === 'bowls') { const f = openBowls(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });

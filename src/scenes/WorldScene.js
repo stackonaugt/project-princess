@@ -857,6 +857,7 @@ export class WorldScene extends Phaser.Scene {
       if (inChapter(4) && !NO_INVITE.includes(npc.id) && !story().invited.includes(npc.id)) choices.push({ label: 'Invite to the party', value: 'invite' });
       if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
       if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
+      if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
       if (!choices.length) break;
@@ -872,6 +873,7 @@ export class WorldScene extends Phaser.Scene {
       }
       if (act === 'shop') { await ui.shop(info.shop); }
       if (act === 'karaoke') { await this.karaoke(npc, opts); break; }
+      if (act === 'bowls') { await this.bowls(npc, opts); break; }
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'prank') await this.prank(npc, opts);
       if (act === 'invite') await this.invite(npc, opts);
@@ -891,6 +893,22 @@ export class WorldScene extends Phaser.Scene {
       state.data.flags.karaokeDay = state.data.day;
       state.addItem('pancit'); sfx.pickup();
       await ui.say(['Tita Liza: "Ang galing! Here, take some pancit home. For long life. And for your voice."', 'You got a plate of pancit.'], { name: 'Tita Liza', portrait: npcIcon('liza') });
+    }
+    this.save();
+  }
+
+  // Lawn bowls at the Brunswick Bowls Club (ui/bowls.js). Close to the jack
+  // makes friends with the old blokes; really close (once a day) gets you ten
+  // bucks from the honesty tin.
+  async bowls(npc, opts) {
+    const r = await ui.bowls();
+    if (!r || r.best === null) return;
+    const pts = r.best <= 15 ? 15 : r.best <= 50 ? 8 : 3;
+    ['crazyjeff', 'bowler1', 'bowler2'].forEach(id => state.addFriendPoints(id, pts));
+    if (r.best <= 30 && state.data.flags.bowlsDay !== state.data.day) {
+      state.data.flags.bowlsDay = state.data.day;
+      state.addMoney(10); sfx.pickup();
+      await ui.say(['Crazy Jeff: "Now THAT is bowls! Here, ten bucks from the honesty tin. Do not tell the committee."', 'You got $10.'], { name: 'Crazy Jeff', portrait: npcIcon('crazyjeff') });
     }
     this.save();
   }
