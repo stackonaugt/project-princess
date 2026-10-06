@@ -41,6 +41,7 @@ import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
 import { CROPS } from '../data/crops.js';
 import { typeName } from '../data/types.js';
 import { flavourFor } from '../data/flavour.js';
+import { FURNITURE } from '../data/furniture.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
@@ -248,7 +249,8 @@ export class WorldScene extends Phaser.Scene {
       if (def.flat) img.setDepth(-900 + y / 1000);
       if (def.deck) img.setDepth(-990);
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
-      if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
+      if (o.forSale) this.interactables.push({ kind: 'forsale', id: o.forSale, x, y: def.flat ? (o.y + o.h / 2) * T : y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots' });
+      else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
       else if (o.kind === 'agendaboard') this.interactables.push({ kind: 'agenda', x, y: y - 6, r: 20, bubble: 'fx-bubble-read' });
       else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
@@ -608,6 +610,25 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'plot') return this.usePlot(t);
     if (t.kind === 'cook') return this.cook();
     if (t.kind === 'lunch') return this.lunch(t);
+    if (t.kind === 'forsale') return this.forSale(t);
+  }
+
+  // ------------------------------------------------------------ furniture
+  // A piece in Franco Cozzo's showroom or a pot plant at Bunnings: its name and
+  // price, and the option to buy it. Delivered to the house straight away.
+  async forSale(t) {
+    const f = FURNITURE[t.id], furn = state.data.furniture;
+    const who = f.shop === 'bunnings' ? 'Olly' : 'Franco';
+    const text = `${f.name}. $${f.price}. ${f.desc}`;
+    if (furn[f.slot] === t.id) return ui.say([text, 'You already have this one at home.']);
+    const owned = furn.owned.includes(t.id);
+    const go = await ui.say({ text, choices: [owned ? { label: 'Put it back in the house', value: true } : { label: `Buy it ($${f.price})`, value: true }, { label: 'Not now', value: false }] }, { cancelValue: false });
+    if (!go) return;
+    if (!owned && !state.spend(f.price)) { sfx.bump(); return ui.say([`You need $${f.price}. You have $${state.data.money}.`]); }
+    state.placeFurniture(t.id);
+    sfx.pickup();
+    ui.toast(`${f.name} is in the house`);
+    return ui.say([who === 'Franco' ? `Franco claps his hands. "Megalo! I deliver it today. Myself. In the van."` : `Olly nods. "Good choice. I'll drop them round on my way home. Swap the old ones out for you."`]);
   }
 
   // ------------------------------------------------------------ fishing

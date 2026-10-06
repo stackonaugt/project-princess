@@ -17,6 +17,7 @@ import { CROPS } from '../data/crops.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
 import { CHAPTERS } from '../data/story.js';
+import { FURNITURE, DEFAULT_FURNITURE } from '../data/furniture.js';
 
 const VERSION = 9;
 export const MAX_TEAM = 3;
@@ -49,7 +50,7 @@ function fresh() {
     npcDay: {},        // npc id -> last day they gave a gift
     council: { given: {}, passed: [], lost: {}, silly: [] },   // silly: SILLY_MOTIONS indexes that passed   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
-    furniture: { couch: 'old', owned: ['old'] },    // what's in the house (Franco Cozzo, data/furniture.js)
+    furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
     settings: { sound: true },
     seenIntro: false,
@@ -93,7 +94,7 @@ function sanitise(raw) {
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], metDay: raw.council.metDay };
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
-  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = ['old']; }
+  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); }
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
@@ -211,6 +212,15 @@ export const state = {
 
   // Money and gear
   addMoney(n) { this.data.money = Math.max(0, this.data.money + Math.round(n)); bus.emit('money:changed'); },
+  // Put a piece of furniture (or the pot plants) in the house; buying is up to the caller.
+  placeFurniture(id) {
+    const f = FURNITURE[id], furn = this.data.furniture;
+    if (!f) return;
+    furn[f.slot] = id;
+    if (!furn.owned.includes(id)) furn.owned.push(id);
+    invalidateMap('home');
+    this.save();
+  },
   spend(n) { if (this.data.money < n) return false; this.addMoney(-n); return true; },
   gearCount(id) { return this.data.gear[id] || 0; },
   addGear(id, n = 1) { this.data.gear[id] = this.gearCount(id) + n; bus.emit('bag:changed'); },
