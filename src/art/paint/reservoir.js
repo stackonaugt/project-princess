@@ -36,25 +36,34 @@ export const RESERVOIR = {
     paint(p) { p.shadow(12, 23, 20); box(p, 4, 6, 16, 18, '#a8a8a2'); p.r('#8a8a84', 4, 6, 3, 18); p.r('#c4c4be', 2, 2, 20, 5); },
   },
   // Reservoir Station: black base with the big R, under a white pleated canopy
+  // Reservoir Station, from the owner's photos: a huge folded white wing,
+  // pleated with diagonal fins, rising to a sharp point on the left and
+  // running low along the skyrail to the right, over a dark glazed base.
   resstation: {
-    foot: [12, 3], tex: [200, 112], variants: ['skyrail'],
+    foot: [12, 3], tex: [200, 120], variants: ['skyrail'],
     paint(p) {
-      const sx = 4, W = 192, H = 112, base = 64;
+      const sx = 4, W = 192, H = 120, base = 72;
       p.r('rgba(30,50,20,.25)', sx + 2, H - 2, W, 3);
-      // the zigzag canopy, sloping up to the left
-      for (let i = 0; i < 26; i++) {
-        const x = sx + i * 8, top = 4 + Math.round(i * 1.2), bottom = base;
-        p.r(i % 2 ? '#e8ece8' : '#d0d6d2', x, top, 8, bottom - top);
-        p.r('#b8c0bc', x + (i % 2 ? 7 : 0), top, 1, bottom - top);
-        for (let y = top + 6; y < bottom; y += 12) p.r('#f4f8f4', x + 2, y, 4, 1);
+      // the skyrail deck carrying on to the right
+      p.r('#b8bcb8', sx + 100, 40, W - 100, 10); p.r('#d0d4d0', sx + 100, 40, W - 100, 2); p.r('#8a8e8a', sx + 100, 48, W - 100, 2);
+      // the wing: top edge rises from right (low) to a sharp peak on the left
+      const topAt = x => Math.round(x < 20 ? 6 + (20 - x) * 0.2 : 6 + (x - 20) * 0.32);
+      for (let x = 0; x < W; x++) {
+        const t = topAt(x), bottom = base - (x < 14 ? Math.round((14 - x) * 2.2) : 0);
+        if (t >= bottom) continue;
+        const pleat = Math.floor((x + t) / 6) % 2;
+        p.r(pleat ? '#eef2f0' : '#d4dad6', sx + x, t, 1, bottom - t);
+        if ((x + t) % 6 === 0) p.r('#b8c0bc', sx + x, t, 1, bottom - t);
       }
-      p.r('#9aa49e', sx, base - 2, W, 3);
-      // black base with glazed entry and the big R
-      p.r('#1e2024', sx, base, W, H - base); for (let x = sx; x < sx + W; x += 16) p.r('#2a2d32', x, base, 1, H - base);
+      for (let x = 0; x < W; x += 2) p.r('#f8fbfa', sx + x, topAt(x), 2, 1);                       // the bright top edge
+      for (let x = 0; x < W; x += 1) if (x > 14) p.r('#9aa49e', sx + x, base - 2, 1, 2);
+      // the dark glazed base, entry and the big R
+      p.r('#1e2024', sx + 8, base, W - 8, H - base); for (let x = sx + 8; x < sx + W; x += 16) p.r('#2a2d32', x, base, 1, H - base);
+      p.r('#3a4a56', sx + 12, base + 4, 50, 14); for (let x = sx + 14; x < sx + 60; x += 8) p.r('#5a7a8a', x, base + 5, 6, 12);
       p.r('#2a2e33', sx + 70, base + 8, 44, H - base - 8); p.r('#5a7a8a', sx + 72, base + 10, 40, H - base - 10); p.r('#2a2e33', sx + 91, base + 10, 2, H - base - 10);
-      p.r('#3a3d44', sx + 150, base + 8, 20, 24); p.r('#c8ccd0', sx + 154, base + 10, 4, 12); p.r('#c8ccd0', sx + 154, base + 10, 10, 3); p.r('#c8ccd0', sx + 161, base + 12, 3, 4); p.r('#c8ccd0', sx + 158, base + 15, 4, 3); p.r('#c8ccd0', sx + 160, base + 18, 4, 4);
+      p.r('#3a3d44', sx + 150, base + 6, 20, 24); p.r('#c8ccd0', sx + 154, base + 8, 4, 12); p.r('#c8ccd0', sx + 154, base + 8, 10, 3); p.r('#c8ccd0', sx + 161, base + 10, 3, 4); p.r('#c8ccd0', sx + 158, base + 13, 4, 3); p.r('#c8ccd0', sx + 160, base + 16, 4, 4);
       p.text('RESERVOIR', sx + 143, base + 34, '#9aa0a8'); p.text('STATION', sx + 147, base + 40, '#9aa0a8');
-      p.r('#e8a030', sx + 30, base + 14, 2, 30); p.r('#c8443a', sx + 26, base + 10, 10, 6); // bus stop flag
+      p.r('#e8a030', sx + 30, base + 18, 2, 28); p.r('#c8443a', sx + 26, base + 14, 10, 6); // bus stop flag
     },
   },
   wayfinding: {
