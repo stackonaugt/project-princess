@@ -1350,6 +1350,13 @@ export class WorldScene extends Phaser.Scene {
       this.lockedExit = ex;
       return this.bounceBack(ex, GATES[ex.gate] || ['The way is closed.']);
     }
+    // A shop is open while its shopkeeper is in: the door is locked once they go home.
+    const shut = ex.to && this.shutShop(ex.to);
+    if (shut) {
+      if (this.lockedExit === ex) return;
+      this.lockedExit = ex;
+      return this.bounceBack(ex, shut);
+    }
     if (ex.to && ex.team && state.foundIds().length) return this.chooseTeamThenGo(ex);
     // Walking into another suburb takes 20 minutes, 10 once the bike lane motion passes.
     const frac = ex.w > 1 && (ex.y === 0 || ex.y + ex.h === this.map.h) ? (tx - ex.x) / (ex.w - 1) : ex.h > 1 ? (ty - ex.y) / (ex.h - 1) : null;
@@ -1357,6 +1364,18 @@ export class WorldScene extends Phaser.Scene {
     if (this.lockedExit === ex) return;
     this.lockedExit = ex;
     this.bounceBack(ex, ex.label ? ex.lines || [`The way to ${ex.label} is closed for now.`] : ['The way is closed.']);
+  }
+  // Lines for a locked shop door, or null if the shop is open (or not a shop).
+  shutShop(to) {
+    const z = ZONES[to];
+    if (!z?.indoor || z.home || to === 'civiccentre') return null;   // the council keeps its own hours (meetings)
+    const keepers = getMap(to).npcs.filter(n => NPCS[n.id]?.shop || n.counter);
+    const inAt = d => keepers.some(n => n.at ? isAt(n.id, n.at, d) : onDuty(n, NPCS[n.id], d));
+    if (!keepers.length || inAt(state.data)) return null;
+    let h = DAY_START / 60;
+    while (h < 24 && !inAt({ ...state.data, minutes: h * 60 })) h += 0.5;
+    const hr = Math.floor(h) % 12 || 12, mins = h % 1 ? ':30' : '', late = state.data.minutes >= h * 60;
+    return [`${z.name} is closed. The lights are off and the door is locked.`, `It opens at ${hr}${mins}${h < 12 ? 'am' : 'pm'}${late ? ' tomorrow' : ''}.`];
   }
   bounceBack(ex, lines) {
     sfx.bump();
