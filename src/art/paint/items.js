@@ -205,6 +205,9 @@ export function paintBook(p, a) {
 
 // Gear icons (pet shop), same format. Texture keys: item-gear-<id>.
 export const GEAR_ART = {
+  fairycollar: { pal: { a: '#f0a0d0', b: '#f8d0e8', m: '#a0e8f0', k: '#8a3a6a', g: '#f0e070' }, rows: [
+    '............', '............', '...kkkkkk...', '.kkaaaaaakk.', 'kamabamabmak', 'kaaaaaaaaaak',
+    '.kkaaaaaakk.', '...kkggkk...', '....gggg....', '...gggggg...', '....g..g....', '............'] },
   lead: { pal: { a: '#c8443a', b: '#e8705f', k: '#7a2018', m: '#b8b8c0' }, rows: [
     '....kkkk....', '...kaaaak...', '..ka....ak..', '..ka....ak..', '...kaaaak...', '....kabk....',
     '.....ka.....', '.....ka.....', '.....kak....', '......kak...', '.......mm...', '.......mm...'] },

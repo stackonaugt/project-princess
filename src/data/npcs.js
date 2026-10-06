@@ -219,6 +219,24 @@ export const NPCS = {
   romey: {
     name: 'Romey', shop: 'petshop', look: { hair: '#3a2214', hairStyle: 'long', skin: '#f6d6c0', shirt: '#f4f0e6', pants: '#3a3a48', shoes: '#6a4a2a', apron: '#c8443a' },
   },
+  sharma: {
+    name: 'Mr Sharma', look: { hair: '#1e1a18', hairStyle: 'short', skin: '#b07a50', shirt: '#6a2a7a', collar: true, scarf: '#e8b040', pants: '#2a2a34', shoes: '#4a2a1a', moustache: true },
+  },
+  crazyjeff: {
+    name: 'Crazy Jeff', look: { hair: '#e8e4dc', hairStyle: 'wavyshort', skin: '#f0c4a4', shirt: '#f4f4f0', collar: true, pants: '#f4f4f0', shoes: '#f4f4f0', hat: '#f4f4f0', moustache: true },
+  },
+  bowler1: { name: 'Merv the Bowler', look: { hair: '#c8c4bc', hairStyle: 'bald', skin: '#e8b498', shirt: '#f4f4f0', collar: true, pants: '#f4f4f0', shoes: '#f4f4f0', glasses: '#4a4a4a' } },
+  bowler2: { name: 'Stan the Bowler', look: { hair: '#d8d4cc', hairStyle: 'short', skin: '#c8906a', shirt: '#f4f4f0', collar: true, pants: '#f4f4f0', shoes: '#f4f4f0', hat: '#f4f4f0' } },
+  ghost: {
+    name: 'The Station Ghost', look: { hair: '#e8eef4', hairStyle: 'short', skin: '#dce8f0', shirt: '#c8d8e8', pants: '#b8c8d8', shoes: '#a8b8c8', coat: '#d8e4f0', tatters: true },
+  },
+  fairy: {
+    name: 'A Real Fairy', look: { hair: '#f0a0d0', hairStyle: 'long', skin: '#f6dcc8', shirt: '#a0e8f0', pants: '#f0a0d0', shoes: '#f4f4f0', lips: '#e05a9a', pinafore: '#c8a0f0' },
+  },
+  // The Premier, outside Parliament. Guards the way into the city.
+  bencarroll: {
+    name: 'Premier Ben Carroll', look: { hair: '#3a2a1e', hairStyle: 'short', skin: '#f0c8a8', shirt: '#f4f4f0', collar: true, blazer: '#1e2440', pants: '#1e2440', shoes: '#141414' },
+  },
   ...SH_NPCS,
 };
 

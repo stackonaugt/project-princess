@@ -25,6 +25,9 @@ export function buildBowls() {
   b.fill(2, 8, 17, 11, 'g'); b.fill(3, 9, 15, 9, 'L');
   b.fill(21, 8, 16, 11, 'g'); b.fill(22, 9, 14, 9, 'L');
   b.put('bowlshelter', 2, 19); b.put('bowlshelter', 6, 19); b.put('bowlshelter', 21, 19); b.put('bowlshelter', 25, 19);
+  // Old blokes bowling, and the President himself
+  b.npc('crazyjeff', 10, 13, { face: 'right', path: [[10, 13], [15, 13], [10, 13]] });
+  b.npc('bowler1', 6, 11, { face: 'right' }); b.npc('bowler2', 28, 12, { face: 'left' });
   b.put('parkbin', 19, 19); b.put('potplant', 20, 8, { v: 'succulent' });
 
   // The bocce courts through the gate on the east side

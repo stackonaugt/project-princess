@@ -51,6 +51,7 @@ export function buildPrestonMkt() {
   b.npc('linh', 25, 13, { face: 'down' });
   b.npc('marko', 5, 18, { face: 'down' });
   b.npc('greco', 21, 9, { face: 'down' });
+  b.npc('sharma', 30, 13, { face: 'down', still: true });   // the palm reader's table by the deli hall
 
   b.exit(0, 10, 1, 15, 'murray', 'east', 'Murray Rd');
   b.exit(0, 27, 44, 1, 'prestonhigh', 'west', 'Preston Station');   // all along the bottom

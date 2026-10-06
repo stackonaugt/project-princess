@@ -16,7 +16,7 @@ import { state } from './state.js';
 import { BALANCE } from '../config.js';
 
 // The level each pet is at when you first befriend them.
-export const START_LEVEL = { princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12 };
+export const START_LEVEL = { princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14 };
 export const MAX_LEVEL = 30;
 // Moves of these types use the special stat instead of attack.
 const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy']);
@@ -49,7 +49,8 @@ export function fighterStats(f) {
   return s;
 }
 export function gearBonus(f) {
-  const g = GEAR[f.gear]?.bonus || {};
+  const gd = GEAR[f.gear];
+  const g = gd && (!gd.forType || typeList(f.type).includes(gd.forType)) ? gd.bonus : {};
   if (f.side !== 'mine') return g;
   const sp = spellBonus(), out = { ...g };
   for (const k of ['crit', 'regen']) if (sp[k]) out[k] = (out[k] || 0) + sp[k];

@@ -365,6 +365,37 @@ Object.assign(TRAINERS, NORTH_TRAINERS);
 export const HOSTILE = new Set(['hipster', 'golfer', 'spruiker', 'spray', 'officer', 'inspector']);
 export const fineFor = (id, t) => t.fine ?? (HOSTILE.has(id) ? t.money || 0 : 0);
 
+// The Premier holds the way into the city (gate: 'bencarroll' on those exits).
+// Hardest fight in the game, and he taxes you $200 if you lose or give up.
+ENEMIES.staffer = { name: 'Media Staffer', tall: true, faces: 'left', type: ['psychic', 'street'], stats: { hp: 70, attack: 66, defence: 62, speed: 80, special: 84 }, moves: ['talkingpoints', 'background', 'questiononnotice'] };
+ENEMIES.juniormp = { name: 'Junior MP', tall: true, faces: 'left', type: ['old', 'plastic'], stats: { hp: 78, attack: 76, defence: 72, speed: 60, special: 70 }, moves: ['dorothy', 'toetheline', 'talkingpoints'] };
+ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'psychic'], stats: { hp: 96, attack: 88, defence: 90, speed: 74, special: 96 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
+TRAINERS.bencarroll = {
+  name: 'Premier Ben Carroll', team: [['staffer', 18], ['juniormp', 19], ['robocarroll', 21]], money: 120, fine: 200,
+  intro: 'The Premier straightens his tie. "Let\'s keep this brief. I have a ribbon to cut at 3."', sendOut: 'He sends out {f}.',
+};
+
+// Mr Sharma, Preston Market's palm reader: his foes are the lines on your hand.
+ENEMIES.lifeline = { name: 'Life Line', type: ['psychic', 'fairy'], stats: { hp: 66, attack: 50, defence: 60, speed: 64, special: 74 }, moves: ['longlife', 'kaleidoscope', 'fortune'], faces: 'front' };
+ENEMIES.heartline = { name: 'Heart Line', type: ['fairy', 'psychic'], stats: { hp: 60, attack: 56, defence: 56, speed: 70, special: 78 }, moves: ['heartbreak', 'fortune', 'longlife'], faces: 'front' };
+ENEMIES.crystalball = { name: 'Crystal Ball', type: ['psychic', 'steel'], stats: { hp: 70, attack: 50, defence: 74, speed: 50, special: 82 }, moves: ['foresee', 'fortune', 'kaleidoscope'], faces: 'front' };
+TRAINERS.sharma = { name: 'Mr Sharma', team: [['lifeline', 15], ['heartline', 15], ['crystalball', 16]], money: 40, fine: 100 };
+// Crazy Jeff, President of the Brunswick Bowls Club
+ENEMIES.jack_ = { name: 'The Jack', type: ['old', 'steel'], stats: { hp: 58, attack: 60, defence: 70, speed: 66, special: 50 }, moves: ['rollup', 'backinmyday', 'grumble'], faces: 'front' };
+TRAINERS.crazyjeff = { name: 'Crazy Jeff', team: [['bowler', 14], ['jack_', 15], ['bowler', 16]], money: 50, sendOut: 'Crazy Jeff bowls out {f}.' };
+// The ghost of Reservoir Station, out after dark with his ghost pets
+ENEMIES.ghostdog = { name: 'Ghost Dog', type: ['ghost', 'leather'], stats: { hp: 62, attack: 70, defence: 54, speed: 72, special: 64 }, moves: ['spookyhowl', 'phasebite', 'fadeout'] };
+ENEMIES.ghostcat = { name: 'Ghost Cat', type: ['ghost', 'street'], stats: { hp: 56, attack: 66, defence: 52, speed: 86, special: 70 }, moves: ['phasebite', 'scratch', 'fadeout'] };
+TRAINERS.ghost = { name: 'The Station Ghost', team: [['ghostdog', 15], ['ghostcat', 16]], money: 45 };
+
+// Ziggy has no owner any more: you play-fight Ziggy himself (pets with challenge: true).
+TRAINERS.ziggy = {
+  name: 'Ziggy', team: [['pet:ziggy', 14]], prize: 'ziggy', noXp: false, money: 0,
+  intro: 'Ziggy flicks his tail. Tiny. Fast. Ready.',
+  win: ['Ziggy sits down and starts washing a paw, like he let you win.', 'Then he trots over and headbutts your hand. He is coming home with you.'],
+  lose: ['Ziggy yawns and wanders back down the lane. Not today.'],
+};
+
 export const PRIZE_TRAINER = Object.fromEntries(Object.entries(TRAINERS).filter(([, t]) => t.prize).map(([id, t]) => [t.prize, id]));
 
 // Brunswick East

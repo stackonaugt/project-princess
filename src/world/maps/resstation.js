@@ -45,6 +45,7 @@ export function buildResStation() {
   b.entry('southeast', 35, 26, 'up').entry('station', 20, 12, 'down').entry('west', 1, 18, 'right').entry('north', 34, 1, 'down').entry('east', 42, 18, 'left');
 
   b.npc('james', 3, 23, { face: 'up' });
+  b.npc('ghost', 26, 10, { face: 'down', at: 'night' });   // only after dark
   b.npc('stranger', 39, 14, { face: 'left' });
 
   b.lane({ axis: 'x', pos: 3.3, dir: 1, from: -12, to: 56, every: [30, 55], speed: 120, kinds: ['veh-train-h'], train: true, sky: true });

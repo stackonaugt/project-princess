@@ -600,6 +600,14 @@ export class WorldScene extends Phaser.Scene {
   }
   async goFishing() {
     if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
+    // The lake's secret (Chris tells you at 10 hearts): cast stale bread at Edwardes Lake.
+    if (this.regionId === 'lake' && state.count('bread') > 0 && !state.isFound('emilio')) {
+      state.removeItem('bread');
+      state.data.minutes += 10;
+      await ui.say(['You tear off some stale bread and toss it in.', 'The water goes very still. Then a big old duck glides out of the reeds, wearing a little top hat.', '"Quack," he says, gravely. He eats the bread, tips his hat, and climbs out after you.']);
+      await this.winPet('emilio');
+      return this.save();
+    }
     const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
     const bait = state.count('bait') > 0;
     if (bait) state.removeItem('bait');
@@ -625,6 +633,18 @@ export class WorldScene extends Phaser.Scene {
     pet.pause(5); pet.facePoint(this.player.x);
     this.heartsFx(pet, 2);
 
+    // Ziggy has nobody to battle for him: you play-fight him yourself.
+    if (!rec.found && d.challenge) {
+      await ui.say([`${d.name} stops at the end of the lane and stares you down.`, 'He wants a play-fight. If you win, he might come home with you.'], opts);
+      if (!readyTeam().length) return ui.say(['You need a pet with you for that.'], opts);
+      const go = await ui.say({ text: `Play-fight ${d.name}?`, choices: [{ label: 'Let\'s go', value: true }, { label: 'Not now', value: false }] }, { ...opts, cancelValue: false });
+      if (!go) return;
+      const t = TRAINERS[d.id];
+      const result = await this.startBattle({ trainer: d.id });
+      if (result.outcome === 'win') { await ui.say(t.win, opts); await this.winPet(d.id); this.save(); }
+      else { if (result.outcome === 'lose') await ui.say(t.lose, opts); if (result.outcome === 'lose') await this.lostBattle(); }
+      return;
+    }
     if (!rec.found && PRIZE_TRAINER[d.id]) {
       const owner = TRAINERS[PRIZE_TRAINER[d.id]].name;
       return ui.say([`${d.name} sizes you up.`, `${owner} is keeping an eye on things nearby. Win a friendly play-fight with ${owner}, and ${d.name} might come home with you.`], opts);
@@ -849,6 +869,13 @@ export class WorldScene extends Phaser.Scene {
       f.talkedDay = day;
       const r = state.addFriendPoints(npc.id, FRIEND_POINTS.talk + (HEROES[state.data.hero]?.perk.talkBonus ? 5 : 0));
       if (r.after > r.before) { sfx.heart(); this.heartsFx(npc, 3); ui.toast(`${info.name}: ${r.after} ${r.after === 1 ? 'heart' : 'hearts'}`); }
+    }
+    // The fairy at Coburg Station gives you a fairy collar, once.
+    if (npc.id === 'fairy' && !state.data.flags.fairyCollar) {
+      state.data.flags.fairyCollar = true;
+      state.data.gear.fairycollar = (state.data.gear.fairycollar || 0) + 1;
+      sfx.found();
+      await ui.say(['The fairy taps your nose with a wand. "For your fairy friends. Princess will look lovely in it."', 'You got: Fairy collar. Put it on a fairy type pet from your Bag.'], opts);
     }
     if (info.gift && state.data.npcDay[npc.id] !== day) {
       // A list of gifts takes turns, one a day (Betty's cooking).

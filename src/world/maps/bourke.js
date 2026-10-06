@@ -43,6 +43,7 @@ export function buildBourke() {
   b.put('tramstop', 28, 23, { v: '86' }); b.put('bikehoop', 40, 24); b.put('bikehoop', 41, 24);
 
   b.npc('raelene', 56, 18, { face: 'down' });
+  b.npc('bencarroll', 48, 18, { face: 'down', still: true });   // the Premier, on the steps of Parliament
 
   b.forage(20, 12, ['feather', 'lemon']);
   b.forage(31, 2, ['sardine', 'croissant']);

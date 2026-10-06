@@ -46,6 +46,7 @@ export function buildCoburgMall() {
   b.fill(0, 0, 2, 26, '.').ellipse(0, 20, 1.5, 4, '"', '.');
 
   b.npc('deb', 33, 11, { face: 'down' });
+  b.npc('fairy', 24, 12, { face: 'down', at: 'visit' });   // every third day
   b.npc('tash', 3, 14, { path: [[3, 14], [3, 22], [3, 6], [3, 14]], speed: 60 });
 
   b.exit(0, 25, 44, 1, 'coburgsyd', 'north', 'Sydney Rd, Coburg');   // all along the bottom

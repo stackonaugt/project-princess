@@ -237,6 +237,12 @@ export const PEOPLE = {
       2: ['Chris: "The garden belongs to everyone who turns up. That\'s the whole idea."'],
       4: ['Chris shows you the seed library. People leave seeds, take seeds. Nobody owns it.'],
       6: ['Chris: "Working bee on Saturday. Bring the twins. Bring the dogs. Bring the ghost bunny."'],
+      10: [
+        'Chris looks around, then leans in. "Can I tell you a secret? The lake\'s secret."',
+        '"There\'s an old duck called Emilio. Older than the steam engine. Wears a little top hat. Nobody believes me."',
+        '"Get a fishing rod, and instead of bait, cast in a bit of stale bread. James sells it at the milk bar. Then wait."',
+        '"Don\'t tell anyone. He\'s very private. Very distinguished."',
+      ],
     },
     helpsInBattle: 'Chris chucks a handful of compost. Rich, warm, and devastating.',
   },
@@ -1134,6 +1140,86 @@ export const PEOPLE = {
     },
     helpsInBattle: 'Romey slides over a free sample from the counter jar. "Shh."',
   },
+  sharma: {
+    role: 'Palm reader, Preston Market. Gives readings by the deli hall',
+    lines: [
+      ['Your palm, please. Ah. A long life line. A short attention span. And a very strong craving for borek.'],
+      ['I see a journey. Possibly on the 86 tram. Possibly delayed. The lines are never clear about the 86.'],
+      ['Palm reading is an ancient art. Also, ten dollars. Card is fine. The spirits accept tap.'],
+    ],
+    battle: {
+      challenge: ['Mr Sharma takes your hand and gasps. "I see... a battle! Right now! With me!"', '"And if you lose, the reading costs one hundred dollars. The spirits are very clear about that."'],
+      ask: 'Battle Mr Sharma?', yes: 'Show me my future', no: 'Close my hand',
+      win: ['"I did not see that coming. Which is, professionally, embarrassing."', '"No charge today. Please do not leave a review."'],
+      lose: ['"As foretold! One hundred dollars, please. The spirits also accept tap."'],
+      again: ['"Back so soon? I knew you would be. I am, after all, a professional."'],
+    },
+  },
+  crazyjeff: {
+    role: 'President of the Brunswick Bowls Club. Has never once been called "Jeff"',
+    lines: [
+      ['They call me Crazy Jeff because in 1987 I bowled barefoot in a hailstorm. And won. And then did it again.'],
+      ['The jack is the little white ball. Get closer than the other bloke. That\'s it. That\'s the whole game. Fifty years and it never gets old.'],
+      ['Barefoot bowls Friday nights. Young people come for the cheap jugs, stay for the glory.'],
+    ],
+    battle: {
+      challenge: ['Crazy Jeff cracks his knuckles. "You\'ve got the look of a bowler. Let\'s see if you\'ve got the weight."'],
+      ask: 'Battle Crazy Jeff?', yes: 'Roll up', no: 'Maybe on Friday',
+      win: ['"Ha! Toucher! Lovely weight. You can have a membership. Pay the treasurer. She\'s terrifying."'],
+      lose: ['"Short again! You\'ll get there. Bend the knees."'],
+      again: ['"Back for another end? Good on ya."'],
+    },
+  },
+  bowler1: { role: 'Bowls every day. Has opinions on the green', lines: [['Green\'s running fast today. Too fast. Crazy Jeff had it shaved. Don\'t tell him I said.'], ['Forty years at this club. Seen four presidents. Jeff\'s the only one who\'s bowled in a hailstorm.']] },
+  bowler2: { role: 'Bowls every day. Mostly for the afternoon tea', lines: [['I don\'t come for the bowls. I come for the scones at three o\'clock. The bowls is just what happens between.'], ['Mind the ditch. I fell in it in 2003 and they still bring it up.']] },
+  ghost: {
+    role: 'Haunts Reservoir Station after dark',
+    lines: [
+      ['Oooooo. I have been waiting for the last train since 1987. Is it here yet? No? Oooooo.'],
+      ['They put the trains up on the skyrail. Do you know how hard it is to haunt a skyrail? Very windy.'],
+      ['My dog and cat came with me. Into the afterlife. They are very loyal. And very see-through.'],
+    ],
+    battle: {
+      challenge: ['A pale figure drifts out from behind the pillars. "Oooooo. You can see me? Then you can battle me."'],
+      ask: 'Battle the ghost?', yes: 'Bring it', no: 'Run for the train',
+      win: ['"Oooo... well played. You may pass. The next train is in... forever."'],
+      lose: ['"Ooooo! The ghost wins! Again! I have a lot of practice."'],
+      again: ['"Back again after dark? Ooooo. Brave."'],
+    },
+  },
+  fairy: {
+    role: 'A real fairy. Only visits Coburg Station every few days',
+    lines: [
+      ['Oh! You can see me? Most people only see a pigeon.'],
+      ['I come down to Coburg every few days for the cannoli. Don\'t tell the other fairies.'],
+    ],
+  },
+  bencarroll: {
+    role: 'Premier of Victoria. Allegedly',
+    lines: [
+      ['I\'m not blocking the city. I\'m activating a temporary pause on pedestrian access. Press release went out at 4:59 on a Friday.'],
+      ['Kinder? Rest assured, it\'s a priority. It\'s in the forward estimates. Way, way forward. Past the horizon, basically.'],
+      ['The Suburban Rail Loop is fully funded. Until about 2050. Don\'t look at the cost. Look at the hi-vis. Isn\'t it bright?'],
+      ['Rent too high? Have you tried owning a house instead? I have. Several times. Highly recommend it.'],
+      ['The western suburbs? We love you. Every four years. Like clockwork.'],
+      ['I\'ll take that on notice. I\'ll get back to you. I won\'t.'],
+    ],
+    battle: {
+      challenge: [
+        'The Premier looks at you like you\'re a bad poll. "Ah. Constituents. I\'ve been briefed on you. Very briefly."',
+        '"Nobody gets into the city today. Not without a meeting with my office. The next opening is March. Next March. Probably."',
+        '"Of course, you could always try to beat me. Many have. Well. None have. I have a very good media unit."',
+      ],
+      ask: 'Battle the Premier?', yes: 'Hold him to account', no: 'Write a strongly worded letter',
+      win: [
+        'The Premier\'s smile flickers. "SYSTEM... ERROR. ANNOUNCEABLE NOT... FOUND."',
+        'His face slides off to show a tangle of wires and a laminated card of talking points. The Premier was a robot all along!',
+        'The police line packs up quietly. The way into the city is open.',
+      ],
+      lose: ['"That\'ll be two hundred dollars. Call it a congestion levy. On you, specifically."', '"Now off you go. And remember: we\'re getting on with it."'],
+      again: ['"You again. I\'ve had my face reattached and the talking points updated. Let\'s go."'],
+    },
+  },
   ...SH_PEOPLE,
 };
 
@@ -1315,7 +1401,47 @@ export const PET_TEXT = {
   },
 };
 
+PET_TEXT.ziggy = {
+  bio: 'A tiny black and white cat, very fast. He was Mads\'s cat. He grew up with dogs and picked up a bark along the way.',
+  clue: 'Something small and black and white darts along the bluestone lane behind the Carlton terraces.',
+  funFact: 'Ziggy grew up with dogs. He knows one bark, and he uses it.',
+  favouriteSpot: 'The end of the lane, in the sun, where Mads used to call him in.',
+  lines: {
+    0: ['Ziggy watches you from the end of the lane, tail up. He might let you closer. He might not.'],
+    3: ['Ziggy winds round your ankles, then barks. One bark. He looks very pleased with himself.'],
+    6: ['Ziggy curls up in your lap. He is tiny, warm and purring like a little engine.'],
+    9: ['Ziggy sleeps on your pillow tonight, just like he used to with Mads. You keep very still so you don\'t wake him.'],
+  },
+  night: ['Ziggy\'s eyes shine in the dark. He has been out patrolling.'],
+  rain: ['Ziggy is not going out in that. He is watching the rain from the window sill.'],
+  asleep: ['Ziggy is asleep in a sunny patch, paws tucked in.'],
+};
+PET_TEXT.emilio = {
+  bio: 'A big old duck in a little top hat. Nobody knows how old he is, or where the hat came from. He will not say.',
+  clue: 'Chris says the old ducks at Edwardes Lake know a secret. Something about bread.',
+  funFact: 'Emilio has lived at Edwardes Lake longer than the steam engine has been in Lake Park.',
+  favouriteSpot: 'The paddling pool, if you have one. Otherwise, the bath. Otherwise, a puddle.',
+  lines: {
+    0: ['Emilio looks at you over the brim of his hat. "Quack," he says, gravely.'],
+    3: ['Emilio waddles a slow lap of you, then tips his hat. You have been approved.'],
+    6: ['Emilio settles down next to you and quacks softly, like he is telling you a long story about the lake.'],
+    9: ['Emilio lets you hold his top hat. Just for a moment. It is the greatest honour a duck can give.'],
+  },
+  night: ['Emilio is asleep with his head tucked under his wing. The hat stays on.'],
+  rain: ['Emilio is delighted. Finally, proper weather.'],
+  asleep: ['Emilio is asleep standing on one leg. His hat has slipped over one eye.'],
+};
+
 export const FOE_TEXT = {
+  lifeline: { appear: 'A long, curling Life Line peels off Mr Sharma\'s palm!', leave: 'curls back into his hand. A long life, but a short battle.' },
+  heartline: { appear: 'A Heart Line flutters up, all swoops and sighs!', leave: 'goes back to the palm to think about someone special.' },
+  crystalball: { appear: 'A crystal ball rolls out from under the table, glowing!', leave: 'clouds over. Reply hazy. Try again later.' },
+  jack_: { appear: 'The jack, the little white bowl, rolls across the green on its own!', leave: 'rolls into the ditch. Dead jack.' },
+  ghostdog: { appear: 'A see-through dog bounds through the ticket barrier!', leave: 'fades into the night with a ghostly wag.' },
+  ghostcat: { appear: 'A ghost cat drops down from the skyrail, glowing faintly!', leave: 'walks through a wall, very smug.' },
+  staffer: { appear: 'A media staffer bursts out of a side door, phone in each hand!', leave: 'gets a call from the Premier\'s office and sprints off.' },
+  juniormp: { appear: 'A junior MP shuffles out, clutching a list of approved answers!', leave: 'is sent to the backbench to think about what it did.' },
+  robocarroll: { appear: 'The Premier himself steps up. His eyes flash a little bit blue.', leave: 'powers down mid-sentence. It was still on message.' },
   bag: {
     appear: 'A plastic bag blows in on the wind!',
     leave: 'blows away over the rooftops.',

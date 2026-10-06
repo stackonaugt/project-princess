@@ -50,6 +50,10 @@ for (const id of COUNCILLORS) {
 // mornings shopping in Footscray.
 ROUTINES.trish = ROUTINES.gordon = d => ch(d, 3) || d.minutes >= 19 * 60 ? null
   : weekday(d.day) === 'Thursday' && d.minutes >= 10 * 60 && d.minutes < 14 * 60 ? 'footscray' : 'woods';
+// The ghost haunts Reservoir Station after 9pm.
+ROUTINES.ghost = d => (d.minutes >= 21 * 60 ? 'night' : null);
+// A real fairy visits Coburg Station every third day, 9am to 5pm.
+ROUTINES.fairy = d => (d.day % 3 === 0 && d.minutes >= 9 * 60 && d.minutes < 17 * 60 ? 'visit' : null);
 // Mem and Corni: up to the Edinburgh Castle at 7pm, home at 11pm.
 ROUTINES.mem = ROUTINES.corni = d => (d.minutes >= 19 * 60 && d.minutes < 23 * 60 ? 'pub' : 'home');
 // Pearman ducks up to the Edinburgh Castle on Friday and Saturday evenings.

@@ -29,6 +29,7 @@ export const ITEMS = {
   feather:   { name: 'Magpie feather', price: 6,     desc: 'Dropped mid-swoop. A trophy of survival.' },
   pear:      { name: 'Pear', price: 3, art: { kind: 'pear', body: '#c8d050', label: '#3f8a3e' }, desc: 'From Pearman. Do not ask where he has been keeping it. Actually, he will tell you anyway.' },
   manoush:   { name: 'Manoush', price: 6, gift: true, art: { kind: 'plate', body: '#d8a850', label: '#3f8a3e', cap: '#e8d8b0' }, desc: 'Lebanese flatbread with za\'atar and oil, still warm, from Sydney Rd. Slinks swears by it.' },
+  bread:     { name: 'Stale bread', price: 2, art: { kind: 'cake', body: '#e8c888', cap: '#b8803a', label: '#d8a860' }, desc: 'Half a loaf, gone hard. Not good for ducks, really. Although some ducks know what to do with it.' },
   golfball:  { name: 'Golf ball', price: 5, gift: true, art: { kind: 'ball', body: '#f4f4f0', label: '#c8c8c0' }, desc: 'Found in the long grass. Pearman will want it. Pearman always wants one more.' },
   // Crops you grow (crop: true). Sold at James's; see data/crops.js. Carrot above is also a crop.
   basil:      { name: 'Basil', crop: true,      desc: 'A fragrant bunch. Smells like summer and Nonna.' },

@@ -23,7 +23,7 @@ import { SH_SHOPS } from './summerhill.js';
 export const SHOPS = {
   petshop: { name: 'The Leash You Can Do', where: 'Hope St, Brunswick', tabs: ['treats', 'gear'] },
   bunnings: { name: 'Bunnings Warehouse', where: 'Kororoit Creek Rd, Altona North', tabs: ['seeds', 'tools', 'upgrades', 'party', 'gifts'], gifts: ['seedling', 'olive', 'gloves', 'fertiliser'] },
-  milkbar: { name: 'James\'s Milk Bar', where: 'Reservoir Station', tabs: ['sell', 'seeds', 'treats', 'gifts'], seeds: ['tomato', 'strawberry', 'chilli', 'basil'], gifts: ['gaytime', 'icedcoffee', 'flowers', 'paperback', 'byzbook', 'modeltrain'] },
+  milkbar: { name: 'James\'s Milk Bar', where: 'Reservoir Station', tabs: ['sell', 'seeds', 'treats', 'gifts'], seeds: ['tomato', 'strawberry', 'chilli', 'basil'], gifts: ['gaytime', 'icedcoffee', 'flowers', 'paperback', 'byzbook', 'modeltrain', 'bread'] },
   bookshop: { name: 'Brunswick Bound', where: 'Sydney Rd, Brunswick', tabs: ['books'] },
   anaconda: { name: 'Anaconda', where: 'Plenty Rd, Preston', tabs: ['fishing', 'gifts'], gifts: ['thermos', 'headtorch'] },
   cozzo: { name: 'Franco Cozzo', where: 'Barkly St, Footscray', tabs: ['furniture'] },

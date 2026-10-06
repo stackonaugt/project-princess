@@ -13,6 +13,8 @@ export const GEAR = {
   bell:    { name: 'Jingle bell', price: 30, desc: '+20% special. Extremely distracting.', bonus: { special: 1.2 } },
   bandana: { name: 'Lucky bandana', price: 40, desc: 'More lucky hits.', bonus: { crit: 0.08 } },
   pouch:   { name: 'Snack pouch', price: 55, desc: 'A little energy back every turn.', bonus: { regen: 0.06 } },
+  // Not for sale: the fairy at Coburg Station gives it away (forType: only works on that type).
+  fairycollar: { name: 'Fairy collar', price: 0, gift: true, forType: 'fairy', desc: 'A gift from a real fairy. Fairy types only: +30% special and more lucky hits.', bonus: { special: 1.3, crit: 0.06 } },
   bowtie:  { name: 'Fancy bow tie', price: 45, desc: '+30% experience from battles. Learning is classy.', bonus: { xp: 1.3 } },
 };
 export const GEAR_ORDER = Object.keys(GEAR);
