@@ -651,7 +651,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'travel') return this.travel();
     if (t.kind === 'tram') return this.tram();
     if (t.kind === 'seat') return this.sitDown(t);
-    if (t.kind === 'crowd') { t.ref.wait = 5; t.ref.setVelocity(0, 0); t.ref.faceTowards(this.player.x, this.player.y); return ui.say([this.crowd.line()], { name: 'Passer-by' }); }
+    if (t.kind === 'crowd') { t.ref.wait = 5; t.ref.setVelocity(0, 0); t.ref.faceTowards(this.player.x, this.player.y); return ui.say([this.crowd.line()], { name: this.crowd.name() }); }
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);

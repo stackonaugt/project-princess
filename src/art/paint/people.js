@@ -55,7 +55,7 @@ function headwear(p, L, dir, y) {
   const side = dir === 'left', back = dir === 'up';
   if (L.hood) {
     const c = L.hood, d = shade(c, -0.25), l = shade(c, 0.18);
-    if (back) { p.r(c, 2, 3 + y, 12, 13); p.r(l, 4, 4 + y, 6, 1); p.r(d, 11, 5 + y, 2, 10); }
+    if (back) { p.r(c, 4, 2 + y, 8, 1); p.r(c, 3, 3 + y, 10, 2); p.r(c, 2, 5 + y, 12, 8); p.r(c, 3, 13 + y, 10, 2); p.r(c, 5, 15 + y, 6, 1); p.r(l, 5, 3 + y, 5, 1); p.r(d, 7, 5 + y, 1, 9); p.r(d, 12, 6 + y, 1, 7); p.r(d, 4, 14 + y, 8, 1); }   // rounded back of the hood, centre seam
     else if (side) { p.r(c, 4, 3 + y, 8, 3); p.r(c, 8, 6 + y, 5, 10); p.r(l, 5, 3 + y, 4, 1); p.r(d, 11, 7 + y, 2, 8); }
     else { p.r(c, 2, 3 + y, 12, 3); p.r(c, 2, 6 + y, 2, 10); p.r(c, 12, 6 + y, 2, 10); p.r(l, 4, 3 + y, 7, 1); p.r(d, 12, 7 + y, 2, 8); p.r('#e8e4dc', 6, 16 + y, 1, 3); p.r('#e8e4dc', 9, 16 + y, 1, 3); }
   }

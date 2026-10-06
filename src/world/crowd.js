@@ -12,6 +12,17 @@ import { state } from '../systems/state.js';
 
 const COST = { '#': 14, '+': 14, P: 3, '"': 3, h: 2 };      // roads are a last resort
 const BROWSE = 'fckbu=pqQKon';                                  // ground you'd stand on to look in a window
+// How many people are about by day in each outdoor zone. Quiet residential
+// streets have nobody, shopping strips and the city are busy. Unlisted: 2.
+const BUSY = {
+  allen: 0, woods: 0, loddon: 0, glasgow: 0, holmes: 0, moreland: 0, murray: 0,
+  lohse: 1, donald: 1, hope: 1, civic: 1, track: 1, lake: 1, lakepark: 1, wetlands: 1, coburglake: 1, fleming: 1, bowls: 1,
+  station: 2, brunswick: 3, reservoir: 3, prestonhigh: 3, coburgmall: 4, coburg: 3, preston: 3, ebnicholson: 2, nicholson: 2, altona: 3, flemington: 2,
+  sydney: 5, albion: 4, coburgsyd: 5, prestonmkt: 6, summerhill: 5, eblygon: 4, footscray: 5, gardens: 4,
+  lygon: 6, bourke: 7, swanston: 8, laneways: 6, flinders: 9,
+};
+// What you call them when you talk to them
+export const CROWD_NAME = { street: 'Local', station: 'Commuter', shop: 'Shopper' };
 
 class Walker extends Actor {
   constructor(scene, look, x, y) {
@@ -85,8 +96,8 @@ export class Crowd {
     if (z.indoor) for (let y = 0; y < m.h; y++) for (let x = 0; x < m.w; x++) if (open(x, y) && m.ground[y][x] !== 'D') this.floor.push([x, y]);
     const shop = m.npcs.some(n => NPCS[n.id]?.shop);
     if (z.indoor && !shop) return;
-    let n = z.indoor ? 1 + (this.floor.length > 200 ? 1 : 0) : Math.max(2, Math.min(7, Math.round(m.solid.filter(s => !s).length / 260)));
-    if (!z.indoor && ['city', 'carlton'].includes(z.suburb)) n += 3;
+    let n = z.indoor ? 1 + (this.floor.length > 200 ? 1 : 0) : BUSY[m.id] ?? 2;
+    if (!n) return;
     const t = state.data.minutes;
     if (t >= 21 * 60) n = Math.ceil(n / 2);
     if (t >= 24 * 60) n = Math.min(n, 1);
@@ -180,5 +191,6 @@ export class Crowd {
 
   update(player, dt, frozen) { for (const w of this.list) w.update(player, dt, frozen); }
   candidates() { return this.list.filter(w => !w.fading && w.alpha > 0.5).map(w => ({ kind: 'crowd', ref: w, x: w.x, y: w.y - 4, bubble: 'fx-bubble-talk' })); }
+  name() { return CROWD_NAME[this.lineSet] || 'Local'; }
   line() { const a = CROWD_LINES[this.lineSet] || CROWD_LINES.street; return a[Math.floor(Math.random() * a.length)]; }
 }
