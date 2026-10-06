@@ -253,6 +253,7 @@ export class WorldScene extends Phaser.Scene {
       o.sprite = img;
       if (def.flat) img.setDepth(-900 + y / 1000);
       if (def.deck) img.setDepth(-990);
+      if (def.above) img.setDepth(8600 + y / 1000);   // over roofs and the skyrail, never over people (keep its art above head height)
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
       if (SEATS.includes(o.kind) && !o.forSale) {   // somewhere to sit: one place per tile of a bench
         const n = o.kind === 'bench' ? o.w : 1, slots = [];

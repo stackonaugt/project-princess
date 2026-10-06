@@ -65,7 +65,7 @@ export class MapBuilder {
     if (!def) throw new Error(`Unknown object kind: ${kind}`);
     const [fw, fh] = def.foot;
     // Flat things (rugs, mats) and wall decorations can overlap other objects.
-    const layered = def.flat || def.roof || def.deck || opts.onWall;
+    const layered = def.flat || def.roof || def.deck || def.above || opts.onWall;
     if (!layered && !this.free(x, y, fw, fh)) return null;
     const o = { kind, x, y, w: fw, h: fh, v: opts.v ?? (Array.isArray(def.variants) ? def.variants[0] : ''), ...opts };
     this.objects.push(o);

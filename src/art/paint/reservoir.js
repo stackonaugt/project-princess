@@ -40,30 +40,41 @@ export const RESERVOIR = {
   // pleated with diagonal fins, rising to a sharp point on the left and
   // running low along the skyrail to the right, over a dark glazed base.
   resstation: {
-    foot: [12, 3], tex: [200, 120], variants: ['skyrail'],
+    foot: [12, 3], tex: [200, 176], variants: ['skyrail'],
     paint(p) {
-      const sx = 4, W = 192, H = 120, base = 72;
+      const sx = 4, W = 192, H = 176, base = 124;
       p.r('rgba(30,50,20,.25)', sx + 2, H - 2, W, 3);
-      // the skyrail deck carrying on to the right
-      p.r('#b8bcb8', sx + 100, 40, W - 100, 10); p.r('#d0d4d0', sx + 100, 40, W - 100, 2); p.r('#8a8e8a', sx + 100, 48, W - 100, 2);
-      // the wing: top edge rises from right (low) to a sharp peak on the left
-      const topAt = x => Math.round(x < 20 ? 6 + (20 - x) * 0.2 : 6 + (x - 20) * 0.32);
-      for (let x = 0; x < W; x++) {
-        const t = topAt(x), bottom = base - (x < 14 ? Math.round((14 - x) * 2.2) : 0);
-        if (t >= bottom) continue;
-        const pleat = Math.floor((x + t) / 6) % 2;
-        p.r(pleat ? '#eef2f0' : '#d4dad6', sx + x, t, 1, bottom - t);
-        if ((x + t) % 6 === 0) p.r('#b8c0bc', sx + x, t, 1, bottom - t);
-      }
-      for (let x = 0; x < W; x += 2) p.r('#f8fbfa', sx + x, topAt(x), 2, 1);                       // the bright top edge
-      for (let x = 0; x < W; x += 1) if (x > 14) p.r('#9aa49e', sx + x, base - 2, 1, 2);
-      // the dark glazed base, entry and the big R
-      p.r('#1e2024', sx + 8, base, W - 8, H - base); for (let x = sx + 8; x < sx + W; x += 16) p.r('#2a2d32', x, base, 1, H - base);
-      p.r('#3a4a56', sx + 12, base + 4, 50, 14); for (let x = sx + 14; x < sx + 60; x += 8) p.r('#5a7a8a', x, base + 5, 6, 12);
-      p.r('#2a2e33', sx + 70, base + 8, 44, H - base - 8); p.r('#5a7a8a', sx + 72, base + 10, 40, H - base - 10); p.r('#2a2e33', sx + 91, base + 10, 2, H - base - 10);
+      // (the wing above the base is reswing, drawn over the skyrail)
+      // the dark glazed base under it, steel columns and the big R
+      p.r('#1e2024', sx + 4, base, W - 4, H - base); for (let x = sx + 8; x < sx + W; x += 14) p.r('#2e3238', x, base, 2, H - base);
+      p.r('#2c3a44', sx + 20, base + 8, 96, H - base - 8); for (let x = sx + 22; x < sx + 116; x += 12) p.r('#3e5260', x, base + 10, 10, H - base - 10);   // dark glass, no big doors
+      for (const x of [44, 92]) p.r('#7a8288', sx + x, base, 3, H - base);
       p.r('#3a3d44', sx + 150, base + 6, 20, 24); p.r('#c8ccd0', sx + 154, base + 8, 4, 12); p.r('#c8ccd0', sx + 154, base + 8, 10, 3); p.r('#c8ccd0', sx + 161, base + 10, 3, 4); p.r('#c8ccd0', sx + 158, base + 13, 4, 3); p.r('#c8ccd0', sx + 160, base + 16, 4, 4);
       p.text('RESERVOIR', sx + 143, base + 34, '#9aa0a8'); p.text('STATION', sx + 147, base + 40, '#9aa0a8');
-      p.r('#e8a030', sx + 30, base + 18, 2, 28); p.r('#c8443a', sx + 26, base + 14, 10, 6); // bus stop flag
+    },
+  },
+  // The wing of Reservoir Station on its own, so it can be drawn over the
+  // skyrail (WorldScene: above). It sits on the same spot as resstation.
+  reswing: {
+    foot: [12, 3], tex: [200, 176], variants: ['skyrail'], solid: false, above: true,
+    paint(p) {
+      const sx = 4, W = 192, base = 124;
+      // the wing: a huge pleated white wedge, a sharp peak at the top left,
+      // its top edge running down to the right, its front edge slanting from the
+      // peak down to the base, so the left end hangs out over the forecourt
+      const topAt = x => Math.round(2 + x * 0.45), botAt = x => Math.round(x < 56 ? 3 + x * (base - 3) / 56 : base);
+      for (let x = 0; x < W; x++) {
+        const t = topAt(x), b = botAt(x);
+        for (let y = t; y < b; y++) {
+          const u = x + (y - t) * 0.9, row = Math.floor((y - t) / 12), k = Math.floor(u / 9), f = u % 9;
+          const light = (k + row) % 2 === 0;
+          let c = light ? (f < 4.5 ? '#f6f9f8' : '#e2e8e5') : (f < 4.5 ? '#c8d0cc' : '#d8dfdb');
+          if (f < 1) c = '#aab4af';                                                     // the fold lines
+          if ((y - t) % 12 === 0) c = '#eef3f1';
+          p.r(c, sx + x, y, 1, 1);
+        }
+        p.r('#ffffff', sx + x, t, 1, 1); p.r('#8a948f', sx + x, b - 1, 1, 1);
+      }
     },
   },
   wayfinding: {

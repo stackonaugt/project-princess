@@ -71,20 +71,26 @@ export const CIVIC = {
       p.r('#2a2e34', sx - 2, top - 8, W + 4, 8); p.r('#3a3e46', sx - 2, top - 8, W + 4, 2);
       bricks(p, sx, top, W, H - top - 1, '#d8c8a4', 4);
       // windows along the left wing
-      for (let i = 0; i < 4; i++) { const x = sx + 6 + i * 22; p.r('#2a2e33', x, top + 14, 18, 26); p.r('#7a9ab0', x + 1, top + 15, 16, 24); p.r('#a8c4d4', x + 2, top + 16, 4, 3); p.r('#2a2e33', x + 1, top + 26, 16, 1); }
+      for (let i = 0; i < 3; i++) { const x = sx + 6 + i * 22; p.r('#2a2e33', x, top + 14, 18, 26); p.r('#7a9ab0', x + 1, top + 15, 16, 24); p.r('#a8c4d4', x + 2, top + 16, 4, 3); p.r('#2a2e33', x + 1, top + 26, 16, 1); }
+      // the entry, right over the path (exit tiles 26-27): glass behind a big flat canopy, sliding doors in the middle
+      const ex = sx + 72, ew = 50;
+      p.r('#2a2e33', ex, top + 10, ew, H - top - 11); p.r('#a8d0e0', ex + 1, top + 11, ew - 2, H - top - 12);
+      for (const x of [10, 40]) p.r('#2a2e33', ex + x, top + 11, 1, H - top - 12);
+      p.r('#2a2e33', ex + 13, top + 18, 24, H - top - 19); p.r('#c8e4ee', ex + 14, top + 19, 22, H - top - 20);   // the doors
+      p.r('#2a2e33', ex + 24, top + 19, 2, H - top - 20); p.r('#f4f4f0', ex + 15, top + 20, 3, 8); p.r('#f4f4f0', ex + 27, top + 20, 3, 8);
+      p.r('#3a9a4a', ex + 21, top + 13, 8, 4); p.r('#f4f4f0', ex + 22, top + 14, 6, 2);                     // a green EXIT/ENTRY light
+      p.r('#d8dcdf', ex - 4, top + 2, ew + 8, 8); p.r('#f4f4f0', ex - 4, top + 2, ew + 8, 1); p.r('#9a9ea6', ex - 4, top + 9, ew + 8, 1);   // the canopy
+      for (const x of [-3, ew - 2]) { p.r('#c8ccd0', ex + x, top + 10, 5, H - top - 11); p.r('#9a9ea6', ex + x + 4, top + 10, 1, H - top - 11); }
+      centred(p, 'CIVIC CENTRE', ex + ew / 2, top + 3, '#3a3e46');
+      p.r('#6a4a3a', ex + 12, H - 4, 26, 3); p.r('#8a6a52', ex + 12, H - 4, 26, 1);                           // the doormat
       // the dark feature wall with the council's name
-      p.r('#3a3e46', sx + 94, top, 30, H - top - 1); p.r('#4a4e56', sx + 94, top, 30, 2);
-      p.text('HOBSONS', sx + 96, top + 8, '#f4f4f0'); p.text('BAY', sx + 104, top + 15, '#f4f4f0'); p.text('CITY', sx + 102, top + 22, '#f4f4f0');
-      p.r('#3aa0c8', sx + 98, top + 32, 22, 2);
-      // the entry: glass behind a big flat canopy on square columns
-      p.r('#2a2e33', sx + 128, top + 10, 58, H - top - 11); p.r('#a8d0e0', sx + 129, top + 11, 56, H - top - 12);
-      for (const x of [140, 152, 164, 176]) p.r('#2a2e33', sx + x, top + 11, 1, H - top - 12);
-      p.r('#5a5e66', sx + 150, top + 34, 14, H - top - 35); p.r('#a8d0e0', sx + 151, top + 35, 12, H - top - 36); p.r('#2a2e33', sx + 157, top + 35, 1, H - top - 36);
-      p.r('#d8dcdf', sx + 122, top + 2, 72, 8); p.r('#f4f4f0', sx + 122, top + 2, 72, 1); p.r('#9a9ea6', sx + 122, top + 9, 72, 1);   // the canopy
-      for (const x of [124, 186]) { p.r('#c8ccd0', sx + x, top + 10, 5, H - top - 11); p.r('#9a9ea6', sx + x + 4, top + 10, 1, H - top - 11); }
-      centred(p, 'CIVIC CENTRE', sx + 158, top + 3, '#3a3e46');
+      p.r('#3a3e46', sx + 128, top, 30, H - top - 1); p.r('#4a4e56', sx + 128, top, 30, 2);
+      p.text('HOBSONS', sx + 130, top + 8, '#f4f4f0'); p.text('BAY', sx + 138, top + 15, '#f4f4f0'); p.text('CITY', sx + 136, top + 22, '#f4f4f0');
+      p.r('#3aa0c8', sx + 132, top + 32, 22, 2);
+      // the right wing
+      for (let i = 0; i < 2; i++) { const x = sx + 162 + i * 14; p.r('#2a2e33', x, top + 14, 12, 26); p.r('#7a9ab0', x + 1, top + 15, 10, 24); p.r('#a8c4d4', x + 2, top + 16, 3, 3); }
       // planter boxes along the front
-      for (const x of [8, 52]) { p.r('#8a8e96', sx + x, H - 9, 34, 8); for (let i = 0; i < 6; i++) p.blob(sx + x + 4 + i * 5, H - 10, 3, i % 2 ? '#3a7a3a' : '#4a8a3a'); }
+      for (const x of [8, 160]) { p.r('#8a8e96', sx + x, H - 9, 30, 8); for (let i = 0; i < 5; i++) p.blob(sx + x + 4 + i * 5, H - 10, 3, i % 2 ? '#3a7a3a' : '#4a8a3a'); }
       outline(p.ctx, 0, 0, 196, H);
     },
   },
