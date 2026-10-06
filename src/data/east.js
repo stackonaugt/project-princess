@@ -266,7 +266,7 @@ export const EAST_FRIENDS = {
 
 // ------------------------------------------------------------ shops
 export const EAST_SHOPS = {
-  spells: { name: 'East Brunswick Take Away and Milk Bar', where: 'Nicholson St, Brunswick East', tabs: ['spells', 'treats', 'gifts'], treats: ['cannoli', 'prosciutto', 'egg', 'cheese', 'snag'], gifts: ['kombucha', 'honey', 'beans', 'parmigiano', 'icedcoffee'] },
+  spells: { name: 'East Brunswick Take Away and Milk Bar', where: 'Nicholson St, Brunswick East', tabs: ['spells', 'treats', 'gifts', 'remedies'], remedies: ['laxatives'], treats: ['cannoli', 'prosciutto', 'egg', 'cheese', 'snag'], gifts: ['kombucha', 'honey', 'beans', 'parmigiano', 'icedcoffee'] },
 };
 
 // ------------------------------------------------------------ items

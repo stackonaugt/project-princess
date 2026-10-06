@@ -374,6 +374,14 @@ body.touch .bt-btn { min-height: 52px; }
 .story-card p { margin: 0; font-size: 17px; line-height: 1.4; }
 .story-kicker { font-size: 15px !important; letter-spacing: .12em; text-transform: uppercase; color: var(--wood); font-weight: 700; }
 .story-title { margin: 0; font-size: 30px; }
+.paper { display: grid; gap: 8px; padding: 16px 16px 14px; background: #f3eedf; color: #222; font-family: Georgia, 'Times New Roman', serif; border-radius: 6px; }
+.paper-mast { text-align: center; font-size: 28px; font-weight: 900; letter-spacing: .04em; border-bottom: 3px double #222; padding-bottom: 4px; font-family: 'Times New Roman', serif; }
+.paper-date { text-align: center; font-size: 12px; font-style: italic; border-bottom: 1px solid #222; padding-bottom: 4px; }
+.paper-head { margin: 4px 0; font-size: 24px; line-height: 1.1; text-align: center; font-weight: 900; text-transform: uppercase; }
+.paper-body { columns: 2 180px; column-gap: 16px; column-rule: 1px solid #999; }
+.paper-body p { margin: 0 0 8px; font-size: 15px; line-height: 1.35; text-align: justify; }
+.paper-body p:first-child::first-letter { float: left; font-size: 40px; line-height: .9; padding-right: 4px; font-weight: 900; }
+.paper-more { margin: 0; font-size: 13px; font-style: italic; text-align: right; }
 .news { display: grid; gap: 12px; padding: 0 0 14px; }
 .news-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #1e2a5a; color: #fff; border-radius: 8px 8px 0 0; }
 .news-head b { flex: 1; font-size: 19px; letter-spacing: .06em; }

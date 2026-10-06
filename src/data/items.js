@@ -94,7 +94,16 @@ export const ITEMS = {
   headtorch:  { name: 'Head torch', price: 20, gift: true, desc: 'For night runs, possum spotting and finding the car keys.' },
 
   // The story (data/story.js). story: true items are for the plot: not treats, not presents.
-  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon and three days on a windowsill. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon, laxatives and three days on a windowsill. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  laxatives:  { name: 'Laxatives', price: 12, story: true, art: { kind: 'packet', body: '#e8eef4', label: '#3a7ac8', cap: '#c83a3a' }, desc: 'Extra strength. "Do not exceed the stated dose." Noted.' },
+  // Chapter 3 prank supplies (data/story.js PRANKS). Bunnings, the $2 shop and James's milk bar.
+  whoopee:    { name: 'Whoopee cushion', price: 3, story: true, art: { kind: 'ball', body: '#d83a4a', label: '#f08090' }, desc: 'Pink rubber, maximum comedy. Place under an unsuspecting dad.' },
+  googly:     { name: 'Googly eyes', price: 2, story: true, art: { kind: 'packet', body: '#f4f4f0', label: '#1e1a18', cap: '#3a7ac8' }, desc: 'A bag of two hundred googly eyes. Everything is funnier when it is looking at you.' },
+  rubbermouse:{ name: 'Rubber mouse', price: 2, story: true, art: { kind: 'ball', body: '#9a9aa8', label: '#e8a0b0' }, desc: 'A squeaky grey mouse. Comes with a tiny plaster cast, for some reason.' },
+  bookmark:   { name: 'Tassel bookmark', price: 2, story: true, art: { kind: 'packet', body: '#c8443a', label: '#e8c040', cap: '#e8c040' }, desc: 'Fancy. Perfect for losing someone\'s place in a very long book.' },
+  grapejuice: { name: 'Grape juice', price: 3, story: true, art: { kind: 'wine', body: '#6a2a5a', label: '#f4e8c8', cap: '#3a1a2a' }, desc: 'In a wine bottle. From a distance, it is a shiraz. Up close, it is for kids.' },
+  crayons:    { name: 'Crayons', price: 2, story: true, art: { kind: 'packet', body: '#e8c040', label: '#3a9a4a', cap: '#c8443a' }, desc: 'Twenty-four colours. Enough to redraw an entire train timetable. With dinosaurs.' },
+  wigglescd:  { name: 'Wiggles CD', price: 5, story: true, art: { kind: 'globe', body: '#e8c040', label: '#c8443a', cap: '#3a7ac8' }, desc: 'Hot Potato, Fruit Salad, the hits. Guaranteed to start a dance-off.' },
   // Party decorations (deco: true) from Bunnings, for the September Babies Bash.
   bunting:    { name: 'Bunting', price: 6, deco: true, desc: 'Ten metres of little triangle flags. Gets tangled just by looking at it.' },
   balloons:   { name: 'Balloons', price: 4, deco: true, desc: 'A bag of balloons. Somebody is going to have to blow these up.' },

@@ -40,8 +40,9 @@ export function objectives(n = chapterNow()) {
   if (n === 1) {
     const found = state.foundCount(), trained = PETS.filter(p => state.isFound(p.id) && petLevel(p.id) >= CH1.level).length;
     const evolved = PETS.some(p => isEvolved(p.id));
-    return [
-      { text: `Find all your friends' pets${count(found, PETS.length)}`, done: found >= PETS.length },
+    const list = [{ text: `Find 6 of your friends' pets${count(found, CH1.find)}`, done: found >= CH1.find }];
+    if (found < CH1.find) return list;   // the rest stay hidden until six are enrolled
+    return [...list,
       { text: `Train ${CH1.trained} pets to level ${CH1.level}${count(trained, CH1.trained)}`, done: trained >= CH1.trained },
       { text: 'Evolve a pet (level and friendship both high enough)', done: evolved },
     ];
@@ -50,7 +51,7 @@ export function objectives(n = chapterNow()) {
     const c = s.ch2;
     return [
       { text: 'Build the kitchen (Olly, Bunnings Warehouse, Altona North)', done: state.hasUpgrade('kitchen') },
-      { text: 'Cook a very dodgy fish pie (any fish and a lemon, at the stove)', done: !!c.pie || state.count('fishpie') > 0 || !!c.swapped },
+      { text: 'Cook a very dodgy fish pie at the stove (any fish, a lemon, and laxatives from Preston Market or the Brunswick East milk bar)', done: !!c.pie || state.count('fishpie') > 0 || !!c.swapped },
       { text: `Swap it for Cr Bentleigh's lunch in the civic centre foyer before the spill vote on ${weekday(c.deadline || 1)}, day ${c.deadline || '?'}`, done: !!c.swapped },
     ];
   }

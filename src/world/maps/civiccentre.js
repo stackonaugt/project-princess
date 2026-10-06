@@ -26,7 +26,7 @@ export function buildCivicCentre() {
 
   // Paddy at reception on weekdays; councillors drop in on their days (routines.js)
   b.npc('paddy', 12, 6, { face: 'down', at: 'reception' });
-  b.npc('lesley', 19, 10, { face: 'left', at: 'foyer' });
+  b.npc('lesley', 21, 9, { face: 'right', at: 'foyer', still: true });   // at her booth, lunch on the table
   b.npc('malcolm', 20, 11, { face: 'left', at: 'foyer' });
   b.npc('kirsty', 5, 12, { face: 'right', at: 'foyer' });
   b.npc('dahlia', 16, 7, { face: 'down', at: 'foyer' });

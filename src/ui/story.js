@@ -41,6 +41,20 @@ export function openCard(panel, close, { kicker, title, lines, button = 'Continu
   return { action: close };
 }
 
+// The morning paper (Chapter 1): { masthead, date, headline, lines, more }.
+export function openPaper(panel, close, { masthead, date, headline, lines, more }) {
+  const go = h('button', { class: 'wood-btn', onclick: close }, 'Put the paper down');
+  panel.replaceChildren(h('div', { class: 'paper' },
+    h('div', { class: 'paper-mast' }, masthead),
+    h('div', { class: 'paper-date' }, date),
+    h('h2', { class: 'paper-head' }, headline),
+    h('div', { class: 'paper-body' }, ...lines.map(t => h('p', {}, t))),
+    more ? h('p', { class: 'paper-more' }, more) : null,
+    h('div', { class: 'center' }, go)));
+  setTimeout(() => go.focus(), 50);
+  return { action: close };
+}
+
 // West is Best News. With `votes`, a bar fills up to Paddy's share, with a line at 50%.
 export function openNews(panel, close, { lines, votes = null }) {
   const go = h('button', { class: 'wood-btn' }, 'Continue');

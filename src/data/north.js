@@ -377,7 +377,7 @@ export const NORTH_FRIENDS = {
 // ------------------------------------------------------------ shops
 export const NORTH_SHOPS = {
   pide: { name: 'Knead to Know', where: 'Sydney Rd, Coburg', tabs: ['treats', 'gifts'], treats: ['pide', 'cheese', 'croissant'], gifts: ['baklava', 'icedcoffee'] },
-  deli: { name: 'Stavros\'s Deli', where: 'Preston Market', tabs: ['treats', 'gifts'], treats: ['fetta', 'cheese', 'chicken', 'sardine'], gifts: ['olivejar', 'baklava'] },
+  deli: { name: 'Stavros\'s Deli', where: 'Preston Market', tabs: ['treats', 'gifts', 'remedies'], remedies: ['laxatives'], treats: ['fetta', 'cheese', 'chicken', 'sardine'], gifts: ['olivejar', 'baklava'] },
   fruitveg: { name: 'Linh\'s Fruit and Veg', where: 'Preston Market', tabs: ['sell', 'seeds', 'gifts'], seeds: ['tomato', 'zucchini', 'chilli', 'pumpkin', 'strawberry'], gifts: ['flowers', 'seedling'] },
   opshop: { name: 'Second Act Op Shop', where: 'High St, Preston', tabs: ['gifts'], gifts: ['cardigan', 'paperback', 'modeltrain', 'byzbook', 'thermos'] },
 };

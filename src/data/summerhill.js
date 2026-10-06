@@ -217,7 +217,7 @@ export const SH_SHOPS = {
   chemist: { name: 'Summerhill Discount Chemist', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['handcream', 'sunscreen'] },
   newsagent: { name: 'Summerhill Newsagency', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['puzzlebook', 'bdaycard', 'paperback'] },
   hotbread: { name: 'Summerhill Hot Bread', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['sausageroll', 'vanillaslice', 'fingerbun'] },
-  twodollar: { name: 'Everything $2', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['fidget', 'fakeplant', 'flowers'] },
+  twodollar: { name: 'Everything $2', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts', 'pranks'], gifts: ['fidget', 'fakeplant', 'flowers'] },
 };
 
 export const SH_FRIENDS = {

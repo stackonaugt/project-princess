@@ -10,7 +10,7 @@ import { isAt, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
 import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, CH2_RECIPE, CH4 } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
 // What blocks a gated exit until you beat its keeper (`gate` on an exit).
@@ -986,6 +986,11 @@ export class WorldScene extends Phaser.Scene {
         sfx.pickup();
         await ui.say(`You got: ${Object.entries(t.reward).map(([item, n]) => `${n} ${ITEMS[item].name}`).join(', ')}.`, opts);
       }
+      if (t.prize && !state.isFound(t.prize)) {
+        state.addMoney(SCHOOL_FEE);
+        sfx.pickup();
+        await ui.say(SCHOOL_LINES[npc.id] || `${t.name}: ${SCHOOL_DEFAULT}`, opts);
+      }
       if (t.prize) await this.winPet(t.prize);
       this.save();
     } else {
@@ -1314,6 +1319,10 @@ export class WorldScene extends Phaser.Scene {
       if (s.heroBefore) { d.hero = s.heroBefore; s.heroBefore = null; this.player.refreshLook(); }
       await ui.news({ lines: NEWS_OPEN(s.ch2.deposed) });
     }
+    if (n === 1) {
+      await ui.paper(CH1_PAPER);
+      await ui.say(CH1_HELEN, { name: 'Helen' });
+    }
     sfx.found();
     await ui.card({ kicker: `Chapter ${n}`, title: CHAPTERS[n].title, lines: CHAPTERS[n].intro, button: 'Let\'s go' });
     if (n === 2) {
@@ -1346,7 +1355,13 @@ export class WorldScene extends Phaser.Scene {
 
   // Chapters 1 and 3 finish by themselves once their objectives are done.
   async checkStory() {
-    const n = story().chapter;
+    const n = story().chapter, f = state.data.flags;
+    if (!this.storyBusy && inChapter(1) && !f.enrolled && state.foundCount() >= CH1.find) {
+      f.enrolled = true; this.storyBusy = true;
+      sfx.found();
+      await ui.say(CH1_ENROLLED, { name: 'Helen' });
+      this.save(); this.storyBusy = false;
+    }
     if (this.storyBusy || !chapterFinished(n)) return;
     this.storyBusy = true;
     await this.finishChapter(n);
@@ -1364,8 +1379,8 @@ export class WorldScene extends Phaser.Scene {
   buildStoryBits() {
     this.lunchSpot = null;
     if (this.regionId === 'civiccentre' && inChapter(2) && !story().ch2.swapped) {
-      const pos = toWorld(18, 9);
-      const sprite = this.add.image(pos.x, pos.y - 4, 'item-lunchbowl').setOrigin(0.5, 1).setDepth(pos.y).setScale(fitScale(this, 'item-lunchbowl', 12));
+      const pos = toWorld(22.5, 9);
+      const sprite = this.add.image(pos.x, pos.y - 8, 'item-fishpie').setOrigin(0.5, 1).setDepth(pos.y + 8).setScale(fitScale(this, 'item-fishpie', 12));
       this.lunchSpot = { kind: 'lunch', x: pos.x, y: pos.y - 4, r: 18, sprite, bubble: 'fx-bubble-alert' };
       this.interactables.push(this.lunchSpot);
     }
@@ -1378,8 +1393,8 @@ export class WorldScene extends Phaser.Scene {
     const r = RECIPES.fishpie;
     const pick = await ui.say({ text: 'The new oven. It still has the plastic on the dials. Cook something?', choices: [{ label: r.name, value: 'fishpie', note: r.needs }, { label: 'Not now', value: null }] }, { cancelValue: null });
     if (!pick) return;
-    if (!fish || state.count('lemon') < CH2_RECIPE.lemon) return ui.say([`You need ${r.needs}. Catch a fish at Edwardes Lake, Edgars Creek or Kororoit Creek. Lemons grow on every second tree in Melbourne.`]);
-    state.removeItem(fish); state.removeItem('lemon');
+    if (!fish || state.count('lemon') < CH2_RECIPE.lemon || state.count('laxatives') < CH2_RECIPE.laxatives) return ui.say([`You need ${r.needs}. Catch a fish at Edwardes Lake, Edgars Creek or Kororoit Creek. Lemons grow on every second tree in Melbourne.`, 'Laxatives: Stavros\'s deli at Preston Market has some behind the counter, and so does the milk bar on Nicholson St, Brunswick East.']);
+    state.removeItem(fish); state.removeItem('lemon'); state.removeItem('laxatives');
     state.addItem('fishpie');
     story().ch2.pie = true;
     sfx.found();
@@ -1418,13 +1433,33 @@ export class WorldScene extends Phaser.Scene {
 
   // Chapter 3: a prank on one of Helen's friends.
   async prank(npc, opts) {
-    const s = story();
-    await ui.say(PRANKS[npc.id].lines, opts);
+    const s = story(), pr = PRANKS[npc.id];
+    if (pr.item && !state.count(pr.item)) return ui.say([PRANK_NEED(pr.label, ITEMS[pr.item].name.toLowerCase())], opts);
+    if (pr.item) state.removeItem(pr.item);
+    const [setup, ...rest] = pr.lines;
+    await ui.say([setup], opts);
+    await this.reactFx(npc, pr.react);
+    await ui.say(rest, opts);
     s.pranks.push(npc.id);
     state.addFriendPoints(npc.id, 5);
     sfx.heart(); this.heartsFx(npc, 4);
     ui.toast(PRANK_AFTER(s.pranks.length));
     this.save();
+  }
+
+  // A big animated reaction: a "!" pops up, then they jump, shake or spin.
+  reactFx(npc, kind = 'jump') {
+    sfx.bump();
+    const bub = this.add.image(npc.x, npc.y - 36, 'fx-bubble-alert').setOrigin(0.5, 1).setDepth(9600).setScale(0);
+    this.tweens.add({ targets: bub, scale: 1.4, duration: 180, ease: 'Back.out' });
+    this.cameras.main.shake(220, 0.004);
+    const y0 = npc.y, x0 = npc.x;
+    return new Promise(done => {
+      const end = () => { npc.x = x0; npc.y = y0; npc.angle = 0; this.tweens.add({ targets: bub, alpha: 0, duration: 300, onComplete: () => bub.destroy() }); done(); };
+      if (kind === 'shake') this.tweens.add({ targets: npc, x: x0 + 3, duration: 50, yoyo: true, repeat: 7, onComplete: end });
+      else if (kind === 'spin') this.tweens.add({ targets: npc, angle: 360, duration: 500, repeat: 1, onComplete: end });
+      else this.tweens.add({ targets: npc, y: y0 - 10, duration: 140, yoyo: true, repeat: 2, ease: 'Quad.out', onComplete: end });
+    });
   }
 
   // Chapter 4: invite a friend to the party. They come if you're close enough.
