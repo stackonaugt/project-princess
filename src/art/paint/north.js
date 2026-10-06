@@ -179,6 +179,21 @@ export const NORTH = {
     paint(p, v) {
       const sx = 2, W = 160, H = 100, base = 52, accent = v === 'coburg' ? '#e8a030' : '#3ab0a0', letter = v === 'coburg' ? 'C' : 'P';
       p.r('rgba(30,50,20,.25)', sx + 2, H - 2, W, 3);
+      if (v === 'preston') {
+        // Preston Station from the owner's photos: the skyrail deck, a white
+        // lattice screen, then the whole building wrapped in tall rainbow fins
+        // over a glass base.
+        p.r('#b8bcb8', sx, 2, W, 10); p.r('#d0d4d0', sx, 2, W, 2); p.r('#8a8e8a', sx, 10, W, 2);
+        p.r('#f4f4f0', sx, 12, W, 12); for (let x = sx; x < sx + W; x += 6) { p.r('#c8ccd0', x, 13, 1, 10); p.r('#c8ccd0', x + 3, 15, 1, 6); } p.r('#d8dcdf', sx, 18, W, 1);
+        const fins = ['#e8508a', '#9a4ab8', '#f0c030', '#3aa84a', '#e8742a', '#3a7ad8', '#f07ab0', '#b8d040', '#2ab0b0', '#c83a3a'];
+        for (let i = 0; i < 32; i++) { const x = sx + i * 5, c = fins[(i * 3) % fins.length], top = 24 + (i % 3); p.r(c, x, top, 4, H - top - 18); p.r(shade(c, 0.25), x, top, 1, H - top - 18); p.r(shade(c, -0.25), x + 3, top, 1, H - top - 18); p.blob(x + 2, top, 2, c); }
+        p.r('#2a2e33', sx, H - 18, W, 17); p.r('#6a8a9a', sx + 2, H - 16, W - 4, 13);
+        for (let x = sx + 2; x < sx + W - 2; x += 14) p.r('#2a2e33', x, H - 16, 1, 13);
+        p.r('#2a2e33', sx + 68, H - 18, 24, 17); p.r('#a8c8d8', sx + 69, H - 17, 22, 15); p.r('#2a2e33', sx + 79, H - 17, 2, 15);
+        p.r('#f4f4f0', sx + 14, H - 15, 22, 10); p.r('#1e3a8a', sx + 15, H - 14, 20, 8); p.text('MYKI', sx + 18, H - 13, '#f4f4f0');
+        p.r('#f4f4f0', sx + 108, H - 15, 34, 9); p.text('PRESTON', sx + 111, H - 13, '#1e3a8a');
+        return;
+      }
       // concrete deck and a train-height parapet
       p.r('#b8bcb8', sx, 6, W, 14); p.r('#d0d4d0', sx, 6, W, 2); p.r('#8a8e8a', sx, 18, W, 2);
       for (let x = sx + 6; x < sx + W; x += 26) p.r('#a8aca8', x, 8, 1, 10);
