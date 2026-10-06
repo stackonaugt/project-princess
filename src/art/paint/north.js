@@ -103,35 +103,72 @@ function nshop(p, v) {
 export const NORTH = {
   nshop: { foot: [4, 3], tex: [64, 66], variants: Object.keys(NSHOPS), paint(p, v) { nshop(p, v); } },
 
-  // Coburg Town Hall, Bell St: cream render, a portico of columns, a pediment
-  // with a clock, and the new council name on a banner.
+  // Coburg Town Hall, Bell St, from the owner's photo: red brick with cream
+  // render bands, red tile roofs on the two wings, and in the middle the
+  // white rendered entry with columns under a little dome. Palms either side.
   townhall: {
-    foot: [8, 3], tex: [128, 104], variants: ['merribek'],
+    foot: [12, 4], tex: [196, 132], variants: ['merribek'],
     paint(p) {
-      const W = 128, H = 104, top = 34, cream = '#e8dcbc', cd = shade(cream, -0.14);
+      const W = 196, H = 132, top = 52, cx = 98, cream = '#ece2c8', cd = shade(cream, -0.14), brick = '#9a4a34';
       p.r('rgba(30,50,20,.22)', 2, H - 2, W - 2, 3);
-      // the clock pediment
-      for (let j = 0; j < 20; j++) p.r(j % 5 ? cream : cd, 64 - (j + 4), top - 22 + j, (j + 4) * 2, 1);
-      p.blob(64, top - 10, 6, '#f4f4f0'); p.blob(64, top - 10, 5, '#1e1e24'); p.blob(64, top - 10, 4, '#f4f4f0');
-      p.r('#1e1e24', 64, top - 13, 1, 4); p.r('#1e1e24', 64, top - 10, 3, 1);
-      p.r('#c8b898', 60, top - 26, 8, 4); p.r('#7a5a3a', 63, top - 32, 2, 6);                  // flagpole
-      p.r('#1e1e24', 65, top - 32, 9, 3); p.r('#c8302a', 65, top - 29, 9, 3); p.r('#f0d040', 68, top - 31, 3, 2);   // Aboriginal flag
-      // body and cornice
-      p.r(cream, 0, top, W, H - top - 1); p.r(cd, W - 3, top, 3, H - top - 1);
-      p.r(shade(cream, 0.2), 0, top, W, 3); p.r(cd, 0, top + 3, W, 2);
-      for (let x = 2; x < W; x += 6) p.r(cd, x, top + 5, 3, 2);                                    // dentils
-      // upper windows, arched
-      for (let i = 0; i < 6; i++) { if (i === 2 || i === 3) continue; const wx = 8 + i * 20; win(p, wx, top + 12, 10, 16, '#c8b898', '#4a5a6a'); p.blob(wx + 5, top + 12, 5, '#c8b898'); p.blob(wx + 5, top + 12, 4, '#4a5a6a'); }
-      // portico: columns over the steps
-      p.r(shade(cream, 0.1), 40, top + 8, 48, 4);
-      for (let i = 0; i < 5; i++) { const cx = 42 + i * 11; p.r('#f4ecd8', cx, top + 12, 5, H - top - 22); p.r(cd, cx + 4, top + 12, 1, H - top - 22); p.r(cream, cx - 1, top + 12, 7, 2); }
-      p.r('#3a2a1a', 56, top + 36, 16, H - top - 46); p.r('#6a4a2a', 57, top + 37, 14, H - top - 47); p.r('#f0c040', 63, top + 50, 2, 2);
-      // the banner
-      box(p, 8, top + 34, 26, 12, '#3a8a7a'); centred(p, 'MERRI', 21, top + 36, '#f4f4f0'); centred(p, '-BEK', 21, top + 41, '#f4f4f0');
-      for (let i = 0; i < 2; i++) win(p, 96 + i * 16, top + 36, 10, 20, '#c8b898', '#4a5a6a');
+      // the wings: red tile hip roofs over red brick with cream bands
+      for (const [x0, w] of [[2, 70], [124, 70]]) {
+        for (let j = 0; j < 22; j++) p.r(j % 3 ? '#b8583a' : '#9a4830', x0 + j, top - 22 + j, w - j * 2, 1);
+        p.r('#7a3a28', x0 - 2, top - 1, w + 4, 2);
+        bricks(p, x0, top + 1, w, H - top - 12, brick, x0);
+        for (const y of [top + 4, top + 30]) p.r(cream, x0, y, w, 3);
+        for (let i = 0; i < 3; i++) { const wx = x0 + 8 + i * 22; win(p, wx, top + 10, 10, 16, cream, '#4a5a6a'); p.blob(wx + 5, top + 10, 5, cream); p.blob(wx + 5, top + 10, 4, '#4a5a6a'); win(p, wx, top + 38, 10, 22, cream, '#4a5a6a'); }
+      }
+      // the centre: a white rendered drum and dome over a portico of columns
+      p.r(cream, cx - 26, top - 10, 52, H - top);
+      p.r(cd, cx + 23, top - 10, 3, H - top);
+      p.r('#f4ecd8', cx - 18, top - 34, 36, 26); p.r(cd, cx + 15, top - 34, 3, 26);                   // the drum
+      for (let x = cx - 14; x < cx + 14; x += 7) { p.r('#4a5a6a', x, top - 28, 3, 12); p.blob(x + 1.5, top - 28, 1.5, '#4a5a6a'); }
+      for (let j = 0; j < 18; j++) { const half = Math.round(Math.sqrt(Math.max(0, 1 - (j / 18) ** 2)) * 21); p.r(j > 14 ? '#f8f4e8' : '#f0e8d4', cx - half, top - 35 - j, half * 2, 1); }   // the dome
+      p.r('#d8ccb0', cx + 6, top - 50, 6, 14); p.r('#c8b898', cx - 1, top - 58, 3, 6); p.blob(cx, top - 58, 2, '#c8a040');
+      p.r(shade(cream, 0.15), cx - 28, top - 12, 56, 3); for (let x = cx - 26; x < cx + 26; x += 5) p.r(cd, x, top - 9, 2, 2);   // cornice and dentils
+      for (let i = 0; i < 4; i++) { const x = cx - 22 + i * 13; p.r('#faf4e4', x, top + 2, 6, H - top - 16); p.r(cd, x + 5, top + 2, 1, H - top - 16); p.r(cream, x - 1, top + 1, 8, 2); }
+      p.r('#3a2a1a', cx - 8, top + 22, 16, H - top - 36); p.r('#6a4a2a', cx - 7, top + 23, 14, H - top - 37); p.r('#f0c040', cx + 3, top + 40, 2, 2);
+      p.blob(cx, top + 22, 8, '#3a2a1a'); p.blob(cx, top + 22, 7, '#a8c8d8');                       // fanlight
+      box(p, cx - 24, top + 6, 48, 9, '#3a8a7a'); centred(p, 'MERRI-BEK', cx, top + 8, '#f4f4f0');
+      // the Aboriginal flag on the dome
+      p.r('#1e1e24', cx + 1, top - 66, 10, 3); p.r('#c8302a', cx + 1, top - 63, 10, 3); p.r('#f0d040', cx + 4, top - 65, 3, 2); p.r('#7a5a3a', cx, top - 66, 1, 10);
       // bluestone plinth and steps
-      p.r('#5a5e66', 0, H - 10, W, 9); for (let x = 0; x < W; x += 8) p.r('#4a4e56', x, H - 10, 1, 9); p.r('#6a6e76', 0, H - 10, W, 1);
-      p.r('#b8b0a0', 46, H - 10, 36, 3); p.r('#a8a090', 44, H - 7, 40, 3); p.r('#989080', 42, H - 4, 44, 3);
+      p.r('#5a5e66', 0, H - 11, W, 10); for (let x = 0; x < W; x += 8) p.r('#4a4e56', x, H - 11, 1, 10); p.r('#6a6e76', 0, H - 11, W, 1);
+      p.r('#b8b0a0', cx - 18, H - 11, 36, 3); p.r('#a8a090', cx - 20, H - 8, 40, 3); p.r('#989080', cx - 22, H - 5, 44, 4);
+      // palms at each end
+      for (const x of [8, 188]) { p.r('#8a6a4a', x - 1, top - 6, 3, H - top - 6); for (let i = 0; i < 7; i++) { const a = -Math.PI + i * Math.PI / 6; for (let r = 2; r < 12; r++) p.r(r % 2 ? '#3a7a3a' : '#4a8a3a', x + Math.cos(a) * r, top - 8 + Math.sin(a) * r * 0.7 + r * r * 0.03, 2, 2); } }
+    },
+  },
+
+  // HM Prison Pentridge's gatehouse, Sydney Rd, Coburg, from the owner's
+  // photos: bluestone, two crenellated towers with arrow slits either side of
+  // the arched gate, walls running off each way, and one of the new
+  // apartment towers standing up behind.
+  pentridgegate: {
+    foot: [10, 3], tex: [164, 140], variants: ['bluestone'],
+    paint(p) {
+      const W = 164, H = 140, top = 56, stone = '#7a6e60', sd = shade(stone, -0.2), sl = shade(stone, 0.14);
+      // the apartment tower behind
+      p.r('#c8ccd4', 104, 0, 40, top + 10); p.r('#a8acb4', 140, 0, 4, top + 10);
+      for (let y = 4; y < top + 6; y += 6) for (let x = 108; x < 140; x += 8) p.r(y % 12 ? '#7a9ab8' : '#8aaac8', x, y, 6, 3);
+      const blocks = (x, y, w, h) => { p.r(stone, x, y, w, h); for (let j = y; j < y + h; j += 5) { p.r(sd, x, j, w, 1); for (let i = x + ((j / 5) % 2) * 6; i < x + w; i += 12) p.r(sd, i, j, 1, 5); } p.r(sl, x, y, w, 1); };
+      const battlements = (x, y, w) => { for (let i = x; i < x + w; i += 8) blocks(i, y - 6, 5, 6); };
+      // the walls running off each side
+      blocks(0, top + 20, W, H - top - 21); battlements(0, top + 20, 36); battlements(128, top + 20, 36);
+      // the towers, each with a turret band and slits
+      for (const tx of [38, 98]) {
+        blocks(tx, top - 22, 28, H - top + 21); battlements(tx, top - 22, 28);
+        p.r(sd, tx - 2, top - 8, 32, 3);
+        for (const y of [top - 2, top + 22, top + 46]) p.r('#1e1a18', tx + 12, y, 3, 10);
+      }
+      // the gatehouse between, with its arched gate
+      blocks(66, top, 32, H - top - 1); battlements(66, top, 32);
+      p.blob(82, top + 40, 11, '#2a1e14'); p.r('#2a1e14', 71, top + 40, 22, H - top - 41);
+      p.r('#5a3a1e', 73, top + 42, 18, H - top - 43); for (let x = 75; x < 91; x += 4) p.r('#4a2e16', x, top + 42, 1, H - top - 43);
+      p.r(sl, 70, top + 26, 24, 2);
+      p.text('1850', 75, top + 14, '#e8dcc0');
+      p.r('rgba(0,0,0,.25)', 0, H - 3, W, 3);
     },
   },
 

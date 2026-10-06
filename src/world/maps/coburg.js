@@ -1,11 +1,11 @@
 // BELL ST, Coburg: the crossroads of the north. Six lanes of Bell St
 // traffic, with Sydney Rd crossing it (the 19 tram tracks) north to Coburg's
-// shops and south back to Brunswick. The old Pentridge Prison bluestone wall
-// and watchtower (apartments inside now, of course) on the north-west
-// corner, Coburg Town Hall on the north-east, a bluestone lane up to Preston
-// Market, and brick houses with nonna gardens on the south side.
+// shops and south back to Brunswick. New apartments on the north-west corner
+// (Pentridge's gatehouse is up Sydney Rd now, coburgsyd.js), Coburg Town Hall
+// on the north-east, a bluestone lane up to Murray Rd, and brick houses with
+// nonna gardens on the south side.
 //
-//   y2-8 Pentridge | Sydney Rd x25-30 | Town Hall, lane x39-40, shops
+//   y2-8 apartments | Sydney Rd x25-30 | Town Hall x31-42, lane x43-44
 //   y9 footpath   y10-13 Bell St   y14 footpath   y15-25 houses and gardens
 import { MapBuilder } from '../MapBuilder.js';
 import { street, furnish } from './citykit.js';
@@ -21,22 +21,20 @@ export function buildCoburg() {
   }
   b.fill(26, 9, 4, 1, 'z'); b.fill(26, 14, 4, 1, 'z');
 
-  // North-west: the Pentridge wall and its watchtower, new apartments behind it
-  b.fill(0, 0, 25, 8, 'g');
+  // North-west: new apartments behind a low fence and street trees
+  b.fill(0, 0, 25, 8, 'c');
   b.put('aptblock', 1, 3, { v: 'grey' }); b.put('aptblock', 14, 3, { v: 'grey' });
-  b.fenceH(0, 24, 8, 'bluestone', [11, 12]);
-  b.put('watchtower', 11, 7);
-  b.sign(16, 9, ['HM Prison Pentridge, 1850 to 1997.', 'Now it is apartments and a cafe. The bluestone walls stayed. The vibe is "heritage".']);
-  b.npc('merv', 14, 9, { face: 'down' });
+  b.fenceH(0, 24, 8, 'metal', [11, 12]);
+  b.put('streettree', 6, 8); b.put('streettree', 18, 8);
 
   // North-east: Coburg Town Hall, the lane up to the market, a cafe and a terrace
-  b.put('townhall', 31, 6, { v: 'merribek' });
-  b.sign(38, 9, ['Coburg Town Hall.', 'Moreland City Council became Merri-bek in 2022. The bins have not noticed.']);
-  b.fill(39, 0, 2, 9, 'b');
-  b.sign(41, 9, ['Bluestone lane.', 'A shortcut through to Preston Market. Mind the trolleys.']);
-  b.put('cafe', 41, 6, { v: 'green' });
+  b.fill(31, 0, 12, 5, 'L');
+  b.put('townhall', 31, 5, { v: 'merribek' });
+  b.sign(33, 9, ['Coburg Town Hall.', 'Moreland City Council became Merri-bek in 2022. The bins have not noticed.']);
+  b.fill(43, 0, 2, 9, 'b');
+  b.sign(45, 9, ['Bluestone lane.', 'A shortcut up to Murray Rd. Mind the trolleys.']);
   b.put('terrace', 45, 6, { v: 'sand' });
-  furnish(b, 9, { skip: [11, 12, 13, 14, 16, 25, 26, 27, 28, 29, 30, 31, 34, 37, 38, 39, 40, 41], seed: 5 });
+  furnish(b, 9, { skip: [11, 12, 13, 14, 16, 25, 26, 27, 28, 29, 30, 31, 33, 36, 37, 38, 43, 44, 45], seed: 5 });
   furnish(b, 14, { skip: [25, 26, 27, 28, 29, 30, 36, 37, 38, 39, 46], seed: 1, step: 8 });
 
   // South: brick veneers, a nonna's veggie garden and lemon tree
@@ -71,9 +69,9 @@ export function buildCoburg() {
   b.exit(47, 14, 1, 1, 'preston', 'west', 'Plenty Rd, Preston');
   b.exit(25, 25, 6, 1, 'albion', 'east', 'Sydney Rd, Brunswick');
   b.exit(25, 0, 6, 1, 'coburgsyd', 'west', 'Sydney Rd, Coburg');
-  b.exit(39, 0, 2, 1, 'murray', 'south', 'Murray Rd');
+  b.exit(43, 0, 2, 1, 'murray', 'south', 'Murray Rd');
   b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('south', 25, 24, 'up')
-    .entry('north', 25, 1, 'down').entry('market', 39, 1, 'down').entry('lygon', 36, 24, 'up');
+    .entry('north', 25, 1, 'down').entry('market', 43, 1, 'down').entry('lygon', 36, 24, 'up');
   // Lived-in touches: pot plants and bikes outside shops (walk-through)
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();
