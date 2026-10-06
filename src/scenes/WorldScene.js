@@ -56,6 +56,7 @@ import { ui } from '../ui/ui.js';
 import { setImageScene, petPortrait, npcIcon, itemIcon } from '../ui/images.js';
 import { bus } from '../bus.js';
 import { hash, pick, clamp, rng } from '../util.js';
+const SEATS = ['bench', 'stool', 'armchair'];   // objects you (and people nearby) can sit on
 
 export class WorldScene extends Phaser.Scene {
   constructor() { super('World'); }
@@ -237,6 +238,7 @@ export class WorldScene extends Phaser.Scene {
 
   buildObjects() {
     this.interactables = [];
+    this.seats = [];
     this.lights = [];
     this.roofs = [];
     for (const o of this.map.objects) {
@@ -249,6 +251,13 @@ export class WorldScene extends Phaser.Scene {
       if (def.flat) img.setDepth(-900 + y / 1000);
       if (def.deck) img.setDepth(-990);
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
+      if (SEATS.includes(o.kind) && !o.forSale) {   // somewhere to sit: one place per tile of a bench
+        const n = o.kind === 'bench' ? o.w : 1, slots = [];
+        for (let i = 0; i < n; i++) slots.push({ x: (o.x + (n > 1 ? i + 0.5 : o.w / 2)) * T, bottom: (o.y + o.h) * T - ({ stool: 7, armchair: 6 }[o.kind] || 3), front: (o.y + o.h) * T + 12, taken: null });
+        this.seats.push(...slots);
+        this.interactables.push({ kind: 'seat', slots, x, y: y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots', quiet: true });
+        continue;
+      }
       if (o.forSale) this.interactables.push({ kind: 'forsale', id: o.forSale, x, y: def.flat ? (o.y + o.h / 2) * T : y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots' });
       else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
@@ -601,6 +610,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   async interact(t = this.findTarget()) {
+    if (this.player.seat) { if (!ui.blocking() && this.time.now - this.player.satAt > 300) this.player.stand(); return; }
     if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.goFishing();
     if (!t || ui.blocking() || this.leaving) return;
     this.player.target = null; this.pending = null;
@@ -611,6 +621,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'item') return this.pickUp(t);
     if (t.kind === 'travel') return this.travel();
     if (t.kind === 'tram') return this.tram();
+    if (t.kind === 'seat') return this.sitDown(t);
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
@@ -1196,6 +1207,18 @@ export class WorldScene extends Phaser.Scene {
       choices: [...options.map(s => ({ label: SUBURBS[s].stationName || `${SUBURBS[s].name} Station`, value: s })), { label: 'Stay here', value: null }],
     }, { cancelValue: null });
     if (choice) this.goTo(SUBURBS[choice].station, 'station', 25);
+  }
+
+  // Sit on a bench, stool or armchair: the free place nearest you.
+  sitDown(t) {
+    const free = t.slots.filter(s => !s.taken).sort((a, b) => Math.abs(a.x - this.player.x) - Math.abs(b.x - this.player.x));
+    if (!free.length) return ui.say(['Someone is already sitting there.']);
+    this.player.sit(free[0]);
+  }
+  // A free seat near a spot whose front is open ground (for people pottering about).
+  freeSeatNear(x, y, r) {
+    const near = this.seats.filter(s => !s.taken && Math.hypot(s.x - x, s.front - y) < r && !this.solidAt(s.x, s.front - 2));
+    return near.length ? near[Math.floor(Math.random() * near.length)] : null;
   }
 
   // Tram stops: tap your myki and ride to any tram stop in a zone you have visited.
