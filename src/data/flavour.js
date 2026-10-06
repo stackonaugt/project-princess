@@ -7,6 +7,7 @@ export const FLAVOUR = {
   terrace: [['A Victorian terrace, about 130 years old. Rent: astronomical. Insulation: none.'], ['A sign in the window says "Brunswick says NO to the new development". Another window says "YES". Neighbours.']],
   cafe: [['The cafe smells like coffee and ambition. There is a queue. There is always a queue.']],
   'shop:records': [['The record shop has a whole crate labelled "Melbourne bands you have never heard of". You have heard of none of them.']],
+  'shop:banh mi': [['Crunchy rolls, pickled carrot, pâté and chilli. The queue is out the door by 11. Worth it.']],
   'shop:pho': [['The best pho on Sydney Rd, according to a handwritten sign. Also according to everyone.']],
   'shop:books': [['A secondhand bookshop. There is a cat asleep on the poetry section. It is not a pet in this game. It is just a cat.']],
   'shop:milk bar': [['The milk bar. Bags of mixed lollies, a dusty ice cream sign, and James knows everyone by name.']],

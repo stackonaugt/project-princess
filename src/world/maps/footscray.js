@@ -1,5 +1,5 @@
 // BARKLY ST, Footscray: halfway between Laverton and Brunswick. A row of
-// shops (pho, curry, a bakery), terraces, and the market's stalls and
+// shops (pho, banh mi, a bakery), terraces, and the market's stalls and
 // car park across the road.
 //
 //   y2-8 shops and terraces   y9 footpath   y10-11 road   y12 footpath   y13-24 market and a pocket park
@@ -12,7 +12,7 @@ export function buildFootscray() {
 
   // North: Barkly St shops
   b.fill(0, 0, 48, 3, 'b');
-  const row = [['shop', 'pho'], ['redshop', 'red'], ['bshop', 'laundro'], ['shop', 'curry'], null, null, null, ['bshop', 'opshop'], ['shop', 'bakery']];
+  const row = [['shop', 'pho'], ['redshop', 'red'], ['bshop', 'laundro'], ['shop', 'banh mi'], null, null, null, ['bshop', 'opshop'], ['shop', 'bakery']];
   row.forEach((s, i) => s && b.put(s[0], 1 + i * 4, 6, { v: s[1] }));
   // Trish and Gordon, out shopping on a Thursday (routines.js)
   b.npc('trish', 30, 13, { face: 'down', at: 'footscray' }); b.npc('gordon', 31, 13, { face: 'down', at: 'footscray' });

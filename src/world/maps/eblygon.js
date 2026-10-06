@@ -19,6 +19,7 @@ export function buildEbLygon() {
   b.hline(0, 43, 14, 'f');
   // Lygon St heads north off the top (towards Moreland Rd, Coburg)
   b.fill(30, 0, 4, 7, '#').vline(29, 0, 6, 'f').vline(34, 0, 6, 'f');
+  b.fill(30, 7, 4, 1, '#');              // the side street meets Lygon St: no footpath across it
 
   // North side, west to east
   b.put('bbnt', 0, 4);

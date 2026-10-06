@@ -15,6 +15,7 @@ export function buildMoreland() {
   // Moreland Rd and Lygon St
   b.hline(0, 43, 12, 'f').hline(0, 43, 13, '#').hline(0, 43, 14, '#').hline(0, 43, 15, 'f');
   b.vline(19, 0, 25, 'f').fill(20, 0, 2, 26, '#').vline(22, 0, 25, 'f');
+  b.fill(19, 13, 4, 2, '#');             // Moreland Rd runs straight through: no footpath across the road
   b.fill(20, 12, 2, 1, 'z'); b.fill(20, 15, 2, 1, 'z');
 
   // North-east corner: Betty and Ward's place

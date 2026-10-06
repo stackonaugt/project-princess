@@ -20,7 +20,25 @@ export const SWING = { kirsty: 4, dahlia: 2 };
 export const ALLIES = ['paddy', 'rayna', 'deanna'];
 export const AGAINST = ['lesley', 'malcolm'];
 
+// What each councillor says when you ask about the next vote, or ask them to back Paddy.
+export const COUNCIL_VIEWS = {
+  rayna: { yes: 'Cr Hawley: "Yes! I\'ve already written my speech. It has a slideshow."', no: '', unsure: '', nothing: 'Cr Hawley: "Nothing on the board yet. Go and put something up there!"', backYes: 'Cr Hawley: "Back Paddy? Always. He remembers everyone\'s birthday. Even Lesley\'s."' },
+  deanna: { yes: 'Cr Grimes: "Voting yes. It\'s good for the people who actually live here."', no: '', unsure: '', nothing: 'Cr Grimes: "The board\'s empty. That\'s how Lesley likes it."', backYes: 'Cr Grimes: "I\'m with Paddy. Ride or die. Well, ride. Bike lanes."' },
+  lesley: { yes: '', no: 'Cr Bentleigh: "NO. Absolutely not. I haven\'t read it, and I\'m voting NO."', unsure: '', nothing: 'Cr Bentleigh: "No motions? GOOD. Council should do LESS."', backNo: 'Cr Bentleigh: "Support PADDY? I\'d rather support a BIN CHICKEN."' },
+  malcolm: { yes: '', no: 'Cr Dismay: "I\'ll be voting with Lesley. As is tradition."', unsure: '', nothing: 'Cr Dismay: "Nothing on the agenda. Lovely. Early night."', backNo: 'Cr Dismay: "Lesley says no, so it\'s no. Sorry. I\'m not sorry. Lesley, I said it."' },
+  kirsty: { yes: 'Cr Bishopp: "You know what? I\'ll back it. Don\'t tell my donors."', no: '', unsure: 'Cr Bishopp: "Hmm. It sounds expensive. Convince me. Ideally with a present."', nothing: 'Cr Bishopp: "Nothing on the board. Fiscally responsible, I call that."', backYes: 'Cr Bishopp: "Fine. Paddy\'s all right. I\'ll vote with him."', backMaybe: 'Cr Bishopp: "Paddy? I\'m not sure we\'re close enough for that yet."' },
+  dahlia: { yes: 'Cr Kellandra: "A yes from me. Obviously."', no: '', unsure: 'Cr Kellandra: "I like it, but I need to know the community is behind it. Are YOU behind it?"', nothing: 'Cr Kellandra: "The board\'s empty. Put something up and I\'ll have a look."', backYes: 'Cr Kellandra: "Of course I\'ll back Paddy. Just keep being nice to me."', backMaybe: 'Cr Kellandra: "I lean his way. Lean. Give me a reason to fall over."' },
+};
+
 export const MOTIONS = {
+  // The first one is low stakes, so the board makes sense early on.
+  lemontree: {
+    title: 'Plant a lemon tree outside the civic centre',
+    needs: { money: 20, lemon: 1 },
+    sponsor: 'rayna',
+    debate: ['Cr Hawley: "One lemon tree. Free lemons for anyone walking past. That\'s the whole motion."', 'Cr Dismay: "Who will be liable for the lemons?"'],
+    effect: 'A lemon tree grows on the civic centre lawn in Altona. Free lemons for all.',
+  },
   bikelane: {
     title: 'A protected bike lane from Laverton to Brunswick',
     needs: { money: 150 },

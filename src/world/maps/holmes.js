@@ -20,6 +20,7 @@ export function buildHolmes() {
 
   // Mitchell St runs south off Holmes St, past the auto parts corner
   b.fill(26, 18, 2, 8, '#').vline(25, 18, 25, 'f').vline(28, 18, 25, 'f');
+  b.fill(26, 17, 2, 1, '#');             // the side street meets Holmes St: no footpath across it
 
   // Adam and Chelsea's: Unit 1 at the front, the second unit behind, and the
   // driveway between them where Chloe sits and judges the street.

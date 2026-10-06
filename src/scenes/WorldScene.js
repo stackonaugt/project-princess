@@ -8,7 +8,8 @@ import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
 import { isAt, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
-import { MOTIONS, MOTION_ORDER } from '../data/council.js';
+import { MOTIONS, MOTION_ORDER, ALLIES, AGAINST, SWING, COUNCIL_VIEWS } from '../data/council.js';
+const COUNCILLORS = ['paddy', ...ALLIES, ...AGAINST, ...Object.keys(SWING)];
 import { REQUEST_BONUS } from '../data/requests.js';
 import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
@@ -240,7 +241,7 @@ export class WorldScene extends Phaser.Scene {
       if (def.flat) img.setDepth(-900 + y / 1000);
       if (def.deck) img.setDepth(-990);
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
-      if (o.kind === 'sign' && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
+      if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
       else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
       else if (this.region.home && o.kind === 'counter' && o.v === 'stove') this.interactables.push({ kind: 'cook', x, y: y - 6, r: 20, bubble: 'fx-bubble-dots' });
@@ -281,11 +282,20 @@ export class WorldScene extends Phaser.Scene {
         continue;
       }
       if (!e.label || !signs) continue;
+      // Beside the exit if there's room; for a long exit (a whole edge), on the
+      // first free spot along it, nearest the middle.
       const spots = vertical ? [[inX, e.y - 1], [inX, e.y + e.h], [inX + (dir === 'left' ? 1 : -1), e.y - 1]] : [[e.x - 1, inY], [e.x + e.w, inY], [e.x - 1, inY + (dir === 'up' ? 1 : -1)]];
-      const [sx, sy] = spots.find(([x, y]) => free(x, y)) || spots[0];
+      const n = vertical ? e.h : e.w, mid = Math.floor(n / 2);
+      for (let k = 0; k < n; k++) {
+        const i = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2), j = inX + (dir === 'left' ? 1 : dir === 'right' ? -1 : 0), kk = inY + (dir === 'up' ? 1 : dir === 'down' ? -1 : 0);
+        if (i >= 0 && i < n) spots.push(vertical ? [j, e.y + i] : [e.x + i, kk]);
+      }
+      const [sx, sy] = spots.find(([x, y]) => free(x, y) && !'#+xzP'.includes(this.map.ground[y]?.[x])) || spots.find(([x, y]) => free(x, y)) || spots[0];
       const key = exitSignTexture(this, e.label, dir);
-      const x = (sx + 0.5) * T, y = (sy + 1) * T - 2;
-      this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y);
+      const tw = this.textures.get(key).getSourceImage().width, th = this.textures.get(key).getSourceImage().height;
+      // Keep the whole sign on the map so it can be read
+      const x = Phaser.Math.Clamp((sx + 0.5) * T, tw / 2 + 1, W * T - tw / 2 - 1), y = Phaser.Math.Clamp((sy + 1) * T - 2, th + 1, H * T - 1);
+      this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y + 8);
     }
   }
 
@@ -816,6 +826,7 @@ export class WorldScene extends Phaser.Scene {
       if (inChapter(3) && PRANKS[npc.id] && !story().pranks.includes(npc.id)) choices.push({ label: `Prank: ${PRANKS[npc.id].label}`, value: 'prank' });
       if (inChapter(4) && !NO_INVITE.includes(npc.id) && !story().invited.includes(npc.id)) choices.push({ label: 'Invite to the party', value: 'invite' });
       if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
+      if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
       if (!choices.length) break;
       const act = await ui.say({ text: 'Anything else?', choices: [...choices, { label: 'Goodbye', value: null }] }, { ...opts, cancelValue: null });
@@ -829,12 +840,29 @@ export class WorldScene extends Phaser.Scene {
         if (choice) await this.giveFriendGift(npc, choice, opts);
       }
       if (act === 'shop') { await ui.shop(info.shop); }
+      if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'prank') await this.prank(npc, opts);
       if (act === 'invite') await this.invite(npc, opts);
       if (act === 'fight') { await this.challenge(npc, trainer, opts); break; }
       this.save();
     }
     this.save();
+  }
+
+  // Councillors: their view on the next motion, and whether they'll back Paddy.
+  async askCouncillor(npc, act, opts) {
+    const id = npc.id, next = MOTION_ORDER.find(m => state.motionUnlocked(m) && !state.motionPassed(m));
+    const ally = ALLIES.includes(id), against = AGAINST.includes(id);
+    const need = SWING[id] ? state.swingHearts(SWING[id]) : 0, won = !SWING[id] || state.friendHearts(id) >= need;
+    const words = COUNCIL_VIEWS[id];
+    if (act === 'vote') {
+      if (!next) return ui.say([words.nothing], opts);
+      return ui.say([`"${MOTIONS[next].title}?"`, ally ? words.yes : against ? words.no : won ? words.yes : words.unsure], opts);
+    }
+    if (ally) return ui.say([words.backYes], opts);
+    if (against) return ui.say([words.backNo], opts);
+    if (won) return ui.say([words.backYes], opts);
+    return ui.say([words.backMaybe, `(${NPCS[id].name} would need ${need} hearts to back Paddy. You have ${state.friendHearts(id)}. Gifts help.)`], opts);
   }
 
   async chatNpc(npc, opts) {
@@ -894,7 +922,7 @@ export class WorldScene extends Phaser.Scene {
     if (!state.foundIds().length) return A.noPets;
     if (!d.party.length) return A.oneTeam;
     if (!d.flags.garden) return A.noGarden;
-    if (state.foundCount() >= 2 && !Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
+    if (state.foundCount() >= 1 && !Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
     const rest = [A.swing, A.train, A.friends, A.types, A.rest];
     return rest[d.day % rest.length];
   }

@@ -164,6 +164,15 @@ export const CIVIC = {
     foot: [1, 1], tex: [16, 16], variants: ['orange', 'pink'],
     paint(p, v) { const c = v === 'pink' ? '#e8b098' : '#c8643a'; box(p, 3, 5, 10, 10, c); p.r('#f4ece0', 3, 4, 10, 2); },
   },
+  // A brass plaque on the wall by the chamber doors.
+  plaque: {
+    foot: [2, 1], tex: [32, 10], variants: ['chambers'], solid: false, lined: true,
+    paint(p) {
+      p.r('#5a3a10', 0, 0, 32, 10); p.r('#c89a3a', 1, 1, 30, 8); p.r('#e8c060', 1, 1, 30, 1);
+      for (let i = 0; i < 12; i++) p.r('#5a3a10', 3 + i * 2 + (i > 5 ? 2 : 0), 3, 1, 1);   // "COUNCIL"
+      for (let i = 0; i < 12; i++) p.r('#5a3a10', 3 + i * 2 + (i > 7 ? 1 : 0), 6, 1, 1);   // "CHAMBERS"
+    },
+  },
   booth: {
     foot: [2, 1], tex: [32, 36], variants: ['green'],
     paint(p) {

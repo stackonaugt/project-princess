@@ -766,6 +766,15 @@ export const PEOPLE = {
       ['If the motion helps actual residents, I\'m in. If it\'s about the font on the agenda, I\'m going home.'],
     ],
   },
+  narelle: {
+    role: 'Civic centre reception. Knows where everything is',
+    lines: [
+      ['Welcome to Hobsons Bay City Council. Take a number. There\'s nobody else here, but take a number.'],
+      ['Council meets Tuesdays at 6:30pm, through the doors on the left. The biscuits go by 6:45.'],
+      ['The noticeboard is for motions. Chip in and they go to the next meeting. Very democratic. Very slow.'],
+      ['Cr Bentleigh has complained about the pot plants again. They are plastic. She says they look "smug".'],
+    ],
+  },
   rayna: {
     role: 'Councillor. Paddy\'s ally',
     lines: [

@@ -153,6 +153,14 @@ export const FURNITURE = {
     },
   },
 
+  // The bath along a wall, end on.
+  bathv: {
+    foot: [1, 3], tex: [16, 54], variants: ['beige'],
+    paint(p) {
+      box(p, 0, 4, 16, 50, '#e8dcc4'); p.r('#d8c8a8', 3, 8, 10, 42); p.r('#c8b898', 3, 8, 2, 42); p.r('#efe4cc', 8, 14, 2, 14);
+      p.r('#b8bcc4', 6, 5, 4, 3); p.r('#2a2a2a', 15, 0, 1, 54);   // tap, and the shower curtain rail
+    },
+  },
   vanity: {
     foot: [1, 1], tex: [16, 30], variants: ['white'],
     paint(p) {

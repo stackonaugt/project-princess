@@ -293,7 +293,7 @@ export const state = {
   // Council motions (data/council.js)
   // Motions go up on the noticeboard one at a time as you settle in: the
   // first once you have found two pets, another with each pet after that.
-  motionUnlocked(id) { return this.motionPassed(id) || MOTION_ORDER.indexOf(id) < this.foundCount() - 1; },
+  motionUnlocked(id) { return this.motionPassed(id) || MOTION_ORDER.indexOf(id) < this.foundCount(); },   // one more motion per pet found
   motionPassed(id) { return this.data.council.passed.includes(id); },
   motionGiven(id) { return this.data.council.given[id] || (this.data.council.given[id] = {}); },
   motionReady(id) { return motionReady(id, this.data.council.given[id]); },
@@ -332,7 +332,7 @@ export const state = {
   passMotion(id) {
     if (this.motionPassed(id)) return;
     this.data.council.passed.push(id);
-    for (const z of { gardenplus: ['wetlands'], bookswap: ['lohse'], trees: ['allen'] }[id] || []) invalidateMap(z);
+    for (const z of { gardenplus: ['wetlands'], bookswap: ['lohse'], trees: ['allen'], lemontree: ['civic'] }[id] || []) invalidateMap(z);
     bus.emit('council:passed', id);
   },
 

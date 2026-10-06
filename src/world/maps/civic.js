@@ -8,6 +8,7 @@
 //   y9-19  lawn: rainbow path, field gun, flags, clock tower, paths to both doors
 //   y20-23 Civic Parade (footpath, road, footpath), west back to Lohse St Reserve
 import { MapBuilder } from '../MapBuilder.js';
+import { state } from '../../systems/state.js';
 
 export function buildCivic() {
   const b = new MapBuilder({ id: 'civic', w: 40, h: 26, fill: '.', seed: 811 });
@@ -51,6 +52,7 @@ export function buildCivic() {
   b.put('powerpole', 6, 20); b.put('powerpole', 34, 20); b.put('lamp', 18, 20);
 
   b.forage(36, 18, ['tennis', 'snag']);
+  if (state.motionPassed('lemontree')) { b.put('tree', 16, 12, { v: 'lemon' }); b.forage(16, 14, ['lemon']); }   // a council motion
   b.fill(36, 24, 2, 2, 'f');                       // the path south to Kororoit Creek Rd
   b.exit(36, 25, 2, 1, 'altona', 'north', 'Kororoit Creek Rd');
   b.border(['gum', 'oak']);

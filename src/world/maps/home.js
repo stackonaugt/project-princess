@@ -25,7 +25,8 @@ export function buildHome() {
   b.fill(1, 12, 4, 6, 'o');           // bed 1 (yours)
   b.fill(6, 12, 4, 6, 'o');           // bed 2: storage, later the study (wall at x10)
   for (let y = 12; y <= 17; y++) b.set(10, y, 'W');
-  b.set(3, 8, 'D').set(8, 8, 'D').set(19, 3, 'D').set(2, 11, 'D').set(8, 11, 'D');
+  for (let y = 2; y <= 7; y++) b.set(19, y, 'n');   // no wall between the kitchen and the laundry
+  b.set(3, 8, 'D').set(8, 8, 'D').set(2, 11, 'D').set(8, 11, 'D');
   b.set(21, 0, 'D').set(21, 1, 'D');  // back door to the yard
   b.set(16, 18, 'D');                 // front door to Allen St
 
@@ -90,7 +91,7 @@ export function buildHome() {
   }
   // bed 2: storage for now. The study upgrade turns it into Paddy's study.
   if (state.hasUpgrade('study')) {
-    b.put('desk', 6, 12); b.put('bookshelf', 8, 12);
+    b.put('desk', 6, 12); b.put('bookshelf', 6, 17);   // shelf clear of the door at x8
     b.put('armchair', 8, 15); b.put('rug', 6, 14, { v: 'red' });
     b.put('plant', 9, 17, { v: 'fiddle' });
   } else {
@@ -100,10 +101,10 @@ export function buildHome() {
   b.put('picture', 7, 11, { v: 'beach', onWall: true });
 
   // Bathroom and laundry
-  b.put('bath', 7, 2); b.put('vanity', 9, 6);
+  b.put('vanity', 7, 2); b.put('bathv', 9, 2);   // sink in the top corner, the bath along the right wall
   b.put('washbasket', 22, 7);
   b.put('washer', 20, 2); b.put('trough', 21, 5); b.put('toilet', 22, 2);
-  b.put('iwindow', 7, 1, { v: 'frosted', onWall: true }); b.put('shelf', 20, 1, { onWall: true });
+  b.put('iwindow', 8, 1, { v: 'frosted', onWall: true }); b.put('shelf', 20, 1, { onWall: true });
 
   // Pet beds (pets you have found hang out here when they're not on your team)
   b.put('petbed', 19, 15, { v: 'pink' });

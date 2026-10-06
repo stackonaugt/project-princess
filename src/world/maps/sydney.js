@@ -37,7 +37,7 @@ export function buildSydney() {
   // North side: A1 Bakery and its neighbours
   b.put('bshop', 1, 9, { v: 'tattoo' });
   b.put('a1bakery', 6, 9);
-  b.put('verandah', 6, 12);
+  // (no verandah: Seb asked for the A1 awning to go)
   b.put('picnic', 7, 12); b.put('picnic', 11, 12);
   b.sign(4, 12, ['A1 Bakery.', 'Open every day. Fresh bread, za\'atar pies and the best seat on Sydney Rd. Spooky agrees.']);
   b.put('bshop', 14, 9, { v: 'oatmilk' });

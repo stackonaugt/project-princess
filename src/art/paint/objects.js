@@ -348,10 +348,10 @@ const BASE = {
     },
   },
   shop: {
-    foot: [4, 3], tex: [64, 56], variants: ['milk bar', 'records', 'bakery', 'pho', 'books', 'curry', 'pizza', 'signs'],
+    foot: [4, 3], tex: [64, 56], variants: ['milk bar', 'records', 'bakery', 'pho', 'books', 'curry', 'pizza', 'signs', 'banh mi'],
     paint(p, v) {
       const { sx, sy, W, H } = frame(this);
-      const col = { 'milk bar': ['#e8dcc2', '#2f6aa3'], records: ['#3a3a48', '#e77fb8'], bakery: ['#f0d9a8', '#a0582a'], pho: ['#c8443a', '#f5d63a'], books: ['#e8dcc2', '#3f6a4a'], curry: ['#f4efe0', '#c8643a'], pizza: ['#f4efe0', '#3f8a3e'], signs: ['#e8ecef', '#2a5aa8'] }[v];
+      const col = { 'milk bar': ['#e8dcc2', '#2f6aa3'], records: ['#3a3a48', '#e77fb8'], bakery: ['#f0d9a8', '#a0582a'], pho: ['#c8443a', '#f5d63a'], books: ['#e8dcc2', '#3f6a4a'], curry: ['#f4efe0', '#c8643a'], pizza: ['#f4efe0', '#3f8a3e'], signs: ['#e8ecef', '#2a5aa8'], 'banh mi': ['#f5d63a', '#c8302a'] }[v];
       p.r('rgba(30,50,20,.22)', sx + 2, sy + H - 2, W - 2, 4);
       p.r(col[0], sx, sy + 6, W, H - 6);
       p.r('#4a4e56', sx, sy - 2, W, 9); p.r('#5d616a', sx, sy - 2, W, 2);
@@ -363,6 +363,7 @@ const BASE = {
       if (v === 'records') { [[7, 30], [17, 30], [27, 30]].forEach(([x, y]) => { p.blob(sx + x + 3, sy + y + 4, 4, '#1e1e24'); p.px('#e77fb8', sx + x + 3, sy + y + 4); }); }
       if (v === 'bakery') { [[7, 38], [16, 38], [25, 38]].forEach(([x, y]) => { p.r('#c8823a', sx + x, sy + y, 7, 4); p.r('#e8b060', sx + x + 1, sy + y, 5, 1); }); }
       if (v === 'pho') { p.blob(sx + 18, sy + 37, 6, '#f4efe0'); p.r('#c8823a', sx + 13, sy + 35, 10, 2); p.r('#3a2412', sx + 20, sy + 29, 1, 7); }
+      if (v === 'banh mi') { [[6, 36], [16, 33], [26, 37]].forEach(([x, y]) => { p.r('#c8823a', sx + x, sy + y, 9, 4); p.r('#e8b060', sx + x + 1, sy + y, 7, 1); p.r('#5aa83a', sx + x + 2, sy + y + 3, 5, 1); }); }
       if (v === 'books') { for (let i = 0; i < 7; i++) p.r(['#c8443a', '#2f6aa3', '#e8c030', '#3f8a4e'][i % 4], sx + 6 + i * 4, sy + 33, 3, 10); }
       p.r('#3d2a1a', sx + 42, sy + 26, 14, 22); p.r('#7b4a24', sx + 43, sy + 27, 12, 21); p.r('#a8d4e8', sx + 45, sy + 29, 8, 8); p.r('#f0c040', sx + 53, sy + 39, 1, 2);
     },
