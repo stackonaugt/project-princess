@@ -73,3 +73,27 @@ export function isAt(id, place, d) {
   const r = ROUTINES[id];
   return !r || r(d) === place;
 }
+
+// Everyone without a routine above still keeps hours. Shopkeepers are there
+// while their shop is open; everyone else is out from the morning (between
+// 6:30 and 8am) and heads home at night (between 8 and 10:30pm), a little
+// different for each person. Night owls come out in the afternoon and stay
+// till close. People at your place, and the ones the story needs on the spot
+// (Ben Carroll on Parliament's steps, Julie's tutorial), are always about.
+const ALWAYS = new Set(['bencarroll', 'julie']);
+const NIGHT_OWLS = { mrwilkinson: 14 * 60, possumpat: 17 * 60 };
+const SHOP_HOURS = {
+  milkbar: [6, 23], spells: [7, 23], vapeshop: [9, 23], coffeecart: [6.5, 15], donuts: [7, 18], fruit: [7, 17], qvdeli: [7, 17],
+  souvenirs: [9, 18], chemist: [8, 21], hotbread: [7, 18], twodollar: [9, 18], pide: [6, 19], deli: [7, 17], fruitveg: [7, 17],
+  opshop: [10, 17], gelateria: [11, 25], bunnings: [6, 21], fishvan: [8, 18], anaconda: [9, 21], cozzo: [9, 18], petshop: [9, 18],
+};
+const spread = id => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 7) / 997;   // 0..1, fixed per person
+export function onDuty(spot, info, d, home = false) {
+  const id = spot.id;
+  if (home || spot.at || ROUTINES[id] || ALWAYS.has(id) || spot.leave) return true;
+  const m = d.minutes;
+  if (NIGHT_OWLS[id] !== undefined) return m >= NIGHT_OWLS[id];
+  if (info?.shop || spot.counter) { const [o, c] = SHOP_HOURS[info?.shop] || [8, 20]; return m >= o * 60 && m < c * 60; }
+  const s = spread(id);
+  return m >= 6 * 60 + 30 + s * 90 && m < 20 * 60 + s * 150;
+}

@@ -6,7 +6,7 @@ import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS } from '../data/region
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
-import { isAt, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
+import { isAt, onDuty, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
 import { MOTIONS, MOTION_ORDER, ALLIES, AGAINST, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
 const COUNCILLORS = ['paddy', ...ALLIES, ...AGAINST, ...Object.keys(SWING)];
@@ -118,7 +118,12 @@ export class WorldScene extends Phaser.Scene {
       this.pets.push(pet);
     }
     // People with a routine (routines.js) only appear while they are here.
-    this.npcs = this.map.npcs.filter(n => NPCS[n.id] && isAt(n.id, n.at, state.data)).map(n => this.spawnNpc(n));
+    this.offDuty = new Set();   // spots whose person has gone home for the night (or their shop is shut)
+    this.npcs = this.map.npcs.filter(n => {
+      if (!NPCS[n.id] || !isAt(n.id, n.at, state.data)) return false;
+      if (onDuty(n, NPCS[n.id], state.data, this.region.home)) return true;
+      this.offDuty.add(n); return false;
+    }).map(n => this.spawnNpc(n));
     this.crowd = new Crowd(this);
     this.routineTick = Math.floor(state.data.minutes / 10);
     this.traffic = new Traffic(this, this.map.lanes);
@@ -1754,7 +1759,13 @@ export class WorldScene extends Phaser.Scene {
 
   syncRoutines() {
     for (const n of this.map.npcs) {
-      if (!n.at || !NPCS[n.id]) continue;
+      if (!NPCS[n.id] || this.region.home) continue;
+      if (!n.at) {   // everyday hours (onDuty): only bring back people their hours sent home
+        const on = onDuty(n, NPCS[n.id], state.data), live = this.npcs.find(x => x.spot === n && !x.gone);
+        if (!on && live && !ui.blocking()) { this.offDuty.add(n); this.removeNpc(live); }
+        else if (on && this.offDuty.delete(n)) { const npc = this.spawnNpc(n); npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 500 }); this.npcs.push(npc); }
+        continue;
+      }
       const here = isAt(n.id, n.at, state.data), live = this.npcs.find(x => x.spot === n && !x.gone);
       if (here && !live) { const npc = this.spawnNpc(n); npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 500 }); this.npcs.push(npc); }
       else if (!here && live && !n.leave) this.removeNpc(live);
