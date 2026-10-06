@@ -48,9 +48,6 @@ export function buildCoburg() {
   b.fill(20, 19, 3, 1, 'h');
   b.sign(24, 21, ['Sydney Rd, south.', 'Back down to Albion St and the Edinburgh Castle, Brunswick.']);
   b.put('brickhouse', 32, 16, { v: 'red' });
-  // Lygon St, south to Moreland Rd
-  b.vline(36, 15, 25, 'f').fill(37, 14, 2, 12, '#').vline(39, 15, 25, 'f');
-  b.sign(35, 21, ['Lygon St, south.', 'Down to Moreland Rd. Betty and Ward live on the corner. Bring an appetite.']);
   b.put('weatherboard', 40, 16, { v: 'lemon' });
   b.put('tall', 44, 16, { v: 'cypress' }); b.put('tall', 46, 16, { v: 'cypress' });
   b.fenceH(31, 35, 19, 'brickwall', [34]); b.fenceH(40, 47, 19, 'brickwall', [42]);
@@ -65,13 +62,13 @@ export function buildCoburg() {
   b.lane({ axis: 'y', pos: 26.5, dir: 1, from: -3, to: 29, every: [9, 18], speed: 56, kinds: ['veh-car-v-silver', 'veh-car-v-yellow'] });
   b.lane({ axis: 'y', pos: 29.5, dir: -1, from: -3, to: 29, every: [10, 20], speed: 56, kinds: ['veh-car-v-yellow', 'veh-car-v-silver'] });
 
-  b.exit(0, 9, 1, 1, null, null, 'Essendon', ['Bell St heads west to Essendon.', 'A long way on foot. Another day.']);
+  b.exit(0, 9, 1, 1, 'moreland', 'east', 'Moreland Rd');   // west along Bell St, round to Lygon St and down to Moreland Rd
   b.exit(47, 14, 1, 1, 'preston', 'west', 'Plenty Rd, Preston');
   b.exit(25, 25, 6, 1, 'albion', 'east', 'Sydney Rd, Brunswick');
   b.exit(25, 0, 6, 1, 'coburgsyd', 'west', 'Sydney Rd, Coburg');
   b.exit(43, 0, 2, 1, 'murray', 'south', 'Murray Rd');
   b.entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('south', 25, 24, 'up')
-    .entry('north', 25, 1, 'down').entry('market', 43, 1, 'down').entry('lygon', 36, 24, 'up');
+    .entry('north', 25, 1, 'down').entry('market', 43, 1, 'down');
   // Lived-in touches: pot plants and bikes outside shops (walk-through)
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   return b.finish();

@@ -46,10 +46,9 @@ export function buildBowls() {
   // A strip of tall grass behind the bocce shed
   b.fill(0, 8, 2, 11, 'g'); b.wildGrass(1, 13, 1.5, 3); b.wildGrass(38, 24, 2, 1.2);
 
-  b.exit(0, 2, 1, 18, 'fleming', 'bowls', 'Fleming Park');
-  b.exit(0, 25, 6, 1, 'fleming', 'bowls', 'Fleming Park');
+  b.exit(0, 21, 1, 4, 'fleming', 'bowls', 'Fleming Park');   // west along the road, into Fleming Park's bottom right corner
   b.exit(39, 21, 1, 4, 'eblygon', 'bowls', 'Lygon St');
-  b.entry('east', 2, 10, 'right').entry('southwest', 2, 24, 'up').entry('west', 38, 21, 'left').entry('street', 14, 21, 'up');
+  b.entry('east', 2, 10, 'right').entry('southwest', 1, 24, 'right').entry('west', 38, 21, 'left').entry('street', 14, 21, 'up');
 
 
   b.lane({ axis: 'x', pos: 22.5, dir: -1, from: -3, to: 43, every: [12, 24], speed: 50, kinds: ['veh-car-h-white', 'veh-ute-h'] });

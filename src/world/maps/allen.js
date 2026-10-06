@@ -49,7 +49,6 @@ export function buildAllen() {
   b.put('tall', 23, 17, { v: 'pear' }); b.put('tall', 16, 18, { v: 'pear' });
   b.put('tall', 12, 15, { v: 'cypress' });
   b.sign(23, 27, ['Allen St.', 'South to Woods St and the reserve. West, the short cut to Laverton Station.']);
-  b.put('waysign', 3, 14, { v: 'station-left' });
 
   // Street trees, once council passes the motion (data/council.js)
   if (state.motionPassed('trees')) {

@@ -53,8 +53,8 @@ export function buildFleming() {
   // Along the bottom: the west half back to Nicholson St, the east half to the bowls club
   b.exit(0, 2, 1, 2, 'ebnicholson', 'north', 'Nicholson St');
   b.exit(0, 33, 23, 1, 'ebnicholson', 'north', 'Nicholson St');
-  b.exit(23, 33, 23, 1, 'bowls', 'southwest', 'Brunswick Bowls Club');
-  b.entry('nicholson', 2, 2, 'down').edgeEntry('south', 'x', 32, 0, 45, 'up').entry('bowls', 43, 31, 'left')
+  b.exit(45, 30, 1, 4, 'bowls', 'southwest', 'Brunswick Bowls Club');   // east along the road at the bottom right
+  b.entry('nicholson', 2, 2, 'down').edgeEntry('south', 'x', 32, 0, 45, 'up').entry('bowls', 44, 33, 'left')
     .entry('south', 21, 4, 'down');
 
   b.npc('michael', 15, 26, { face: 'down' });

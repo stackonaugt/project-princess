@@ -215,15 +215,11 @@ export class WorldScene extends Phaser.Scene {
       tex.refresh();
     }
     this.add.image(0, 0, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1000);
-    // The camera can scroll past the top and bottom edges (see onResize), so
-    // repeat the edge rows outwards rather than showing the page background.
-    const { w, h } = this.map, rowH = T * GROUND_SCALE;
-    for (let i = 1; i <= 16; i++) {
-      this.add.image(0, i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
-        .setCrop(0, (h - 1) * rowH, w * rowH, rowH);
-      if (i <= 6) this.add.image(0, -i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
-        .setCrop(0, 0, w * rowH, rowH);
-    }
+    // The camera can scroll past the top edge (under the HUD, see onResize),
+    // so repeat the top row upwards. Past the bottom is solid black.
+    const { w } = this.map, rowH = T * GROUND_SCALE;
+    for (let i = 1; i <= 6; i++) this.add.image(0, -i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
+      .setCrop(0, 0, w * rowH, rowH);
     // Water sparkles
     for (let y = 0; y < this.map.h; y++) for (let x = 0; x < this.map.w; x++) {
       if (this.map.ground[y][x] !== '~' || hash(x, y, 5) > 0.3) continue;
@@ -293,6 +289,12 @@ export class WorldScene extends Phaser.Scene {
     const free = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && !this.map.solid[y * W + x];
     // Way signs only outdoors: inside and in the yard the way out is obvious.
     const signs = !this.region.indoor && !this.region.home;
+    // What a sign mustn't cover: the drawn area of every standing object (flat rugs and roofs aside)
+    const boxes = this.map.objects.filter(o => !OBJECTS[o.kind]?.flat).map(o => {
+      const [tw, th] = OBJECTS[o.kind]?.tex || [o.w * T, o.h * T], cx = (o.x + o.w / 2) * T, by = (o.y + o.h) * T;
+      return { x0: cx - tw / 2 + 2, x1: cx + tw / 2 - 2, y0: by - th + 2, y1: by };
+    });
+    const placed = [];
     for (const e of this.map.exits) {
       const dir = e.x === 0 && e.w === 1 ? 'left' : e.x + e.w === W && e.w === 1 ? 'right' : e.y === 0 && e.h === 1 ? 'up' : e.y + e.h === H && e.h === 1 ? 'down' : null;
       if (!dir) continue;   // doors in the middle of a map are easy to spot
@@ -309,19 +311,36 @@ export class WorldScene extends Phaser.Scene {
         continue;
       }
       if (!e.label || !signs) continue;
-      // Beside the exit if there's room; for a long exit (a whole edge), on the
-      // first free spot along it, nearest the middle.
-      const spots = vertical ? [[inX, e.y - 1], [inX, e.y + e.h], [inX + (dir === 'left' ? 1 : -1), e.y - 1]] : [[e.x - 1, inY], [e.x + e.w, inY], [e.x - 1, inY + (dir === 'up' ? 1 : -1)]];
-      const n = vertical ? e.h : e.w, mid = Math.floor(n / 2);
-      for (let k = 0; k < n; k++) {
-        const i = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2), j = inX + (dir === 'left' ? 1 : dir === 'right' ? -1 : 0), kk = inY + (dir === 'up' ? 1 : dir === 'down' ? -1 : 0);
-        if (i >= 0 && i < n) spots.push(vertical ? [j, e.y + i] : [e.x + i, kk]);
-      }
-      const [sx, sy] = spots.find(([x, y]) => free(x, y) && !'#+xzP'.includes(this.map.ground[y]?.[x])) || spots.find(([x, y]) => free(x, y)) || spots[0];
+      // One sign per place: a second exit to the same zone (or with the same
+      // label) close by doesn't get another sign on top of the first.
+      const ex = (e.x + e.w / 2) * T, ey = (e.y + e.h / 2) * T;
+      if (placed.some(p => (p.to === e.to || p.label === e.label) && Math.hypot(p.ex - ex, p.ey - ey) < 14 * T)) continue;
       const key = exitSignTexture(this, e.label, dir);
       const tw = this.textures.get(key).getSourceImage().width, th = this.textures.get(key).getSourceImage().height;
-      // Keep the whole sign on the map so it can be read
-      const x = Phaser.Math.Clamp((sx + 0.5) * T, tw / 2 + 1, W * T - tw / 2 - 1), y = Phaser.Math.Clamp((sy + 1) * T - 2, th + 1, H * T - 1);
+      // Candidate spots: beside the exit, then along it from the middle, then a
+      // few rows further in. The first one on open ground (not road) where the
+      // sign doesn't overlap a building, a tree or another sign wins.
+      const n = vertical ? e.h : e.w, mid = Math.floor(n / 2), spots = [];
+      for (let d = 0; d < 5; d++) {
+        const ix = inX + (dir === 'left' ? d : dir === 'right' ? -d : 0), iy = inY + (dir === 'up' ? d : dir === 'down' ? -d : 0);
+        spots.push(vertical ? [ix, e.y - 1] : [e.x - 1, iy], vertical ? [ix, e.y + e.h] : [e.x + e.w, iy]);
+        for (let k = 0; k < n; k++) {
+          const i = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2);
+          if (i >= 0 && i < n) spots.push(vertical ? [ix, e.y + i] : [e.x + i, iy]);
+        }
+        spots.push(vertical ? [ix, e.y - 2] : [e.x - 2, iy], vertical ? [ix, e.y + e.h + 1] : [e.x + e.w + 1, iy]);
+      }
+      const at = ([sx, sy]) => ({ x: Phaser.Math.Clamp((sx + 0.5) * T, tw / 2 + 1, W * T - tw / 2 - 1), y: Phaser.Math.Clamp((sy + 1) * T - 2, th + 1, H * T - 1) });
+      const clear = ([sx, sy]) => {
+        const { x, y } = at([sx, sy]), r = { x0: x - tw / 2, x1: x + tw / 2, y0: y - th, y1: y };
+        const hit = q => q.x0 < r.x1 && q.x1 > r.x0 && q.y0 < r.y1 && q.y1 > r.y0;
+        return !boxes.some(hit) && !placed.some(p => hit(p.r));
+      };
+      const road = ([x, y]) => '#+xzP'.includes(this.map.ground[y]?.[x]);
+      const spot = spots.find(sp => free(...sp) && !road(sp) && clear(sp)) || spots.find(sp => free(...sp) && clear(sp))
+        || spots.find(sp => free(...sp) && !road(sp)) || spots[0];
+      const { x, y } = at(spot);
+      placed.push({ to: e.to, label: e.label, ex, ey, r: { x0: x - tw / 2, x1: x + tw / 2, y0: y - th, y1: y } });
       this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y + 8);
     }
   }
@@ -518,10 +537,12 @@ export class WorldScene extends Phaser.Scene {
     if (!this.textures.exists('fx-edgefade')) {
       const t = this.textures.createCanvas('fx-edgefade', 4, T), c = t.getContext();
       const g = c.createLinearGradient(0, 0, 0, T);
-      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.85)');
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
       c.fillStyle = g; c.fillRect(0, 0, 4, T); t.refresh();
     }
     this.add.image(0, this.map.h * T, 'fx-edgefade').setOrigin(0, 1).setDisplaySize(this.map.w * T, T).setDepth(8990);
+    // and a black band below it, over anything that pokes past the edge (cars, tall art, the night overlay)
+    this.add.rectangle(-64, this.map.h * T, this.map.w * T + 128, 40 * T, 0x000000).setOrigin(0).setDepth(9450);
     cam.startFollow(this.player, true, 0.2, 0.2);
     this.onResize();
   }
