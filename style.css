@@ -405,5 +405,24 @@ body.touch .bt-btn { min-height: 52px; }
 .party-answer { min-width: 70%; }
 .dance-show { text-align: center; font-size: 44px; min-height: 60px; font-weight: 700; letter-spacing: .1em; }
 .dance-pads { display: flex; justify-content: center; gap: 8px; }
-.dance-pad { font-size: 26px; min-width: 56px; }
+.dance-pad { font-size: 26px; min-width: 56px; touch-action: manipulation; }
+.dance-pad.on { filter: brightness(1.4); transform: translateY(2px); }
+.rhythm { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); height: 240px; background: linear-gradient(#2a1a3a, #4a2a5a); border-radius: 8px; overflow: hidden; }
+.rhythm-lane { position: relative; border-right: 1px solid rgba(255,255,255,.12); }
+.rhythm-line { position: absolute; left: 0; right: 0; top: 85%; height: 3px; background: #f5d63a; box-shadow: 0 0 8px #f5d63a; }
+.rhythm-note { position: absolute; left: 50%; transform: translate(-50%, -50%); width: 36px; height: 30px; display: grid; place-items: center; font-size: 22px; font-weight: 700; color: #fff; background: #e2506a; border: 2px solid #1e1a18; border-radius: 8px; }
+.rhythm-lane:nth-child(2) .rhythm-note { background: #3a8ad8; }
+.rhythm-lane:nth-child(3) .rhythm-note { background: #5aa83a; }
+.rhythm-lane:nth-child(4) .rhythm-note { background: #e8a030; }
+.rhythm-note.hit { opacity: 0; transform: translate(-50%, -50%) scale(1.8); transition: all .2s; }
+.rhythm-note.miss { opacity: .25; }
+.bar-picks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.bar-pick { min-width: 0; font-size: 14px; }
+.bar-pick.on { outline: 3px solid #f5d63a; }
+.bar-top { position: relative; height: 44px; background: linear-gradient(#a0683a, #6a4020); border: 2px solid #3a2410; border-radius: 6px; }
+.bar-glass { position: absolute; top: 4px; left: -12px; width: 24px; height: 32px; }
+.bar-glass img { width: 24px; height: 24px; }
+.bar-target { position: absolute; top: 2px; width: 12%; height: 36px; border: 2px dashed #f5d63a; border-radius: 6px; font-size: 11px; color: #fff; text-align: center; overflow: hidden; }
+.bar-power { height: 10px; background: #3a2a1a; border-radius: 5px; overflow: hidden; }
+.bar-power-fill { height: 100%; width: 0; background: linear-gradient(90deg, #5aa83a, #e8a030, #e2506a); }
 @media (prefers-reduced-motion: reduce) { .news-ticker span, .news-live { animation: none; } .news-ticker span { padding-left: 0; } }

@@ -8,6 +8,9 @@ import { sfx } from '../systems/sfx.js';
 import { CHAPTERS, TRIVIA } from '../data/story.js';
 import { objectives, partyReady, chapterNow } from '../systems/story.js';
 import { itemIcon, npcIcon } from './images.js';
+import { ITEMS } from '../data/items.js';
+import { NPCS } from '../data/npcs.js';
+import { FRIENDS } from '../data/friends.js';
 
 // The Story app: this chapter's objectives.
 export function openStoryApp(panel, close) {
@@ -83,7 +86,7 @@ export function openNews(panel, close, { lines, votes = null }) {
   return { action: finish };
 }
 
-// The party mini-games: flip the snags, guest trivia, a dance-off.
+// The party mini-games: the dance floor (rhythm), behind the bar, guest trivia.
 // Calls done(score) when finished (0 to 8).
 // Enter both clicks a focused button and sends the A action: run once only.
 const once = fn => { let used = false; return () => { if (!used) { used = true; fn(); } }; };
@@ -94,36 +97,108 @@ export function openParty(panel, close, { guests, done }) {
   const area = h('div', { class: 'm-scroll party' });
   panel.replaceChildren(head, area);
   const scoreLine = () => h('p', { class: 'small center meta' }, `Party score: ${score}`);
-  const next = () => { cleanup(); cleanup = () => {}; action = null; stage++; [snags, trivia, dance, finish][stage - 1](); };
+  const next = () => { cleanup(); cleanup = () => {}; action = null; stage++; [rhythm, bar, trivia, finish][stage - 1](); };
 
-  // 1. Snags on the barbie: flip each one while the marker is in the green.
-  const snags = () => {
-    let round = 0, pos = 0, dir = 1, raf = 0, lock = 0;
-    const marker = h('div', { class: 'fish-marker' }), zone = h('div', { class: 'fish-zone' });
-    const bar = h('div', { class: 'fish-bar' }, zone, marker);
-    const msg = h('p', { class: 'center' }, 'Round 1: flip the snag when the tongs are in the green!');
-    const btn = h('button', { class: 'wood-btn', tabindex: '-1' }, 'Flip!');
-    const setZone = () => { const w = 0.26 - round * 0.04, z0 = 0.1 + Math.random() * (0.8 - w); zone.style.left = `${z0 * 100}%`; zone.style.width = `${w * 100}%`; zone.dataset.a = z0; zone.dataset.b = z0 + w; };
-    const tick = () => { pos += dir * (0.012 + round * 0.004); if (pos > 1) { pos = 1; dir = -1; } if (pos < 0) { pos = 0; dir = 1; } marker.style.left = `calc(${pos * 100}% - 6px)`; raf = requestAnimationFrame(tick); };
-    const flip = () => {
-      if (performance.now() < lock) return;
-      lock = performance.now() + 700;
-      const hit = pos >= +zone.dataset.a && pos <= +zone.dataset.b;
-      if (hit) { score++; sfx.heart(); } else sfx.bump();
-      round++;
-      msg.textContent = (hit ? 'Perfect flip! Onions on the bottom, as is correct.' : 'Burnt it. Somebody will still eat it.') + (round < 3 ? ` Round ${round + 1}...` : '');
-      if (round >= 3) { cancelAnimationFrame(raf); const go = once(next); btn.textContent = 'Next game'; btn.onclick = go; action = go; return; }
-      setZone();
+  // 1. Rhythm: notes fall down four lanes; hit each one as it crosses the line.
+  const rhythm = () => {
+    const ARROWS = ['←', '↓', '↑', '→'], KEYS = { ArrowLeft: 0, ArrowDown: 1, ArrowUp: 2, ArrowRight: 3, a: 0, s: 1, w: 2, d: 3 };
+    const SPEED = 0.42, LINE = 0.85, WINDOW = 0.07;            // screen heights per second, where the line is, how close counts
+    const notes = []; let t = 1.2;
+    for (let i = 0; i < 18; i++) { notes.push({ lane: Math.floor(Math.random() * 4), at: t, el: null, done: false }); t += [0.45, 0.6, 0.9][i % 3]; }
+    let hits = 0, raf = 0, t0 = 0, over = false;
+    const field = h('div', { class: 'rhythm' }, ...ARROWS.map(() => h('div', { class: 'rhythm-lane' })), h('div', { class: 'rhythm-line' }));
+    const msg = h('p', { class: 'center' }, 'Hot Potato (Laverton club mix). Hit each arrow as it crosses the line!');
+    const lanes = [...field.querySelectorAll('.rhythm-lane')];
+    notes.forEach(n => { n.el = h('div', { class: 'rhythm-note' }, ARROWS[n.lane]); lanes[n.lane].append(n.el); });
+    const y = (n, now) => LINE - (n.at - now) * SPEED;
+    const hit = lane => {
+      if (over) return;
+      const now = (performance.now() - t0) / 1000;
+      const n = notes.find(n => !n.done && n.lane === lane && Math.abs(y(n, now) - LINE) < WINDOW);
+      pads[lane].classList.add('on'); setTimeout(() => pads[lane].classList.remove('on'), 90);
+      if (n) { n.done = true; hits++; n.el.classList.add('hit'); sfx.select(); } else sfx.bump();
     };
-    btn.onclick = flip; action = flip;
-    setZone(); tick();
-    cleanup = () => cancelAnimationFrame(raf);
-    area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, '1. Snags on the barbie'), h('p', { class: 'small' }, `${guests.length ? guests.length : 'No'} hungry ${guests.length === 1 ? 'guest' : 'guests'} are watching. No pressure.`)), msg, bar, h('div', { class: 'center' }, btn), scoreLine());
+    const pads = ARROWS.map((a, i) => h('button', { class: 'wood-btn dance-pad', tabindex: '-1', onpointerdown: e => { e.preventDefault(); hit(i); } }, a));
+    const onKey = e => { const k = KEYS[e.key]; if (k !== undefined && !over) { e.preventDefault(); e.stopPropagation(); hit(k); } };
+    window.addEventListener('keydown', onKey, true);
+    const tick = () => {
+      const now = (performance.now() - t0) / 1000;
+      for (const n of notes) {
+        const ny = y(n, now);
+        n.el.style.top = `${ny * 100}%`;
+        n.el.style.display = ny < -0.1 || ny > 1.05 ? 'none' : '';
+        if (!n.done && ny > LINE + WINDOW) { n.done = true; n.el.classList.add('miss'); }
+      }
+      if (notes.every(n => n.done) && now > notes[notes.length - 1].at + 0.6) return end();
+      raf = requestAnimationFrame(tick);
+    };
+    const end = () => {
+      over = true;
+      const pts = hits >= 15 ? 3 : hits >= 11 ? 2 : hits >= 6 ? 1 : 0;
+      score += pts; (pts >= 2 ? sfx.heart : sfx.bump)();
+      msg.textContent = `${hits} of ${notes.length} notes! ${pts >= 3 ? 'The whole backyard is dancing. Nicholas does the worm.' : pts >= 2 ? 'Solid moves. Paddy dad-dances in approval.' : 'The twins love it anyway. They love everything.'}`;
+      const go = h('button', { class: 'wood-btn' }, 'Next game');
+      go.onclick = action = once(next);
+      msg.append(h('div', { class: 'center' }, go)); go.focus();
+    };
+    cleanup = () => { cancelAnimationFrame(raf); window.removeEventListener('keydown', onKey, true); };
+    area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, '1. Dance floor'), h('p', { class: 'small' }, 'Arrow keys (or tap the pads) as each arrow reaches the line.')), field, h('div', { class: 'dance-pads' }, ...pads), msg, scoreLine());
+    t0 = performance.now(); tick();
   };
 
-  // 2. Guest trivia: three questions about the neighbours.
+  // 2. Behind the bar: each guest orders a drink. Pick it, then slide it down
+  // the bar and stop it in front of them.
+  const bar = () => {
+    const names = guests.length ? guests.map(id => NPCS[id]?.name || id) : ['Nanna Trish', 'Pop Gordon', 'a neighbour'];
+    const drinkIds = Object.keys(ITEMS).filter(id => ITEMS[id].drink);
+    const orders = [0, 1, 2].map(i => {
+      const who = guests.length ? guests[i % guests.length] : null;
+      const fav = who && (FRIENDS[who]?.loves || []).find(x => ITEMS[x]?.drink);
+      return { name: names[i % names.length], drink: fav || drinkIds[Math.floor(Math.random() * drinkIds.length)] };
+    });
+    let i = 0, raf = 0;
+    const serve = () => {
+      const o = orders[i];
+      const opts = [o.drink, ...drinkIds.filter(x => x !== o.drink).sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
+      const msg = h('p', { class: 'center' }, `${o.name}: "Could I grab a ${ITEMS[o.drink].name}, please?"`);
+      let chosen = null;
+      const glass = h('div', { class: 'bar-glass' }), target = h('div', { class: 'bar-target' }, o.name.split(' ')[0]);
+      const counter = h('div', { class: 'bar-top' }, target, glass);
+      const z0 = 0.62 + Math.random() * 0.2;
+      target.style.left = `${z0 * 100}%`;
+      let pos = 0, vel = 0, sliding = false, power = 0, pdir = 1;
+      const meter = h('div', { class: 'bar-power' }, h('div', { class: 'bar-power-fill' }));
+      const slide = h('button', { class: 'wood-btn', tabindex: '-1', disabled: true }, 'Slide!');
+      const pickBtns = opts.map(id => h('button', { class: 'wood-btn party-answer bar-pick', onclick: () => {
+        chosen = id; pickBtns.forEach(b => b.classList.toggle('on', b === pickBtns[opts.indexOf(id)]));
+        glass.replaceChildren(h('img', { class: 'pix', src: itemIcon(id, 32), alt: '' }));
+        slide.disabled = false; slide.focus(); action = () => slide.click();
+      } }, h('img', { class: 'pix', src: itemIcon(id, 24), alt: '' }), ' ', ITEMS[id].name));
+      const charge = () => { if (sliding) return; power += pdir * 0.025; if (power > 1) { power = 1; pdir = -1; } if (power < 0) { power = 0; pdir = 1; } meter.firstChild.style.width = `${power * 100}%`; raf = requestAnimationFrame(charge); };
+      const move = () => {
+        pos += vel; vel *= 0.94;
+        glass.style.left = `calc(${pos * 100}% - 12px)`;
+        if (vel > 0.0008 && pos < 1.02) { raf = requestAnimationFrame(move); return; }
+        const good = chosen === o.drink && Math.abs(pos - (z0 + 0.06)) < 0.08;
+        if (good) { score++; sfx.heart(); } else sfx.bump();
+        msg.textContent = chosen !== o.drink ? `${o.name}: "That's... not what I asked for. I'll drink it though."` : pos > 1 ? 'It flies off the end of the bar. Pina catches it. Somehow.' : good ? `Perfect! ${o.name} catches it without looking. Legend.` : `${o.name} has to lean right over to reach it. Close!`;
+        const go = h('button', { class: 'wood-btn' }, i < 2 ? 'Next order' : 'Next game');
+        go.onclick = once(() => { i++; if (i < 3) serve(); else next(); });
+        action = () => go.click();
+        msg.append(h('div', { class: 'center' }, go)); go.focus();
+      };
+      slide.onclick = () => { if (sliding || !chosen) return; sliding = true; cancelAnimationFrame(raf); vel = 0.015 + power * 0.05; slide.disabled = true; pickBtns.forEach(b => { b.disabled = true; }); action = null; sfx.blip(); move(); };
+      action = null;
+      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `2. Behind the bar (${i + 1}/3)`), h('p', { class: 'small' }, 'Pick the drink they asked for, then hit Slide! when the power is right.')), msg, h('div', { class: 'bar-picks' }, ...pickBtns), counter, meter, h('div', { class: 'center' }, slide), scoreLine());
+      charge();
+    };
+    cleanup = () => cancelAnimationFrame(raf);
+    serve();
+  };
+
+  // 3. Guest trivia: two questions about the neighbours.
   const trivia = () => {
-    const qs = [...TRIVIA].sort(() => Math.random() - 0.5).slice(0, 3);
+    const qs = [...TRIVIA].sort(() => Math.random() - 0.5).slice(0, 2);
     let i = 0;
     const ask = () => {
       const q = qs[i];
@@ -131,58 +206,16 @@ export function openParty(panel, close, { guests, done }) {
       const opts = q.a.map((a, k) => h('button', { class: 'wood-btn party-answer', onclick: () => {
         opts.forEach(b => { b.disabled = true; });
         if (k === q.right) { score++; sfx.heart(); after.textContent = 'Correct! The guests are impressed.'; } else { sfx.bump(); after.textContent = `Not quite. It was: ${q.a[q.right]}.`; }
-        const go = h('button', { class: 'wood-btn' }, i < 2 ? 'Next question' : 'Next game');
-        go.onclick = once(() => { i++; if (i < 3) ask(); else next(); });
+        const go = h('button', { class: 'wood-btn' }, i < 1 ? 'Next question' : 'Finish');
+        go.onclick = once(() => { i++; if (i < 2) ask(); else next(); });
         action = () => go.click();
         after.append(h('div', { class: 'center' }, go)); go.focus();
       } }, a));
       action = null;
-      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `2. Guest trivia (${i + 1}/3)`), h('p', {}, q.q)), ...opts.map(b => h('div', { class: 'center' }, b)), after, scoreLine());
+      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `3. Guest trivia (${i + 1}/2)`), h('p', {}, q.q)), ...opts.map(b => h('div', { class: 'center' }, b)), after, scoreLine());
       opts[0].focus();
     };
     ask();
-  };
-
-  // 3. Dance-off: watch the moves, then repeat them.
-  const dance = () => {
-    const ARROWS = { left: '←', up: '↑', down: '↓', right: '→' }, keys = Object.keys(ARROWS);
-    let round = 0, seq = [], typed = [], listening = false, timer = 0;
-    const show = h('div', { class: 'dance-show' }), msg = h('p', { class: 'center' });
-    const pads = keys.map(k => h('button', { class: 'wood-btn dance-pad', onclick: () => press(k) }, ARROWS[k]));
-    const press = k => {
-      if (!listening) return;
-      typed.push(k); sfx.select();
-      show.textContent = typed.map(x => ARROWS[x]).join(' ');
-      if (typed[typed.length - 1] !== seq[typed.length - 1]) { listening = false; sfx.bump(); msg.textContent = 'You tripped over a toddler. The crowd still cheers.'; return after(); }
-      if (typed.length === seq.length) { listening = false; score++; sfx.heart(); msg.textContent = 'Nailed it! Nicholas gives you a nod of respect.'; after(); }
-    };
-    const after = () => {
-      round++;
-      const go = h('button', { class: 'wood-btn' }, round < 2 ? 'Next round' : 'Finish');
-      go.onclick = once(() => (round < 2 ? play() : next()));
-      action = () => go.click();
-      msg.append(h('div', { class: 'center' }, go));
-    };
-    const onKey = e => {
-      const k = { ArrowLeft: 'left', ArrowUp: 'up', ArrowDown: 'down', ArrowRight: 'right', a: 'left', w: 'up', s: 'down', d: 'right' }[e.key];
-      if (k && listening) { e.preventDefault(); e.stopPropagation(); press(k); }
-    };
-    window.addEventListener('keydown', onKey, true);
-    const play = () => {
-      seq = Array.from({ length: 4 + round }, () => keys[Math.floor(Math.random() * 4)]);
-      typed = []; listening = false; action = null;
-      msg.textContent = `Round ${round + 1}: watch the moves...`;
-      let i = 0;
-      show.textContent = '';
-      clearInterval(timer);
-      timer = setInterval(() => {
-        if (i < seq.length) { show.textContent = ARROWS[seq[i]]; sfx.blip(); i++; return; }
-        clearInterval(timer); show.textContent = '?'; listening = true; msg.textContent = 'Your turn! Repeat the moves.';
-      }, 650);
-    };
-    cleanup = () => { clearInterval(timer); window.removeEventListener('keydown', onKey, true); };
-    area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, '3. Dance-off'), h('p', { class: 'small' }, 'Watch the moves, then repeat them with the arrows.')), show, msg, h('div', { class: 'dance-pads' }, ...pads), scoreLine());
-    play();
   };
 
   const finish = () => {
@@ -196,7 +229,7 @@ export function openParty(panel, close, { guests, done }) {
   start.onclick = action = once(next);
   area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'} turned up!`),
     h('div', { class: 'party-guests' }, ...guests.map(id => h('img', { class: 'pix', src: npcIcon(id), alt: id }))),
-    h('p', { class: 'small' }, 'Three party games. Do well and the whole town hears about it.'),
+    h('p', { class: 'small' }, 'Dancing, drinks and trivia. Do well and the whole town hears about it.'),
     h('p', { class: 'small' }, h('img', { class: 'pix', src: itemIcon('bunting', 32), alt: '' }), ' The bunting is up, the drinks are cold and the twins are wearing party hats.')),
     h('div', { class: 'center' }, start));
   start.focus();

@@ -10,7 +10,7 @@ import { isAt, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
 import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
 // What blocks a gated exit until you beat its keeper (`gate` on an exit).
@@ -1462,6 +1462,32 @@ export class WorldScene extends Phaser.Scene {
     });
   }
 
+  // Chapter 4: the decorations you bought go up in the backyard for the party.
+  partyDecor(decos) {
+    const g = this.add.graphics().setDepth(8500), W = this.map.w * T;
+    const cols = [0xe2506a, 0xf5d63a, 0x3a8ad8, 0x5aa83a];
+    const string = (x0, y0, x1, y1, sag, every, draw) => {
+      g.lineStyle(1, 0x3a2a1a, 1).beginPath();
+      const pts = [];
+      for (let i = 0; i <= 24; i++) { const t = i / 24, x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t + Math.sin(t * Math.PI) * sag; pts.push([x, y]); i ? g.lineTo(x, y) : g.moveTo(x, y); }
+      g.strokePath();
+      pts.forEach(([x, y], i) => { if (i % every === 0 && i && i < 24) draw(x, y, i); });
+    };
+    if (decos.includes('bunting')) for (const y of [4.5, 9.5]) string(2 * T, y * T, 19 * T, y * T, 10, 1, (x, y, i) => { g.fillStyle(cols[i % 4], 1).fillTriangle(x - 4, y, x + 4, y, x, y + 7); });
+    if (decos.includes('fairylights')) for (const y of [6.5, 12.5]) string(2 * T, y * T, 19 * T, y * T, 6, 1, (x, y) => {
+      const l = this.add.circle(x, y + 1, 2, 0xfff3a0).setDepth(9001);
+      this.add.circle(x, y + 1, 6, 0xfff3a0, 0.25).setDepth(9001);
+      this.tweens.add({ targets: l, alpha: 0.4, duration: 600 + Math.random() * 600, yoyo: true, repeat: -1 });
+    });
+    if (decos.includes('balloons')) [[3, 7], [18, 7], [10, 13], [17, 13]].forEach(([tx, ty], k) => [-5, 0, 5].forEach((dx, j) => {
+      const x = tx * T + 8 + dx, y = ty * T - 6 - (j === 1 ? 6 : 0);
+      g.lineStyle(1, 0x5a5a5a, 1).lineBetween(x, y + 6, tx * T + 8, ty * T + 12);
+      const b = this.add.ellipse(x, y, 9, 11, cols[(k + j) % 4]).setStrokeStyle(1, 0x1e1a18).setDepth(8500);
+      this.tweens.add({ targets: b, y: y - 2, duration: 900 + j * 150, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
+    }));
+    if (!decos.length) string(2 * T, 5 * T, 19 * T, 5 * T, 8, 2, (x, y, i) => { g.fillStyle(cols[i % 4], 1).fillTriangle(x - 4, y, x + 4, y, x, y + 7); });
+  }
+
   // Chapter 4: invite a friend to the party. They come if you're close enough.
   async invite(npc, opts) {
     const s = story(), yes = state.friendHearts(npc.id) >= CH4.rsvpHearts;
@@ -1494,9 +1520,24 @@ export class WorldScene extends Phaser.Scene {
       npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400, delay: i * 120 });
       this.npcs.push(npc);
     });
+    const decos = Object.keys(ITEMS).filter(k => ITEMS[k].deco && state.count(k));
+    this.partyDecor(decos);
     ui.banner('The September Babies Bash', `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'}`);
     await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.', 'Helen: "Right! Party games!"']);
     const score = await ui.party(guests);
+    // Stories round the fire pit, then Helen has had a big night.
+    for (const id of guests.slice(0, 4)) {
+      const npc = this.npcs.find(n => n.id === id);
+      if (npc) { this.facePlayerTo(npc.x, npc.y); this.heartsFx(npc, 2); }
+      await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), { name: NPCS[id]?.name, portrait: npcIcon(id) });
+    }
+    state.data.minutes = Math.max(state.data.minutes, 23 * 60);
+    await ui.say(PARTY_END.slice(0, 3), { name: 'Helen' });
+    this.tweens.add({ targets: this.player, angle: { from: -12, to: 12 }, duration: 350, yoyo: true, repeat: 3 });
+    await new Promise(r => this.time.delayedCall(1500, r));
+    this.player.angle = 90;
+    await ui.say(PARTY_END.slice(3));
+    this.player.angle = 0;
     // The drinks and decorations get used up.
     let need = CH4.drinks;
     for (const id of Object.keys(ITEMS).filter(k => ITEMS[k].drink)) while (need > 0 && state.count(id)) { state.removeItem(id); need--; }
@@ -1507,7 +1548,7 @@ export class WorldScene extends Phaser.Scene {
     s.party = { score, attendees: guests, votes, won };
     s.done[4] = d.day;
     this.save();
-    await ui.say(['The party winds down at 1am. Somebody is asleep in the paddling pool. It is Corni.', 'A week later, Hobsons Bay votes.']);
+    await ui.say(['A week later, Hobsons Bay votes.']);
     this.cameras.main.fadeOut(500, 0, 0, 0);
     await new Promise(r => this.cameras.main.once('camerafadeoutcomplete', r));
     await ui.news({ lines: NEWS_RESULT(votes, won, s.ch2.deposed), votes });

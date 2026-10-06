@@ -180,9 +180,33 @@ export const TRIVIA = [
   { q: 'Where is Paddy mayor of?', a: ['Moreland', 'Hobsons Bay', 'Wyndham'], right: 1 },
 ];
 
+// Late at the party, guests tell stories (up to four of them, in the yard).
+export const PARTY_STORIES = {
+  corni: ['"Did I ever tell you about the time I ran the Merri Creek trail in the wrong direction for nine kilometres? Mem waited at the finish with a Guinness. True love."'],
+  mem: ['"So one of my lab mice broke her leg on purpose, I swear. She just wanted the extra attention. And honestly? Same."'],
+  rose: ['"Senate estimates went until 11pm and a senator asked me what a fax machine was. I said, a printer that phones people. He wrote that down."'],
+  slinks: ['"I once did a wine tour in the Yarra Valley and came home with eleven bottles and no memory of buying any of them. No regrets. Some regrets."'],
+  tim: ['"Picture this: Rome, 2019, a train strike. I joined the picket line. In Italian. I do not speak Italian. They gave me a sandwich."'],
+  nicholas: ['"In my dancing days I did a whole show with a sprained ankle. Nobody noticed. Then I fell off the stage at the curtain call. Everybody noticed."'],
+  paddy: ['"First council meeting as mayor, I got stuck in the chamber lift for forty minutes. Bentleigh moved a motion to leave me there. It was seconded."'],
+  pearman: ['"My BETTY shirt? A woman named Betty gave it to me at a pub in 2004 and I\'ve never found out why. I wear it to honour her."'],
+  nathan: ['"Rusty once ran so fast at the dog park he lapped a greyhound. The greyhound\'s owner asked for his number. Rusty\'s, not mine."'],
+  sinead: ['"I had a client last week who said I was the first person to ever listen to him properly. Then he asked if I could watch his ferret for a month."'],
+  gordon: ['"In Ravenna there\'s a mosaic so beautiful I cried in front of a tour group of Year 9s. They clapped. It was very moving for all of us."'],
+  trish: ['"When Helen was little she ran a pet school for the neighbourhood snails. Charged them a leaf each. Some things never change!"'],
+};
+export const PARTY_STORY_DEFAULT = name => [`${name} tells a long story about a parking ticket in Footscray. It has a twist. Everybody gasps.`];
+export const PARTY_END = [
+  'It gets late. The fairy lights glow, the twins are asleep in a pile of party hats, and the music gets softer.',
+  'Helen: "Has everyone had a drink? Have I had a drink? I think I\'ve had... a few drinks."',
+  'Helen: "I love you all. I love this backyard. I love that tree. Hello, tree."',
+  'Helen lies down on the trampoline to look at the stars, and is asleep in about four seconds.',
+  'What a night. Corni tucks a beach towel over her. Somebody is asleep in the paddling pool. It is also Corni.',
+];
+
 // The end of the story (for now).
 export const THE_END = [
   'That\'s it for now!',
   'Thanks for playing Project Princess. You can keep playing: the pets, the garden, the council and the shops are all still here.',
-  'More is planned if people want it: Coburg and Preston as full suburbs, Brunswick East, Carlton and the CBD, and a big Meredith finale. Tell Seb if you want more!',
+  'More is planned if people want it: more pets, mini-games and a big Meredith finale. Tell Seb if you want more!',
 ];
