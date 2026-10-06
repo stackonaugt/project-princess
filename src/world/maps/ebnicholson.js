@@ -1,13 +1,14 @@
-// NICHOLSON ST, Brunswick East. 199 Nicholson St, the red brick bungalow
-// where Helen and Paddy used to live, behind its red brick wall and its
-// overgrown yucca. Next door, the cream brick deco house. Down on the
-// Victoria St corner, the shop strip: the sandwich parlour, the East
-// Brunswick Take Away and Milk Bar (where the Sorceress works), and the
-// black shopfront with the brush lettering. Across the road, the new green
-// apartments. The 96 tram runs down the middle; its stop is the myki reader.
+// NICHOLSON ST, Brunswick East, from the owner's notes and photos. On the
+// north side, from the left: the black FORAGING shopfront, the sandwich
+// parlour and the long East Brunswick Take Away and Milk Bar (where the
+// Sorceress works), wall to wall; then a side street running up, one house,
+// and 199 Nicholson St, the big red brick bungalow where Helen and Paddy used
+// to live, then Nonna Concetta's with her chooks. Back yards fill the space
+// behind. On the south side, houses, the new green apartments and the 96 tram
+// stop (the myki reader). The 96 runs down the middle.
 //
-//   y0-8 houses   y9 footpath   y10-16 Nicholson St (tram 12-14)   y17 footpath
-//   y18-25 shops, the apartments and Victoria St
+//   y0-4 back yards   y5-8 shops and houses   y9 footpath   y10-16 Nicholson St (tram 12-14)
+//   y17 footpath   y18-25 houses, the apartments and Victoria St
 import { MapBuilder } from '../MapBuilder.js';
 
 export function buildEbNicholson() {
@@ -18,61 +19,69 @@ export function buildEbNicholson() {
   b.fill(0, 14, 46, 3, '#').hline(0, 45, 17, 'f');
   b.fill(20, 11, 6, 1, 'z').fill(20, 15, 6, 1, 'z');
 
-  // 199 Nicholson St and its neighbours
-  b.put('bungalow', 2, 5, { v: 'red' });
-  b.put('bungalow', 9, 5, { v: 'deco' });
-  b.put('bungalow', 16, 5, { v: 'cream' });
-  b.fenceH(1, 21, 8, 'brickwall', [5, 12, 19]);
-  b.fill(1, 8, 21, 1, '.').fill(6, 8, 2, 1, '"');
-  b.put('tall', 7, 8, { v: 'cypress' }); b.put('tree', 14, 8, { v: 'lemon' });
-  b.sign(4, 8, ['199 Nicholson St.', 'Helen and Paddy lived here before the twins, the mayoring and the house out west. The lemon tree is still going.']);
-  b.put('letterbox', 12, 8);
-  // Nonna Concetta's place and her chooks, up the top end
-  b.put('bungalow', 24, 5, { v: 'cream' });
-  b.fenceH(23, 31, 8, 'brickwall', [27]);
-  b.fill(32, 0, 9, 8, '.');
-  b.fenceH(32, 40, 8, 'picket', [36]).fenceV(31, 0, 8, 'picket').fenceV(41, 0, 8, 'picket');
-  b.put('chookpen', 34, 3);
-  b.put('tree', 39, 5, { v: 'lemon' }); b.put('tree', 32, 2, { v: 'lemon' });
-  b.fill(37, 6, 3, 2, '"');
-  b.sign(33, 8, ['Nonna Concetta\'s.', 'Three chooks, one lemon tree, and very strong views on which side of the street the bins go.']);
-  b.put('bin', 28, 9, { v: 'garbage' }); b.put('bin', 29, 9, { v: 'yellow' });
-  b.put('powerpole', 23, 9); b.put('powerpole', 43, 9);
-  b.put('streettree', 10, 9); b.put('streettree', 30, 9);
+  // The shops on the north side, wall to wall, the milk bar twice as long
+  b.fill(0, 8, 16, 1, 'f');
+  b.put('nichshop', 0, 5, { v: 'mural' });
+  b.put('nichshop', 4, 5, { v: 'sandwich' });
+  b.put('nichmilkbar', 8, 5);
+  b.exit(14, 8, 1, 1, 'ebmilkbar', 'door', 'East Brunswick Take Away and Milk Bar');   // right in front of its door
+  b.put('bin', 3, 8, { v: 'garbage' }); b.put('phonebooth', 15, 8);
+  b.sign(7, 8, ['The milk bar.', 'Potato cakes, cold drinks and, behind the counter, a shelf of powerful protection spells. The prices move.']);
+  // behind the shops: a bluestone lane, bins and a back fence
+  b.fill(0, 0, 16, 5, 'c'); b.fill(0, 2, 16, 1, 'b');
+  b.fenceH(0, 15, 1, 'paling'); b.put('bin', 2, 3, { v: 'garbage' }); b.put('bin', 3, 3, { v: 'yellow' });
+  b.put('rollerdoor', 9, 3, { v: 'tagged' });
 
-  // The shop strip on the south side, with the milk bar in the middle
-  b.put('nichshop', 2, 18, { v: 'sandwich' });
-  b.put('nichshop', 7, 18, { v: 'milkbar' });
-  b.exit(9, 23, 1, 1, 'ebmilkbar', 'door', 'East Brunswick Take Away and Milk Bar');
-  b.put('nichshop', 12, 18, { v: 'mural' });
-  b.put('phonebooth', 6, 23);
-  b.put('bin', 11, 23, { v: 'garbage' });
-  b.sign(17, 23, ['The milk bar.', 'Potato cakes, cold drinks and, behind the counter, a shelf of powerful protection spells. The prices move.']);
-  b.graffiti(17, 20);
+  // A side street running up between the shops and the houses
+  b.fill(16, 0, 1, 10, 'f').fill(17, 0, 2, 10, '#').fill(19, 0, 1, 10, 'f');
+  b.put('streettree', 19, 4);
 
-  // The new apartments on the Victoria St corner, with the tram stop out front
+  // One house, then 199 Nicholson St, then Nonna Concetta's
+  b.fill(20, 0, 26, 9, '.');
+  b.put('bungalow', 20, 5, { v: 'deco' });
+  b.put('house199', 26, 4);
+  b.put('bungalow', 36, 5, { v: 'cream' });
+  b.fenceH(20, 45, 8, 'brickwall', [22, 30, 38]);
+  b.fill(26, 8, 7, 1, '.'); b.put('tall', 27, 8, { v: 'cypress' }); b.put('tree', 32, 8, { v: 'lemon' }); b.fill(28, 8, 2, 1, '"');
+  b.sign(31, 9, ['199 Nicholson St.', 'Helen and Paddy lived here before the twins, the mayoring and the house out west. The lemon tree is still going.']);
+  b.put('letterbox', 29, 8);
+  // back yards behind the houses: paling fences, a Hills hoist, a shed, a trampoline
+  b.fenceH(20, 45, 3, 'paling', [24, 33, 41]);
+  b.fenceV(25, 0, 2, 'paling'); b.fenceV(34, 0, 2, 'paling');
+  b.put('hoist', 22, 1); b.put('gardenshed', 30, 0); b.put('trampoline', 26, 0); b.put('tree', 33, 1, { v: 'fruit' });
+  b.put('chookpen', 38, 0);
+  b.put('tree', 43, 1, { v: 'lemon' }); b.fill(41, 4, 3, 1, '"');
+  b.sign(40, 8, ['Nonna Concetta\'s.', 'Three chooks, one lemon tree, and very strong views on which side of the street the bins go.']);
+  b.put('bin', 41, 9, { v: 'garbage' }); b.put('bin', 42, 9, { v: 'yellow' });
+  b.put('powerpole', 23, 9); b.put('powerpole', 44, 9);
+  b.put('streettree', 34, 9);
+
+  // The south side: houses, a graffiti wall and the new apartments with the tram stop
+  b.put('bungalow', 1, 19, { v: 'red' }); b.put('bungalow', 8, 19, { v: 'corner' });
+  b.fenceH(0, 14, 22, 'brickwall', [3, 10]); b.fill(0, 22, 15, 1, '.');
+  b.fill(0, 23, 15, 3, '.'); b.put('tree', 2, 24, { v: 'gum' }); b.put('hoist', 11, 24);
+  b.graffiti(15, 20);
   b.put('greenapts', 22, 18);
   b.put('tramstop', 20, 17, { v: '96' });
   b.put('myki', 21, 17, { travel: true });
   b.sign(19, 23, ['Nicholson St tram stop. Route 96.', 'No train out here. Tap your myki at the reader and the 96 will take you anywhere you have already been.']);
   b.put('bikehoop', 41, 17); b.put('bikehoop', 42, 17);
-  // Nicholson St carries on south to Carlton
-  b.fill(32, 18, 3, 8, 'f');
-  b.put('bungalow', 36, 20, { v: 'red' });
-  b.fenceH(35, 45, 23, 'brickwall', [39]);
-  b.fill(35, 23, 11, 1, '.');
+  b.put('bungalow', 31, 19, { v: 'cream' });
+  b.put('bungalow', 37, 19, { v: 'deco' });
+  b.fenceH(30, 45, 22, 'brickwall', [33, 39]);
+  b.fill(30, 23, 16, 3, '.');
   b.wildGrass(42, 24, 2.5, 1.2);
 
-  b.put('car', 4, 17, { v: 'white' }); b.put('car', 30, 17, { v: 'blue' }); b.put('car', 15, 9, { v: 'red' });
+  b.put('car', 4, 17, { v: 'white' }); b.put('car', 30, 17, { v: 'blue' }); b.put('car', 37, 9, { v: 'red' });
 
   b.exit(0, 9, 1, 9, 'nicholson', 'north', 'Nicholson St, Carlton');
   b.exit(45, 9, 1, 9, 'holmes', 'south', 'Holmes St');
   b.exit(0, 0, 46, 1, 'fleming', 'south', 'Fleming Park');   // the whole top edge, back to the park
   b.entry('west', 1, 10, 'right').entry('east', 44, 10, 'left').entry('station', 21, 16, 'down')
-    .edgeEntry('north', 'x', 1, 0, 45, 'down').entry('milkbar', 9, 24, 'down');
+    .edgeEntry('north', 'x', 1, 0, 45, 'down').entry('milkbar', 14, 9, 'down');
 
-  b.npc('concetta', 36, 7, { face: 'down' });
-  b.npc('hatman', 13, 24, { face: 'up' });
+  b.npc('concetta', 39, 9, { face: 'down' });
+  b.npc('hatman', 11, 9, { face: 'up' });
 
   b.lane({ axis: 'x', pos: 12.5, dir: 1, from: -6, to: 52, every: [26, 44], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 13.5, dir: -1, from: -6, to: 52, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });
@@ -80,7 +89,7 @@ export function buildEbNicholson() {
   b.lane({ axis: 'x', pos: 15.5, dir: 1, from: -3, to: 49, every: [7, 14], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });
   b.lane({ axis: 'x', pos: 16.5, dir: 1, from: -2, to: 48, every: [14, 28], speed: 72, kinds: ['veh-car-h-white'] });
 
-  b.forage(38, 7, ['lemon', 'egg']);
+  b.forage(42, 4, ['lemon', 'egg']);
   b.forage(43, 24, ['tennis', 'sardine']);
   b.magpies([[34, 7], [40, 24]]);
   b.scatter([0, 0, b.w, b.h], 0.02, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
