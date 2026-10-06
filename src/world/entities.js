@@ -11,7 +11,7 @@ export const toWorld = (tx, ty) => ({ x: (tx + 0.5) * T, y: (ty + 0.75) * T });
 
 // Base: a physics sprite standing on its feet, with a shadow, a tall-grass
 // tuft and an optional emote bubble.
-class Actor extends Phaser.Physics.Arcade.Sprite {
+export class Actor extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, x, y, tex, slot = 16) {
     const t = scene.textures.get(tex);
     super(scene, x, y, tex, t.has(0) ? 0 : undefined);

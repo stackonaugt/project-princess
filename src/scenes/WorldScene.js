@@ -46,6 +46,7 @@ import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
 import { custom, objectTexture, tuftTexture, fitScale, cropTexture, exitSignTexture } from '../art/textures.js';
+import { Crowd } from '../world/crowd.js';
 import { Player, Pet, Npc, toWorld } from '../world/entities.js';
 import { Traffic } from '../world/traffic.js';
 import { state } from '../systems/state.js';
@@ -118,6 +119,7 @@ export class WorldScene extends Phaser.Scene {
     }
     // People with a routine (routines.js) only appear while they are here.
     this.npcs = this.map.npcs.filter(n => NPCS[n.id] && isAt(n.id, n.at, state.data)).map(n => this.spawnNpc(n));
+    this.crowd = new Crowd(this);
     this.routineTick = Math.floor(state.data.minutes / 10);
     this.traffic = new Traffic(this, this.map.lanes);
 
@@ -547,6 +549,7 @@ export class WorldScene extends Phaser.Scene {
     return [
       ...this.pets.map(p => ({ kind: 'pet', ref: p, x: p.x, y: p.y - 4 })),
       ...this.npcs.filter(n => !n.gone).map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4, r: n.spot.counter ? 30 : 16 })),   // shopkeepers reach across the counter
+      ...this.crowd.candidates(),
       ...this.forage,
       ...this.interactables,
     ];
@@ -622,6 +625,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'travel') return this.travel();
     if (t.kind === 'tram') return this.tram();
     if (t.kind === 'seat') return this.sitDown(t);
+    if (t.kind === 'crowd') { t.ref.wait = 5; t.ref.setVelocity(0, 0); t.ref.faceTowards(this.player.x, this.player.y); return ui.say([this.crowd.line()], { name: 'Passer-by' }); }
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
@@ -1788,9 +1792,10 @@ export class WorldScene extends Phaser.Scene {
     }
     for (const p of this.pets) p.update(this.player, dt, blocked);
     for (const n of this.npcs) if (!n.gone) n.update(this.player, dt, blocked);
+    this.crowd.update(this.player, dt, blocked);
     const tick = Math.floor(state.data.minutes / 10);
     if (tick !== this.routineTick) { this.routineTick = tick; this.syncRoutines(); this.maybeMeeting(); }
-    this.traffic.update(dt, this.player, blocked);
+    this.traffic.update(dt, this.player, blocked, this.crowd.list);
     this.updateDecor(dt, blocked);
     this.updateLighting();
     this.updateRain();

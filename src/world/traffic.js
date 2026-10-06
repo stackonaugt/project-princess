@@ -26,16 +26,19 @@ export class Traffic {
     const cam = this.scene.cameras.main.worldView;
     if (lane.tram && Phaser.Geom.Rectangle.Overlaps(cam, new Phaser.Geom.Rectangle(pos - 40, 0, 80, this.scene.map.h * T))) sfx.ding();
   }
-  update(dt, player, frozen) {
+  update(dt, player, frozen, others = []) {
     for (const lane of this.lanes) {
       lane.wait -= dt;
       if (lane.wait <= 0) { this.spawn(lane); lane.wait = lane.every[0] + Math.random() * (lane.every[1] - lane.every[0]); }
       const horiz = lane.axis === 'x';
       for (const s of lane.list) {
         const half = (horiz ? s.width : s.height) / 2;
-        const along = horiz ? player.x - s.x : player.y - s.y;
-        const across = Math.abs(horiz ? player.y - 4 - s.y : player.x - s.x);
-        const blocking = !lane.under && !lane.sky && across < (horiz ? s.height : s.width) / 2 + 4 && along * lane.dir > 0 && along * lane.dir < half + 20;
+        const inWay = q => {
+          const along = horiz ? q.x - s.x : q.y - s.y;
+          const across = Math.abs(horiz ? q.y - 4 - s.y : q.x - s.x);
+          return across < (horiz ? s.height : s.width) / 2 + 4 && along * lane.dir > 0 && along * lane.dir < half + 20;
+        };
+        const blocking = !lane.under && !lane.sky && (inWay(player) || (!lane.train && others.some(inWay)));   // passers-by crossing hold up cars too
         if (blocking || frozen) {
           s.stopped += dt;
           if (blocking && lane.bike) { s.bell = (s.bell ?? 0.3) - dt; if (s.bell <= 0) { s.bell = 1.1; sfx.bell(); } }   // ring ring, until you move
