@@ -425,6 +425,9 @@ body.touch .bt-btn { min-height: 52px; }
 .kara-lane { position: relative; height: 26px; background: #2a1a3a; border-radius: 13px; overflow: hidden; }
 .kara-now { position: absolute; left: 15%; top: 0; bottom: 0; width: 3px; background: #f5d63a; box-shadow: 0 0 6px #f5d63a; }
 .kara-cue { position: absolute; top: 5px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: #fff; border: 2px solid #1e1a18; }
+.kara-line.cur.words { background: none; color: var(--ink); }
+.kara-line.cur.words span { transition: color .1s; } .kara-line.cur.words .kara-beat { text-decoration: underline 2px; text-underline-offset: 3px; } .kara-line.cur.words .lit { color: #e2506a; }
+.kara-cue.word { width: 12px; height: 12px; margin-left: -6px; top: 7px; }
 .kara-cue.perfect { background: #f5d63a; } .kara-cue.good { background: #5aa83a; } .kara-cue.miss { background: #6a6e78; opacity: .5; }
 .kara-fb { margin: 0; font-weight: 700; min-height: 1.3em; } .kara-fb.perfect { color: #c8302a; } .kara-fb.good { color: #3a8a2a; } .kara-fb.miss { color: #6a6e78; }
 .kara-btn { font-size: 22px; min-width: 50%; touch-action: manipulation; }
