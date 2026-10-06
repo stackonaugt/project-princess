@@ -48,7 +48,7 @@ export function buildEbNicholson() {
   b.put('phonebooth', 6, 23);
   b.put('bin', 11, 23, { v: 'garbage' });
   b.sign(17, 23, ['The milk bar.', 'Potato cakes, cold drinks and, behind the counter, a shelf of powerful protection spells. The prices move.']);
-  b.put('graffiti', 17, 20, { v: 'piece' });
+  b.graffiti(17, 20);
 
   // The new apartments on the Victoria St corner, with the tram stop out front
   b.put('greenapts', 22, 18);

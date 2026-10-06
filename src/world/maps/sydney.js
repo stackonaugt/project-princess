@@ -19,7 +19,7 @@ export function buildSydney() {
   b.fenceV(0, 1, 5, 'brickwall').fenceV(43, 1, 5, 'brickwall');
   b.put('factory', 1, 3, { v: 'rope' });
   b.put('rollerdoor', 9, 4, { v: 'tagged' }); b.put('rollerdoor', 12, 4, { v: 'grey' });
-  b.put('graffiti', 15, 5, { v: 'piece' });
+  b.graffiti(15, 5);
   b.put('factory', 19, 3, { v: 'tin' });
   b.put('rollerdoor', 27, 4, { v: 'green' });
   // A vacant lot, gone to weeds
@@ -27,7 +27,7 @@ export function buildSydney() {
   b.fenceH(30, 35, 1, 'park').fenceV(30, 2, 5, 'park').fenceV(35, 2, 5, 'park').fenceH(31, 34, 5, 'park', [32, 33]);
   b.put('trolley', 34, 4);
   b.sign(34, 2, ['Vacant lot.', 'Approved: 14 storeys of "boutique living". Currently: weeds, a trolley and a very confident pigeon.']);
-  b.put('graffiti', 36, 5, { v: 'paste' });
+  b.graffiti(36, 5, true);
   b.put('rollerdoor', 40, 4, { v: 'grey' });
   b.put('bin', 9, 6, { v: 'red' }); b.put('bin', 10, 6, { v: 'yellow' }); b.put('bin', 18, 6, { v: 'green' });
   b.put('crate', 28, 6, { v: 'blue' }); b.put('crate', 29, 6, { v: 'red' }); b.put('bin', 42, 6, { v: 'red' });

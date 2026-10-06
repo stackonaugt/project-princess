@@ -104,6 +104,23 @@ function shopWindow(p, v, x, y, w, h) {
   }
 }
 
+// Little wheat-paste posters, 17x18, from the owner's photos of Brunswick
+// walls: gig posters, a local beer, a festival, a protest, and lost cats.
+const POSTERS = [
+  (p, x, y) => { p.r('#f4efe0', x, y, 17, 18); p.r('#3a8a3a', x + 2, y + 2, 13, 4); p.text('BRU', x + 3, y + 3, '#f4efe0'); p.blob(x + 8, y + 10, 3, '#f5d63a'); p.r('#c8302a', x + 2, y + 14, 13, 2); },   // a Brunswick beer
+  (p, x, y) => { p.r('#3fb8a8', x, y, 17, 18); p.text('BRUN', x + 1, y + 2, '#1e1e24'); p.text('0403', x + 1, y + 9, '#f4f4f0'); for (let i = 0; i < 5; i++) p.r(['#f5d63a', '#e2306a', '#f4f4f0'][i % 3], x + 2 + i * 3, y + 15, 1, 1); },   // gig, 04/03
+  (p, x, y) => { p.r('#1e1e24', x, y, 17, 18); p.r('#c8302a', x, y + 9, 17, 9); p.blob(x + 8, y + 9, 3, '#f5d63a'); p.text('JAN', x + 3, y + 1, '#f4f4f0'); p.text('26', x + 5, y + 13, '#f4f4f0'); },   // Not a date to celebrate
+  (p, x, y) => { p.r('#f4f4f0', x, y, 17, 18); p.r('#3fb8a8', x, y + 12, 17, 6); p.text('ROCK', x + 1, y + 2, '#1e1e24'); p.text('POST', x + 1, y + 13, '#f4f4f0'); },   // rock posters
+  (p, x, y) => { p.r('#f29a3a', x, y, 17, 18); p.blob(x + 8, y + 10, 5, '#3a2a1a'); p.r('#f5d63a', x + 6, y + 9, 1, 1); p.r('#f5d63a', x + 10, y + 9, 1, 1); p.text('RAIN', x + 1, y + 1, '#1e1e24'); },   // a band poster with a face
+  (p, x, y) => { p.r('#2a8a6a', x, y, 17, 18); p.r('#f4f0e6', x + 7, y + 4, 3, 7); p.blob(x + 8, y + 4, 2, '#f2c79a'); p.r('#f4f0e6', x + 4, y + 6, 9, 1); p.r('#f5d63a', x + 2, y + 13, 13, 1); p.r('#f4f0e6', x + 2, y + 15, 10, 1); },   // a festival
+  (p, x, y) => { p.r('#e8e4dc', x, y, 17, 18); p.r('#6a4a2a', x + 3, y + 5, 11, 3); p.r('#4a3a2a', x + 6, y + 4, 4, 6); p.r('#d8c8a0', x + 13, y + 6, 3, 1); p.r('#1e1e24', x + 2, y + 13, 13, 1); p.r('#1e1e24', x + 2, y + 15, 9, 1); },   // an eagle
+  (p, x, y) => { p.r('#f4f4f0', x, y, 17, 18); p.text('LOST', x + 1, y + 2, '#1e1e24'); p.blob(x + 8, y + 12, 3, '#3a3a40'); p.r('#3a3a40', x + 5, y + 8, 1, 2); p.r('#3a3a40', x + 10, y + 8, 1, 2); },   // lost cat
+  (p, x, y) => { p.r('#f5d63a', x, y, 17, 18); p.text('GIG', x + 3, y + 3, '#c8443a'); p.r('#c8443a', x + 3, y + 10, 11, 1); p.r('#c8443a', x + 3, y + 13, 8, 1); },
+  (p, x, y) => { p.r('#e77fb8', x, y, 17, 18); p.text('YOGA', x + 1, y + 3, '#1e1e24'); p.r('#1e1e24', x + 3, y + 10, 11, 1); p.r('#1e1e24', x + 3, y + 13, 8, 1); },
+  (p, x, y) => { p.r('#7fa6e8', x, y, 17, 18); p.text('RENT', x + 1, y + 3, '#f4f4f0'); p.text('$$$', x + 3, y + 10, '#c8302a'); },
+  (p, x, y) => { p.r('#f29a5b', x, y, 17, 18); p.text('ZINE', x + 1, y + 3, '#1e1e24'); p.r('#1e1e24', x + 3, y + 10, 11, 1); p.r('#1e1e24', x + 3, y + 13, 8, 1); },
+];
+
 export const BRUNSWICK = {
   bshop: {
     foot: [4, 3], tex: [64, 66], variants: Object.keys(SHOPS),
@@ -237,27 +254,64 @@ export const BRUNSWICK = {
       outline(p.ctx, 0, 0, 48, H);
     },
   },
-  // A tall laneway wall covered in street art.
+  // A tall laneway wall covered in street art. Six pieces (from the owner's
+  // reference photos) and wheat-paste poster walls (paste-0..9, each a
+  // different mix of POSTERS). Maps pick at random: MapBuilder.graffiti().
   graffiti: {
-    foot: [4, 1], tex: [64, 52], variants: ['piece', 'tags', 'paste'],
+    foot: [4, 1], tex: [64, 52], variants: ['piece', 'kooka', 'tags', 'kelly', 'devil', 'bubble', ...Array.from({ length: 10 }, (_, i) => `paste-${i}`)],
     paint(p, v) {
       const x0 = 1, W = 62, H = 52, top = 4;
-      bricks(p, x0, top, W, H - top - 1, v === 'paste' ? '#b8b0a4' : '#8a4a3a', 3);
+      const paste = String(v).startsWith('paste');
+      bricks(p, x0, top, W, H - top - 1, paste ? '#b8b0a4' : v === 'kelly' ? '#2a2a30' : '#8a4a3a', 3);
       p.r('#6a6e76', x0, top - 2, W, 3); p.r('#8a8e96', x0, top - 2, W, 1);
-      if (v === 'piece') {                             // big bubble letters, a drop shadow and some stars
-        p.r('#3a8a9a', x0 + 2, top + 6, W - 4, 34);
-        for (let i = 0; i < 6; i++) p.r('#f4f4f0', x0 + 6 + Math.floor(hash(i, 2) * 50), top + 8 + Math.floor(hash(i, 4) * 28), 1, 1);
-        bigText(p, 'BRUNS', x0 + 4, top + 15, 3, '#1e1e24'); bigText(p, 'BRUNS', x0 + 2, top + 13, 3, '#f5d63a');
-        p.r('#e77fb8', x0 + 5, top + 29, 52, 2); p.blob(x0 + 52, top + 10, 3, '#e77fb8');
-      } else if (v === 'tags') {
-        tags(p, x0, top + 4, W, 36, 9); tags(p, x0 + 6, top + 20, W - 10, 22, 4);
-        p.r('#f4f4f0', x0 + 16, top + 6, 30, 9); p.text('BE KIND', x0 + 18, top + 8, '#c8443a');
-      } else {                                          // wheat-paste posters
-        const posters = [['LOST', '#f4f4f0', '#1e1e24'], ['GIG', '#f5d63a', '#c8443a'], ['YOGA', '#e77fb8', '#1e1e24'], ['RENT', '#7fa6e8', '#f4f4f0'], ['ZINE', '#f29a5b', '#1e1e24'], ['CAT', '#f4f4f0', '#3a8a5a']];
-        posters.forEach(([t, bg, ink], i) => {
+      if (v === 'piece') {                             // wildstyle: green and yellow letters, black outline, white highlights
+        p.r('#5a3a8a', x0 + 2, top + 8, W - 4, 32);
+        const lx = x0 + 3, ly = top + 15;
+        for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1], [2, 2], [1, 2]]) bigText(p, 'BRUNS', lx + dx, ly + dy, 3, '#1e1e24');   // outline and drop shadow
+        bigText(p, 'BRUNS', lx, ly, 3, '#9ad83a');
+        p.ctx.save(); p.ctx.beginPath(); p.ctx.rect(x0, ly + 9, W, 6); p.ctx.clip(); bigText(p, 'BRUNS', lx, ly, 3, '#f5d63a'); p.ctx.restore();   // yellow fade at the bottom
+        for (let i = 0; i < 5; i++) p.r('#f4f4f0', lx + 1 + i * 12, ly + 1, 1, 4);   // highlights
+        p.r('#e2306a', x0 + 50, top + 6, 8, 2); p.r('#e2306a', x0 + 56, top + 4, 2, 6);   // an arrow
+        for (let i = 0; i < 6; i++) p.r('#f4f4f0', x0 + 6 + Math.floor(hash(i, 2) * 50), top + 9 + Math.floor(hash(i, 4) * 28), 1, 1);
+      } else if (v === 'kooka') {                      // a big kookaburra on a blue sky, tags underneath
+        p.r('#7ab8e0', x0 + 2, top + 2, W - 4, 30); p.r('#a8d4f0', x0 + 2, top + 2, W - 4, 6);
+        p.blob(x0 + 32, top + 18, 13, '#f4efe0'); p.blob(x0 + 38, top + 20, 9, '#e8dcc0');            // head and chest
+        p.r('#6a4a2a', x0 + 18, top + 8, 28, 5); p.r('#5a3a1a', x0 + 22, top + 12, 6, 3);           // brown crown and eye stripe
+        p.r('#1e1e24', x0 + 24, top + 15, 3, 3); p.r('#f4f4f0', x0 + 24, top + 15, 1, 1);           // eye
+        p.r('#3a3a40', x0 + 6, top + 18, 18, 4); p.r('#d8c8a0', x0 + 6, top + 21, 16, 2);            // the beak
+        p.r('#3a6aa8', x0 + 42, top + 24, 14, 6); p.r('#5a8ac8', x0 + 44, top + 25, 10, 2);          // blue wing
+        tags(p, x0, top + 34, W, 12, 7, ['#1e1e24', '#f4f4f0', '#3a3a40']);
+      } else if (v === 'tags') {                       // red throw-ups over grey, and a kind word
+        p.r('#a8a8a4', x0 + 1, top + 1, W - 2, 44);
+        tags(p, x0, top + 4, W, 36, 9, ['#d8302a', '#e85040', '#1e1e24']); tags(p, x0 + 6, top + 20, W - 10, 22, 4, ['#d8302a', '#1e1e24']);
+        p.r('#f4f4f0', x0 + 16, top + 30, 30, 9); p.text('BE KIND', x0 + 18, top + 32, '#c8443a');
+      } else if (v === 'kelly') {                      // Ned Kelly helmets, stencilled in rows in bright colours
+        const cols = ['#e85a4a', '#f5d63a', '#3fa38f', '#e77fb8', '#7fa6e8', '#f29a5b'];
+        for (let r = 0; r < 2; r++) for (let i = 0; i < 6; i++) {
+          const hx = x0 + 3 + i * 10, hy = top + 4 + r * 22, c = cols[(i + r * 3) % 6];
+          p.r(c, hx, hy, 8, 11); p.r(shade(c, 0.25), hx, hy, 8, 2); p.r('#1e1e24', hx + 1, hy + 4, 6, 1);   // helmet with the slot
+          p.r(c, hx - 1, hy + 11, 10, 7); p.r(shade(c, -0.25), hx - 1, hy + 16, 10, 2);                     // shoulders
+        }
+      } else if (v === 'devil') {                      // a grinning red devil above a fiery piece
+        p.r('#2a2a30', x0 + 2, top + 2, W - 4, 44);
+        p.blob(x0 + 31, top + 13, 10, '#c8302a'); p.r('#e85040', x0 + 26, top + 6, 10, 2);
+        p.r('#f4f0e6', x0 + 20, top + 2, 3, 6); p.r('#f4f0e6', x0 + 40, top + 2, 3, 6);              // horns
+        p.r('#1e1e24', x0 + 26, top + 11, 3, 2); p.r('#1e1e24', x0 + 34, top + 11, 3, 2); p.r('#f4f0e6', x0 + 27, top + 17, 10, 2);
+        const fire = ['#f5d63a', '#f29a3a', '#e2306a', '#a03ac8'];
+        for (let i = 0; i < 6; i++) { const lx = x0 + 4 + i * 9, ly = top + 26;
+          p.r('#1e1e24', lx - 1, ly - 1, 10, 17); for (let k = 0; k < 4; k++) p.r(fire[k], lx, ly + k * 4, 8, 4); p.r('#1e1e24', lx + 3, ly + 4 + (i % 2) * 4, 2, 5); }
+      } else if (v === 'bubble') {                     // pink and teal bubble letters
+        p.r('#f4efe0', x0 + 2, top + 6, W - 4, 34);
+        ['L', 'O', 'V', 'E'].forEach((ch, i) => { const lx = x0 + 5 + i * 14;
+          p.blob(lx + 6, top + 22, 8, '#1e1e24'); p.blob(lx + 6, top + 21, 7, i % 2 ? '#3fa38f' : '#e77fb8'); p.r('#f4f4f0', lx + 2, top + 16, 3, 2);
+          bigText(p, ch, lx + 3, top + 17, 2, '#1e1e24'); });
+        p.r('#f5d63a', x0 + 52, top + 8, 4, 4); p.r('#f5d63a', x0 + 6, top + 34, 3, 3);
+      } else {                                          // wheat-paste posters, a different mix on every wall
+        const n = Number(String(v).split('-')[1]) || 0;
+        const order = POSTERS.map((_, i) => i).sort((a, b) => hash(a, n + 11) - hash(b, n + 11));
+        order.slice(0, 6).forEach((k, i) => {
           const px = x0 + 3 + (i % 3) * 20, py = top + 6 + Math.floor(i / 3) * 20;
-          p.r(shade(bg, -0.2), px + 1, py + 1, 17, 18); p.r(bg, px, py, 17, 18); p.text(t, px + 2, py + 3, ink);
-          p.r(ink, px + 3, py + 10, 11, 1); p.r(ink, px + 3, py + 13, 8, 1);
+          p.r('rgba(0,0,0,.25)', px + 1, py + 1, 17, 18); POSTERS[k](p, px, py);
         });
       }
       p.r('rgba(0,0,0,.2)', x0, H - 4, W, 3);

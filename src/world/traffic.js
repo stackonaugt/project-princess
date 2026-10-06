@@ -10,6 +10,7 @@ export class Traffic {
     this.lanes = lanes.map(l => ({ ...l, wait: 1 + Math.random() * l.every[1] * 0.6, list: [] }));
   }
   spawn(lane) {
+    if (lane.kinds.every(k => k.startsWith('veh-bike'))) lane.bike = true;
     const key = pick(lane.kinds);
     const horiz = lane.axis === 'x';
     const start = (lane.dir > 0 ? lane.from : lane.to) * T;
@@ -37,18 +38,24 @@ export class Traffic {
         const blocking = !lane.under && !lane.sky && across < (horiz ? s.height : s.width) / 2 + 4 && along * lane.dir > 0 && along * lane.dir < half + 20;
         if (blocking || frozen) {
           s.stopped += dt;
-          if (blocking && s.stopped > 1.5 && !s.honked && !lane.train && !lane.tram) { s.honked = true; sfx.honk(); }
+          if (blocking && lane.bike) { s.bell = (s.bell ?? 0.3) - dt; if (s.bell <= 0) { s.bell = 1.1; sfx.bell(); } }   // ring ring, until you move
+          else if (blocking && s.stopped > 1.5 && !s.honked && !lane.train && !lane.tram) { s.honked = true; sfx.honk(); }
           if (blocking && s.stopped > 1.2 && lane.tram && !s.honked) { s.honked = true; sfx.ding(); }
         } else {
           s.stopped = 0;
           const step = lane.speed * lane.dir * dt;
           if (horiz) s.x += step; else s.y += step;
         }
+        if (lane.bike) {   // bikes stay on their path: fade in and out over its last tile instead of riding through walls
+          const p = horiz ? s.x : s.y, edge = Math.min(p - lane.from * T, lane.to * T - p);
+          s.setAlpha(Math.max(0, Math.min(1, edge / T)));
+        }
         s.setDepth(lane.sky ? 8700 : lane.under ? -995 : horiz ? s.y + s.height / 2 : s.y + half);
       }
       lane.list = lane.list.filter(s => {
         const p = horiz ? s.x : s.y;
-        const done = lane.dir > 0 ? p > lane.to * T + 100 : p < lane.from * T - 100;
+        const m = lane.bike ? 0 : 100;
+        const done = lane.dir > 0 ? p > lane.to * T + m : p < lane.from * T - m;
         if (done) s.destroy();
         return !done;
       });

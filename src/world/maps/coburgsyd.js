@@ -49,7 +49,7 @@ export function buildCoburgSyd() {
   // The lane behind, then houses and a little pocket park
   b.fill(0, 17, 17, 2, 'b').fill(23, 17, 25, 2, 'b');
   b.put('bin', 3, 17, { v: 'red' }); b.put('bin', 4, 17, { v: 'yellow' }); b.put('crate', 11, 17, { v: 'blue' }); b.put('crate', 29, 17, { v: 'red' });
-  b.put('graffiti', 24, 18, { v: 'paste' });
+  b.graffiti(24, 18, true);
   b.fill(0, 19, 17, 7, '.').fill(23, 19, 25, 7, '.');
   b.put('weatherboard', 1, 20, { v: 'blue' }); b.put('brickhouse', 6, 20, { v: 'tan' }); b.put('weatherboard', 11, 20, { v: 'cream' });
   b.fenceH(0, 16, 19, 'picket', [3, 8, 13]);

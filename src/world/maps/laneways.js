@@ -25,7 +25,7 @@ export function buildLaneways() {
 
   // Hosier Lane: painted from end to end
   for (const [x, v] of [[4, 'melb'], [8, 'koala'], [12, 'tram'], [16, 'melb'], [24, 'tram'], [28, 'koala'], [32, 'melb'], [36, 'tram']]) b.put('laneart', x, 8, { v });
-  b.put('graffiti', 40, 8, { v: 'piece' });
+  b.graffiti(40, 8);
   b.put('skip', 43, 10); b.put('bin', 3, 10, { v: 'garbage' });
   b.sign(23, 9, ['Hosier Lane.', 'Paint is allowed here. So every wall has been painted about four hundred times.']);
   b.put('bin', 7, 14, { v: 'yellow' }); b.put('crate', 41, 22, { v: 'blue' }); b.put('crate', 40, 13, { v: 'red' });

@@ -32,7 +32,7 @@ export function buildHope() {
 
   // East: a little car park, the bike co-op and an old tin shed
   b.fenceV(25, 0, 5, 'paling');
-  b.put('graffiti', 26, 4, { v: 'paste' });
+  b.graffiti(26, 4, true);
   b.put('car', 26, 6, { v: 'yellow' }); b.put('bin', 30, 6, { v: 'yellow' }); b.put('bin', 31, 6, { v: 'red' });
   // THE LEASH YOU CAN DO, the pet shop, run by Romey (inside: src/world/maps/petshop.js)
   b.put('petshop', 28, 8);
@@ -48,7 +48,7 @@ export function buildHope() {
   b.fenceH(10, 26, 16, 'bluestone', [17, 18]).fenceV(10, 17, 23, 'bluestone').fenceV(26, 17, 23, 'bluestone').fenceH(11, 25, 23, 'bluestone');
   b.sign(17, 17, ['Vacant lot.', 'Coming soon: "luxury living". Currently: weeds, one shopping trolley, excellent cat hangout.']);
   b.put('trolley', 21, 20);
-  b.put('graffiti', 6, 17, { v: 'tags' });
+  b.graffiti(6, 17);
   b.fill(6, 20, 2, 2, '"');
   b.put('shed', 28, 18, { v: 'blue' });
   b.put('rollerdoor', 35, 19, { v: 'green' });

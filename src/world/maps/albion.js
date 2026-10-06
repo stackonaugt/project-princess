@@ -27,7 +27,7 @@ export function buildAlbion() {
   b.fenceV(0, 0, 5, 'brickwall');
   b.put('factory', 1, 2, { v: 'brick' });
   b.put('rollerdoor', 10, 4, { v: 'tagged' });
-  b.put('graffiti', 13, 5, { v: 'piece' });
+  b.graffiti(13, 5);
   b.put('rollerdoor', 16, 4, { v: 'green' });
   // The Edinburgh Castle's beer garden out the back, behind a brick wall
   b.fill(19, 0, 9, 6, 'k');
@@ -57,7 +57,7 @@ export function buildAlbion() {
   b.put('terrace', 46, 9, { v: 'brick' });
   b.fill(34, 0, 14, 8, '.');
   b.put('shed', 35, 3, { v: 'grey' });
-  b.put('graffiti', 41, 5, { v: 'paste' });
+  b.graffiti(41, 5, true);
   b.put('container', 43, 2, { v: 'green' });
   b.wildGrass(40, 6, 3, 1.5);
   b.put('table', 39, 12);

@@ -75,6 +75,12 @@ export class MapBuilder {
   fenceH(x0, x1, y, style, gaps = []) { for (let x = x0; x <= x1; x++) if (!gaps.includes(x)) this.put('fence', x, y, { style }); return this; }
   fenceV(x, y0, y1, style, gaps = []) { for (let y = y0; y <= y1; y++) if (!gaps.includes(y)) this.put('fence', x, y, { style }); return this; }
   sign(x, y, text) { return this.put('sign', x, y, { text }); }
+  // Street art: a random piece, or (paste) a random wall of wheat-paste
+  // posters. Random each session, not seeded, so the walls change.
+  graffiti(x, y, paste = false) {
+    const v = paste ? `paste-${Math.floor(Math.random() * 10)}` : ['piece', 'kooka', 'tags', 'kelly', 'devil', 'bubble'][Math.floor(Math.random() * 6)];
+    return this.put('graffiti', x, y, { v });
+  }
 
   // Trees around the edge, leaving gaps on paths/roads so exits stay open.
   border(variants = ['oak']) {

@@ -30,7 +30,7 @@ export function buildEbLygon() {
   b.put('lygonshop', 22, 4, { v: 'benjys' });
   b.put('gigposters', 27, 6);
   b.sign(28, 7, ['Lygon St, Brunswick East.', 'Bars, karaoke, a toy store that is not a toy store, and apartments all the way up. Not a blade of grass.']);
-  b.put('graffiti', 36, 5, { v: 'paste' });
+  b.graffiti(36, 5, true);
   b.put('rollerdoor', 40, 4, { v: 'tagged' });
 
   // South side: the apartments and the old yellow brick building at 300

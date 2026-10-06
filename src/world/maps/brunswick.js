@@ -49,7 +49,7 @@ export function buildBrunswick() {
   // East of the path: a tin factory, roller doors and a weedy lot
   b.put('rollerdoor', 28, 2, { v: 'grey' });
   b.put('factory', 31, 1, { v: 'tin' });
-  b.put('graffiti', 28, 9, { v: 'paste' });
+  b.graffiti(28, 9, true);
   b.fill(33, 8, 6, 7, 'g').fill(34, 10, 3, 2, '"');
   b.fenceH(33, 38, 7, 'park').fenceV(32, 7, 14, 'park', [11, 12]).fenceH(33, 38, 14, 'park').fenceV(39, 7, 14, 'park');
   b.put('crate', 30, 15, { v: 'blue' }); b.put('crate', 31, 15, { v: 'red' });
@@ -60,7 +60,7 @@ export function buildBrunswick() {
   b.put('rollerdoor', 1, 23, { v: 'tagged' }); b.put('rollerdoor', 4, 23, { v: 'green' });
   b.fill(9, 22, 2, 4, 'b');
   b.put('mural', 12, 22, { v: 'a' }); b.put('mural', 23, 22, { v: 'b' });
-  b.put('rollerdoor', 28, 23, { v: 'grey' }); b.put('rollerdoor', 31, 23, { v: 'tagged' }); b.put('graffiti', 34, 24, { v: 'tags' });
+  b.put('rollerdoor', 28, 23, { v: 'grey' }); b.put('rollerdoor', 31, 23, { v: 'tagged' }); b.graffiti(34, 24);
   b.fill(38, 23, 2, 2, '"');
   b.put('powerpole', 8, 18); b.put('powerpole', 32, 18);
 

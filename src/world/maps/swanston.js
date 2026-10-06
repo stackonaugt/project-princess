@@ -46,7 +46,7 @@ export function buildSwanston() {
   b.sign(31, 34, ['Melbourne Central.', 'A glass cone over a shot tower from 1888. They made lead shot by dropping it fifty metres. Now it is a food court.']);
   // The alley down to the laneways
   b.fill(40, 35, 3, 13, 'b');
-  b.put('bin', 40, 38, { v: 'garbage' }); b.put('graffiti', 42, 41, { v: 'tags' });
+  b.put('bin', 40, 38, { v: 'garbage' }); b.graffiti(42, 41);
 
   b.npc('chesskev', 17, 21, { face: 'right' });
   b.npc('luca', 36, 28, { face: 'down' });

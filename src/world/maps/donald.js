@@ -46,13 +46,13 @@ export function buildDonald() {
   b.put('rollerdoor', 0, 19, { v: 'tagged' });
   b.put('terrace', 3, 18, { v: 'brick' }); b.put('terrace', 6, 18, { v: 'cream' }); b.put('terrace', 9, 18, { v: 'sand' });
   b.fill(12, 17, 1, 5, 'b');
-  b.put('graffiti', 13, 20, { v: 'piece' });
+  b.graffiti(13, 20);
   b.put('streettree', 14, 16);
   b.put('terrace', 17, 18, { v: 'sage' }); b.put('terrace', 20, 18, { v: 'brick' });
   b.put('rollerdoor', 23, 19, { v: 'green' });
   b.put('redshop', 26, 18, { v: 'cream' });
   b.put('terrace', 30, 18, { v: 'sage' }); b.put('terrace', 33, 18, { v: 'cream' });
-  b.put('graffiti', 36, 20, { v: 'paste' });
+  b.graffiti(36, 20, true);
   b.put('powerpole', 8, 16); b.put('powerpole', 36, 16);
 
   // The bluestone lane behind, with back fences beyond

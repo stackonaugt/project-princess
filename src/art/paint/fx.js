@@ -63,7 +63,22 @@ export const VEHICLES = {
   'veh-truck-h': [80, 32, p => truckSide(p, '#c8443a')],
   'veh-car-v-yellow': [24, 44, p => carTop(p, '#e8c030')],
   'veh-car-v-silver': [24, 44, p => carTop(p, '#b8bcc4')],
-  'veh-bike-v': [8, 14, p => { p.r('#1e1e1e', 3, 0, 2, 4); p.r('#1e1e1e', 3, 10, 2, 4); p.r('#c8443a', 3, 4, 2, 6); p.r('#f2c79a', 2, 5, 4, 3); p.r('#2a5a8a', 2, 4, 4, 2); }],
+  // A cyclist from above, riding down the screen (flipped to ride up): red
+  // jersey, white helmet, arms out to the bars, knees either side of the frame.
+  'veh-bike-v': [16, 28, p => {
+    p.r('#1e1e1e', 7, 0, 2, 9); p.r('#4a4a4a', 7, 1, 1, 7);            // back wheel
+    p.r('#1e1e1e', 7, 19, 2, 9); p.r('#4a4a4a', 7, 20, 1, 7);          // front wheel
+    p.r('#8a8e98', 7, 8, 2, 12);                                       // frame
+    p.r('#1e1e24', 5, 4, 6, 4);                                        // knicks on the saddle
+    p.r('#f2c79a', 3, 6, 2, 5); p.r('#f2c79a', 11, 6, 2, 5);           // legs out to the pedals
+    p.r('#1e1e24', 3, 10, 2, 2); p.r('#1e1e24', 11, 10, 2, 2);         // shoes
+    p.r('#1e1e1e', 1, 18, 14, 2); p.r('#c8ccd4', 2, 18, 12, 1);        // handlebars
+    p.r('#c8302a', 4, 7, 8, 8); p.r('#e85040', 4, 7, 8, 2); p.r('#901e1a', 11, 8, 1, 7); p.r('#f4f4f0', 7, 8, 2, 6);   // jersey with a stripe
+    p.r('#c8302a', 2, 12, 2, 4); p.r('#c8302a', 12, 12, 2, 4);         // sleeves
+    p.r('#f2c79a', 2, 15, 2, 3); p.r('#f2c79a', 12, 15, 2, 3);         // arms to the bars
+    p.r('#1e1e24', 1, 17, 3, 2); p.r('#1e1e24', 12, 17, 3, 2);         // gloves
+    p.r('#1e1e24', 5, 13, 6, 6); p.r('#f4f4f0', 5, 13, 6, 5); p.r('#c8ccd4', 6, 14, 1, 3); p.r('#c8ccd4', 9, 14, 1, 3); p.r('#3a3a44', 6, 17, 4, 1);   // helmet with vents
+  }],
 };
 
 function metroTrain(p, vertical) {

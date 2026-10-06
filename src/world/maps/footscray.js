@@ -31,7 +31,7 @@ export function buildFootscray() {
   b.fill(0, 18, 20, 7, 'P');
   [[1, 19, 'red'], [5, 21, 'white'], [9, 19, 'blue'], [14, 21, 'silver']].forEach(([x, y, v]) => b.put('car', x, y, { v }));
   b.fill(20, 13, 2, 12, 'b');
-  b.put('graffiti', 22, 13, { v: 'paste' });
+  b.graffiti(22, 13, true);
   b.fill(22, 15, 26, 10, '.');
   b.wildGrass(29, 20, 4, 2);
   b.put('tall', 24, 16, { v: 'biggum' }); b.put('tall', 38, 17, { v: 'biggum' }); b.put('tall', 45, 22, { v: 'biggum' });
