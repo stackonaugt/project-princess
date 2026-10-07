@@ -1,6 +1,6 @@
 // Characters that walk around: the player, pets and townsfolk.
 import { TILE as T, WALK_SPEED, RUN_SPEED, PET_SPEED } from '../config.js';
-import { custom, fitScale, frameCount, playerTexture } from '../art/textures.js';
+import { custom, fitScale, frameCount, playerTexture, objectTexture } from '../art/textures.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from '../systems/state.js';
 import { petTex } from '../systems/forms.js';
@@ -351,7 +351,16 @@ export class Npc extends Actor {
     this.idle = !this.path && !spot.counter && !spot.still && !scene.region?.indoor ? 2 + Math.random() * 6 : null;
     this.goal = null;
     this.setInteractive({ useHandCursor: true });
+    // Meghan pushes Whitlam about in a pram, out in front of her.
+    if (info?.pram) this.pram = scene.add.image(pos.x, pos.y, objectTexture(scene, { kind: 'pram', v: 'cat' })).setOrigin(0.5, 1);
   }
+  syncExtras() {
+    super.syncExtras();
+    if (!this.pram) return;
+    const [dx, dy] = { left: [-12, 0], right: [12, 0], up: [0, -6], down: [0, 8] }[this.dir] || [0, 8];
+    this.pram.setPosition(this.x + dx, this.y + dy).setDepth(this.y + dy).setFlipX(this.dir === 'left').setVisible(this.visible).setAlpha(this.alpha);
+  }
+  destroy(fromScene) { this.pram?.destroy(); super.destroy(fromScene); }
   setDir(dir) {
     this.dir = dir;
     if (this.customArt) { this.setFlipX(dir === 'left'); return; }

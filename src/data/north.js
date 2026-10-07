@@ -79,6 +79,11 @@ export const NORTH_NPCS = {
     name: 'Betty', gift: ['lasagne', 'roast', 'bananabread', 'shepherds', 'lamington', 'crumble', 'quiche', 'scones'],
     look: { hair: '#141010', hairStyle: 'long', skin: '#8a5a3e', shirt: '#1e1e22', pants: '#1e1e22', shoes: '#2a2a2a', lips: '#7a3a3a' },
   },
+  // Meghan Hopper: Bell St regular, pushes her cat in a pram, wins every bake-off.
+  meghan: {
+    name: 'Meghan Hopper', pram: true,
+    look: { hair: '#7a4a2a', hairStyle: 'long', skin: '#f2c8a8', shirt: '#c8302a', blazer: '#2a2a30', pants: '#2a2a30', shoes: '#1e1e22', lips: '#b83a4a' },
+  },
   alison: {
     name: 'Alison', look: { hair: '#6a4a2a', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#d8d8d4', pants: '#1e1e24', shoes: '#f4f4f0' },
   },
@@ -322,6 +327,27 @@ export const NORTH_PEOPLE = {
     },
     helpsInBattle: 'Betty marches over with a plate of food. Your pet eats and is instantly, completely restored.',
   },
+  meghan: {
+    role: 'Walks Bell St with her cat Whitlam in a pram. Has run for preselection more times than anyone can count. Wins every bake-off',
+    lines: [
+      ['Hi! Meghan Hopper. You might know me from the ballot paper. Every ballot paper. Since 2010.'],
+      ['This is Whitlam. He prefers the pram. Walking is for cats without ambition.'],
+      ['Door knocking is just meeting your neighbours with a clipboard. I love it. My knees do not.'],
+      ['The bake-off? Oh, I just throw something together. It\'s nothing. It\'s a nine layer torte, but it\'s nothing.'],
+    ],
+    heartScenes: {
+      3: ['Meghan: "Between us, I don\'t even like winning the bake-off. I like Betty\'s face when I win the bake-off."'],
+      6: ['Meghan: "If I ever get preselected, I\'m putting Whitlam on the how-to-vote card. He polls very well with the over sixties."'],
+    },
+    helpsInBattle: 'Meghan wheels the pram straight at the foe. Whitlam hisses from under the blanket.',
+    battle: {
+      challenge: ['Oh, a challenge? I never back down from a contest. Ask anyone. Ask the electoral commission.', 'Whitlam! Out of the pram! Well, half out.'],
+      ask: 'Battle Meghan and Whitlam?', yes: 'You\'re on', no: 'Maybe after the election',
+      win: ['Well! A loss is just a win that hasn\'t been preselected yet.', 'Whitlam is fine. He\'s having a lie down. He was always having a lie down.'],
+      lose: ['Another win for the Hopper campaign! I\'ll put it in the newsletter.'],
+      again: ['A rematch? I love a second round. And a third. And a recount.'],
+    },
+  },
   alison: {
     role: 'Lives on Murray Rd, Preston. Standing out the front, being an idiot',
     lines: [
@@ -372,6 +398,7 @@ export const NORTH_FRIENDS = {
   inspector: { loves: ['modeltrain', 'icedcoffee'], likes: ['snag', 'croissant'], dislikes: ['goon', 'oldboot'] },
   dimi: { loves: ['croissant', 'baklava'], likes: ['icedcoffee', 'pide', 'drpepper'], dislikes: ['moscato'] },
   betty: { loves: ['flowers', 'olivejar', 'baklava'], likes: ['tomato', 'chilli', 'icedcoffee', 'lemon'], dislikes: ['twinkie'], rewards: { 7: { item: 'roast', n: 3 } }, assist: { heal: 0.5 } },
+  meghan: { loves: ['flowers', 'lemon', 'puzzlebook'], likes: ['icedcoffee', 'timtams', 'chicken'], dislikes: ['vb'], assist: { foeDef: 1 } },
   alison: { loves: ['cheese', 'reeses'], likes: ['icedcoffee', 'sambusa', 'tomato'], dislikes: ['basil', 'lemon'], assist: { foeAtk: 1, foeDef: 1 } },
 };
 
@@ -420,6 +447,11 @@ export const NORTH_MOVES = {
   wingbeat:     { name: 'Wing Beat', type: 'park', power: 55, anim: 'gust', text: '{u} beats its huge black wings at {t}.' },
   luxury:       { name: 'Luxury Living', type: 'psychic', power: 45, effect: { foeDef: 1 }, anim: 'beam', text: '{u} promises "luxury living from $899k". {t} suddenly feels very poor.' },
   wonkywheel:   { name: 'Wonky Wheel', type: 'steel', power: 0, effect: { evade: true }, anim: 'fade', text: '{u}\'s wonky wheel sends it veering off sideways. Nobody can predict it.' },
+  // Meghan's cat Whitlam, battling from his pram
+  doorknock:    { name: 'Door Knock', type: 'old', power: 55, anim: 'lunge', text: '{u} knocks on {t}\'s door three times and asks if it has five minutes.' },
+  preselect:    { name: 'Preselection', type: 'psychic', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} is preselected! For now. It feels very confident.' },
+  pramram:      { name: 'Pram Ram', type: 'steel', power: 60, anim: 'lunge', text: '{u}\'s pram rolls straight into {t}. Brakes are for other cats.' },
+  cathiss:      { name: 'Pram Hiss', type: 'street', power: 45, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} hisses from under the blanket. {t} loses its nerve.' },
   // Alison's team
   sundried:     { name: 'Sun-Dried Tomato', type: 'fire', power: 50, anim: 'flame', text: '{u} flings a hot sun-dried tomato at {t}. It sticks.' },
   autismattack: { name: 'Autism Attack', type: 'psychic', power: 60, anim: 'beam', text: '{u} info-dumps about its favourite topic for forty minutes straight. {t} is overwhelmed.' },
@@ -461,6 +493,10 @@ export const NORTH_ENEMIES = {
     name: 'Runaway Trolley', type: 'steel', stats: { hp: 58, attack: 64, defence: 62, speed: 50, special: 30 },
     moves: ['rolldown', 'wonkywheel', 'beep'], faces: 'front', drop: ['tennis', 0.2],
   },
+  whitlam: {
+    name: 'Whitlam (in his pram)', type: ['street', 'steel'], stats: { hp: 66, attack: 62, defence: 64, speed: 48, special: 60 },
+    moves: ['doorknock', 'pramram', 'cathiss', 'preselect'], faces: 'front',
+  },
   toastie: {
     name: 'The Same Toastie', type: 'fire', stats: { hp: 55, attack: 60, defence: 50, speed: 55, special: 66 },
     moves: ['sundried', 'autismattack', 'cheesymelt'], faces: 'front',
@@ -483,6 +519,7 @@ export const NORTH_FOE_TEXT = {
   swan: { appear: 'A black swan rises up out of the reeds, hissing!', leave: 'glides back across the lake, still muttering.' },
   render: { appear: 'An artist\'s impression of "Preston\'s newest address" blows in on the wind!', leave: 'is rolled up and taken back to the planning office.' },
   trolley: { appear: 'A shopping trolley rolls out of the car park on its own!', leave: 'wobbles off towards the Merri Creek. They always end up in the creek.' },
+  whitlam: { appear: 'A grey cat peers out of a pram, wearing a tiny red rosette!', leave: 'curls up under the pram blanket. It\'s time for his nap. It was always time for his nap.' },
   toastie: { appear: 'A toasted sandwich. The same one as always.', leave: 'goes cold. Alison will make another one tomorrow. The same one.' },
   boobpillows: { appear: 'Two very thin pillows flop onto the ground.', leave: 'slide gently under a couch.' },
   slugalison: { appear: 'Alison has become a slug. A big one.', leave: 'turns back into Alison, a bit slimy and very pleased with herself.' },
@@ -494,5 +531,6 @@ export const NORTH_TRAINERS = {
   kostas: { name: 'Kostas', team: [['duck', 13], ['swan', 14]], reward: { sardine: 2 }, money: 45 },
   greco: { name: 'Greco', team: [['cravat', 15], ['beret', 16]], reward: { baklava: 1 }, money: 30, sendOut: 'Greco unknots {f} from his neck.' },
   inspector: { name: 'Myki Inspector', intro: 'He steps out from behind a pillar with a hand-held device.', team: [['myki', 16], ['reader', 17]], money: 70 },
+  meghan: { name: 'Meghan Hopper', team: [['whitlam', 15]], sendOut: 'Meghan pulls back the pram blanket: {f}!', reward: { timtams: 1 }, money: 45 },
   alison: { name: 'Alison', team: [['toastie', 12], ['boobpillows', 11], ['slugalison', 14]], sendOut: 'Alison whips out {f}.', reward: { cheese: 1 }, money: 50 },
 };

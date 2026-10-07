@@ -71,5 +71,7 @@ export function buildCoburg() {
     .entry('north', 25, 1, 'down').entry('market', 43, 1, 'down');
   // Lived-in touches: pot plants and bikes outside shops (walk-through)
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
+  // Meghan Hopper walks Whitlam up and down Bell St in his pram.
+  b.npc('meghan', 33, 14, { face: 'right', path: [[33, 14], [46, 14], [46, 14], [33, 14]], speed: 26 });
   return b.finish();
 }

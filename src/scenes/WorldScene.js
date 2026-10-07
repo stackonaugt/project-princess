@@ -912,6 +912,8 @@ export class WorldScene extends Phaser.Scene {
     // Talking starts the chat straight away; then a menu of anything else
     // (a gift, the shop, a rematch...), if there is anything else.
     await this.chatNpc(npc, opts);
+    // Betty asks for help beating Meghan Hopper at the bake-off (a side mission on the To Do list).
+    if (npc.id === 'betty' && !state.data.side.bake) { await ui.say(BAKE_OFF.rivalry, opts); state.data.side.bake = 1; ui.toast('Added to your To Do list'); this.save(); }
     for (;;) {
       const choices = [];
       const giftable = state.bagItems().filter(id => !ITEMS[id].story && !ITEMS[id].deco);
@@ -1039,8 +1041,11 @@ export class WorldScene extends Phaser.Scene {
     const pickId = await ui.say({ text: 'What are you entering?', choices: [...baked.map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32) })), { label: 'Not today', value: null }] }, { ...opts, cancelValue: null });
     if (!pickId) return;
     state.removeItem(pickId); state.data.flags.bakeoffWeek = week;
-    const r = rng(state.data.day * 17 + 3), rivals = [...BAKE_OFF.rivals].sort(() => r() - 0.5).slice(0, 3).map(x => ({ ...x, score: 5 + Math.floor(r() * 5) }));
-    const mine = COOK_RECIPES[pickId].score + Math.floor(Math.random() * 3) + (ITEMS[pickId].homegrown ? 1 : 0);
+    const r = rng(state.data.day * 17 + 3), M = BAKE_OFF.meghan;
+    const rivals = [{ name: M.name, dish: M.dishes[Math.floor(r() * M.dishes.length)], score: M.score + (r() < 0.5 ? 1 : 0), meghan: true },
+      ...[...BAKE_OFF.rivals].sort(() => r() - 0.5).slice(0, 2).map(x => ({ ...x, score: 5 + Math.floor(r() * 5) }))];
+    const secret = typeof COOK_RECIPES[pickId].learn === 'object' && !COOK_RECIPES[pickId].learn.book;
+    const mine = COOK_RECIPES[pickId].score + Math.floor(Math.random() * 3) + (ITEMS[pickId].homegrown ? 1 : 0) + (secret ? BAKE_OFF.secretBonus : 0);
     await ui.say(rivals.map(x => `${x.name} brings ${x.dish}. Betty takes a bite... ${x.score} out of 12.`), opts);
     await ui.say([`Your ${ITEMS[pickId].name.toLowerCase()}. Betty chews. Betty closes her eyes. ${mine} out of 12.`], opts);
     const place = rivals.filter(x => x.score > mine).length, prize = BAKE_OFF.prize[place] || 0;
@@ -1048,6 +1053,9 @@ export class WorldScene extends Phaser.Scene {
     if (place === 0) { state.addItem('blueribbon'); sfx.found(); this.heartsFx(npc, 8); }
     else if (prize) sfx.pickup(); else sfx.sad();
     await ui.say([BAKE_OFF.results[place] + (prize ? ` You win $${prize}.` : ' Better luck next Saturday.'), ...(place === 0 ? [BAKE_OFF.win] : [])], opts);
+    // The rivalry: beat Meghan Hopper (once) for Betty.
+    if (place === 0 && state.data.side.bake < 2) { state.data.side.bake = 2; await ui.say(BAKE_OFF.beatMeghan, opts); state.addFriendPoints('betty', 50); ui.toast('Side mission done: Meghan Hopper beaten!'); }
+    else if (place > 0 && rivals.some(x => x.meghan && x.score > mine)) await ui.say([BAKE_OFF.lostToMeghan], opts);
     this.save();
   }
 
