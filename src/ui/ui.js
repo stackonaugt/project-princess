@@ -198,7 +198,7 @@ export const ui = {
 
   // Story screens (ui/story.js). Each resolves when it's closed.
   card(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('card'); }); },
-  karaoke() { return new Promise(resolve => { this._storyOpts = { done: resolve }; this.openModal('karaoke'); }); },
+  karaoke(opts = {}) { return new Promise(resolve => { this._storyOpts = { ...opts, done: resolve }; this.openModal('karaoke'); }); },
   bowls() { return new Promise(resolve => { this._storyOpts = { done: resolve }; this.openModal('bowls'); }); },
   paper(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('paper'); }); },
   news(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('news'); }); },

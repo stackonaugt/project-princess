@@ -13,7 +13,7 @@ import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SI
 const COUNCILLORS = COUNCIL_ALL;
 import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF } from '../data/cooking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, PADDY_SPEECH, PADDY_PARTY, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
 // What blocks a gated exit until you beat its keeper (`gate` on an exit).
@@ -1896,7 +1896,14 @@ export class WorldScene extends Phaser.Scene {
     const free = [];
     for (let y = 6; y <= 13; y++) for (let x = 3; x <= 18; x++) if (!this.solidAt((x + 0.5) * T, (y + 0.75) * T)) free.push([x, y]);
     free.sort((a, b) => hash(a[0], a[1], d.day) - hash(b[0], b[1], d.day));
-    guests.forEach((id, i) => {
+    // Paddy is at the party too (he gives a speech at the end).
+    const people = guests.includes('paddy') ? guests : [...guests, 'paddy'];
+    if (!this.npcs.some(n => n.id === 'paddy' && !n.gone)) people.forEach((id, i) => {
+      if (id !== 'paddy') return;
+      const [x, y] = free[(i + 3) % free.length], npc = this.spawnNpc({ id, x, y, face: 'down' });
+      npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400 }); this.npcs.push(npc);
+    });
+    guests.filter(id => id !== 'paddy').forEach((id, i) => {
       const [x, y] = free[i % free.length], npc = this.spawnNpc({ id, x, y, face: 'down' });
       npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400, delay: i * 120 });
       this.npcs.push(npc);
@@ -1906,9 +1913,9 @@ export class WorldScene extends Phaser.Scene {
     ui.banner('The September Babies Bash', `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'}`);
     await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.',
       guests.length ? 'Helen: "Go and say hello to everyone! Party games in a bit."' : 'Helen: "Right! Party games!"']);
-    // Mingle: talk to the guests to hear their stories. Every three stories
+    // Mingle: talk to the guests to hear their stories. Every two stories
     // (or once you have heard everyone) a party game starts.
-    this.party = { guests, heard: [], score: 0, games: 0 };
+    this.party = { guests: guests.filter(id => id !== 'paddy'), heard: [], score: 0, games: 0 };
     if (guests.length) ui.toast('Mingle! Talk to your guests.');
     else this.partyGames();
   }
@@ -1916,38 +1923,54 @@ export class WorldScene extends Phaser.Scene {
   async partyChat(npc) {
     const p = this.party, id = npc.id, opts = { name: NPCS[id]?.name, portrait: npcIcon(id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
+    if (id === 'paddy') return ui.say([pick(PADDY_PARTY)], opts);
     if (p.heard.includes(id)) return ui.say([pick(PARTY_MINGLE)(NPCS[id]?.name || 'A guest')], opts);
     p.heard.push(id);
     this.heartsFx(npc, 2);
     await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), opts);
     const left = p.guests.length - p.heard.length;
-    if (p.heard.length % 3 === 0 || !left) await this.partyGames();
-    else { const n = Math.min(left, 3 - p.heard.length % 3); ui.toast(`${n} more ${n === 1 ? 'chat' : 'chats'} till the next game.`); }
+    if (p.heard.length % 2 === 0 || !left) await this.partyGames();
+    else ui.toast('One more chat till the next game.');
   }
   // Run the next party game, or every game left once everyone has been heard.
   async partyGames() {
     const p = this.party;
     if (!p || this.partyGaming) return;
     this.partyGaming = true;
+    // Behind the bar, the dance floor, karaoke, then trivia (which ends on the score).
+    const GAMES = [1, 2, 'karaoke', 3];
     const all = p.heard.length >= p.guests.length;
     do {
-      p.games++;
-      p.score = await ui.party(p.guests, { only: p.games, score: p.score });
-    } while (all && p.games < 3);
+      const g = GAMES[p.games++];
+      if (g === 'karaoke') {
+        await ui.say(['Paddy wheels out the karaoke machine. "Who\'s first? Not me. Definitely me."']);
+        const r = await ui.karaoke({ intro: 'Paddy hands you the mic. "Make your mother proud. She\'s right there."' });
+        p.score += r?.stars || 0;
+      } else p.score = await ui.party(p.guests, { only: g, score: p.score });
+    } while (all && p.games < GAMES.length);
     this.partyGaming = false;
-    if (p.games >= 3) return this.partyEnd();
+    if (p.games >= GAMES.length) return this.partyEnd();
     ui.toast('Back to mingling!');
   }
   async partyEnd() {
     const s = story(), d = state.data, { guests, score } = this.party;
     this.party = null; delete d.flags.partyNow;
     state.data.minutes = Math.max(state.data.minutes, 23 * 60);
+    // Paddy taps a glass.
+    const paddy = this.npcs.find(n => n.id === 'paddy' && !n.gone);
+    if (paddy) { paddy.faceTowards(this.player.x, this.player.y); this.cameras.main.pan(paddy.x, paddy.y - 16, 600); this.reactFx(paddy, 'jump'); }
+    await ui.say(PADDY_SPEECH, { name: 'Paddy', portrait: npcIcon('paddy') });
+    this.cameras.main.pan(this.player.x, this.player.y, 400);
     await ui.say(PARTY_END.slice(0, 3), { name: 'Helen' });
     this.tweens.add({ targets: this.player, angle: { from: -12, to: 12 }, duration: 350, yoyo: true, repeat: 3 });
     await new Promise(r => this.time.delayedCall(1500, r));
     this.player.angle = 90;
     await ui.say(PARTY_END.slice(3));
+    // Lights out: the party is over and everyone goes home.
+    this.cameras.main.fadeOut(900, 0, 0, 0);
+    await new Promise(r => this.cameras.main.once('camerafadeoutcomplete', r));
     this.player.angle = 0;
+    for (const n of [...this.npcs]) if (!n.gone && (guests.includes(n.id) || n.id === 'paddy')) this.removeNpc(n);
     // The drinks and decorations get used up.
     let need = CH4.drinks;
     for (const id of Object.keys(ITEMS).filter(k => ITEMS[k].drink)) while (need > 0 && state.count(id)) { state.removeItem(id); need--; }
@@ -1959,15 +1982,16 @@ export class WorldScene extends Phaser.Scene {
     s.done[4] = d.day;
     this.save();
     await ui.say(['A week later, Hobsons Bay votes.']);
-    this.cameras.main.fadeOut(500, 0, 0, 0);
-    await new Promise(r => this.cameras.main.once('camerafadeoutcomplete', r));
     await ui.news({ lines: NEWS_RESULT(votes, won, s.ch2.deposed), votes });
-    this.cameras.main.fadeIn(500, 0, 0, 0);
-    if (won) { sfx.found(); this.heartsFx(this.player, 10); }
+    if (won) sfx.found();
     await ui.card({ kicker: 'The end, for now', title: won ? 'Mayor Paddy!' : 'So close!', lines: THE_END, button: 'Keep playing' });
     s.chapter = 5;
     this.partying = false;
-    this.save();
+    // Helen wakes up in bed the next morning, the backyard empty.
+    const news = state.newDay();
+    state.save();
+    this.leaving = true;
+    this.scene.restart({ region: 'home', entry: this.bedEntry(), newDay: true, news: [...news, 'Helen wakes up with a party hat stuck to her face. Now anyone can be played: Settings > Character.'] });
   }
 
   syncRoutines() {

@@ -9,6 +9,7 @@ import { CHAPTERS, TRIVIA, GOALS } from '../data/story.js';
 import { ZONES, npcZone } from '../data/regions.js';
 import { objectives, partyReady, chapterNow } from '../systems/story.js';
 import { itemIcon, npcIcon } from './images.js';
+import { loadSongs, beats } from './karaoke.js';
 import { ITEMS } from '../data/items.js';
 import { NPCS } from '../data/npcs.js';
 import { FRIENDS } from '../data/friends.js';
@@ -100,10 +101,11 @@ export function openNews(panel, close, { lines, votes = null }) {
   return { action: finish };
 }
 
-// The party mini-games: the dance floor (rhythm), behind the bar, guest trivia.
-// Calls done(score) when finished (0 to 8). With `only` (1 rhythm, 2 bar,
-// 3 trivia) it runs just that game, starting from `score`, so the party can
-// break for mingling between games; after trivia it shows the final score.
+// The party mini-games: behind the bar, the dance floor (rhythm, to a song
+// from the karaoke book), guest trivia. Karaoke runs between them from the
+// scene (WorldScene.partyGames). Calls done(score) when finished. With `only`
+// (1 bar, 2 rhythm, 3 trivia) it runs just that game, starting from `score`,
+// so the party can break for mingling; after trivia it shows the final score.
 // Enter both clicks a focused button and sends the A action: run once only.
 const once = fn => { let used = false; return () => { if (!used) { used = true; fn(); } }; };
 
@@ -114,17 +116,33 @@ export function openParty(panel, close, { guests, done, only = null, score: scor
   panel.replaceChildren(head, area);
   const scoreLine = () => h('p', { class: 'small center meta' }, `Party score: ${score}`);
   const next = () => { cleanup(); cleanup = () => {}; action = null; if (only && stage) { if (stage !== 3) return close(); stage = 3; }
-    stage = only && !stage ? only : stage + 1; [rhythm, bar, trivia, finish][stage - 1](); };
+    stage = only && !stage ? only : stage + 1; [bar, rhythm, trivia, finish][stage - 1](); };
 
-  // 1. Rhythm: notes fall down four lanes; hit each one as it crosses the line.
+  // 2. Rhythm: pick a song from the karaoke book; arrows fall down four lanes
+  // on its words, and you hit each one as it crosses the line.
   const rhythm = () => {
+    area.replaceChildren(h('p', { class: 'center' }, 'Finding the playlist...'));
+    loadSongs().then(list => {
+      const btns = list.map(song => h('button', { class: 'wood-btn party-answer kara-song', onclick: once(() => { sfx.select(); dance(song); }) }, h('b', {}, song.title), h('small', {}, ` ${song.artist}`)));
+      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, 'The dance floor'), h('p', {}, 'Helen: "DJ twins! Pick a song!"')), ...btns.map(b => h('div', { class: 'center' }, b)), scoreLine());
+      btns[0]?.focus();
+    }).catch(() => dance(null));
+  };
+  const dance = song => {
     const ARROWS = ['←', '↓', '↑', '→'], KEYS = { ArrowLeft: 0, ArrowDown: 1, ArrowUp: 2, ArrowRight: 3, a: 0, s: 1, w: 2, d: 3 };
     const SPEED = 0.42, LINE = 0.85, WINDOW = 0.07;            // screen heights per second, where the line is, how close counts
-    const notes = []; let t = 1.2;
-    for (let i = 0; i < 18; i++) { notes.push({ lane: Math.floor(Math.random() * 4), at: t, el: null, done: false }); t += [0.45, 0.6, 0.9][i % 3]; }
+    const notes = [];
+    // The song's words (every other one), for about 30 seconds from its first line
+    const cues = song ? beats(song.lines, { every: 2 }).map(b => b.t) : [];
+    const from = cues.length ? Math.max(0, cues[0] - 1.6) : 0;
+    let last = -1;
+    for (const c of cues) if (c - from < 30 && c - last > 0.3) { notes.push({ lane: Math.floor(Math.random() * 4), at: c - from, el: null, done: false }); last = c; }
+    if (!notes.length) { let t = 1.2; for (let i = 0; i < 18; i++) { notes.push({ lane: Math.floor(Math.random() * 4), at: t, el: null, done: false }); t += [0.45, 0.6, 0.9][i % 3]; } }
+    let audio = null;
+    if (song) { audio = new Audio(`assets/karaoke/${song.id}.mp3`); audio.volume = state.data.settings.sound ? 0.7 : 0; audio.currentTime = from; audio.play().catch(() => {}); }
     let hits = 0, raf = 0, t0 = 0, over = false;
     const field = h('div', { class: 'rhythm' }, ...ARROWS.map(() => h('div', { class: 'rhythm-lane' })), h('div', { class: 'rhythm-line' }));
-    const msg = h('p', { class: 'center' }, 'Hot Potato (Laverton club mix). Hit each arrow as it crosses the line!');
+    const msg = h('p', { class: 'center' }, `${song ? song.title : 'Hot Potato (Laverton club mix)'}. Hit each arrow as it crosses the line!`);
     const lanes = [...field.querySelectorAll('.rhythm-lane')];
     notes.forEach(n => { n.el = h('div', { class: 'rhythm-note' }, ARROWS[n.lane]); lanes[n.lane].append(n.el); });
     const y = (n, now) => LINE - (n.at - now) * SPEED;
@@ -151,29 +169,32 @@ export function openParty(panel, close, { guests, done, only = null, score: scor
     };
     const end = () => {
       over = true;
-      const pts = hits >= 15 ? 3 : hits >= 11 ? 2 : hits >= 6 ? 1 : 0;
+      if (audio) { audio.pause(); audio.src = ''; audio = null; }
+      const f = hits / notes.length, pts = f >= 0.8 ? 3 : f >= 0.6 ? 2 : f >= 0.3 ? 1 : 0;
       score += pts; (pts >= 2 ? sfx.heart : sfx.bump)();
       msg.textContent = `${hits} of ${notes.length} notes! ${pts >= 3 ? 'The whole backyard is dancing. Nicholas does the worm.' : pts >= 2 ? 'Solid moves. Paddy dad-dances in approval.' : 'The twins love it anyway. They love everything.'}`;
       const go = h('button', { class: 'wood-btn' }, only ? 'Back to the party' : 'Next game');
       go.onclick = action = once(next);
       msg.append(h('div', { class: 'center' }, go)); go.focus();
     };
-    cleanup = () => { cancelAnimationFrame(raf); window.removeEventListener('keydown', onKey, true); };
-    area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, '1. Dance floor'), h('p', { class: 'small' }, 'Arrow keys (or tap the pads) as each arrow reaches the line.')), field, h('div', { class: 'dance-pads' }, ...pads), msg, scoreLine());
+    cleanup = () => { cancelAnimationFrame(raf); window.removeEventListener('keydown', onKey, true); if (audio) { audio.pause(); audio.src = ''; audio = null; } };
+    area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, 'The dance floor'), h('p', { class: 'small' }, 'Arrow keys (or tap the pads) as each arrow reaches the line.')), field, h('div', { class: 'dance-pads' }, ...pads), msg, scoreLine());
     t0 = performance.now(); tick();
+    // Keep the arrows in time with the music once it actually starts playing.
+    audio?.addEventListener('playing', () => { t0 = performance.now() - (audio.currentTime - from) * 1000; }, { once: true });
   };
 
-  // 2. Behind the bar: each guest orders a drink. Pick it, then slide it down
+  // 1. Behind the bar: each guest orders a drink. Pick it, then slide it down
   // the bar and stop it in front of them.
   const bar = () => {
     const names = guests.length ? guests.map(id => NPCS[id]?.name || id) : ['Nanna Trish', 'Pop Gordon', 'a neighbour'];
     const drinkIds = Object.keys(ITEMS).filter(id => ITEMS[id].drink);
-    const orders = [0, 1, 2].map(i => {
+    const orders = [0, 1, 2, 3, 4].map(i => {
       const who = guests.length ? guests[i % guests.length] : null;
       const fav = who && (FRIENDS[who]?.loves || []).find(x => ITEMS[x]?.drink);
       return { name: names[i % names.length], drink: fav || drinkIds[Math.floor(Math.random() * drinkIds.length)] };
     });
-    let i = 0, raf = 0;
+    let i = 0, raf = 0, goods = 0;
     const serve = () => {
       const o = orders[i];
       const opts = [o.drink, ...drinkIds.filter(x => x !== o.drink).sort(() => Math.random() - 0.5).slice(0, 3)].sort(() => Math.random() - 0.5);
@@ -197,16 +218,17 @@ export function openParty(panel, close, { guests, done, only = null, score: scor
         glass.style.left = `calc(${pos * 100}% - 12px)`;
         if (vel > 0.0008 && pos < 1.02) { raf = requestAnimationFrame(move); return; }
         const good = chosen === o.drink && Math.abs(pos - (z0 + 0.06)) < 0.08;
-        if (good) { score++; sfx.heart(); } else sfx.bump();
+        if (good) { goods++; sfx.heart(); } else sfx.bump();
+        if (i === orders.length - 1) score += goods >= 5 ? 3 : goods >= 3 ? 2 : goods >= 1 ? 1 : 0;
         msg.textContent = chosen !== o.drink ? `${o.name}: "That's... not what I asked for. I'll drink it though."` : pos > 1 ? 'It flies off the end of the bar. Pina catches it. Somehow.' : good ? `Perfect! ${o.name} catches it without looking. Legend.` : `${o.name} has to lean right over to reach it. Close!`;
-        const go = h('button', { class: 'wood-btn' }, i < 2 ? 'Next order' : only ? 'Back to the party' : 'Next game');
-        go.onclick = once(() => { i++; if (i < 3) serve(); else next(); });
+        const go = h('button', { class: 'wood-btn' }, i < orders.length - 1 ? 'Next order' : only ? 'Back to the party' : 'Next game');
+        go.onclick = once(() => { i++; if (i < orders.length) serve(); else next(); });
         action = () => go.click();
         msg.append(h('div', { class: 'center' }, go)); go.focus();
       };
       slide.onclick = () => { if (sliding || !chosen) return; sliding = true; cancelAnimationFrame(raf); vel = 0.015 + power * 0.05; slide.disabled = true; pickBtns.forEach(b => { b.disabled = true; }); action = null; sfx.blip(); move(); };
       action = null;
-      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `2. Behind the bar (${i + 1}/3)`), h('p', { class: 'small' }, 'Pick the drink they asked for, then hit Slide! when the power is right.')), msg, h('div', { class: 'bar-picks' }, ...pickBtns), counter, meter, h('div', { class: 'center' }, slide), scoreLine());
+      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `Behind the bar (${i + 1}/5)`), h('p', { class: 'small' }, 'Pick the drink they asked for, then hit Slide! when the power is right.')), msg, h('div', { class: 'bar-picks' }, ...pickBtns), counter, meter, h('div', { class: 'center' }, slide), scoreLine());
       charge();
     };
     cleanup = () => cancelAnimationFrame(raf);
@@ -229,7 +251,7 @@ export function openParty(panel, close, { guests, done, only = null, score: scor
         after.append(h('div', { class: 'center' }, go)); go.focus();
       } }, a));
       action = null;
-      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `3. Guest trivia (${i + 1}/2)`), h('p', {}, q.q)), ...opts.map(b => h('div', { class: 'center' }, b)), after, scoreLine());
+      area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `Guest trivia (${i + 1}/2)`), h('p', {}, q.q)), ...opts.map(b => h('div', { class: 'center' }, b)), after, scoreLine());
       opts[0].focus();
     };
     ask();
@@ -238,16 +260,16 @@ export function openParty(panel, close, { guests, done, only = null, score: scor
   const finish = () => {
     const go = h('button', { class: 'wood-btn' }, 'See how it went');
     go.onclick = close; action = close;
-    area.replaceChildren(h('div', { class: 'note center' }, h('h4', {}, 'What a night!'), h('p', {}, `Party score: ${score} out of 8.`), h('p', { class: 'small' }, score >= 6 ? 'People will be talking about this one for years.' : score >= 3 ? 'A solid party. Nobody fell in the pool. Well, one person.' : 'Chaotic, but everyone had fun. Mostly the twins.')), h('div', { class: 'center' }, go));
+    area.replaceChildren(h('div', { class: 'note center' }, h('h4', {}, 'What a night!'), h('p', {}, `Party score: ${score} out of 11.`), h('p', { class: 'small' }, score >= 8 ? 'People will be talking about this one for years.' : score >= 4 ? 'A solid party. Nobody fell in the pool. Well, one person.' : 'Chaotic, but everyone had fun. Mostly the twins.')), h('div', { class: 'center' }, go));
     go.focus();
   };
 
   const start = h('button', { class: 'wood-btn' }, 'Let\'s go!');
   start.onclick = action = once(next);
   if (only) {
-    const GAMES = ['', 'The dance floor', 'Behind the bar', 'Guest trivia'];
+    const GAMES = ['', 'Behind the bar', 'The dance floor', 'Guest trivia'];
     area.replaceChildren(h('div', { class: 'note center' }, h('h4', {}, `Game time: ${GAMES[only]}`),
-      h('p', { class: 'small' }, only === 1 ? 'Helen turns the music up. Everyone onto the lawn!' : only === 2 ? 'The esky is open and the orders are coming in.' : 'Helen taps a glass. "Who here knows their neighbours?"'), scoreLine()),
+      h('p', { class: 'small' }, only === 2 ? 'Helen turns the music up. Everyone onto the lawn!' : only === 1 ? 'The esky is open and the orders are coming in.' : 'Helen taps a glass. "Who here knows their neighbours?"'), scoreLine()),
       h('div', { class: 'center' }, start));
     start.focus();
     return { action: () => action?.(), cleanup: () => { cleanup(); done(score); } };

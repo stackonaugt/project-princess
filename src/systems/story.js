@@ -85,6 +85,6 @@ export const chapterFinished = n => inChapter(n) && (n === 1 || n === 3) && obje
 // party games went, plus being the sitting mayor. 50 or more wins.
 export function electionVotes(score, guests) {
   const s = story();
-  const v = 24 + Math.min(30, guests * 3) + score * 2.5 + (s.ch2.deposed ? 0 : 10) + Math.min(6, state.data.council.passed.length * 2);
+  const v = 24 + Math.min(30, guests * 3) + score * 1.8 + (s.ch2.deposed ? 0 : 10) + Math.min(6, state.data.council.passed.length * 2);
   return Math.max(18, Math.min(78, Math.round(v)));
 }

@@ -234,6 +234,20 @@ export const PARTY_MINGLE = [
   name => `${name} is teaching the twins a dance. It is mostly stomping.`,
   name => `${name} raises a sausage in a toast to you.`,
 ];
+// Paddy at the party: a line if you chat, then his speech at the end.
+export const PADDY_PARTY = [
+  'Paddy: "Have you had a snag? Have a snag. I\'m saving my speech for later. It\'s a good one. I wrote it on a napkin."',
+  'Paddy: "The twins have had four fairy breads each. This is fine. This is democracy."',
+  'Paddy: "Don\'t tell Lesley, but this is the best turnout of any event in Hobsons Bay this year. Including council."',
+];
+export const PADDY_SPEECH = [
+  'Paddy taps his glass with a fork. Clink clink clink. The music stops. Somebody shushes the twins. The twins shush back.',
+  '"Thanks, everyone. Seriously. Thank you all for coming. Look at this backyard. Look at all of you."',
+  '"First up: Hadrian and Aleksy. Happy birthday, boys. You are the loudest, funniest, stickiest little blokes I know, and I love you to bits."',
+  '"And Helen. You held this whole family together while I was off fighting about bike lanes. You ran a pet school. You threw this party. You are amazing, and I don\'t say it enough."',
+  '"On council, all I\'m trying to do is make Hobsons Bay a place where kids like ours can grow up: more trees, safe streets, a lemon tree or two, and a council that listens."',
+  '"So whatever happens next week, thank you for being here. Now eat something. There are forty sausages left and I am not taking them home."',
+];
 export const PARTY_END = [
   'It gets late. The fairy lights glow, the twins are asleep in a pile of party hats, and the music gets softer.',
   'Helen: "Has everyone had a drink? Have I had a drink? I think I\'ve had... a few drinks."',

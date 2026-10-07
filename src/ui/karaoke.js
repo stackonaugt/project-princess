@@ -8,7 +8,7 @@ import { sfx } from '../systems/sfx.js';
 import { heroIcon } from './images.js';
 
 let songs = null;
-const loadSongs = () => songs ? Promise.resolve(songs) : fetch('assets/karaoke/songs.json').then(r => r.json()).then(s => (songs = s));
+export const loadSongs = () => songs ? Promise.resolve(songs) : fetch('assets/karaoke/songs.json').then(r => r.json()).then(s => (songs = s));
 // Difficulty: which beats you hit, and how close (seconds either side) counts
 // as perfect or good. Words are timed evenly through each line.
 const LEVELS = [
@@ -17,7 +17,7 @@ const LEVELS = [
   { id: 'hard', name: 'Hard', desc: 'Every single word. Good luck.', every: 1, perfect: 0.12, good: 0.28 },
 ];
 const SING_RATE = 0.42;   // seconds a word takes, at most (fast lines squeeze in)
-function beats(lines, lv) {
+export function beats(lines, lv) {
   const out = [];
   lines.forEach(([a, text], li) => {
     const words = text.split(/\s+/).filter(Boolean), next = lines[li + 1]?.[0] ?? a + words.length * SING_RATE + 1;
@@ -29,7 +29,7 @@ function beats(lines, lv) {
 // How fast a song is: words per second over the whole song (for the song list)
 const pace = song => { const w = song.lines.reduce((n, [, t]) => n + t.split(/\s+/).length, 0), d = song.lines.at(-1)[0] - song.lines[0][0] || 1; return w / d; };
 
-export function openKaraoke(panel, close, { done }) {
+export function openKaraoke(panel, close, { done, intro }) {
   let action = null, audio = null, raf = 0, result = null;
   const stop = () => { cancelAnimationFrame(raf); if (audio) { audio.pause(); audio.src = ''; audio = null; } };
   const head = title => h('div', { class: 'm-head' }, h('h2', {}, title), h('button', { class: 'wood-btn small', onclick: close }, 'Close'));
@@ -39,7 +39,7 @@ export function openKaraoke(panel, close, { done }) {
     loadSongs().then(list => {
       const btns = list.map(s => { const p = pace(s); return h('button', { class: 'wood-btn party-answer kara-song', onclick: () => { sfx.select(); level(s); } }, h('b', {}, s.title), h('small', {}, ` ${s.artist} · ${p > 2.2 ? 'fast' : p > 1.4 ? 'medium' : 'slow'}`)); });
       panel.replaceChildren(head('Karaoke'), h('div', { class: 'm-scroll' },
-        h('div', { class: 'note' }, h('p', {}, 'Tito Ramon hands you the mic. "Pick a song! Any song! Except mine."'), h('p', { class: 'small' }, 'Press Sing! (A or Space) on the beat. Pick how hard after the song. Fast songs are harder.')),
+        h('div', { class: 'note' }, h('p', {}, intro || 'Tito Ramon hands you the mic. "Pick a song! Any song! Except mine."'), h('p', { class: 'small' }, 'Press Sing! (A or Space) on the beat. Pick how hard after the song. Fast songs are harder.')),
         ...btns.map(b => h('div', { class: 'center' }, b))));
       btns[0]?.focus();
     }).catch(() => panel.replaceChildren(head('Karaoke'), h('div', { class: 'm-scroll' }, h('p', { class: 'center' }, 'The song book is missing. Check your internet and try again.'))));
