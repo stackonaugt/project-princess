@@ -52,9 +52,9 @@ export function objectives(n = chapterNow()) {
   if (n === 2) {
     const c = s.ch2;
     return [
-      { id: 'kitchen', destination: { region: 'bunnings' }, text: 'Build the kitchen (Olly, Bunnings Warehouse, Altona North)', done: state.hasUpgrade('kitchen') },
-      { id: 'fish-pie', destination: { region: 'home', kind: 'cook' }, text: 'Cook a very dodgy fish pie at the stove (any fish, a lemon, and laxatives from Preston Market or the Brunswick East milk bar)', done: !!c.pie || state.count('fishpie') > 0 || !!c.swapped },
-      { id: 'lunch-swap', destination: { region: 'civiccentre', kind: 'lunch' }, text: `Swap it for Cr Bentleigh's lunch in the civic centre foyer before the spill vote on ${weekday(c.deadline || 1)}, day ${c.deadline || '?'}`, done: !!c.swapped },
+      { id: 'kitchen', destination: { region: 'bunnings' }, text: 'Fish pie route: build the kitchen (Olly, Bunnings Warehouse, Altona North) — or choose the clean campaign with Paddy.', done: state.hasUpgrade('kitchen') || !!c.campaignWon },
+      { id: 'fish-pie', destination: { region: 'home', kind: 'cook' }, text: 'Fish pie route: cook a dodgy pie with fish, lemon and laxatives — or build support with Kirsty (4 hearts) and Dahlia (2 hearts).', done: !!c.pie || state.count('fishpie') > 0 || !!c.campaignWon || !!c.swapped },
+      { id: 'lunch-swap', destination: { region: 'civiccentre', kind: 'lunch' }, text: c.campaignWon ? 'Clean campaign won: Kirsty and Dahlia publicly back Paddy.' : `Swap the pie for Cr Bentleigh's lunch before the spill vote on ${weekday(c.deadline || 1)}, day ${c.deadline || '?'}`, done: !!c.swapped || !!c.campaignWon },
     ];
   }
   if (n === 3) return [

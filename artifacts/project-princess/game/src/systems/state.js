@@ -20,7 +20,7 @@ import { FRIEND_POINTS } from '../data/friends.js';
 import { CHAPTERS } from '../data/story.js';
 import { FURNITURE, DEFAULT_FURNITURE } from '../data/furniture.js';
 
-const VERSION = 9;
+const VERSION = 10;
 export const MAX_TEAM = 3;
 export const SLOT_COUNT = 3;
 const slotKey = n => `${SAVE_KEY}-slot${n}`;
@@ -43,6 +43,7 @@ function fresh() {
     friends: {},       // npc id -> { points, talkedDay, giftedDay, reactions, events: [hearts seen], met }
     seeds: {},         // crop id -> packets of seeds
     farm: {},          // plot id -> { crop, growth, watered (day), boost } (see data/crops.js)
+    soil: {},          // plot id -> { family, crop } from its last finished crop
     upgrades: {},      // upgrade id -> true (see data/upgrades.js)
     matchups: [],      // type matchups seen in battle, 'fire>water' (the Petdex shows them)
     flags: {},         // one-off story flags, e.g. garden (Chris gave you plots)
@@ -54,7 +55,7 @@ function fresh() {
     wallPaint: null,   // the colour of the walls at home (Lincraft paint, Summerhill)
     // Side missions and mini-games: pranks scoped out (Chapter 3), duck feeding,
     // bowls wins, the bake-off rivalry (0 untold, 1 Betty asked, 2 Meghan beaten).
-    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0 },
+    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, school: { lessonDay: {}, stamps: {} } },
     recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
@@ -98,13 +99,18 @@ function sanitise(raw) {
   for (const obj of [d.friends, d.npcDay, d.beaten]) for (const [from, to] of Object.entries(RENAMED)) if (obj[from] && !obj[to]) { obj[to] = obj[from]; delete obj[from]; }
   if (raw.seeds && typeof raw.seeds === 'object') for (const [k, n] of Object.entries(raw.seeds)) if (CROPS[k] && n > 0) d.seeds[k] = n | 0;
   if (raw.farm && typeof raw.farm === 'object') for (const [k, f] of Object.entries(raw.farm)) if (f && CROPS[f.crop]) d.farm[k] = f;
+  if (raw.soil && typeof raw.soil === 'object') for (const [k, s] of Object.entries(raw.soil)) if (s && typeof s.family === 'string' && typeof s.crop === 'string' && CROPS[s.crop]) d.soil[k] = { family: s.family, crop: s.crop };
   if (raw.upgrades && typeof raw.upgrades === 'object') for (const k of Object.keys(raw.upgrades)) if (UPGRADES[k]) d.upgrades[k] = true;
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, known: Array.isArray(raw.council.known) ? raw.council.known : [], metDay: raw.council.metDay };
   if (typeof raw.wallPaint === 'string') d.wallPaint = raw.wallPaint;
-  if (raw.side && typeof raw.side === 'object') Object.assign(d.side, raw.side, { scouted: Array.isArray(raw.side.scouted) ? raw.side.scouted : [] });
+  if (raw.side && typeof raw.side === 'object') {
+    Object.assign(d.side, raw.side, { scouted: Array.isArray(raw.side.scouted) ? raw.side.scouted : [] });
+    const school = raw.side.school || {};
+    d.side.school = { lessonDay: school.lessonDay && typeof school.lessonDay === 'object' ? school.lessonDay : {}, stamps: school.stamps && typeof school.stamps === 'object' ? school.stamps : {} };
+  }
   if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
   if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); }
@@ -289,7 +295,7 @@ export const state = {
     }
     // The spill vote (Chapter 2): out of time, and Paddy is rolled.
     const st = d.story, c2 = st.ch2;
-    if (st.chapter === 2 && !st.done[2] && c2.deadline && ended >= c2.deadline && !c2.swapped) {
+    if (st.chapter === 2 && !st.done[2] && c2.deadline && ended >= c2.deadline && !c2.swapped && !c2.campaignWon) {
       c2.deposed = true; st.done[2] = ended;
       news.push(...CHAPTERS[2].failed);
     }

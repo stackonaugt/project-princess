@@ -60,7 +60,7 @@ export function openKaraoke(panel, close, { done, intro }) {
     const lane = h('div', { class: 'kara-lane' }, h('div', { class: 'kara-now' })), feedback = h('p', { class: 'kara-fb center' }, 'Get ready...');
     const scoreEl = h('p', { class: 'small center meta' });
     const btn = h('button', { class: 'wood-btn kara-btn', tabindex: '-1', onpointerdown: e => { e.preventDefault(); press(); } }, 'Sing!');
-    const stopBtn = h('button', { class: 'wood-btn small', onclick: () => finish() }, 'Stop');
+    const stopBtn = h('button', { class: 'wood-btn small', onclick: () => finish(hit, cuesAt.length) }, 'Stop');
     const cues = cuesAt.map(() => { const c = h('div', { class: 'kara-cue' + (lv.every ? ' word' : '') }); lane.append(c); return c; });
     const notesBox = stage.querySelector('.kara-notes');
     const score = () => { scoreEl.textContent = `${lv.name} · Perfect ${perfect} · Good ${good} · Beats ${cuesAt.length}`; };
@@ -93,7 +93,7 @@ export function openKaraoke(panel, close, { done, intro }) {
       cur.style.setProperty('--fill', `${Math.max(0, Math.min(1, (t - a) / Math.max(0.5, b - a))) * 100}%`);
       const span = lv.every ? 2.5 : 4;   // seconds of lane on screen
       cues.forEach((c, k) => { const x = (cuesAt[k].t - t) / span; c.style.left = `${15 + x * 85}%`; c.style.display = x < -0.2 || x > 1.05 ? 'none' : ''; if (hit[k] === null && t - cuesAt[k].t > GOOD) { hit[k] = 'miss'; c.classList.add('miss'); } });
-      if (audio.ended) return finish();
+      if (audio.ended) return finish(hit, cuesAt.length);
       raf = requestAnimationFrame(tick);
     };
     panel.replaceChildren(h('div', { class: 'm-head' }, h('h2', {}, song.title), stopBtn),
@@ -106,13 +106,13 @@ export function openKaraoke(panel, close, { done, intro }) {
     tick();
   };
 
-  const finish = () => {
+  const finish = (hit = [], total = hit.length) => {
     if (!audio) return;
     cancelAnimationFrame(raf);
+    hit.forEach((v, i) => { if (v === null) hit[i] = 'miss'; });
     const t = audio.currentTime; stop();
-    const els = panel.querySelectorAll('.kara-cue.perfect').length * 2 + panel.querySelectorAll('.kara-cue.good').length;
-    const due = panel.querySelectorAll('.kara-cue.perfect, .kara-cue.good, .kara-cue.miss').length || 1;   // lines that have come up so far
-    const pct = Math.round(els / (due * 2) * 100);
+    const els = hit.filter(x => x === 'perfect').length * 2 + hit.filter(x => x === 'good').length;
+    const pct = total ? Math.round(els / (total * 2) * 100) : 0;
     const stars = pct >= 80 ? 3 : pct >= 50 ? 2 : pct >= 20 ? 1 : 0;
     result = { pct, stars, seconds: t };
     (stars >= 2 ? sfx.found : sfx.blip)();
