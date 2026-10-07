@@ -1,0 +1,289 @@
+// Builds every texture the game needs. If you have dropped a custom PNG into
+// assets/sprites/, that is used instead of the built-in pixel art.
+//
+// Custom art is discovered through assets/sprites/manifest.json, which is
+// generated automatically (by the GitHub Pages workflow, or by tools/serve.mjs
+// when you play locally). You never need to edit it by hand.
+
+import { ART_PATH } from '../config.js';
+import { PETS } from '../data/pets.js';
+import { NPCS } from '../data/npcs.js';
+import { CROWD } from '../data/crowd.js';
+import { painter, outline, textWidth } from './paint/painter.js';
+import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
+import { HEROES } from '../data/heroes.js';
+import { drawPerson } from './paint/people.js';
+import { OBJECTS } from './paint/objects.js';
+import { ITEM_ART, GEAR_ART, paintSeedPacket, paintDrink, paintBook } from './paint/items.js';
+import { ITEMS } from '../data/items.js';
+import { CROPS } from '../data/crops.js';
+import { paintCrop } from './paint/crops.js';
+import { FX, FX_STRIPS, VEHICLES } from './paint/fx.js';
+import { paintTuft } from './paint/tiles.js';
+import { FOE_ART } from './paint/enemies.js';
+import { EAST_ITEM_ART, EAST_FOE_ART } from './paint/brunseast.js';
+import { AUTHORING } from '../authoring/overrides.js';
+import { assetLayout, entityArtBindings, runtimeArtBindingFailures } from './asset-rules.js';
+
+// Folder in assets/sprites -> texture key prefix
+const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe' };
+// Character sheets get split into square frames.
+const CHARACTER_PREFIXES = ['player', 'pet', 'npc', 'foe'];
+
+export const custom = new Set();     // texture keys that came from PNGs
+export const customURL = {};         // key -> url (used for HTML portraits)
+const customPath = {};               // key -> assigned path relative to assets/sprites/
+
+export function keyForPath(path) {
+  const m = /^([a-z]+)\/([a-z0-9_-]+)\.(png|jpe?g|webp)$/i.exec(path);
+  if (!m || !FOLDERS[m[1]]) return null;
+  return `${FOLDERS[m[1]]}-${m[2].toLowerCase()}`;
+}
+
+export function queueCustomArt(scene, paths, customEntities = AUTHORING.custom) {
+  const queued = new Map();
+  for (const path of paths) {
+    const key = keyForPath(path);
+    if (!key) continue;
+    queued.set(key, path);
+  }
+  // Assign aliases, never copy or replace a built-in's source file.
+  for (const binding of entityArtBindings(customEntities)) queued.set(binding.key, binding.path);
+  for (const [key, path] of queued) {
+    const url = ART_PATH + path;
+    scene.load.image(key, url);
+    custom.add(key); customURL[key] = url; customPath[key] = path;
+  }
+  scene.load.on('loaderror', file => {
+    custom.delete(file.key); delete customURL[file.key]; delete customPath[file.key];
+  });
+  return queued.size;
+}
+
+export function runtimeArtStatus(scene, customEntities = AUTHORING.custom) {
+  const bindings = entityArtBindings(customEntities);
+  const failures = runtimeArtBindingFailures(bindings, key => {
+    if (!scene?.textures?.exists(key)) return null;
+    const image = scene.textures.get(key).getSourceImage();
+    return {
+      exists: true,
+      custom: custom.has(key),
+      path: customPath[key],
+      width: image?.width,
+      height: image?.height,
+    };
+  });
+  return { bindings, failures };
+}
+
+function canvasTexture(scene, key, w, h, draw) {
+  if (scene.textures.exists(key)) return;
+  const tex = scene.textures.createCanvas(key, w, h);
+  draw(painter(tex.getContext()));
+  tex.refresh();
+}
+function stripTexture(scene, key, fw, fh, n, draw, outlined = false) {
+  if (scene.textures.exists(key)) return;
+  const tex = scene.textures.createCanvas(key, fw * n, fh);
+  const p = painter(tex.getContext());
+  for (let i = 0; i < n; i++) { p.ctx.save(); p.ctx.translate(i * fw, 0); draw(p, i); p.ctx.restore(); }
+  if (outlined) for (let i = 0; i < n; i++) outline(p.ctx, i * fw, 0, fw, fh);
+  tex.refresh();
+  for (let i = 0; i < n; i++) tex.add(i, 0, i * fw, 0, fw, fh);
+}
+// Split a custom character sheet into frames numbered 0..n-1. Pets use
+// square frames; people are twice as tall as they are wide (16x32).
+function splitCustom(scene, key) {
+  const tex = scene.textures.get(key), src = tex.getSourceImage();
+  const h = src.height, fw = key.startsWith('pet-') || key.startsWith('foe-') ? h : h / 2, n = Math.max(1, Math.round(src.width / fw));
+  for (let i = 0; i < n; i++) tex.add(i, 0, i * Math.floor(src.width / n), 0, Math.floor(src.width / n), h);
+}
+export const frameCount = (scene, key) => Math.max(1, scene.textures.get(key).frameTotal - 1);
+
+// The texture to use for the player: your own art for this character,
+// then your own art for everyone, then the built-in sprite. Returns
+// [key, flipX] (right-facing reuses left, mirrored, unless you drew it).
+export function playerTexture(hero, dir) {
+  for (const k of [`player-${hero}-${dir}`, `player-${dir}`]) if (custom.has(k)) return [k, false];
+  if (dir === 'right') { const [k] = playerTexture(hero, 'left'); return [k, true]; }
+  return [`player-${hero}-${dir}`, false];
+}
+
+const STEPS = [0, 1, 2]; // people: standing, left stride, right stride
+
+export function buildTextures(scene, customEntities = AUTHORING.custom) {
+  // Also protect gameplay if an assigned file is replaced after a studio save.
+  for (const binding of entityArtBindings(customEntities)) {
+    if (!custom.has(binding.key)) continue;
+    try {
+      const src = scene.textures.get(binding.key).getSourceImage();
+      assetLayout(binding.folder, src.width, src.height);
+    } catch {
+      scene.textures.remove(binding.key);
+      custom.delete(binding.key); delete customURL[binding.key]; delete customPath[binding.key];
+    }
+  }
+  for (const key of custom) if (CHARACTER_PREFIXES.some(pfx => key.startsWith(pfx + '-'))) splitCustom(scene, key);
+
+  // Player
+  for (const [id, hero] of Object.entries(HEROES)) for (const dir of ['down', 'up', 'left'])
+    stripTexture(scene, `player-${id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, hero.look, dir, STEPS[i]), true);
+  // Pets
+  for (const pet of PETS) {
+    const frames = PET_FRAMES[pet.sprite], pal = { ...BASE_PALETTE, ...pet.pal };
+    stripTexture(scene, `pet-${pet.id}`, 16, 16, frames.length, (p, i) => p.sprite(frames[i], pal, 0, 0), true);
+    const e = pet.evolution;
+    if (e) {
+      const ef = PET_FRAMES[e.sprite] || frames, epal = { ...BASE_PALETTE, ...pet.pal, ...e.pal };
+      stripTexture(scene, `pet-${pet.id}-evolved`, 16, 16, ef.length, (p, i) => p.sprite(ef[i], epal, 0, 0), true);
+    }
+  }
+  // People
+  for (const [id, npc] of Object.entries(NPCS)) {
+    if (custom.has(`npc-${id}`)) continue;
+    for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, npc.look, dir, STEPS[i]), true);
+  }
+  // The crowd (data/crowd.js): unnamed passers-by
+  for (const c of CROWD) for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${c.id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, c.look, dir, STEPS[i]), true);
+  // Things you battle
+  for (const [id, [w, h, draw]] of Object.entries({ ...FOE_ART, ...EAST_FOE_ART })) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
+  // Items
+  for (const [id, art] of Object.entries({ ...ITEM_ART, ...EAST_ITEM_ART })) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
+  for (const [id, it] of Object.entries(ITEMS)) if (it.drink || it.lolly || it.vape || it.art?.kind) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
+  for (const [id, it] of Object.entries(ITEMS)) if (it.book) canvasTexture(scene, `item-${id}`, 16, 16, p => paintBook(p, it.art));
+  for (const [id, c] of Object.entries(CROPS)) canvasTexture(scene, `item-seed-${id}`, 16, 16, p => paintSeedPacket(p, c.colour));
+  for (const [id, art] of Object.entries(GEAR_ART)) canvasTexture(scene, `item-gear-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
+  // Effects and vehicles
+  for (const [key, [w, h, draw]] of Object.entries(FX)) canvasTexture(scene, key, w, h, draw);
+  for (const [key, [fw, fh, n, draw]] of Object.entries(FX_STRIPS)) stripTexture(scene, `fx-${key}`, fw, fh, n, draw);
+  for (const [key, [w, h, draw]] of Object.entries(VEHICLES)) canvasTexture(scene, key, w, h, draw);
+
+  createAnims(scene);
+}
+
+// Crop sprites are made the first time a plot needs them.
+// A green way sign beside an exit: the place name and an arrow pointing off the map.
+export function exitSignTexture(scene, label, dir) {
+  const words = label.toUpperCase().split(' ');
+  const lines = [];
+  for (const w of words) {
+    const last = lines[lines.length - 1];
+    if (last && textWidth(`${last} ${w}`) <= 40) lines[lines.length - 1] = `${last} ${w}`; else lines.push(w);
+  }
+  const tw = Math.max(...lines.map(textWidth)), w = tw + 16, ph = lines.length * 6 + 5, h = ph + 12;
+  const key = `exitsign-${label}-${dir}`;
+  canvasTexture(scene, key, w, h, p => {
+    p.shadow(w / 2, h - 1, 6);
+    p.r('#8a8e96', w / 2 - 1, ph, 2, h - ph - 1);
+    p.r('#1e6a3a', 1, 1, w - 2, ph); p.r('#2e8a4e', 1, 1, w - 2, 1); p.r('#f4f4f0', 2, 2, w - 4, 1); p.r('#f4f4f0', 2, ph - 1, w - 4, 1);
+    lines.forEach((l, i) => p.text(l, 3, 4 + i * 6, '#f4f4f0'));
+    const ax = w - 7, ay = Math.floor(ph / 2) + 1, c = '#f4f4f0';
+    if (dir === 'up') { p.r(c, ax, ay - 3, 1, 7); p.r(c, ax - 1, ay - 2, 3, 1); p.r(c, ax - 2, ay - 1, 5, 1); }
+    else if (dir === 'down') { p.r(c, ax, ay - 3, 1, 7); p.r(c, ax - 1, ay + 2, 3, 1); p.r(c, ax - 2, ay + 1, 5, 1); }
+    else if (dir === 'left') { p.r(c, ax - 3, ay, 7, 1); p.r(c, ax - 2, ay - 1, 1, 3); p.r(c, ax - 1, ay - 2, 1, 5); }
+    else { p.r(c, ax - 3, ay, 7, 1); p.r(c, ax + 2, ay - 1, 1, 3); p.r(c, ax + 1, ay - 2, 1, 5); }
+    outline(p.ctx, 0, 0, w, h);
+  });
+  return key;
+}
+
+export function cropTexture(scene, id, stage) {
+  const key = `crop-${id}-${stage}`;
+  canvasTexture(scene, key, 16, 16, p => { paintCrop(p, id, stage); if (stage > 0) outline(p.ctx, 0, 0, 16, 16); });
+  return key;
+}
+
+export function tuftTexture(scene, region, grass) {
+  const key = `tuft-${region}`;
+  canvasTexture(scene, key, 16, 16, p => paintTuft(p, grass));
+  return key;
+}
+
+// Object textures are made the first time a map needs them.
+export function objectTexture(scene, o) {
+  const def = OBJECTS[o.kind];
+  const variantName = String(o.kind === 'fence' ? String(o.v).split(':')[0] : o.v).replace(/\s+/g, '').toLowerCase();
+  for (const k of [`obj-${o.kind}-${variantName}`, `obj-${o.kind}`]) if (custom.has(k)) return k;
+  const key = `obj-${o.kind}-${o.v}`;
+  canvasTexture(scene, key, def.tex[0], def.tex[1], p => {
+    def.paint(p, o.v, o);
+    if (needsOutline(o.kind, def)) objectOutline(p.ctx, def.tex[0], def.tex[1]);
+  });
+  return key;
+}
+
+// Stardew-style 1px dark outline on standing objects. Skips flat things,
+// things that tile together (fences, rails, the viaduct), wall decorations
+// and art that draws its own outline. Soft ground shadows are ignored.
+const NO_OUTLINE = new Set(['birdmural', 'bigscreen', 'ropebarrier', 'coasterwall', 'fence', 'viaduct', 'pier', 'trackoval', 'footbridge', 'iwindow', 'picture', 'shelf', 'verandah', 'canopy', 'carport', 'shade', 'archshelter', 'tank', 'crops', 'reeds']);
+function needsOutline(kind, def) { return !def.flat && !def.deck && !def.lined && !NO_OUTLINE.has(kind) && !ALREADY_OUTLINED.has(kind); }
+const ALREADY_OUTLINED = new Set(['stolberg', 'convenience', 'plentycafe', 'muralbuilding', 'secondhandman', 'printers', 'wheelstyres', 'bbound', 'anaconda', 'francocozzo', 'chamberdome', 'civiccentre', 'car', 'ute', 'edcastle', 'bottleshop', 'decoshop', 'bshop', 'garagecafe', 'factory', 'rollerdoor', 'graffiti', 'streettree', 'towerblock', 'billboard', 'watchtower']);
+function objectOutline(ctx, w, h, colour = '#2a1810') {
+  const img = ctx.getImageData(0, 0, w, h), d = img.data;
+  const solid = i => d[i * 4 + 3] > 150;
+  const marks = [];
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const k = j * w + i;
+    if (solid(k)) continue;
+    if ((i > 0 && solid(k - 1)) || (i < w - 1 && solid(k + 1)) || (j > 0 && solid(k - w)) || (j < h - 1 && solid(k + w))) marks.push(k);
+  }
+  const n = parseInt(colour.slice(1), 16);
+  for (const k of marks) { d[k * 4] = n >> 16; d[k * 4 + 1] = (n >> 8) & 255; d[k * 4 + 2] = n & 255; d[k * 4 + 3] = 235; }
+  ctx.putImageData(img, 0, 0);
+}
+
+function createAnims(scene) {
+  const make = (key, tex, frames, rate) => {
+    if (scene.anims.exists(key)) return;
+    scene.anims.create({ key, frames: frames.map(f => ({ key: tex, frame: f })), frameRate: rate, repeat: -1 });
+  };
+  const walkFrames = (tex, n) => custom.has(tex) && n === 3 ? [1, 0, 2, 0] : custom.has(tex) ? (n > 2 ? [...Array(n - 1).keys()].map(i => i + 1) : [...Array(n).keys()]) : [1, 0, 2, 0];
+  const playerKeys = ['down', 'up', 'left', 'right'].flatMap(d => [`player-${d}`, ...Object.keys(HEROES).map(h => `player-${h}-${d}`)]);
+  for (const tex of playerKeys) {
+    if (!scene.textures.exists(tex)) continue;
+    const n = frameCount(scene, tex);
+    if (n > 1) make(`${tex}-walk`, tex, walkFrames(tex, n), 8);
+  }
+  for (const pet of PETS) for (const tex of [`pet-${pet.id}`, `pet-${pet.id}-evolved`]) {
+    if (!scene.textures.exists(tex)) continue;
+    const n = frameCount(scene, tex);
+    if (n > 1) make(`${tex}-walk`, tex, custom.has(tex) ? [...Array(n).keys()] : [0, 1], 6);
+  }
+  for (const id of Object.keys(NPCS)) {
+    if (custom.has(`npc-${id}`)) {
+      const tex = `npc-${id}`, n = frameCount(scene, tex);
+      if (n > 1) make(`${tex}-walk`, tex, [...Array(n).keys()], 6);
+      continue;
+    }
+    for (const dir of ['down', 'up', 'left']) make(`npc-${id}-${dir}-walk`, `npc-${id}-${dir}`, [1, 0, 2, 0], 7);
+  }
+  for (const c of CROWD) for (const dir of ['down', 'up', 'left']) make(`npc-${c.id}-${dir}-walk`, `npc-${c.id}-${dir}`, [1, 0, 2, 0], 7);
+  make('fx-duck-swim', 'fx-duck', [0, 1], 2);
+  make('fx-magpie-hop', 'fx-magpie', [0, 1], 4);
+}
+
+// Scale that makes a texture fill a slot of `size` world pixels.
+export function firstFrame(scene, key) {
+  const tex = scene.textures.get(key);
+  return tex.has(0) ? 0 : undefined;
+}
+export function fitScale(scene, key, size, by = 'height') {
+  const tex = scene.textures.get(key), f = tex.has(0) ? tex.get(0) : tex.get();
+  return size / (by === 'width' ? f.width : f.height);
+}
+
+// PNG data URL of one frame, for showing sprites in the HTML interface.
+const urlCache = {};
+export function frameDataURL(scene, key, frame = 0, size = 64) {
+  const id = `${key}:${frame}:${size}`;
+  if (urlCache[id]) return urlCache[id];
+  if (!scene.textures.exists(key)) return '';
+  const tex = scene.textures.get(key), f = tex.has(frame) ? tex.get(frame) : tex.get();
+  const c = document.createElement('canvas');
+  const scale = Math.max(1, Math.floor(size / Math.max(f.width, f.height)));
+  c.width = f.width * scale; c.height = f.height * scale;
+  const g = c.getContext('2d'); g.imageSmoothingEnabled = false;
+  g.drawImage(f.source.image, f.cutX, f.cutY, f.cutWidth, f.cutHeight, 0, 0, c.width, c.height);
+  return (urlCache[id] = c.toDataURL());
+}
+

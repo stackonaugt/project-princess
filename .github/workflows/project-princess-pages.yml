@@ -1,0 +1,77 @@
+name: Publish Project Princess
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: project-princess-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Review PRs can build, but only the default branch can publish.
+    if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch) || (github.event_name == 'pull_request' && github.base_ref == github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+      - name: Read configured Pages address
+        id: pages
+        uses: actions/configure-pages@v5
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v6
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+      - name: Install locked workspace dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Check game behaviour and hosting configuration
+        run: |
+          pnpm --filter @workspace/project-princess run test:site-config
+          pnpm --filter @workspace/project-princess run test:navigation
+          pnpm --filter @workspace/project-princess run test:studio-art
+          pnpm --filter @workspace/project-princess run test:studio-archive
+      - name: Build public game
+        env:
+          # "/repository" for project Pages; empty for an account site/custom domain.
+          BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+        run: pnpm --filter @workspace/project-princess run build
+      - name: Verify assets and exclude the editor
+        run: pnpm --filter @workspace/project-princess run check:build
+      - name: Install browser for release checks
+        run: pnpm --filter @workspace/project-princess exec playwright install --with-deps chromium
+      - name: Check map loading and save/reload in the release
+        run: pnpm --filter @workspace/project-princess run smoke:build
+      - name: Upload only the public game
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/project-princess/dist/public
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Publish GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

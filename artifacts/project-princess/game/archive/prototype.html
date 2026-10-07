@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Project Princess</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#1f3a29; --wood:#7b4a24; --wood-dark:#4a2a12; --wood-light:#a96c37;
+  --parch:#f4dfae; --parch-dark:#e0c083; --ink:#3a2412;
+  --stage-w:min(calc(100vw - 24px), calc((100dvh - 110px) * 1.3636), 1080px);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){ --bg:#142619; } }
+:root[data-theme="dark"]{ --bg:#142619; }
+@media (pointer:coarse){ :root{--stage-w:min(calc(100vw - 16px), calc((100dvh - 290px) * 1.3636), 1080px)} }
+*,*::before,*::after{box-sizing:border-box}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{
+  height:100%;margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Pixelify Sans",ui-monospace,"Courier New",monospace;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  overflow:hidden;touch-action:manipulation;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;
+}
+.bar{width:var(--stage-w);display:flex;justify-content:space-between;align-items:center;gap:8px;padding-top:10px}
+.plaque,.wood-btn{
+  background:var(--wood);border:3px solid var(--wood-dark);border-radius:6px;
+  box-shadow:inset 0 2px 0 var(--wood-light), 0 3px 0 var(--wood-dark);
+  color:var(--parch);font-family:inherit;
+}
+.plaque{padding:6px 12px;font-weight:700;font-size:clamp(16px,4.4vw,24px);letter-spacing:.5px}
+.wood-btn{padding:8px 12px;font-size:clamp(14px,3.8vw,18px);cursor:pointer}
+.wood-btn:active{transform:translateY(2px);box-shadow:inset 0 2px 0 var(--wood-light)}
+.wood-btn:focus-visible,.a-btn:focus-visible{outline:3px solid var(--parch);outline-offset:2px}
+#count{color:#ffe08a;margin-left:4px}
+#stage{position:relative;width:var(--stage-w);aspect-ratio:240/176}
+#cv{
+  width:100%;height:100%;display:block;image-rendering:pixelated;image-rendering:crisp-edges;
+  border:4px solid var(--wood-dark);border-radius:8px;background:#78bc4c;
+  box-shadow:0 0 0 3px var(--wood),0 6px 0 3px var(--wood-dark);
+}
+#banner{
+  position:absolute;top:6%;left:50%;transform:translateX(-50%);
+  background:var(--wood);border:3px solid var(--wood-dark);border-radius:6px;
+  box-shadow:inset 0 2px 0 var(--wood-light),0 3px 0 var(--wood-dark);
+  color:var(--parch);padding:6px 18px;font-size:clamp(18px,5vw,30px);font-weight:700;
+  opacity:0;pointer-events:none;transition:opacity .5s;
+}
+#banner.show{opacity:1}
+#dialog{
+  position:absolute;left:4%;right:4%;bottom:5%;
+  background:var(--parch);border:4px solid var(--wood);border-radius:8px;
+  box-shadow:inset 0 0 0 3px var(--parch-dark),0 4px 0 var(--wood-dark);
+  padding:12px 16px 14px;min-height:30%;cursor:pointer;
+}
+#dialog[hidden]{display:none}
+#dtext{margin:0;font-size:clamp(15px,3.8vw,22px);line-height:1.35;max-width:60ch}
+#dialog .more{position:absolute;right:12px;bottom:6px;font-size:14px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){#dialog .more{animation:none}#banner{transition:none}}
+.hint{color:#cfe6b8;font-size:15px;margin:2px 0 0;opacity:.85}
+#pad{display:none;width:var(--stage-w);justify-content:space-between;align-items:center;padding:6px 10px 12px;flex:1;max-height:200px}
+@media (pointer:coarse){ #pad{display:flex} .hint{display:none} }
+#dpad{position:relative;width:150px;height:150px;touch-action:none}
+#dpad span{position:absolute;background:var(--wood);border:3px solid var(--wood-dark);box-shadow:inset 0 2px 0 var(--wood-light)}
+#dpad .h{left:0;top:50px;width:150px;height:50px;border-radius:8px}
+#dpad .v{left:50px;top:0;width:50px;height:150px;border-radius:8px}
+#dpad .c{left:53px;top:53px;width:44px;height:44px;border:none;box-shadow:none}
+#dpad .arr{background:none;border:none;box-shadow:none;color:var(--parch);font-size:18px;width:50px;height:50px;display:flex;align-items:center;justify-content:center}
+.a-btn{
+  width:84px;height:84px;border-radius:50%;background:#c0473a;color:#fff3dc;
+  border:4px solid #6e2018;box-shadow:inset 0 3px 0 #e2705f,0 4px 0 #6e2018;
+  font-family:inherit;font-size:30px;font-weight:700;touch-action:none;
+}
+.a-btn:active{transform:translateY(3px);box-shadow:inset 0 3px 0 #e2705f}
+#dex{position:fixed;inset:0;background:rgba(20,30,18,.72);display:flex;align-items:center;justify-content:center;padding:16px;z-index:5}
+#dex[hidden]{display:none}
+.dex-panel{
+  background:var(--parch);border:5px solid var(--wood);border-radius:10px;
+  box-shadow:inset 0 0 0 4px var(--parch-dark),0 6px 0 var(--wood-dark);
+  width:min(600px,100%);max-height:min(85dvh,760px);display:flex;flex-direction:column;
+}
+.dex-head{display:flex;justify-content:space-between;align-items:center;padding:14px 16px 8px}
+.dex-head h2{margin:0;font-size:26px}
+.dex-sub{margin:0 16px 10px;font-size:16px}
+.dex-grid{overflow:auto;padding:0 16px 12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.card{display:flex;gap:10px;align-items:flex-start;background:#fbedc8;border:3px solid var(--parch-dark);border-radius:8px;padding:10px}
+.card canvas{width:60px;height:60px;image-rendering:pixelated;flex:none;background:#e9d29a;border-radius:6px}
+.card h3{margin:0 0 4px;font-size:19px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.card p{margin:0;font-size:14px;line-height:1.35}
+.card .meta{opacity:.75;margin-bottom:4px}
+.card.unknown canvas{opacity:.45}
+.type{font-size:12px;font-weight:600;color:#fff;padding:1px 7px;border-radius:10px;border:2px solid rgba(0,0,0,.25)}
+.dex-foot{padding:6px 16px 14px;display:flex;justify-content:flex-end}
+.link-btn{background:none;border:none;color:var(--wood);font-family:inherit;font-size:14px;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="plaque">Project Princess</div>
+  <button id="dexBtn" class="wood-btn" aria-label="Open Petdex">Petdex <span id="count">0/5</span></button>
+</header>
+<main id="stage">
+  <canvas id="cv" width="240" height="176" aria-label="Game world"></canvas>
+  <div id="banner" aria-live="polite"></div>
+  <div id="dialog" hidden role="status"><p id="dtext"></p><span class="more">▼</span></div>
+</main>
+<p class="hint">Move with arrow keys or WASD. Press Space to say hello or read signs. Press P for the Petdex.</p>
+<div id="pad">
+  <div id="dpad" aria-label="Movement pad">
+    <span class="h"></span><span class="v"></span><span class="c"></span>
+    <span class="arr" style="left:50px;top:0">▲</span>
+    <span class="arr" style="left:50px;top:100px">▼</span>
+    <span class="arr" style="left:0;top:50px">◀</span>
+    <span class="arr" style="left:100px;top:50px">▶</span>
+  </div>
+  <button class="a-btn" id="aBtn" aria-label="Talk">A</button>
+</div>
+<div id="dex" hidden>
+  <div class="dex-panel" role="dialog" aria-label="Petdex">
+    <div class="dex-head"><h2>Petdex</h2><button class="wood-btn" id="dexClose">Close</button></div>
+    <p class="dex-sub" id="dexSub"></p>
+    <div class="dex-grid" id="dexGrid"></div>
+    <div class="dex-foot"><button class="link-btn" id="resetBtn">Start over</button></div>
+  </div>
+</div>
+<script>
+// ================= MAP =================
+const MW = 60, MH = 24;
+const PET_HOMES = [[14,9],[26,8],[35.5,17.5],[47,10],[54,11]];
+function hash(x,y){ let h = Math.imul(x,374761393) + Math.imul(y,668265263); h = Math.imul(h ^ (h>>>13), 1274126177); return ((h ^ (h>>>16))>>>0) / 4294967295; }
+function regionOf(tx){ return tx < 20 ? 0 : tx < 40 ? 1 : 2; }
+function buildMap(){
+  const M = Array.from({length:MH}, () => Array(MW).fill('.'));
+  const set = (x,y,c) => { if (x>=0 && y>=0 && x<MW && y<MH) M[y][x] = c; };
+  const get = (x,y) => (x<0||y<0||x>=MW||y>=MH) ? 'T' : M[y][x];
+  const objs = [];
+  const addObj = (kind,x,y,w,h) => { objs.push({kind,x,y,w,h,seed:hash(x,y)}); for (let j=y;j<y+h;j++) for (let i=x;i<x+w;i++) set(i,j,'B'); };
+  for (let x=1;x<MW-1;x++) set(x,12,'=');
+  // Laverton: creek, sheds, concrete
+  for (let y=1;y<MH-1;y++){ const cx = 6 + Math.round(Math.sin(y*.45)*1.5); const c = y===12 ? 'w' : '~'; set(cx,y,c); set(cx+1,y,c); }
+  for (let x=10;x<16;x++) set(x,5,'c');
+  for (let x=12;x<18;x++) set(x,19,'c');
+  addObj('shed',10,2,6,3); addObj('shed',12,16,6,3);
+  // Brunswick: Sydney Rd, terraces, cafe, park
+  for (let y=1;y<MH-1;y++){ set(28,y,'f'); set(29,y,'#'); set(30,y,'+'); set(31,y,'#'); set(32,y,'f'); }
+  for (let x=22;x<28;x++){ set(x,5,'f'); set(x,19,'f'); }
+  for (let x=33;x<37;x++) set(x,5,'f');
+  addObj('terrace',22,2,3,3); addObj('terrace',25,2,3,3); addObj('cafe',33,2,4,3);
+  addObj('terrace',22,16,3,3); addObj('terrace',25,16,3,3);
+  for (let y=14;y<=21;y++) for (let x=33;x<=38;x++){
+    const edge = x===33||x===38||y===14||y===21;
+    const gap = (y===14 && (x===35||x===36)) || (x===33 && (y===17||y===18));
+    if (edge && !gap) set(x,y,'T'); else if (!edge && hash(x,y) > .6) set(x,y,',');
+  }
+  // Reservoir: Edwardes Lake, weatherboards
+  for (let y=1;y<11;y++) for (let x=43;x<58;x++) if (((x-50)/5.5)**2 + ((y-5.5)/3.2)**2 < 1) set(x,y,'~');
+  addObj('weatherboard',43,16,4,3); addObj('weatherboard',51,16,4,3);
+  for (let x=42;x<48;x++) if (x!==44) set(x,20,'F');
+  for (let x=50;x<56;x++) if (x!==52) set(x,20,'F');
+  set(44,19,'='); set(44,20,'='); set(52,19,'='); set(52,20,'=');
+  // dividers and border
+  for (let y=1;y<MH-1;y++) if (y<11 || y>13){ set(20,y,'T'); set(40,y,'T'); }
+  for (let x=0;x<MW;x++){ set(x,0,'T'); set(x,MH-1,'T'); }
+  for (let y=0;y<MH;y++){ set(0,y,'T'); set(MW-1,y,'T'); }
+  set(21,10,'S'); set(41,10,'S');
+  // scatter
+  const dens = [.025,.02,.06];
+  for (let y=1;y<MH-1;y++) for (let x=1;x<MW-1;x++){
+    if (M[y][x] !== '.') continue;
+    if (Math.abs(y-12) <= 1) continue;
+    if (PET_HOMES.some(([hx,hy]) => Math.hypot(hx-x,hy-y) < 2.8)) continue;
+    let nearBuilt = false;
+    for (let j=-1;j<=1;j++) for (let i=-1;i<=1;i++){ const c = get(x+i,y+j); if (c==='B'||c==='S'||c==='F'||c==='f'||c==='c') nearBuilt = true; }
+    const r = hash(x*7+1,y*13+5), d = dens[regionOf(x)];
+    let nearWater = false;
+    for (let j=-1;j<=1;j++) for (let i=-1;i<=1;i++) if (get(x+i,y+j)==='~') nearWater = true;
+    if (!nearBuilt && (r < d || (nearWater && regionOf(x)===2 && r > .75))) M[y][x] = 'T';
+    else if (!nearBuilt && r < d + .02) M[y][x] = 'b';
+    else if (r > .9) M[y][x] = ',';
+  }
+  return { M: M.map(r => r.join('')), objs };
+}
+// ================= PETS (edit these!) =================
+const TYPES = { fairy:'#e77fb8', street:'#d0802e', ghost:'#5b4a8c', rock:'#9a7a4c', psychic:'#a24fc9' };
+const REGIONS = ['Laverton','Brunswick','Reservoir'];
+const PETS = [
+  { id:'princess', name:'Princess', species:'Toy poodle', type:'fairy', sprite:'poodle', region:0,
+    pal:{ a:'#f7f4ee', b:'#ddd5ca', r:'#f07ab0' }, owner:'Helen and Paddy', home:[14,9], range:3,
+    bio:"The guardian of Laverton. Sassy, fluffy, and ready to attack.",
+    lines:['Princess looks you up and down. You have not passed inspection.','Princess yaps once. That was a warning.','Princess fluffs her pom-poms. Laverton is under her protection.'] },
+  { id:'salami', name:'Salami', species:'Tabby cat', type:'street', sprite:'tabby', region:1,
+    pal:{ a:'#a5723e', b:'#6b4422' }, owner:'Rose', home:[26,8], range:2.5,
+    bio:'A foundling with a vicious strike.',
+    lines:['Salami eyes your ankles like they owe her money.','Salami headbutts your leg, then swipes it. Mixed signals.','Salami has claimed a milk crate. It is hers now.'] },
+  { id:'spooky', name:'Spooky', species:'Bunny', type:'ghost', sprite:'bunny', region:1, ghost:true,
+    pal:{ a:'#2e2836', b:'#6a5878', k:'#120d18', e:'#9fe8ff', p:'#9a78b0' }, owner:'Slinks', home:[35.5,17.5], range:1.6,
+    bio:'A night walker who can phase in and out of reality at will.',
+    lines:['Spooky flickers out of sight, then reappears right behind you.',"Spooky stares at something you can't see.",'You blink and Spooky is somewhere else entirely.'] },
+  { id:'poppy', name:'Poppy', species:'French bulldog', type:'rock', sprite:'frenchie', region:2,
+    pal:{ a:'#2c2b2f', b:'#4c3c3c', k:'#0f0f11', e:'#d8b070', w:'#f4f1ea' }, owner:'Seb and Sinead', home:[47,10], range:3,
+    bio:'Pure muscle and brawn, with very little brains. Ready to bust her way through.',
+    lines:['Poppy charges at you and bounces off. She is thrilled about it.','Poppy snorts loudly. Possibly a thought. Probably not.','Poppy tries to squeeze through a gap that is clearly too small.'] },
+  { id:'stanley', name:'Stanley', species:'Mini schnauzer', type:'psychic', sprite:'schnauzer', region:2,
+    pal:{ a:'#8a8d94', b:'#d4d7db', w:'#dcdee1' }, owner:'Tim and Nicholas', home:[54,11], range:2.5,
+    bio:'Grumpy but loyal. Only likes smart animals like him.',
+    lines:['Stanley sighs. He was hoping for more intelligent company.','Stanley grumbles, but stays close by.','Stanley raises one bushy eyebrow at you.'] },
+];
+const SIGNS = {
+  '21,10':['Welcome to Brunswick.','West: Laverton. East: Reservoir.'],
+  '41,10':['Welcome to Reservoir.','West: Brunswick and Laverton.'],
+};
+
+// ================= SPRITES =================
+const SPR = {
+  poodle:[".....rr.....","....kaak....","...kaaaak...",".kkkaaaakkk.","kbbkaaaakbbk","kbbaeaaeabbk","kbbaaaaaabbk",".kbaakkaabk.","..kaaaaaak..","..kbaaaabk..",".kaak..kaak.",".kkk....kkk."],
+  tabby:["............",".k........k.",".kk......kk.",".kpk....kpk.",".kaabbbbaak.",".kaaabbaaak.",".kaeaaaaeak.",".kaaaaaaaak.",".kaaappaaak.","..kbaaaabk..","..kak..kak..","..kk....kk.."],
+  bunny:["...kk..kk...","..kbk..kbk..","..kbk..kbk..","..kak..kak..","..kaakkaak..",".kaaaaaaaak.",".kaeaaaaeak.",".kaaappaaak.",".kaaaaaaaak.","..kaaaaaak..","..kaaaaaak..","...kk..kk..."],
+  frenchie:[".kk......kk.","kbak....kabk","kbaak..kaabk",".kaakkkkaak.",".kaaaaaaaak.","kaeaaaaaaeak","kaaaaaaaaaak","kaaakkkkaaak",".kaaawwaaak.",".kaaawwaaak.",".kaak..kaak.",".kkk....kkk."],
+  schnauzer:[".kk......kk.",".kak....kak.","..kakkkkak..","..kaaaaaak..",".kbbbaabbbk.",".kaeaaaaeak.",".kaaaaaaaak.",".kawwkkwwak.","..kwwwwwwk..","..kwwwwwwk..",".kaak..kaak.",".kkk....kkk."],
+  pDown:["...kkkkkk...","..khhhhhhk..",".khhhhhhhhk.",".khsssssshk.",".kskssssksk.","..kssssssk..","..kcccccck..",".ksccccccsk.",".ksccccccsk.","..kllllllk..","..kll..llk..","..kkk..kkk.."],
+  pUp:["...kkkkkk...","..khhhhhhk..",".khhhhhhhhk.",".khhhhhhhhk.",".khhhhhhhhk.","..khhhhhhk..","..kcccccck..",".ksccccccsk.",".ksccccccsk.","..kllllllk..","..kll..llk..","..kkk..kkk.."],
+  pLeft:["...kkkkkk...","..khhhhhhk..",".khhhhhhhhk.",".ksssshhhhk.",".kkssshhhhk.","..kssssshk..","..kcccccck..","..kscccccck.","..kscccccck.","..kllllllk..","..kll..llk..","..kkk..kkk.."],
+};
+const BASEPAL = { k:'#3a2412', e:'#2a1a0c', p:'#f08aa0', y:'#f0a030', w:'#ffffff', r:'#d83c3c',
+  h:'#6b3f1f', s:'#f2c79a', c:'#3fa38f', l:'#33446e' };
+const cache = {};
+function makeSprite(rows, pal, sil){
+  const c = document.createElement('canvas'); c.width = rows[0].length; c.height = rows.length;
+  const g = c.getContext('2d');
+  rows.forEach((row,y)=>{ for (let x=0;x<row.length;x++){ const ch = row[x]; if (ch==='.') continue;
+    g.fillStyle = sil ? '#3a2412' : (pal[ch] || '#ff00ff'); g.fillRect(x,y,1,1); } });
+  return c;
+}
+function getSprite(key, rows, pal, sil){ return cache[key] || (cache[key] = makeSprite(rows, pal, sil)); }
+function petSprite(p, sil){ return getSprite(p.id+(sil?'-sil':''), SPR[p.sprite], {...BASEPAL, ...p.pal}, sil); }
+
+// ================= STATE =================
+const T = 16, VW = 15, VH = 11;
+const { M:MAP, objs:OBJS } = buildMap();
+const SOLID = new Set(['T','F','B','b','~','S']);
+const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const SAVE_KEY = 'whisker-hollow-v2';
+const player = { x:(24+.5)*T, y:(12+.8)*T, dir:'down', moving:false, anim:0 };
+const found = new Set();
+const pets = PETS.map(d => { const hx=(d.home[0]+.5)*T, hy=(d.home[1]+.75)*T;
+  return { ...d, hx, hy, x:hx, y:hy, moving:false, timer:Math.random()*2, tx:0, ty:0, face:1, anim:Math.random()*10 }; });
+let particles = [], dialog = null, dexOpen = false, curRegion = -1, bannerTimer = null;
+
+function loadGame(){
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch(e) {}
+  if (!s) return false;
+  (s.found || []).forEach(id => { if (PETS.some(p => p.id === id)) found.add(id); });
+  if (typeof s.x === 'number' && typeof s.y === 'number' && !boxHits(s.x, s.y, 4, 5)) { player.x = s.x; player.y = s.y; }
+  return true;
+}
+function saveGame(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify({ found:[...found], x:player.x, y:player.y })); } catch(e) {} }
+
+// ================= COLLISION =================
+function tileAt(tx,ty){ return (tx<0||ty<0||tx>=MW||ty>=MH) ? 'T' : MAP[ty][tx]; }
+function solidAt(px,py){ return SOLID.has(tileAt(Math.floor(px/T), Math.floor(py/T))); }
+function boxHits(x,y,hw,hh){ return solidAt(x-hw,y-hh)||solidAt(x+hw,y-hh)||solidAt(x-hw,y-.01)||solidAt(x+hw,y-.01); }
+function moveEnt(e,dx,dy,hw,hh){
+  let moved = false;
+  if (dx && !boxHits(e.x+dx, e.y, hw, hh)) { e.x += dx; moved = true; }
+  if (dy && !boxHits(e.x, e.y+dy, hw, hh)) { e.y += dy; moved = true; }
+  return moved;
+}
+
+// ================= INPUT =================
+const keys = {}, pad = { x:0, y:0 };
+addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k)) e.preventDefault();
+  keys[k] = true;
+  if (e.repeat) return;
+  if ([' ','enter','e','z'].includes(k)) pressA();
+  if (k === 'p') toggleDex();
+  if (k === 'escape' && dexOpen) toggleDex(false);
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; pad.x = pad.y = 0; });
+const dpad = document.getElementById('dpad');
+function padFrom(e){
+  const r = dpad.getBoundingClientRect();
+  const dx = e.clientX - (r.left + r.width/2), dy = e.clientY - (r.top + r.height/2);
+  if (Math.hypot(dx,dy) < 12) { pad.x = pad.y = 0; return; }
+  const a = Math.round(Math.atan2(dy,dx) / (Math.PI/4)) * (Math.PI/4);
+  pad.x = Math.round(Math.cos(a)); pad.y = Math.round(Math.sin(a));
+}
+dpad.addEventListener('pointerdown', e => { e.preventDefault(); dpad.setPointerCapture(e.pointerId); padFrom(e); });
+dpad.addEventListener('pointermove', e => { if (dpad.hasPointerCapture(e.pointerId)) padFrom(e); });
+['pointerup','pointercancel'].forEach(t => dpad.addEventListener(t, () => { pad.x = pad.y = 0; }));
+document.getElementById('aBtn').addEventListener('pointerdown', e => { e.preventDefault(); pressA(); });
+document.getElementById('dialog').addEventListener('click', () => advance());
+
+// ================= DIALOGUE =================
+const dEl = document.getElementById('dialog'), dText = document.getElementById('dtext');
+function openDialog(lines){ dialog = { lines, i:0, shown:0 }; dEl.hidden = false; dText.textContent = ''; }
+function advance(){
+  if (!dialog) return;
+  const line = dialog.lines[dialog.i];
+  if (dialog.shown < line.length) { dialog.shown = line.length; dText.textContent = line; return; }
+  dialog.i++; dialog.shown = 0;
+  if (dialog.i >= dialog.lines.length) { dialog = null; dEl.hidden = true; }
+}
+function nearPet(){
+  let best = null, bd = 20;
+  for (const p of pets) { const d = Math.hypot(p.x-player.x, p.y-player.y); if (d < bd) { bd = d; best = p; } }
+  return best;
+}
+function nearSign(){
+  const tx = Math.floor(player.x/T), ty = Math.floor((player.y-4)/T);
+  for (let j=-1;j<=1;j++) for (let i=-1;i<=1;i++) { const k = (tx+i)+','+(ty+j); if (SIGNS[k]) return SIGNS[k]; }
+  return null;
+}
+function pressA(){
+  if (dexOpen) return;
+  if (dialog) { advance(); return; }
+  const p = nearPet();
+  if (p) {
+    p.moving = false; p.timer = 2.5; p.face = player.x < p.x ? -1 : 1;
+    burst(p);
+    if (!found.has(p.id)) {
+      found.add(p.id); saveGame(); updateCount();
+      const lines = [`You found ${p.name}, the ${p.type} type ${p.species.toLowerCase()}!`, p.bio, `${p.name} was added to your Petdex.`];
+      if (found.size === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now.");
+      openDialog(lines);
+    } else openDialog([p.lines[Math.floor(Math.random()*p.lines.length)]]);
+    return;
+  }
+  const s = nearSign(); if (s) openDialog(s);
+}
+function burst(p){ for (let i=0;i<4;i++) particles.push({ x:p.x-6+Math.random()*12, y:p.y-14, vy:-12-Math.random()*10, life:1.2+Math.random()*.5 }); }
+
+// ================= REGION BANNER =================
+const banner = document.getElementById('banner');
+function checkRegion(){
+  const r = regionOf(Math.floor(player.x/T));
+  if (r === curRegion) return;
+  curRegion = r; banner.textContent = REGIONS[r]; banner.classList.add('show');
+  clearTimeout(bannerTimer); bannerTimer = setTimeout(() => banner.classList.remove('show'), 2200);
+}
+
+// ================= PETDEX =================
+const dexEl = document.getElementById('dex');
+function updateCount(){ document.getElementById('count').textContent = `${found.size}/${PETS.length}`; }
+function toggleDex(force){
+  dexOpen = force === undefined ? !dexOpen : force;
+  dexEl.hidden = !dexOpen;
+  if (!dexOpen) return;
+  document.getElementById('dexSub').textContent = found.size === PETS.length
+    ? `All ${PETS.length} pets found. Legend.` : `${found.size} of ${PETS.length} pets found. Keep exploring.`;
+  const grid = document.getElementById('dexGrid'); grid.innerHTML = '';
+  PETS.forEach(p => {
+    const known = found.has(p.id);
+    const card = document.createElement('div'); card.className = 'card' + (known ? '' : ' unknown');
+    const c = document.createElement('canvas'); c.width = 12; c.height = 12;
+    c.getContext('2d').drawImage(petSprite(p, !known), 0, 0);
+    const info = document.createElement('div');
+    const h3 = document.createElement('h3'), meta = document.createElement('p'), bio = document.createElement('p');
+    meta.className = 'meta';
+    if (known) {
+      h3.textContent = p.name;
+      const badge = document.createElement('span'); badge.className = 'type'; badge.textContent = p.type; badge.style.background = TYPES[p.type];
+      h3.append(badge);
+      meta.textContent = `${p.species} from ${REGIONS[p.region]}. Lives with ${p.owner}.`;
+      bio.textContent = p.bio;
+    } else {
+      h3.textContent = '???';
+      meta.textContent = `Somewhere in ${REGIONS[p.region]}`;
+      bio.textContent = 'Not found yet.';
+    }
+    info.append(h3, meta, bio); card.append(c, info); grid.append(card);
+  });
+}
+document.getElementById('dexBtn').addEventListener('click', () => toggleDex());
+document.getElementById('dexClose').addEventListener('click', () => toggleDex(false));
+dexEl.addEventListener('click', e => { if (e.target === dexEl) toggleDex(false); });
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if (!confirm('Start over? Your Petdex will be cleared.')) return;
+  try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
+  location.reload();
+});
+
+// ================= UPDATE =================
+const SPEED = 64, PET_SPEED = 24;
+function update(dt){
+  let ix = 0, iy = 0;
+  if (!dialog && !dexOpen) {
+    ix = (keys.arrowright||keys.d ? 1 : 0) - (keys.arrowleft||keys.a ? 1 : 0) + pad.x;
+    iy = (keys.arrowdown||keys.s ? 1 : 0) - (keys.arrowup||keys.w ? 1 : 0) + pad.y;
+    ix = Math.max(-1, Math.min(1, ix)); iy = Math.max(-1, Math.min(1, iy));
+  }
+  player.moving = !!(ix || iy);
+  if (player.moving) {
+    const n = Math.hypot(ix, iy);
+    moveEnt(player, ix/n*SPEED*dt, iy/n*SPEED*dt, 4, 5);
+    player.dir = Math.abs(ix) > Math.abs(iy) ? (ix > 0 ? 'right' : 'left') : (iy > 0 ? 'down' : 'up');
+    player.anim += dt;
+  }
+  checkRegion();
+  for (const p of pets) {
+    p.anim += dt; p.timer -= dt;
+    if (p.timer <= 0) {
+      if (p.moving) { p.moving = false; p.timer = 1 + Math.random()*2.5; }
+      else { const ang = Math.random()*Math.PI*2, d = Math.random()*p.range*T;
+        p.tx = p.hx + Math.cos(ang)*d; p.ty = p.hy + Math.sin(ang)*d; p.moving = true; p.timer = 4; }
+    }
+    if (p.moving) {
+      const dx = p.tx - p.x, dy = p.ty - p.y, dist = Math.hypot(dx, dy);
+      if (dist < 1) { p.moving = false; p.timer = 1 + Math.random()*2; }
+      else {
+        const step = Math.min(dist, PET_SPEED*dt);
+        if (!moveEnt(p, dx/dist*step, dy/dist*step, 3, 3)) { p.moving = false; p.timer = .5; }
+        if (Math.abs(dx) > .5) p.face = dx < 0 ? -1 : 1;
+      }
+    }
+  }
+  particles.forEach(q => { q.y += q.vy*dt; q.life -= dt; });
+  particles = particles.filter(q => q.life > 0);
+  if (dialog) {
+    const line = dialog.lines[dialog.i];
+    if (dialog.shown < line.length) {
+      dialog.shown = Math.min(line.length, dialog.shown + dt*45);
+      dText.textContent = line.slice(0, Math.floor(dialog.shown));
+    }
+  }
+}
+
+// ================= DRAW =================
+function rect(c,x,y,w,h){ ctx.fillStyle = c; ctx.fillRect(x,y,w,h); }
+function blob(cx,cy,r,c){ ctx.fillStyle = c; for (let dy=-r; dy<=r; dy++){ const w = Math.round(Math.sqrt(r*r-dy*dy)); ctx.fillRect(cx-w, cy+dy, w*2, 1); } }
+const GRASS = [ // per region: base, alt, dark tuft, light
+  ['#a3bd5c','#9ab455','#7f9a42','#c2d67a'],
+  ['#7cbd4e','#74b548','#5a9a38','#9ad466'],
+  ['#68b04a','#61a845','#4b8f36','#86ca5e'],
+];
+const FLOWERS = ['#f5e66b','#f28bb0','#ffffff','#b79cf0','#f29a5b'];
+
+function drawGround(tx,ty,sx,sy,t){
+  const c = tileAt(tx,ty), r = hash(tx,ty), r2 = hash(ty+7,tx+3);
+  const g = GRASS[regionOf(tx)];
+  if (c === '~' || c === 'w') {
+    rect('#4a90cf', sx, sy, T, T);
+    const isW = ch => ch === '~' || ch === 'w';
+    if (!isW(tileAt(tx,ty-1))) rect('#2f6aa3', sx, sy, T, 3);
+    if (!isW(tileAt(tx-1,ty))) rect('#3c7bb8', sx, sy, 2, T);
+    if (!isW(tileAt(tx+1,ty))) rect('#3c7bb8', sx+T-2, sy, 2, T);
+    if (!isW(tileAt(tx,ty+1))) rect('#a8d8f2', sx, sy+T-2, T, 2);
+    const ph = Math.floor(((t/900) + r*4) % 2);
+    rect('#86c4ec', sx+3+Math.floor(r*7)+ph, sy+5+Math.floor(r2*6), 4, 1);
+    if (c === 'w') { rect('#8a5a2e', sx, sy+1, T, 14); for (let i=0;i<4;i++) rect('#a8723c', sx, sy+2+i*4, T, 3); rect('#5e3a1a', sx, sy+1, T, 1); rect('#5e3a1a', sx, sy+14, T, 1); }
+    return;
+  }
+  if (c === '=') {
+    rect('#d4ad78', sx, sy, T, T);
+    if (!'=wf#+c'.includes(tileAt(tx,ty-1))) rect(g[0], sx, sy, T, 1);
+    if (!'=wf#+c'.includes(tileAt(tx,ty+1))) rect('#b98f5c', sx, sy+T-1, T, 1);
+    rect('#bf955d', sx+Math.floor(r*13), sy+Math.floor(r2*13), 2, 1);
+    rect('#e3c290', sx+Math.floor(r2*12), sy+Math.floor(r*12), 2, 1);
+    return;
+  }
+  if (c === '#' || c === '+') {
+    rect('#5d5f66', sx, sy, T, T);
+    rect('#6b6d74', sx+Math.floor(r*13), sy+Math.floor(r2*13), 2, 1);
+    if (c === '+') { rect('#3e4046', sx+3, sy, 2, T); rect('#3e4046', sx+11, sy, 2, T); rect('#b8bcc4', sx+3, sy, 1, T); rect('#b8bcc4', sx+11, sy, 1, T); }
+    else if (ty % 3 === 0) rect('#e8d36a', sx+7, sy+4, 2, 6);
+    return;
+  }
+  if (c === 'f') { rect('#cbc3b3', sx, sy, T, T); rect('#b3ab9b', sx, sy+7, T, 1); rect('#b3ab9b', sx+7, sy, 1, 7); rect('#b3ab9b', sx+11, sy+8, 1, 8); return; }
+  if (c === 'c') { rect('#bab7af', sx, sy, T, T); rect('#a5a29a', sx, sy+15, T, 1); if (r>.6) rect('#9a978f', sx+3+Math.floor(r2*8), sy+5, 4, 1); return; }
+  rect(r > .5 ? g[0] : g[1], sx, sy, T, T);
+  for (let i=0;i<3;i++){ const q = hash(tx*5+i, ty*3-i); if (q < .6) { const x = sx+1+Math.floor(q*23)%13, y = sy+2+Math.floor(q*41)%11; rect(g[2], x, y, 1, 2); rect(g[2], x+2, y-1, 1, 3); rect(g[3], x+1, y-2, 1, 1); } }
+  if (c === ',') {
+    for (let i=0;i<3;i++){ const fx = sx+2+Math.floor(hash(tx*3+i,ty)*11), fy = sy+3+Math.floor(hash(tx,ty*3+i)*10);
+      rect(g[2], fx, fy+1, 1, 2); rect(FLOWERS[Math.floor(hash(i,tx+ty)*5)], fx-1, fy-1, 3, 2); rect('#f0a030', fx, fy-1, 1, 1); }
+  }
+  if (c === 'F') {
+    const L = tileAt(tx-1,ty)==='F', R = tileAt(tx+1,ty)==='F';
+    const gate = tileAt(tx-1,ty)==='=' || tileAt(tx+1,ty)==='=';
+    if (L || gate) { rect('#e9e4d8', sx, sy+6, 8, 2); rect('#e9e4d8', sx, sy+10, 8, 2); }
+    if (R || gate) { rect('#e9e4d8', sx+8, sy+6, 8, 2); rect('#e9e4d8', sx+8, sy+10, 8, 2); }
+    rect('#9a958a', sx+5, sy+14, 6, 1); rect('#f4f0e6', sx+6, sy+3, 4, 11); rect('#c9c3b5', sx+9, sy+4, 1, 10);
+  }
+}
+function drawTree(sx,sy,r,reg){
+  const pine = reg === 0 && r > .5;
+  shadowE(sx+8, sy+15, 12);
+  if (pine) { // eucalypt-ish for Laverton
+    rect('#d8cbb4', sx+7, sy+4, 3, 12); rect('#b5a68a', sx+9, sy+4, 1, 12);
+    blob(sx+5, sy+1, 5, '#5f8a5a'); blob(sx+11, sy+3, 4, '#6f9a66'); blob(sx+8, sy-3, 4, '#7faa72');
+    return;
+  }
+  rect('#6b4226', sx+6, sy+8, 4, 8); rect('#4e2f1a', sx+9, sy+8, 1, 8);
+  blob(sx+8, sy+3, 8, '#2c6a33'); blob(sx+8, sy+2, 7, '#3b8a3e'); blob(sx+6, sy, 4, '#4f9e46'); blob(sx+5, sy-2, 2, '#6dbb58');
+  if (r > .8) { rect('#e05a4a', sx+10, sy+4, 2, 2); rect('#e05a4a', sx+4, sy+6, 2, 2); }
+}
+function drawBush(sx,sy){ shadowE(sx+8, sy+15, 12); blob(sx+8, sy+10, 6, '#2f7a37'); blob(sx+8, sy+9, 5, '#46993f'); blob(sx+6, sy+7, 2, '#5fb24f'); rect('#d8405a', sx+5, sy+9, 2, 2); rect('#d8405a', sx+10, sy+11, 2, 2); }
+function drawSign(sx,sy){ shadowE(sx+8, sy+15, 10); rect('#6b4226', sx+7, sy+6, 2, 10); rect('#4a2a12', sx+1, sy+1, 14, 8); rect('#b07a42', sx+2, sy+2, 12, 6); rect('#7b4a24', sx+4, sy+4, 8, 1); rect('#7b4a24', sx+4, sy+6, 6, 1); }
+function shadowE(cx,cy,w){ ctx.fillStyle = 'rgba(30,50,20,.22)'; ctx.fillRect(Math.round(cx-w/2), cy-2, w, 3); ctx.fillRect(Math.round(cx-w/2)+2, cy-3, w-4, 5); }
+
+function drawObj(o,sx,sy){
+  const W = o.w*T, H = o.h*T;
+  ctx.fillStyle = 'rgba(30,50,20,.22)'; ctx.fillRect(sx+2, sy+H-2, W, 4);
+  if (o.kind === 'shed') {
+    rect('#a7afb3', sx, sy+10, W, H-10);
+    for (let x=0;x<W;x+=3) rect('#8e979b', sx+x, sy+10, 1, H-10);
+    rect('#6c757a', sx-2, sy+2, W+4, 9); rect('#848d92', sx-2, sy+2, W+4, 2);
+    for (let x=0;x<W+4;x+=4) rect('#5d666b', sx-2+x, sy+4, 1, 7);
+    const dw = 28; rect('#5d666b', sx+10, sy+H-26, dw+2, 26); rect('#c3c8cb', sx+11, sy+H-25, dw, 25);
+    for (let y=0;y<25;y+=3) rect('#a9afb2', sx+11, sy+H-25+y, dw, 1);
+    rect('#3a4a5a', sx+W-26, sy+H-30, 16, 10); rect('#6f8fa8', sx+W-25, sy+H-29, 14, 8);
+    rect('#e8b730', sx+W-24, sy+14, 18, 6); rect('#3a2412', sx+W-22, sy+16, 14, 2);
+    return;
+  }
+  if (o.kind === 'terrace') {
+    const walls = ['#a8553a','#e8dcc2','#9fb39a','#c9b08a']; const wall = walls[Math.floor(o.seed*4)];
+    rect(wall, sx+1, sy+12, W-2, H-12);
+    if (wall === '#a8553a') for (let y=sy+14;y<sy+H;y+=4) rect('#8e4430', sx+1, y, W-2, 1);
+    rect('#5f636c', sx-1, sy, W+2, 13); rect('#73777f', sx-1, sy, W+2, 2);
+    rect('#6e5a4a', sx+W-12, sy-6, 6, 8); rect('#4e3e32', sx+W-13, sy-7, 8, 2);
+    rect('#f2efe6', sx, sy+12, W, 2);
+    rect('#3d2a1a', sx+6, sy+28, 11, 20); rect('#5a8a6a', sx+7, sy+29, 9, 19); rect('#f0c040', sx+14, sy+39, 1, 2);
+    rect('#f2efe6', sx+25, sy+22, 16, 17); rect('#7fb4d2', sx+27, sy+24, 12, 13); rect('#f2efe6', sx+32, sy+24, 1, 13);
+    rect('#f2efe6', sx, sy+26, W, 2);
+    for (let x=0;x<W;x+=4) rect('#f2efe6', sx+x+1, sy+28, 2, 2);
+    rect('#f2efe6', sx+1, sy+28, 2, 20); rect('#f2efe6', sx+W-3, sy+28, 2, 20);
+    return;
+  }
+  if (o.kind === 'cafe') {
+    rect('#2f5b4a', sx, sy+10, W, H-10);
+    rect('#24483a', sx-1, sy+2, W+2, 9); rect('#f4dfae', sx+8, sy+4, W-16, 5); rect('#2f5b4a', sx+12, sy+6, W-24, 1);
+    for (let i=0;i<8;i++) rect(i%2 ? '#f4efe0' : '#c8443a', sx+i*8, sy+14, 8, 7);
+    rect('#9a3028', sx, sy+21, W, 1);
+    rect('#f4efe0', sx+4, sy+24, 26, 20); rect('#a8d4e8', sx+6, sy+26, 22, 16); rect('#ffffff', sx+8, sy+28, 3, 3);
+    rect('#3d2a1a', sx+40, sy+26, 14, 22); rect('#6a4a2a', sx+41, sy+27, 12, 21); rect('#f0c040', sx+51, sy+37, 1, 2);
+    rect('#8a5a2e', sx+6, sy+H+2, 10, 3); rect('#5e3a1a', sx+10, sy+H+5, 2, 6);
+    rect('#f4efe0', sx+20, sy+H+6, 3, 5); rect('#8a5a2e', sx+20, sy+H+3, 4, 3);
+    return;
+  }
+  if (o.kind === 'weatherboard') {
+    rect('#efe6cf', sx+1, sy+14, W-2, H-14);
+    for (let y=sy+16;y<sy+H;y+=3) rect('#d6caae', sx+1, y, W-2, 1);
+    for (let i=0;i<16;i++){ const w = Math.round(W-8 + i*12/15); rect(i%4===3 ? '#8e4430' : '#b0583a', sx+W/2-Math.round(w/2), sy-2+i, w, 1); }
+    rect('#6b4226', sx+16, sy+30, 12, 18); rect('#f0c040', sx+25, sy+39, 1, 2);
+    [6,38].forEach(wx => { rect('#f4f0e6', sx+wx, sy+22, 14, 12); rect('#86b8d6', sx+wx+2, sy+24, 10, 8); rect('#f4f0e6', sx+wx+6, sy+24, 1, 8); });
+    rect('#c9c0a8', sx, sy+H-3, W, 3);
+  }
+}
+function shadow(x,y,w){ ctx.fillStyle = 'rgba(30,50,20,.25)'; ctx.fillRect(Math.round(x-w/2), Math.round(y-2), w, 3); }
+function drawSprite(img,x,y,flip){
+  if (!flip) { ctx.drawImage(img, x, y); return; }
+  ctx.save(); ctx.translate(x+img.width, y); ctx.scale(-1,1); ctx.drawImage(img, 0, 0); ctx.restore();
+}
+function heart(x,y){ const c = '#e2506a'; rect(c,x,y,2,1); rect(c,x+3,y,2,1); rect(c,x,y+1,5,1); rect(c,x+1,y+2,3,1); rect(c,x+2,y+3,1,1); }
+
+function draw(t){
+  const camX = Math.round(Math.max(0, Math.min(MW*T - VW*T, player.x - VW*T/2)));
+  const camY = Math.round(Math.max(0, Math.min(MH*T - VH*T, player.y - 8 - VH*T/2)));
+  const x0 = Math.floor(camX/T), y0 = Math.floor(camY/T);
+  for (let ty=y0; ty<=y0+VH; ty++) for (let tx=x0; tx<=x0+VW; tx++) drawGround(tx, ty, tx*T-camX, ty*T-camY, t);
+  const list = [];
+  for (let ty=Math.max(0,y0-1); ty<=Math.min(MH-1,y0+VH+1); ty++) for (let tx=Math.max(0,x0-1); tx<=Math.min(MW-1,x0+VW+1); tx++) {
+    const c = MAP[ty][tx], sx = tx*T-camX, sy = ty*T-camY;
+    if (c === 'T') list.push({ y:(ty+1)*T, f:() => drawTree(sx, sy, hash(tx,ty), regionOf(tx)) });
+    else if (c === 'b') list.push({ y:(ty+1)*T, f:() => drawBush(sx, sy) });
+    else if (c === 'S') list.push({ y:(ty+1)*T, f:() => drawSign(sx, sy) });
+  }
+  for (const o of OBJS) {
+    if (o.x*T > camX+VW*T+T || (o.x+o.w)*T < camX-T || o.y*T > camY+VH*T+T || (o.y+o.h)*T < camY-2*T) continue;
+    list.push({ y:(o.y+o.h)*T, f:() => drawObj(o, o.x*T-camX, o.y*T-camY) });
+  }
+  for (const p of pets) list.push({ y:p.y, f:() => {
+    const bob = p.moving && Math.floor(p.anim*6)%2 ? -1 : 0;
+    let alpha = 1;
+    if (p.ghost) { const ph = (p.anim % 6) / 6; alpha = ph > .8 ? .15 + .85*Math.abs(Math.cos((ph-.8)*Math.PI*5)) : .9; }
+    ctx.globalAlpha = alpha;
+    shadow(p.x-camX, p.y-camY, 9);
+    drawSprite(petSprite(p,false), Math.round(p.x-6-camX), Math.round(p.y-12-camY+bob), p.face < 0);
+    ctx.globalAlpha = 1;
+  }});
+  list.push({ y:player.y, f:() => {
+    const bob = player.moving && Math.floor(player.anim*8)%2 ? -1 : 0;
+    const key = player.dir === 'up' ? 'pUp' : player.dir === 'down' ? 'pDown' : 'pLeft';
+    shadow(player.x-camX, player.y-camY, 9);
+    drawSprite(getSprite(key, SPR[key], BASEPAL), Math.round(player.x-6-camX), Math.round(player.y-12-camY+bob), player.dir === 'right');
+  }});
+  list.sort((a,b) => a.y - b.y).forEach(o => o.f());
+  const np = !dialog && !dexOpen ? nearPet() : null;
+  if (np) {
+    const bx = Math.round(np.x-camX-4), by = Math.round(np.y-camY-22 + (Math.floor(t/400)%2 ? -1 : 0));
+    rect('#3a2412', bx-1, by-1, 10, 9); rect('#fff6e0', bx, by, 8, 7); rect('#fff6e0', bx+3, by+7, 2, 2);
+    if (found.has(np.id)) heart(bx+2, by+2); else { rect('#c0473a', bx+3, by+1, 2, 3); rect('#c0473a', bx+3, by+5, 2, 1); }
+  }
+  particles.forEach(q => heart(Math.round(q.x-camX), Math.round(q.y-camY)));
+}
+
+// ================= LOOP =================
+let last = performance.now();
+function frame(now){
+  const dt = Math.min(.05, (now-last)/1000); last = now;
+  update(dt); draw(now);
+  requestAnimationFrame(frame);
+}
+const hadSave = loadGame();
+updateCount();
+if (!hadSave) openDialog([
+  'Welcome to Project Princess!',
+  "Your friends' pets are scattered across Laverton, Brunswick and Reservoir.",
+  'Walk up to a pet and press A to say hello. Read the signs to find your way. Can you find them all?'
+]);
+setInterval(saveGame, 5000);
+addEventListener('pagehide', saveGame);
+document.addEventListener('visibilitychange', () => { if (document.hidden) saveGame(); });
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

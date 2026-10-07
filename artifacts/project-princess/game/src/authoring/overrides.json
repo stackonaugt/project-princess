@@ -1,0 +1,87 @@
+{
+  "version": 1,
+  "maps": {
+    "allen": {
+      "tiles": [],
+      "objects": {
+        "move": [
+          {
+            "index": 2,
+            "x": 14,
+            "y": 8
+          }
+        ],
+        "add": [],
+        "remove": []
+      },
+      "exits": {
+        "update": [],
+        "add": [],
+        "remove": []
+      },
+      "npcs": [
+        {
+          "id": "trist_test",
+          "x": 20,
+          "y": 20,
+          "at": "home"
+        }
+      ]
+    }
+  },
+  "data": {},
+  "custom": {
+    "pets": {},
+    "npcs": {
+      "trist_test": {
+        "record": {
+          "name": "trish2",
+          "look": {
+            "hair": "#d8d4cc",
+            "hairStyle": "pixie",
+            "skin": "#f0c8a8",
+            "shirt": "#c8ccd0",
+            "pants": "#c8ccd0",
+            "shoes": "#6a5a4a",
+            "glasses": "#6a4a2a",
+            "scarf": "#3a8a6a",
+            "collar": true
+          }
+        },
+        "text": {
+          "role": "Helen's mum. Lives at 72 Woods St",
+          "lines": [
+            [
+              "Hello, I'm trish2."
+            ]
+          ],
+          "hints": {
+            "princess": "Princess will be out on Allen St, guarding the court. Bring her a ribbon. She likes to look her best."
+          },
+          "giftLine": "Here, take some treats for the dogs. I buy them in bulk. Do not tell Gordon how much bulk.",
+          "heartScenes": {
+            "2": [
+              "Trish: \"Come in, come in. I made too much lasagne. I always make too much lasagne.\"",
+              "You leave with a container. It is still warm."
+            ],
+            "4": [
+              "Trish shows you a photo album. Helen at six, dressed as a poodle for Book Week.",
+              "\"She was always going to end up with Princess, wasn't she.\""
+            ],
+            "6": [
+              "Trish: \"You are family now, love. That means you get the good tupperware. The one with the lid.\""
+            ],
+            "10": [
+              "Trish sits you down at the kitchen table at 72 Woods St. Gordon is sent out of the room.",
+              "\"Right. There is one thing I have never told anyone. Not even Helen.\""
+            ]
+          },
+          "helpsInBattle": "Trish turns up with a casserole. Everyone feels better."
+        },
+        "art": {
+          "sprite": "npcs/trish2.png"
+        }
+      }
+    }
+  }
+}
