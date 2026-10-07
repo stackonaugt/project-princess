@@ -7,3 +7,4 @@ folder one level up (for example `templates/pets/princess.png` to
 Files in this folder are never loaded by the game. They are examples only.
 
 Ground tiles here are exported at 32x32 (two pixels per game pixel).
+People are their front-facing (down) walk cycle: three 16x32 frames side by side.
