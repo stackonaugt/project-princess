@@ -101,17 +101,20 @@ export function openNews(panel, close, { lines, votes = null }) {
 }
 
 // The party mini-games: the dance floor (rhythm), behind the bar, guest trivia.
-// Calls done(score) when finished (0 to 8).
+// Calls done(score) when finished (0 to 8). With `only` (1 rhythm, 2 bar,
+// 3 trivia) it runs just that game, starting from `score`, so the party can
+// break for mingling between games; after trivia it shows the final score.
 // Enter both clicks a focused button and sends the A action: run once only.
 const once = fn => { let used = false; return () => { if (!used) { used = true; fn(); } }; };
 
-export function openParty(panel, close, { guests, done }) {
-  let score = 0, stage = 0, action = null, cleanup = () => {};
+export function openParty(panel, close, { guests, done, only = null, score: score0 = 0 }) {
+  let score = score0, stage = 0, action = null, cleanup = () => {};
   const head = h('div', { class: 'm-head' }, h('h2', {}, 'The September Babies Bash'));
   const area = h('div', { class: 'm-scroll party' });
   panel.replaceChildren(head, area);
   const scoreLine = () => h('p', { class: 'small center meta' }, `Party score: ${score}`);
-  const next = () => { cleanup(); cleanup = () => {}; action = null; stage++; [rhythm, bar, trivia, finish][stage - 1](); };
+  const next = () => { cleanup(); cleanup = () => {}; action = null; if (only && stage) { if (stage !== 3) return close(); stage = 3; }
+    stage = only && !stage ? only : stage + 1; [rhythm, bar, trivia, finish][stage - 1](); };
 
   // 1. Rhythm: notes fall down four lanes; hit each one as it crosses the line.
   const rhythm = () => {
@@ -151,7 +154,7 @@ export function openParty(panel, close, { guests, done }) {
       const pts = hits >= 15 ? 3 : hits >= 11 ? 2 : hits >= 6 ? 1 : 0;
       score += pts; (pts >= 2 ? sfx.heart : sfx.bump)();
       msg.textContent = `${hits} of ${notes.length} notes! ${pts >= 3 ? 'The whole backyard is dancing. Nicholas does the worm.' : pts >= 2 ? 'Solid moves. Paddy dad-dances in approval.' : 'The twins love it anyway. They love everything.'}`;
-      const go = h('button', { class: 'wood-btn' }, 'Next game');
+      const go = h('button', { class: 'wood-btn' }, only ? 'Back to the party' : 'Next game');
       go.onclick = action = once(next);
       msg.append(h('div', { class: 'center' }, go)); go.focus();
     };
@@ -196,7 +199,7 @@ export function openParty(panel, close, { guests, done }) {
         const good = chosen === o.drink && Math.abs(pos - (z0 + 0.06)) < 0.08;
         if (good) { score++; sfx.heart(); } else sfx.bump();
         msg.textContent = chosen !== o.drink ? `${o.name}: "That's... not what I asked for. I'll drink it though."` : pos > 1 ? 'It flies off the end of the bar. Pina catches it. Somehow.' : good ? `Perfect! ${o.name} catches it without looking. Legend.` : `${o.name} has to lean right over to reach it. Close!`;
-        const go = h('button', { class: 'wood-btn' }, i < 2 ? 'Next order' : 'Next game');
+        const go = h('button', { class: 'wood-btn' }, i < 2 ? 'Next order' : only ? 'Back to the party' : 'Next game');
         go.onclick = once(() => { i++; if (i < 3) serve(); else next(); });
         action = () => go.click();
         msg.append(h('div', { class: 'center' }, go)); go.focus();
@@ -241,6 +244,14 @@ export function openParty(panel, close, { guests, done }) {
 
   const start = h('button', { class: 'wood-btn' }, 'Let\'s go!');
   start.onclick = action = once(next);
+  if (only) {
+    const GAMES = ['', 'The dance floor', 'Behind the bar', 'Guest trivia'];
+    area.replaceChildren(h('div', { class: 'note center' }, h('h4', {}, `Game time: ${GAMES[only]}`),
+      h('p', { class: 'small' }, only === 1 ? 'Helen turns the music up. Everyone onto the lawn!' : only === 2 ? 'The esky is open and the orders are coming in.' : 'Helen taps a glass. "Who here knows their neighbours?"'), scoreLine()),
+      h('div', { class: 'center' }, start));
+    start.focus();
+    return { action: () => action?.(), cleanup: () => { cleanup(); done(score); } };
+  }
   area.replaceChildren(h('div', { class: 'note' }, h('h4', {}, `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'} turned up!`),
     h('div', { class: 'party-guests' }, ...guests.map(id => h('img', { class: 'pix', src: npcIcon(id), alt: id }))),
     h('p', { class: 'small' }, 'Dancing, drinks and trivia. Do well and the whole town hears about it.'),

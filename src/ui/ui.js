@@ -203,7 +203,7 @@ export const ui = {
   paper(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('paper'); }); },
   news(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('news'); }); },
   // The party games. Resolves with the score.
-  party(guests) { return new Promise(resolve => { this._storyOpts = { guests, done: resolve }; this.openModal('party'); }); },
+  party(guests, opts = {}) { return new Promise(resolve => { this._storyOpts = { guests, ...opts, done: resolve }; this.openModal('party'); }); },
 
   // The pet shop. Resolves when you close it.
   shop(id = 'petshop') { return new Promise(resolve => { this._shopResolve = resolve; this._shopId = id; this.openModal('shop'); }); },

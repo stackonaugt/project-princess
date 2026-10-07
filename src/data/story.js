@@ -200,6 +200,13 @@ export const PARTY_STORIES = {
   trish: ['"When Helen was little she ran a pet school for the neighbourhood snails. Charged them a leaf each. Some things never change!"'],
 };
 export const PARTY_STORY_DEFAULT = name => [`${name} tells a long story about a parking ticket in Footscray. It has a twist. Everybody gasps.`];
+// Guests you have already heard from.
+export const PARTY_MINGLE = [
+  name => `${name} is deep in a chat about rent prices by the esky.`,
+  name => `${name}: "Best party in Laverton. Don't tell anyone in Altona."`,
+  name => `${name} is teaching the twins a dance. It is mostly stomping.`,
+  name => `${name} raises a sausage in a toast to you.`,
+];
 export const PARTY_END = [
   'It gets late. The fairy lights glow, the twins are asleep in a pile of party hats, and the music gets softer.',
   'Helen: "Has everyone had a drink? Have I had a drink? I think I\'ve had... a few drinks."',

@@ -12,7 +12,7 @@ import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SI
 const COUNCILLORS = COUNCIL_ALL;
 import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF } from '../data/cooking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
 // What blocks a gated exit until you beat its keeper (`gate` on an exit).
@@ -886,6 +886,7 @@ export class WorldScene extends Phaser.Scene {
 
   // ------------------------------------------------------------ people, items, trains
   async talkToNpc(npc) {
+    if (this.party?.guests.includes(npc.id)) return this.partyChat(npc);
     const info = npc.info, day = state.data.day;
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
@@ -1416,6 +1417,12 @@ export class WorldScene extends Phaser.Scene {
       this.lockedExit = ex;
       return this.bounceBack(ex, GATES[ex.gate] || ['The way is closed.']);
     }
+    // Nobody leaves the party early, least of all the host.
+    if (ex.to && this.party) {
+      if (this.lockedExit === ex) return;
+      this.lockedExit = ex;
+      return this.bounceBack(ex, ['You can\'t leave your own party! Go and talk to your guests.']);
+    }
     // A shop is open while its shopkeeper is in: the door is locked once they go home.
     const shut = ex.to && this.shutShop(ex.to);
     if (shut) {
@@ -1842,7 +1849,7 @@ export class WorldScene extends Phaser.Scene {
   async partyTime() {
     const s = story(), d = state.data;
     if (!d.flags.partyNow || this.regionId !== 'yard' || this.partying) return;
-    this.partying = true; delete d.flags.partyNow;
+    this.partying = true;
     const guests = attendees();
     // Everyone who RSVP'd turns up in the backyard.
     const free = [];
@@ -1856,14 +1863,43 @@ export class WorldScene extends Phaser.Scene {
     const decos = Object.keys(ITEMS).filter(k => ITEMS[k].deco && state.count(k));
     this.partyDecor(decos);
     ui.banner('The September Babies Bash', `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'}`);
-    await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.', 'Helen: "Right! Party games!"']);
-    const score = await ui.party(guests);
-    // Stories round the fire pit, then Helen has had a big night.
-    for (const id of guests.slice(0, 4)) {
-      const npc = this.npcs.find(n => n.id === id);
-      if (npc) { this.facePlayerTo(npc.x, npc.y); this.heartsFx(npc, 2); }
-      await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), { name: NPCS[id]?.name, portrait: npcIcon(id) });
-    }
+    await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.',
+      guests.length ? 'Helen: "Go and say hello to everyone! Party games in a bit."' : 'Helen: "Right! Party games!"']);
+    // Mingle: talk to the guests to hear their stories. Every three stories
+    // (or once you have heard everyone) a party game starts.
+    this.party = { guests, heard: [], score: 0, games: 0 };
+    if (guests.length) ui.toast('Mingle! Talk to your guests.');
+    else this.partyGames();
+  }
+  // A guest at the party: their story the first time, a happy line after.
+  async partyChat(npc) {
+    const p = this.party, id = npc.id, opts = { name: NPCS[id]?.name, portrait: npcIcon(id) };
+    npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
+    if (p.heard.includes(id)) return ui.say([pick(PARTY_MINGLE)(NPCS[id]?.name || 'A guest')], opts);
+    p.heard.push(id);
+    this.heartsFx(npc, 2);
+    await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), opts);
+    const left = p.guests.length - p.heard.length;
+    if (p.heard.length % 3 === 0 || !left) await this.partyGames();
+    else { const n = Math.min(left, 3 - p.heard.length % 3); ui.toast(`${n} more ${n === 1 ? 'chat' : 'chats'} till the next game.`); }
+  }
+  // Run the next party game, or every game left once everyone has been heard.
+  async partyGames() {
+    const p = this.party;
+    if (!p || this.partyGaming) return;
+    this.partyGaming = true;
+    const all = p.heard.length >= p.guests.length;
+    do {
+      p.games++;
+      p.score = await ui.party(p.guests, { only: p.games, score: p.score });
+    } while (all && p.games < 3);
+    this.partyGaming = false;
+    if (p.games >= 3) return this.partyEnd();
+    ui.toast('Back to mingling!');
+  }
+  async partyEnd() {
+    const s = story(), d = state.data, { guests, score } = this.party;
+    this.party = null; delete d.flags.partyNow;
     state.data.minutes = Math.max(state.data.minutes, 23 * 60);
     await ui.say(PARTY_END.slice(0, 3), { name: 'Helen' });
     this.tweens.add({ targets: this.player, angle: { from: -12, to: 12 }, duration: 350, yoyo: true, repeat: 3 });
