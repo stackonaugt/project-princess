@@ -54,6 +54,8 @@ There is no test suite yet. Verify changes by driving the game in headless Chrom
 
 ## Architecture
 
+Art pilot decisions and status are in [docs/ART_DIRECTION.md](docs/ART_DIRECTION.md). Helen's built-in player frames now use `src/art/paint/helen.js`; the Allen St house uses `src/art/paint/allen-house.js`. Their texture sizes and existing custom-PNG override behaviour are unchanged. Update relevant documentation alongside implementation changes.
+
 ```
 index.html            HTML shell: HUD, dialogue box, touch controls, modal container
 style.css             All interface styles (wood and parchment look)
