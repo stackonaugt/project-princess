@@ -990,10 +990,18 @@ export class WorldScene extends Phaser.Scene {
     if (act === 'vote') {
       if (!next) return ui.say([words.nothing], opts);
       const v = MOTIONS[next].votes, sw = v.swing[id];
+      // A councillor who wants to meet a pet: bring one along on your team.
+      if (sw?.pet && !state.swingWon(next, id) && state.data.party.length) {
+        state.winOver(next, id); sfx.found(); this.heartsFx(npc, 3); this.save();
+        return ui.say([`"${MOTIONS[next].title}?"`, `${PETS.find(p => p.id === state.data.party[0])?.name || 'Your pet'} trots up and sits on ${name}'s foot.`, `${name}: ${sw.won}`], opts);
+      }
       const line = v.yes.includes(id) || (sw && state.swingWon(next, id)) ? (words.yes || `${name}: "Yes from me. Easy."`)
         : v.no.includes(id) ? (words.no || `${name}: "No. Not this one. Not ever."`)
         : `(${name} ${sw.hint}.)`;
-      return ui.say([`"${MOTIONS[next].title}?"`, line], opts);
+      await ui.say([`"${MOTIONS[next].title}?"`, line], opts);
+      // Now you know what they want: it goes on the To Do list.
+      if (sw && !state.swingWon(next, id) && state.learnSwing(next, id)) { ui.toast('Added to your To Do list'); this.save(); }
+      return;
     }
     if (['paddy', 'rayna', 'deanna'].includes(id)) return ui.say([words.backYes], opts);
     if (['lesley', 'malcolm'].includes(id)) return ui.say([words.backNo], opts);
@@ -1003,7 +1011,10 @@ export class WorldScene extends Phaser.Scene {
   // Paddy's tip for the first motion on the board someone is still undecided on.
   councilTip() {
     const m = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id) && state.councilVote(id).undecided.length && !state.councilVote(id).passed);
-    return m ? MOTIONS[m].tip : null;
+    if (!m) return null;
+    // Paddy's tip puts everyone still undecided on your To Do list.
+    if (state.councilVote(m).undecided.map(w => state.learnSwing(m, w)).some(Boolean)) setTimeout(() => ui.toast('Added to your To Do list'), 300);
+    return MOTIONS[m].tip;
   }
   // The street party for the community garden motion: three homegrown dishes.
   streetPartyOpen() { return state.motionUnlocked('gardenplus') && !state.motionPassed('gardenplus') && Object.entries(MOTIONS.gardenplus.votes.swing).some(([w, h]) => h.party && !state.swingWon('gardenplus', w)); }
@@ -1595,7 +1606,9 @@ export class WorldScene extends Phaser.Scene {
     const silly = sillyFor(d.day, d.council.silly);
     const results = state.holdMeeting(d.day);
     for (const i of silly) {
-      const who = pick(['rayna', 'deanna', 'kirsty', 'dahlia', 'malcolm']), yes = sillyYes(d.day, i);
+      // Friendship with council quietly helps the silly motions along.
+      const avg = COUNCIL_ALL.reduce((n, c) => n + state.friendHearts(c), 0) / COUNCIL_ALL.length;
+      const who = pick(['rayna', 'deanna', 'kirsty', 'dahlia', 'malcolm']), yes = Math.min(7, sillyYes(d.day, i) + (avg >= 3) + (avg >= 6));
       await say(who, [`I move that we ${SILLY_MOTIONS[i][0].toLowerCase()}${SILLY_MOTIONS[i].slice(1)}.`]);
       await ui.say([`Cr ${pick(['Hawley', 'Grimes', 'Bishopp', 'Kellandra'])}: ${pick(SILLY_DEBATE.yes)}`, `Cr ${pick(['Bentleigh', 'Dismay'])}: ${pick(SILLY_DEBATE.no)}`]);
       if (yes >= 4) { d.council.silly.push(i); sfx.found(); await say('paddy', [`${yes} for, ${7 - yes} against. CARRIED! Someone tell the newsletter.`]); }

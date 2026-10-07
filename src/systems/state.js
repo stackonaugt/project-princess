@@ -311,7 +311,9 @@ export const state = {
   // Council motions (data/council.js)
   // Motions go up on the noticeboard one at a time as you settle in: the
   // first once you have found two pets, another with each pet after that.
-  motionUnlocked(id) { return this.motionPassed(id) || MOTION_ORDER.indexOf(id) < this.foundCount(); },   // one more motion per pet found
+  // One motion on the board at a time: the next goes up once the last has
+  // passed (and you have found one more pet than the motions before it).
+  motionUnlocked(id) { const i = MOTION_ORDER.indexOf(id); return this.motionPassed(id) || (i < this.foundCount() && MOTION_ORDER.slice(0, i).every(m => this.motionPassed(m))); },
   motionPassed(id) { return this.data.council.passed.includes(id); },
   motionGiven(id) { return this.data.council.given[id] || (this.data.council.given[id] = {}); },
   motionReady(id) { return motionReady(id, this.data.council.given[id]); },
@@ -333,9 +335,11 @@ export const state = {
   swingWon(motion, who) {
     const w = MOTIONS[motion].votes.swing[who];
     if (!w) return false;
-    if (w.hearts) return this.friendHearts(who) >= this.swingHearts(w.hearts);
     return (this.data.council.won[motion] || []).includes(who);
   },
+  // What an undecided councillor wants, once you have found out (To Do list).
+  swingKnown(motion, who) { return this.data.council.known.includes(`${motion}:${who}`); },
+  learnSwing(motion, who) { const k = `${motion}:${who}`; if (this.data.council.known.includes(k)) return false; this.data.council.known.push(k); return true; },
   winOver(motion, who) { const a = this.data.council.won[motion] || (this.data.council.won[motion] = []); if (!a.includes(who)) a.push(who); },
   // How each councillor votes on a motion right now.
   councilVote(motion) {

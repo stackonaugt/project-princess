@@ -13,6 +13,7 @@ import { loadSongs, beats } from './karaoke.js';
 import { ITEMS } from '../data/items.js';
 import { NPCS } from '../data/npcs.js';
 import { FRIENDS } from '../data/friends.js';
+import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 
 // The To Do app: the story's jobs, and today's requests from friends.
 let todoTab = 'todo';
@@ -24,6 +25,19 @@ export function openStoryApp(panel, close) {
     else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
     else if (s.done[n]) body.push(h('div', { class: 'note' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
     else body.push(todoNote(GOALS[n], objectives(n)));
+    // Council: the motion on the board, and what you know the undecided want.
+    const open = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id));
+    if (open) {
+      const m = MOTIONS[open], v = state.councilVote(open);
+      body.push(todoNote(`Council: ${m.title}`, [
+        { text: 'Chip in what it needs on the noticeboard in the civic centre foyer', done: state.motionReady(open) },
+        ...v.undecided.filter(w => state.swingKnown(open, w)).map(w => ({ text: `${NPCS[w].name}: ${m.votes.swing[w].todo}`, done: false })),
+        ...(v.undecided.some(w => !state.swingKnown(open, w)) ? [{ text: 'Find out what the other undecided councillors want: ask them, or ask Paddy at home in the evening', done: false }] : []),
+      ]));
+    }
+    // Side missions
+    const bake = state.data.side.bake;
+    if (bake === 1) body.push(todoNote('Beat Meghan Hopper at the bake-off', [{ text: 'Betty says only a special recipe will beat her. Learn one, bake it, and enter it at Betty\'s on a Saturday (Moreland Rd).', done: false }]));
     if (partyReady()) body.push(h('div', { class: 'center' }, h('button', { class: 'wood-btn', onclick: () => { close(); bus.emit('story:party'); } }, 'Throw the party!')));
     const past = Object.keys(s.done).map(Number).filter(k => k < n || (k === n && n > 4));
     if (past.length) body.push(h('div', { class: 'note' }, h('h4', {}, 'Done'), ...past.map(k => h('p', { class: 'todo-item done' }, h('span', { class: 'todo-box' }, '✓'), GOALS[k]))));

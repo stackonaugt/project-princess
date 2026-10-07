@@ -20,7 +20,7 @@ export function openCouncil(panel, close) {
         h('div', { class: 'note' }, h('h4', {}, 'How this board works'),
           h('p', { class: 'small' }, 'Each card below is a motion: an idea for council to vote on. Chip in what it needs from your bag or your wallet. Once it has everything, it goes to the next Tuesday meeting at 6:30pm and council votes on it. If it passes, something in town changes.')),
         h('div', { class: 'note' }, h('h4', {}, 'Winning votes'),
-          h('p', { class: 'small' }, `Every motion splits council differently. Win over the undecided: some want a present, some want to be your friend, some need convincing another way. Paddy has tips at home in the evening. At most ${MAX_PER_MEETING} motions go to each meeting.`),
+          h('p', { class: 'small' }, `One motion at a time. Every motion splits council differently. To win over the undecided, ask them about the vote, or ask Paddy at home in the evening. What they want goes on your To Do list.`),
           state.paddyDeposed() ? h('p', { class: 'small' }, 'Paddy is not mayor right now, so councillors won by friendship need twice the hearts.') : null),
         state.foundCount() < 1 ? h('div', { class: 'note' }, h('p', {}, 'The noticeboard is empty apart from a flyer for a lost cockatoo. Council business can wait: go and find some more pets first.')) : null,
         ...MOTION_ORDER.filter(id => state.motionUnlocked(id)).map(id => {
@@ -40,8 +40,9 @@ export function openCouncil(panel, close) {
           const v = passed ? null : state.councilVote(id);
           const undecided = v ? v.undecided.map(w => {
             const sw = m.votes.swing[w];
-            const how = sw.hearts ? ` (${state.swingHearts(sw.hearts)} hearts, you have ${state.friendHearts(w)})` : '';
-            return h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: npcIcon(w), alt: '', width: 24, height: 24 }), h('span', { class: 'small' }, `${short(w)} ${sw.hint}${how}.`));
+            // The board only says who is undecided. Asking them (or Paddy) tells you what they want.
+            const known = state.swingKnown(id, w);
+            return h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: npcIcon(w), alt: '', width: 24, height: 24 }), h('span', { class: 'small' }, known ? `${short(w)}: undecided. To do: ${sw.todo}.` : `${short(w)}: undecided. Ask them about it.`));
           }) : [];
           return h('div', { class: 'note' },
             h('h4', {}, m.title),
