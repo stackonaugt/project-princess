@@ -17,7 +17,7 @@ import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party' };
+const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party', pantry: 'Pantry' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -43,6 +43,7 @@ export function openShop(panel, close, shopId = 'petshop') {
     const itemRow = id => { const it = ITEMS[id]; return { name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }; };
     if (tab === 'treats') return (shop.treats || Object.keys(ITEMS).filter(id => !ITEMS[id].local)).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
     if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
+    if (tab === 'pantry') return (shop.pantry || []).map(itemRow);
     if (tab === 'pranks') return Object.values(PRANKS).map(pr => pr.item).map(itemRow);
     if (tab === 'remedies') return (shop.remedies || []).map(itemRow);
     if (tab === 'spells') return SPELL_ORDER.map(id => {
@@ -114,6 +115,7 @@ export function openShop(panel, close, shopId = 'petshop') {
         refused(tab) ? h('div', { class: 'note' }, h('p', {}, 'Sam leans right over the counter. "Absolutely not, little one. Lollies are that way."')) : null,
         tab === 'vapes' && !refused(tab) ? h('p', { class: 'small' }, 'Presents for adult friends who already vape. Sam says the law changed and these are "basically pharmacy only". There is a sign. It says VAPES.') : null,
         tab === 'drinks' || tab === 'gifts' || tab === 'books' || tab === 'lollies' ? h('p', { class: 'small' }, 'Presents for your friends around town. Not for pets. Everyone has favourites: check the Friends app.') : null,
+        tab === 'pantry' ? h('p', { class: 'small' }, 'Baking supplies for the kitchen at home. Cook books from Brunswick Bound teach new recipes.') : null,
         tab === 'tools' ? h('p', { class: 'small' }, 'Garden tools work as soon as you buy them.') : null,
         tab === 'books' ? h('p', { class: 'small' }, 'Classics and the latest hits. Books make lovely presents. Some friends are big readers.') : null,
         tab === 'fishing' ? h('p', { class: 'small' }, 'With a rod, face the water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A.') : null,

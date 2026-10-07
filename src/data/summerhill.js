@@ -213,7 +213,7 @@ export const SH_ITEMS = {
 };
 
 export const SH_SHOPS = {
-  summerfresh: { name: 'Coles', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['treats', 'seeds', 'gifts'], seeds: ['carrot', 'potato', 'zucchini', 'pumpkin'], gifts: ['timtams', 'icedcoffee', 'gaytime', 'flowers'] },
+  summerfresh: { name: 'Coles', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['treats', 'pantry', 'seeds', 'gifts'], pantry: ['flour', 'sugar', 'butter', 'milk', 'egg', 'chocchips', 'lemon'], seeds: ['carrot', 'potato', 'zucchini', 'pumpkin', 'strawberry', 'basil', 'tomato'], gifts: ['timtams', 'icedcoffee', 'gaytime', 'flowers'] },
   chemist: { name: 'Summerhill Discount Chemist', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['handcream', 'sunscreen'] },
   newsagent: { name: 'Summerhill Newsagency', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['puzzlebook', 'bdaycard', 'paperback'] },
   hotbread: { name: 'Bakers Delight', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['sausageroll', 'vanillaslice', 'fingerbun'] },

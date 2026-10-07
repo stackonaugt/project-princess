@@ -8,8 +8,9 @@ import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
 import { isAt, onDuty, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
-import { MOTIONS, MOTION_ORDER, ALLIES, AGAINST, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
-const COUNCILLORS = ['paddy', ...ALLIES, ...AGAINST, ...Object.keys(SWING)];
+import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
+const COUNCILLORS = COUNCIL_ALL;
+import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF } from '../data/cooking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
 import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
@@ -909,6 +910,8 @@ export class WorldScene extends Phaser.Scene {
       if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
       if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
       if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
+      if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
+      if (npc.id === 'betty' && weekday(day) === BAKE_OFF.day) choices.push({ label: 'Enter the bake-off', value: 'bakeoff' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
       if (!choices.length) break;
@@ -925,6 +928,8 @@ export class WorldScene extends Phaser.Scene {
       if (act === 'shop') { await ui.shop(info.shop); }
       if (act === 'karaoke') { await this.karaoke(npc, opts); break; }
       if (act === 'bowls') { await this.bowls(npc, opts); break; }
+      if (act === 'party') await this.streetParty(npc, opts);
+      if (act === 'bakeoff') await this.bakeOff(npc, opts);
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'prank') await this.prank(npc, opts);
       if (act === 'invite') await this.invite(npc, opts);
@@ -967,17 +972,59 @@ export class WorldScene extends Phaser.Scene {
   // Councillors: their view on the next motion, and whether they'll back Paddy.
   async askCouncillor(npc, act, opts) {
     const id = npc.id, next = MOTION_ORDER.find(m => state.motionUnlocked(m) && !state.motionPassed(m));
-    const ally = ALLIES.includes(id), against = AGAINST.includes(id);
     const need = SWING[id] ? state.swingHearts(SWING[id]) : 0, won = !SWING[id] || state.friendHearts(id) >= need;
-    const words = COUNCIL_VIEWS[id];
+    const words = COUNCIL_VIEWS[id], name = NPCS[id].name;
     if (act === 'vote') {
       if (!next) return ui.say([words.nothing], opts);
-      return ui.say([`"${MOTIONS[next].title}?"`, ally ? words.yes : against ? words.no : won ? words.yes : words.unsure], opts);
+      const v = MOTIONS[next].votes, sw = v.swing[id];
+      const line = v.yes.includes(id) || (sw && state.swingWon(next, id)) ? (words.yes || `${name}: "Yes from me. Easy."`)
+        : v.no.includes(id) ? (words.no || `${name}: "No. Not this one. Not ever."`)
+        : `(${name} ${sw.hint}.)`;
+      return ui.say([`"${MOTIONS[next].title}?"`, line], opts);
     }
-    if (ally) return ui.say([words.backYes], opts);
-    if (against) return ui.say([words.backNo], opts);
+    if (['paddy', 'rayna', 'deanna'].includes(id)) return ui.say([words.backYes], opts);
+    if (['lesley', 'malcolm'].includes(id)) return ui.say([words.backNo], opts);
     if (won) return ui.say([words.backYes], opts);
-    return ui.say([words.backMaybe, `(${NPCS[id].name} would need ${need} hearts to back Paddy. You have ${state.friendHearts(id)}. Gifts help.)`], opts);
+    return ui.say([words.backMaybe, `(${name} would need ${need} hearts to back Paddy. You have ${state.friendHearts(id)}. Gifts help.)`], opts);
+  }
+  // Paddy's tip for the first motion on the board someone is still undecided on.
+  councilTip() {
+    const m = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id) && state.councilVote(id).undecided.length && !state.councilVote(id).passed);
+    return m ? MOTIONS[m].tip : null;
+  }
+  // The street party for the community garden motion: three homegrown dishes.
+  streetPartyOpen() { return state.motionUnlocked('gardenplus') && !state.motionPassed('gardenplus') && Object.entries(MOTIONS.gardenplus.votes.swing).some(([w, h]) => h.party && !state.swingWon('gardenplus', w)); }
+  async streetParty(npc, opts) {
+    const dishes = state.bagItems().filter(id => ITEMS[id].homegrown).flatMap(id => Array(state.count(id)).fill(id)).slice(0, 3);
+    if (dishes.length < 3) return ui.say(['Chris: "A street party for the garden? Love it. Bring three dishes made from veggies you grew yourself. Soups, sugo, a tart. Then we party."', `(You have ${dishes.length} of 3.)`], opts);
+    dishes.forEach(id => state.removeItem(id));
+    sfx.found();
+    const who = Object.entries(MOTIONS.gardenplus.votes.swing).filter(([, h]) => h.party).map(([w]) => w);
+    who.forEach(w => state.winOver('gardenplus', w));
+    await ui.say(['Chris strings up bunting between the bean poles. Half of Reservoir turns up with folding chairs.', `Your ${dishes.map(id => ITEMS[id].name.toLowerCase()).join(', ')} disappear in minutes.`,
+      `${who.map(w => NPCS[w].name).join(' and ')} wander through, eat seconds, and shake Chris's hand. "Fine. The garden feeds people. I'm convinced."`, 'They will vote yes on expanding the community garden.'], opts);
+    this.save();
+  }
+  // The Moreland Rd Bake-Off, Saturdays at Betty's.
+  async bakeOff(npc, opts) {
+    const week = Math.floor(state.data.day / 7);
+    if (state.data.flags.bakeoffWeek === week) return ui.say([BAKE_OFF.done], opts);
+    await ui.say(BAKE_OFF.intro, opts);
+    const baked = state.bagItems().filter(id => ITEMS[id].baked && COOK_RECIPES[id]);
+    if (!baked.length) return ui.say([BAKE_OFF.noEntry], opts);
+    const pickId = await ui.say({ text: 'What are you entering?', choices: [...baked.map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32) })), { label: 'Not today', value: null }] }, { ...opts, cancelValue: null });
+    if (!pickId) return;
+    state.removeItem(pickId); state.data.flags.bakeoffWeek = week;
+    const r = rng(state.data.day * 17 + 3), rivals = [...BAKE_OFF.rivals].sort(() => r() - 0.5).slice(0, 3).map(x => ({ ...x, score: 5 + Math.floor(r() * 5) }));
+    const mine = COOK_RECIPES[pickId].score + Math.floor(Math.random() * 3) + (ITEMS[pickId].homegrown ? 1 : 0);
+    await ui.say(rivals.map(x => `${x.name} brings ${x.dish}. Betty takes a bite... ${x.score} out of 12.`), opts);
+    await ui.say([`Your ${ITEMS[pickId].name.toLowerCase()}. Betty chews. Betty closes her eyes. ${mine} out of 12.`], opts);
+    const place = rivals.filter(x => x.score > mine).length, prize = BAKE_OFF.prize[place] || 0;
+    if (prize) state.addMoney(prize);
+    if (place === 0) { state.addItem('blueribbon'); sfx.found(); this.heartsFx(npc, 8); }
+    else if (prize) sfx.pickup(); else sfx.sad();
+    await ui.say([BAKE_OFF.results[place] + (prize ? ` You win $${prize}.` : ' Better luck next Saturday.'), ...(place === 0 ? [BAKE_OFF.win] : [])], opts);
+    this.save();
   }
 
   async chatNpc(npc, opts) {
@@ -1002,6 +1049,13 @@ export class WorldScene extends Phaser.Scene {
       if (info.greetsPets && state.data.party.length) {
         const names = state.data.party.map(id => form(id).name);
         lines = [`${info.name} crouches down. "${names.join('! ')}! Hello, hello! Who\'s a good team? You are. All of you."`, ...lines];
+      }
+      // Paddy at home in the evening: a tip on winning over council
+      if (npc.id === 'paddy' && this.region.home && state.data.minutes >= 18 * 60 && Math.random() < 0.7) { const tip = this.councilTip(); if (tip) lines = [`Paddy: "${tip}"`]; }
+      // Shannon knows which book each councillor would vote for (the street library)
+      if (npc.id === 'shannon' && state.motionUnlocked('bookswap') && !state.motionPassed('bookswap') && Math.random() < 0.7) {
+        const left = Object.keys(MOTIONS.bookswap.votes.swing).filter(w => !state.swingWon('bookswap', w));
+        if (left.length) lines = ['Shannon: "Shopping for the council? I\'ve got a book for every one of them."', BOOK_RECS[pick(left)]];
       }
       // Paddy's advice once a day, before anything else.
       if (npc.id === 'paddy' && f.talkedDay !== day && !npc.spot.leave) lines = [...lines, this.paddyAdvice()];
@@ -1051,6 +1105,7 @@ export class WorldScene extends Phaser.Scene {
     const reward = fi.rewards?.[hearts];
     if (reward?.item) { state.addItem(reward.item, reward.n || 1); await ui.say(`You got: ${reward.n || 1} ${ITEMS[reward.item].name}.`, opts); }
     if (reward?.money) { state.addMoney(reward.money); await ui.say(`You got: $${reward.money}.`, opts); }
+    for (const rid of RECIPE_ORDER) { const h = COOK_RECIPES[rid].learn?.hearts; if (h && h[0] === npc.id && h[1] <= hearts && !state.data.recipes.includes(rid)) { state.data.recipes.push(rid); sfx.found(); await ui.say(TEACH_LINES[rid], opts); } }
     if (hearts >= 4 && fi.assist) await ui.say(`${npc.info.name} has your back now. Battle near their part of town and they might turn up to help.`);
   }
 
@@ -1075,6 +1130,16 @@ export class WorldScene extends Phaser.Scene {
     }[reaction];
     if (reaction === 'love' || reaction === 'like') { sfx.heart(); this.heartsFx(npc, reaction === 'love' ? 8 : 3); } else if (reaction === 'dislike') sfx.sad();
     const lines = [text];
+    // A present that wins a councillor over on a motion (data/council.js)
+    for (const id of MOTION_ORDER) {
+      const sw = MOTIONS[id].votes.swing[npc.id];
+      if (sw?.gift === item && state.motionUnlocked(id) && !state.motionPassed(id) && !state.swingWon(id, npc.id)) {
+        state.winOver(id, npc.id); sfx.found();
+        lines.push(`${n}: ${sw.won}`, `${n} will vote yes on "${MOTIONS[id].title}".`);
+      }
+    }
+    // A loved present can teach a recipe (data/cooking.js, learn: { gift })
+    if (reaction === 'love') for (const rid of RECIPE_ORDER) if (COOK_RECIPES[rid].learn?.gift === npc.id && !state.data.recipes.includes(rid)) { state.data.recipes.push(rid); lines.push(...TEACH_LINES[rid]); }
     // A request from the board?
     const req = state.todaysRequests().find(q => q.who === npc.id && q.item === item && !q.done);
     if (req) {
@@ -1461,7 +1526,7 @@ export class WorldScene extends Phaser.Scene {
     const d = state.data;
     let day = d.day;
     while (!isMeetingDay(day) || (day === d.day && d.council.metDay === day)) day++;
-    const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id)).map(id => MOTIONS[id].title);
+    const ready = state.meetingMotions().map(id => MOTIONS[id].title);
     const silly = sillyFor(day, d.council.silly).map(i => SILLY_MOTIONS[i]);
     const items = ['Acknowledgement of Country', ...ready, ...silly, 'General business (Cr Bentleigh has 14 points of order)'];
     return [`AGENDA: Council meeting, ${day === d.day ? 'tonight' : `${weekday(day)}, day ${day}`}, 6:30pm.`, ...items.map((t, i) => `${i + 1}. ${t}.`).reduce((a, l) => { const last = a[a.length - 1]; if (last && last.length + l.length < 130) a[a.length - 1] = `${last} ${l}`; else a.push(l); return a; }, [])];
@@ -1484,7 +1549,7 @@ export class WorldScene extends Phaser.Scene {
       c2.deposed = true; story().done[2] = d.day; sfx.sad();
       await ui.card({ kicker: 'Chapter 2', title: 'Paddy is rolled', lines: CHAPTERS[2].failed });
     }
-    const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id));
+    const ready = state.meetingMotions();
     if (!ready.length) {
       await say('lesley', ['POINT OF ORDER! The agenda is in the WRONG FONT!']);
       await say('paddy', ['Noted, Councillor. Again. No community motions are ready tonight. Chip in on the noticeboard in the foyer, everyone.', 'On to general business.']);
@@ -1504,7 +1569,7 @@ export class WorldScene extends Phaser.Scene {
       await ui.say(m.debate);
       await say('paddy', [`All those in favour?`, `${r.yes.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ')}. ${r.yes.length} for.`, `Against: ${r.no.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ')}. ${r.no.length} against.`]);
       if (r.passed) { sfx.found(); await say('paddy', ['The motion is CARRIED!', m.effect]); }
-      else { sfx.sad(); await say('lesley', ['HA! DEFEATED!']); await say('paddy', ['The motion is lost. We go again next week. Maybe bring Kirsty or Dahlia some flowers.']); }
+      else { sfx.sad(); await say('lesley', ['HA! DEFEATED!']); await say('paddy', [`The motion is lost. We go again next week. Still undecided: ${r.undecided.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ') || 'nobody'}.`]); }
     }
     await say('paddy', ['That concludes tonight\'s business. Meeting closed. Drive safely, and mind the pelicans.']);
     this.save();
@@ -1626,11 +1691,31 @@ export class WorldScene extends Phaser.Scene {
   lesleyHere() { return this.npcs.some(n => n.id === 'lesley' && !n.gone); }
 
   // The kitchen stove: cook the dodgy fish pie.
+  // The kitchen: the fish pie in Chapter 2, then everything in data/cooking.js.
+  knownRecipes() {
+    // Cook books in your bag teach their recipes for good.
+    for (const id of state.bagItems()) for (const rid of ITEMS[id].cookbook || []) if (!state.data.recipes.includes(rid)) { state.data.recipes.push(rid); ui.toast(`New recipe: ${ITEMS[rid].name}`, itemIcon(rid, 32)); }
+    return RECIPE_ORDER.filter(rid => COOK_RECIPES[rid].learn === 'start' || state.data.recipes.includes(rid));
+  }
   async cook() {
+    const needsText = n => Object.entries(n).map(([k, c]) => `${c} ${ITEMS[k].name.toLowerCase()}`).join(', ');
+    const has = n => Object.entries(n).every(([k, c]) => state.count(k) >= c);
+    const choices = this.knownRecipes().map(rid => ({ label: ITEMS[rid].name, value: rid, icon: itemIcon(rid, 32), note: `${has(COOK_RECIPES[rid].needs) ? '✓ ' : ''}${needsText(COOK_RECIPES[rid].needs)}` }));
+    if (inChapter(2) && !story().ch2.swapped) choices.unshift({ label: RECIPES.fishpie.name, value: 'fishpie', note: RECIPES.fishpie.needs });
+    const pick_ = await ui.say({ text: 'The oven. Cook something?', choices: [...choices, { label: 'Not now', value: null }] }, { cancelValue: null });
+    if (!pick_) return;
+    if (pick_ === 'fishpie') return this.cookFishPie();
+    const r = COOK_RECIPES[pick_];
+    if (!has(r.needs)) return ui.say([`You need ${needsText(r.needs)}.`, 'Veggies come from your garden. Flour, sugar, butter, milk, eggs and choc chips are on the Pantry shelf at Coles.']);
+    for (const [k, c] of Object.entries(r.needs)) for (let i = 0; i < c; i++) state.removeItem(k);
+    state.addItem(pick_);
+    sfx.found(); ui.toast(`+1 ${ITEMS[pick_].name}`, itemIcon(pick_, 32));
+    await ui.say([r.text]);
+    this.save();
+  }
+  async cookFishPie() {
     const fish = Object.keys(ITEMS).find(id => ITEMS[id].fish && state.count(id) >= CH2_RECIPE.fish);
     const r = RECIPES.fishpie;
-    const pick = await ui.say({ text: 'The new oven. It still has the plastic on the dials. Cook something?', choices: [{ label: r.name, value: 'fishpie', note: r.needs }, { label: 'Not now', value: null }] }, { cancelValue: null });
-    if (!pick) return;
     if (!fish || state.count('lemon') < CH2_RECIPE.lemon || state.count('laxatives') < CH2_RECIPE.laxatives) return ui.say([`You need ${r.needs}. Catch a fish at Edwardes Lake, Edgars Creek or Kororoit Creek. Lemons grow on every second tree in Melbourne.`, 'Laxatives: Stavros\'s deli at Preston Market has some behind the counter, and so does the milk bar on Nicholson St, Brunswick East.']);
     state.removeItem(fish); state.removeItem('lemon'); state.removeItem('laxatives');
     state.addItem('fishpie');

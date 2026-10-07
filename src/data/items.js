@@ -154,7 +154,10 @@ export const ITEMS = {
 import { EAST_ITEMS } from './east.js';
 Object.assign(ITEMS, EAST_ITEMS);   // Brunswick East
 
+import { COOK_ITEMS } from './cooking.js';
+Object.assign(ITEMS, COOK_ITEMS);   // cooking: pantry, dishes, cook books
+
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
-export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;
+export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco && !ITEMS[id].ingredient;
 
 Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston

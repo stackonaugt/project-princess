@@ -318,6 +318,7 @@ export const NORTH_PEOPLE = {
       3: ['Betty: "My recipe book is just a shoebox of cards from everyone on this street. Nonna\'s lasagne. The quiche from next door. Mine is the banana bread."'],
       5: ['Betty puts the kettle on and brings out the good teapot. "Three cups. You stay for all three. That is the rule of this house."'],
       7: ['Betty presses a takeaway container into your hands. "For your mum and dad. Tell them it is from Betty. They will know."'],
+      8: ['Betty pulls a card out of the shoebox, the oldest one, soft as cloth. "My Victoria sponge. I don\'t give this to just anyone."'],
     },
     helpsInBattle: 'Betty marches over with a plate of food. Your pet eats and is instantly, completely restored.',
   },

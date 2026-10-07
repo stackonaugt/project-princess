@@ -10,7 +10,7 @@ import { GEAR } from '../data/gear.js';
 import { bus } from '../bus.js';
 import { rng } from '../util.js';
 import { ZONES, invalidateMap } from '../data/regions.js';
-import { MOTIONS, MOTION_ORDER, motionReady, SWING, ALLIES, AGAINST } from '../data/council.js';
+import { MOTIONS, MOTION_ORDER, motionReady, MAX_PER_MEETING } from '../data/council.js';
 import { isMeetingDay } from '../data/routines.js';
 import { requestsFor, REQUEST_BONUS } from '../data/requests.js';
 import { CROPS } from '../data/crops.js';
@@ -48,7 +48,8 @@ function fresh() {
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
-    council: { given: {}, passed: [], lost: {}, silly: [] },   // silly: SILLY_MOTIONS indexes that passed   // motions: items chipped in, passed ids, id -> day it lost a vote (data/council.js)
+    council: { given: {}, passed: [], lost: {}, silly: [], won: {} },   // motions (data/council.js): items chipped in, passed ids, id -> day it lost a vote, SILLY_MOTIONS indexes that passed, motion -> councillors won over
+    recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
@@ -92,7 +93,8 @@ function sanitise(raw) {
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
-  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], metDay: raw.council.metDay };
+  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, metDay: raw.council.metDay };
+  if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
   if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); }
   if (raw.stats) Object.assign(d.stats, raw.stats);
@@ -269,7 +271,7 @@ export const state = {
     if (this.hasUpgrade('sprinkler') && Object.keys(d.farm).some(id => id.startsWith('yd'))) news.push('The sprinkler ticks away in the backyard. The beds are watered.');
     // Council met last night and you weren't in the chamber: read about it in the morning.
     if (isMeetingDay(ended) && d.council.metDay !== ended) {
-      for (const r of this.holdMeeting(ended)) news.push(r.passed ? `Council news: "${MOTIONS[r.id].title}" passed ${r.yes.length} votes to ${r.no.length}! ${MOTIONS[r.id].effect}` : `Council news: "${MOTIONS[r.id].title}" lost ${r.yes.length} votes to ${r.no.length}. Win over Kirsty or Dahlia and try again next Tuesday.`);
+      for (const r of this.holdMeeting(ended)) news.push(r.passed ? `Council news: "${MOTIONS[r.id].title}" passed ${r.yes.length} votes to ${r.no.length}! ${MOTIONS[r.id].effect}` : `Council news: "${MOTIONS[r.id].title}" lost ${r.yes.length} votes to ${r.no.length}. Win over the undecided councillors (see the noticeboard) and try again next Tuesday.`);
     }
     // The spill vote (Chapter 2): out of time, and Paddy is rolled.
     const st = d.story, c2 = st.ch2;
@@ -321,19 +323,28 @@ export const state = {
   // election in Chapter 4): the swing votes are twice as hard to win.
   paddyDeposed() { const st = this.data.story; return st.party ? !st.party.won : !!st.ch2.deposed; },
   swingHearts(h) { return this.paddyDeposed() ? Math.min(10, h * 2) : h; },
-  // How each councillor votes on a motion right now.
-  councilVote() {
-    const yes = [...ALLIES], no = [...AGAINST];
-    for (const [id, h] of Object.entries(SWING)) (this.friendHearts(id) >= this.swingHearts(h) ? yes : no).push(id);
-    return { yes, no, passed: yes.length >= 4 };
+  // Has this undecided councillor been won over on this motion?
+  swingWon(motion, who) {
+    const w = MOTIONS[motion].votes.swing[who];
+    if (!w) return false;
+    if (w.hearts) return this.friendHearts(who) >= this.swingHearts(w.hearts);
+    return (this.data.council.won[motion] || []).includes(who);
   },
-  // Vote on every motion that has all it needs. Returns the results.
+  winOver(motion, who) { const a = this.data.council.won[motion] || (this.data.council.won[motion] = []); if (!a.includes(who)) a.push(who); },
+  // How each councillor votes on a motion right now.
+  councilVote(motion) {
+    const v = MOTIONS[motion].votes, yes = [...v.yes], no = [...v.no], undecided = [];
+    for (const who of Object.keys(v.swing)) if (this.swingWon(motion, who)) yes.push(who); else { no.push(who); undecided.push(who); }
+    return { yes, no, undecided, passed: yes.length >= 4 };
+  },
+  // The motions going to the next meeting: ready ones, at most MAX_PER_MEETING.
+  meetingMotions() { return MOTION_ORDER.filter(id => !this.motionPassed(id) && this.motionReady(id)).slice(0, MAX_PER_MEETING); },
+  // Vote on the ready motions (up to the cap). Returns the results.
   holdMeeting(day = this.data.day) {
     const c = this.data.council, results = [];
     c.metDay = day;
-    for (const id of MOTION_ORDER) {
-      if (c.passed.includes(id) || !this.motionReady(id)) continue;
-      const v = this.councilVote();
+    for (const id of this.meetingMotions()) {
+      const v = this.councilVote(id);
       results.push({ id, ...v });
       if (v.passed) this.passMotion(id); else c.lost[id] = day;
     }
