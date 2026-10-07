@@ -15,9 +15,10 @@ export function openFishing(panel, close, { fish, zone, done }) {
   const target = h('div', { class: 'fish-zone' });
   const bar = h('div', { class: 'fish-bar', 'aria-hidden': 'true' }, target, marker);
   const btn = h('button', { class: 'wood-btn', disabled: true }, 'Reel in');
-  let phase = 'wait', pos = 0, dir = 1, raf = 0, result = null, overAt = 0;
+  let phase = 'wait', pos = 0, dir = 1, raf = 0, result = null, overAt = 0, retries = 0, lastFrame = null;
   const water = h('div', { class: 'fish-water' });
-  const zw = Math.max(0.1, zone), z0 = 0.15 + Math.random() * (0.7 - zw);
+  const zw = Math.max(0.1, zone);
+  let z0 = 0.15 + Math.random() * (0.7 - zw);
   target.style.left = `${z0 * 100}%`; target.style.width = `${zw * 100}%`;
   const finish = () => { cancelAnimationFrame(raf); clearTimeout(bite); done(result); };
   // The same key press that reels in must not also close the window: wait a moment.
@@ -27,7 +28,12 @@ export function openFishing(panel, close, { fish, zone, done }) {
     phase = 'over'; btn.disabled = true; overAt = performance.now(); cancelAnimationFrame(raf);
     if (pos >= z0 && pos <= z0 + zw) { result = fish; celebrate(); }
     else { sfx.sad(); status.textContent = 'It got away! Too early, or too late.'; }
-    btn.textContent = 'Done'; btn.disabled = false; btn.onclick = shut;
+    btn.textContent = !result && retries < 1 ? 'Try once more' : 'Done'; btn.disabled = false;
+    btn.onclick = !result && retries < 1 ? () => {
+      retries++; pos = 0; dir = 1; lastFrame = null; z0 = 0.15 + Math.random() * (0.7 - zw);
+      target.style.left = `${z0 * 100}%`; phase = 'bite'; btn.textContent = 'Reel in';
+      btn.onclick = reel; btn.disabled = false; status.textContent = 'One more cast. Watch the green zone!'; raf = requestAnimationFrame(tick);
+    } : shut;
   };
   // A proper fuss when you land one: the fish leaps out, confetti, and its size.
   const celebrate = () => {
@@ -39,8 +45,11 @@ export function openFishing(panel, close, { fish, zone, done }) {
       h('span', {}, it.junk ? 'Still counts. Kind of.' : `${cm} cm. ${cm > (lo + hi) / 2 + (hi - lo) / 4 ? 'A whopper!' : 'A nice one.'}`));
     water.replaceChildren(pop, h('div', { class: 'center' }, btn));
   };
-  const tick = () => {
-    pos += dir * 0.014;
+  const tick = timestamp => {
+    timestamp ??= performance.now();
+    const dt = lastFrame == null ? 0 : Math.min(50, timestamp - lastFrame);
+    lastFrame = timestamp;
+    pos += dir * 0.84 * dt / 1000;
     if (pos > 1) { pos = 1; dir = -1; } if (pos < 0) { pos = 0; dir = 1; }
     marker.style.left = `calc(${pos * 100}% - 6px)`;
     raf = requestAnimationFrame(tick);

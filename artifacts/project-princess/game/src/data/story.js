@@ -27,7 +27,7 @@ export let CHAPTERS = {
     title: 'Get Bent!',
     intro: [
       'Paddy\'s enemies on council have spotted a chance. One of his allies is away, and they want to roll him as mayor.',
-      'There has to be some way to put one of them out of action. Something sneaky. Something fishy.',
+      'There is a fishy way to disrupt their numbers, but it feels wrong. Maybe Kirsty and Dahlia can help make the case for Paddy instead.',
     ],
     done: [
       'Cr Bentleigh is home with a very upset tummy, and the spill motion has nobody to move it.',
@@ -117,7 +117,7 @@ export let PADDY_SPILL = [
   '"But that would never happen. Bentleigh hasn\'t had a sick day since 1987. She eats the same lunch in the foyer every weekday like clockwork."',
   '"Oh well. I\'m off to work. Wish me luck."',
 ];
-export let PADDY_SPILL_HINT = 'Cr Bentleigh eats her lunch in the civic centre foyer every weekday, 11am to 3pm. If only something fishy happened to it.';
+export let PADDY_SPILL_HINT = 'For the fish pie route, Cr Bentleigh eats lunch in the civic centre foyer weekdays, 11am to 3pm. For a clean campaign, build Kirsty to 4 hearts and Dahlia to 2, then ask Paddy to make the case.';
 
 // Lesley's lunch on the foyer booth (Chapter 2).
 export let LUNCH = {

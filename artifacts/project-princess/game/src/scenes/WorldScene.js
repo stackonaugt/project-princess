@@ -43,7 +43,7 @@ import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
 import { TRAINERS, PRIZE_TRAINER, fineFor } from '../data/enemies.js';
-import { rollEncounter, readyTeam, START_LEVEL } from '../systems/battle.js';
+import { rollEncounter, readyTeam, START_LEVEL, gainXp, petFighter } from '../systems/battle.js';
 import { form, canEvolve, evolve } from '../systems/forms.js';
 import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
 import { CROPS } from '../data/crops.js';
@@ -440,7 +440,9 @@ export class WorldScene extends Phaser.Scene {
       if (!seeds.length) return ui.say(['An empty bed of good soil. You have no seeds. Olly at Bunnings (Altona North) and James at Reservoir sell them.']);
       const pick = await ui.say({ text: 'Plant something?', choices: [...seeds.map(k => ({ label: `${CROPS[k].name} seeds`, value: k, icon: itemIcon(`seed-${k}`, 32), note: `×${state.seedCount(k)} · ${CROPS[k].days} days` })), { label: 'Not now', value: null }] }, { cancelValue: null });
       if (!pick || !state.useSeed(pick)) return;
-      state.data.farm[p.id] = { crop: pick, growth: 0, watered: day, boost: false };
+      const lastSoil = state.data.soil[p.id];
+      const rotation = !!lastSoil && lastSoil.family !== CROPS[pick].family;
+      state.data.farm[p.id] = { crop: pick, growth: 0, watered: day, boost: false, rotation };
       sfx.pickup(); this.splash(t);
       this.refreshPlot(t); this.save();
       return ui.say([`You plant the ${CROPS[pick].name.toLowerCase()} and give it a drink.`, 'Water it once a day. Rain counts. Check the Garden app on your phone.']);
@@ -448,12 +450,19 @@ export class WorldScene extends Phaser.Scene {
     if (f.growth >= c.days) {
       let n = c.yield;
       const extra = [];
+      if (f.rotation) { n++; extra.push('Rotating crop families gave the soil a little rest, so you get an extra one.'); }
+      const companion = this.plots.some(o => {
+        if (!o.plot || o.plot.id === p.id || !c.companions?.includes(state.data.farm[o.plot.id]?.crop)) return false;
+        const other = state.data.farm[o.plot.id];
+        return other && Math.abs(o.plot.x - p.x) + Math.abs(o.plot.y - p.y) === 1;
+      });
+      if (companion) { n++; extra.push('A compatible neighbour is thriving beside it. Companion planting adds one more.'); }
       if (state.inParty('poppy')) { n++; extra.push(`${form('poppy').name} digs with total enthusiasm and finds an extra one.`); }
       if (state.inParty('stanley') && Math.random() < 0.4) { n++; extra.push(`${form('stanley').name} points, sternly, at one you missed.`); }
       state.addItem(f.crop, n);
       sfx.found(); this.heartsFx(t, 4);
       if (c.regrow) Object.assign(f, { growth: Math.max(0, c.days - c.regrow), watered: 0 });
-      else delete state.data.farm[p.id];
+      else { state.data.soil[p.id] = { family: c.family, crop: f.crop }; delete state.data.farm[p.id]; }
       this.refreshPlot(t); this.save();
       ui.toast(`+${n} ${c.name}`, itemIcon(f.crop, 32));
       return ui.say([`You pick ${n} ${c.name.toLowerCase()}${n > 1 && !c.name.endsWith('s') ? 's' : ''}!`, ...extra, ...(c.regrow ? ['It will keep producing. Keep watering it.'] : [])]);
@@ -855,15 +864,15 @@ export class WorldScene extends Phaser.Scene {
     for (let first = true; ; first = false) {
       const canTreat = rec.giftedDay !== day && state.treatItems().length;
       let act = 'chat';
-      if (canTreat || !first) {
-        if (!canTreat) break;
+      if (canTreat || !first || rec.found) {
         act = await ui.say({
           text: first ? `${d.name} looks up at you.` : `Anything else for ${d.name}?`,
-          choices: [{ label: 'Chat', value: 'chat' }, { label: 'Give a treat', value: 'treat' }, { label: 'Bye', value: null }],
+          choices: [{ label: 'Chat', value: 'chat' }, ...(rec.found ? [{ label: state.data.side.school.lessonDay[d.id] === day ? 'School lesson (done today)' : 'School lesson', value: 'school' }] : []), ...(canTreat ? [{ label: 'Give a treat', value: 'treat' }] : []), { label: 'Bye', value: null }],
         }, { ...opts, cancelValue: null });
       }
       if (!act) break;
       if (act === 'chat') await this.chatPet(pet, opts);
+      if (act === 'school') await this.petSchoolLesson(pet, opts);
       if (act === 'treat') {
         const choice = await ui.say({
           text: `Give ${d.name} a treat?`,
@@ -891,6 +900,31 @@ export class WorldScene extends Phaser.Scene {
     }
     await ui.say(lines, opts);
     if (canEvolve(d.id)) await this.evolveInWorld(pet);
+  }
+
+  async petSchoolLesson(pet, opts) {
+    const id = pet.id, day = state.data.day, school = state.data.side.school;
+    if (school.lessonDay[id] === day) return ui.say([`${form(id).name} has already had a lesson today. The report card says to practise again tomorrow.`], opts);
+    const drills = [
+      { q: 'A magpie swoops while your student is off lead. What is the safest response?', a: 'Call them back, reward them for returning, then give the bird space.', wrong: ['Chase the magpie together.', 'Shout and keep running.'] },
+      { q: 'Another dog is eating nearby. How do you practise polite manners?', a: 'Ask for a calm sit at a comfortable distance, then reward it.', wrong: ['Take the other dog’s food away.', 'Make them greet nose to nose.'] },
+      { q: 'Your student follows a point toward a garden gate. What makes that good teamwork?', a: 'Mark the moment they check in with you and reward the choice.', wrong: ['Keep pointing until they work it out.', 'Pull them by the lead.'] },
+    ];
+    let score = 0;
+    for (const drill of drills) {
+      const options = [drill.a, ...drill.wrong].sort(() => Math.random() - 0.5);
+      const answer = await ui.say({ text: drill.q, choices: options.map(label => ({ label, value: label })) }, { ...opts, cancelValue: null });
+      if (answer === drill.a) { score++; await ui.say(['Good timing. Mark and reward the behaviour.'], opts); }
+      else await ui.say(['That one needs a little more practice. Give the pet space and reward the safe choice.'], opts);
+    }
+    school.lessonDay[id] = day;
+    const xp = score * 8;
+    if (xp) gainXp(petFighter(id), xp);
+    if (score === drills.length) school.stamps[id] = (school.stamps[id] || 0) + 1;
+    state.addPoints(id, score * 2);
+    this.save();
+    await ui.say([`${form(id).name} got ${score} of 3 right and earned ${xp} training XP.`, ...(score === 3 ? ['A perfect lesson earns a gold star on the report card.'] : []), `Perfect lessons recorded: ${school.stamps[id] || 0}.`], opts);
+    if (canEvolve(id)) await this.evolveInWorld(pet);
   }
 
   // A pet you have just found trots straight onto your team if there's room.
@@ -1005,6 +1039,7 @@ export class WorldScene extends Phaser.Scene {
       if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
       if (npc.id === 'betty' && weekday(day) === BAKE_OFF.day) choices.push({ label: 'Enter the bake-off', value: 'bakeoff' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
+      if (npc.id === 'paddy' && inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) choices.push({ label: 'Plan a clean campaign for Paddy', value: 'cleanCampaign' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
       if (!choices.length) break;
       const act = await ui.say({ text: 'Anything else?', choices: [...choices, { label: 'Goodbye', value: null }] }, { ...opts, cancelValue: null });
@@ -1023,6 +1058,7 @@ export class WorldScene extends Phaser.Scene {
       if (act === 'party') await this.streetParty(npc, opts);
       if (act === 'bakeoff') await this.bakeOff(npc, opts);
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
+      if (act === 'cleanCampaign') await this.cleanCampaign(opts);
       if (act === 'prank') await this.prank(npc, opts);
       if (act === 'invite') await this.invite(npc, opts);
       if (act === 'fight') { await this.challenge(npc, trainer, opts); break; }
@@ -1096,6 +1132,16 @@ export class WorldScene extends Phaser.Scene {
     if (['lesley', 'malcolm'].includes(id)) return ui.say([words.backNo], opts);
     if (won) return ui.say([words.backYes], opts);
     return ui.say([words.backMaybe, `(${name} would need ${need} hearts to back Paddy. You have ${state.friendHearts(id)}. Gifts help.)`], opts);
+  }
+  async cleanCampaign(opts) {
+    const c2 = story().ch2, k = state.friendHearts('kirsty'), d = state.friendHearts('dahlia');
+    if (k < SWING.kirsty || d < SWING.dahlia) return ui.say([`A clean campaign needs Kirsty at ${SWING.kirsty} hearts and Dahlia at ${SWING.dahlia}. Current support: Kirsty ${k}/${SWING.kirsty}, Dahlia ${d}/${SWING.dahlia}. Ask them to back Paddy and keep building the friendships.`], opts);
+    const go = await ui.say({ text: 'Kirsty and Dahlia are ready to speak up. Run a public case for Paddy at the next council meeting?', choices: [{ label: 'Make the case', value: true }, { label: 'Not yet', value: false }] }, { ...opts, cancelValue: false });
+    if (!go) return;
+    c2.campaignWon = true; c2.deposed = false;
+    state.addFriendPoints('kirsty', 4); state.addFriendPoints('dahlia', 4);
+    await ui.say(['You bring the neighbours’ letters to council. Kirsty lays out why Paddy has earned their trust; Dahlia speaks about how a mayor should hear the community.', 'The room is packed. The spill motion loses its support before it can be called. Paddy stays mayor, and nobody gets sick.'], opts);
+    await this.finishChapter(2);
   }
   // Paddy's tip for the first motion on the board someone is still undecided on.
   councilTip() {
@@ -1690,7 +1736,7 @@ export class WorldScene extends Phaser.Scene {
     else await say('paddy', ['Order, order. I declare this meeting of Hobsons Bay City Council open.', 'I acknowledge the Bunurong people, the Traditional Owners of this land.']);
     // The spill (Chapter 2), if the fish pie never happened
     const c2 = story().ch2;
-    if (inChapter(2) && c2.deadline === d.day && !c2.swapped) {
+    if (inChapter(2) && c2.deadline === d.day && !c2.swapped && !c2.campaignWon) {
       await say('lesley', ['I MOVE A SPILL! All in favour of a new mayor? Me, Malcolm, Kirsty and Dahlia. Four votes!']);
       await say('paddy', ['...The motion is carried. Congratulations, Mayor Bentleigh.']);
       c2.deposed = true; story().done[2] = d.day; sfx.sad();
@@ -1825,18 +1871,35 @@ export class WorldScene extends Phaser.Scene {
     this.save();
     sfx.found();
     ui.banner(`Chapter ${n} complete!`, CHAPTERS[n].title);
-    await ui.card({ kicker: `Chapter ${n} complete`, title: CHAPTERS[n].title, lines: [...CHAPTERS[n].done, 'The next chapter starts tomorrow morning. Get some sleep!'] });
+    const outcome = n === 2 && story().ch2.campaignWon ? ['You brought the neighbours’ letters to council. Kirsty and Dahlia spoke up, and the spill motion lost support before it could be called.', 'Paddy stays mayor. Nobody gets sick, and the campaign gives him a reason to listen more closely to the community.'] : CHAPTERS[n].done;
+    await ui.card({ kicker: `Chapter ${n} complete`, title: CHAPTERS[n].title, lines: [...outcome, 'The next chapter starts tomorrow morning. Get some sleep!'] });
   }
 
   // Story things placed in maps: Cr Bentleigh's lunch in the foyer (Chapter 2).
   buildStoryBits() {
     this.lunchSpot = null;
-    if (this.regionId === 'civiccentre' && inChapter(2) && !story().ch2.swapped) {
+    if (this.regionId === 'civiccentre' && inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) {
       const pos = toWorld(22.5, 9);
       const sprite = this.add.image(pos.x, pos.y - 8, 'item-fishpie').setOrigin(0.5, 1).setDepth(pos.y + 8).setScale(fitScale(this, 'item-fishpie', 12));
       this.lunchSpot = { kind: 'lunch', x: pos.x, y: pos.y - 4, r: 18, sprite, bubble: 'fx-bubble-alert' };
       this.interactables.push(this.lunchSpot);
     }
+    for (const id of story().pranks) {
+      const npc = this.npcs.find(n => n.id === id && !n.gone);
+      if (npc) this.drawPrankMarker(npc, id);
+    }
+  }
+  drawPrankMarker(npc, id) {
+    const colors = { paddy: 0xe2506a, corni: 0xf4efe0, mem: 0x8c8a82, rose: 0x4f79b8, slinks: 0x74349b, sinead: 0x8bd8eb, tim: 0x65a94d, nicholas: 0xe6c64c };
+    const g = this.add.graphics().setDepth(npc.y + 30);
+    const x = Math.round(npc.x - 6), y = Math.round(npc.y - 33), color = colors[id] || 0xf4efe0;
+    g.fillStyle(0x28231e, 1); g.fillRect(x - 1, y - 1, 14, 10); g.fillStyle(color, 1); g.fillRect(x, y, 12, 8);
+    if (id === 'corni') { g.fillStyle(0xffffff, 1); g.fillRect(x + 2, y + 2, 3, 3); g.fillRect(x + 7, y + 2, 3, 3); g.fillStyle(0x28231e, 1); g.fillRect(x + 3, y + 3, 1, 1); g.fillRect(x + 8, y + 3, 1, 1); }
+    else if (id === 'paddy') { g.fillStyle(0x8f2937, 1); g.fillRect(x + 2, y + 3, 8, 3); g.fillRect(x + 4, y + 1, 4, 2); }
+    else if (id === 'sinead') { g.fillStyle(0xffffff, 0.9); g.fillCircle(x + 3, y + 3, 2); g.fillCircle(x + 8, y + 1, 1.5); }
+    else if (id === 'tim') { g.fillStyle(0x2d642e, 1); g.fillRect(x + 2, y + 2, 6, 4); g.fillRect(x + 7, y + 1, 3, 3); g.fillRect(x + 1, y + 6, 2, 2); }
+    else { g.fillStyle(0xffffff, 0.9); g.fillRect(x + 2, y + 2, 8, 1); g.fillRect(x + 2, y + 5, 5, 1); }
+    this.tweens.add({ targets: g, y: g.y - 2, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
   }
   lesleyHere() { return this.npcs.some(n => n.id === 'lesley' && !n.gone); }
 
@@ -1851,7 +1914,7 @@ export class WorldScene extends Phaser.Scene {
     const needsText = n => Object.entries(n).map(([k, c]) => `${c} ${ITEMS[k].name.toLowerCase()}`).join(', ');
     const has = n => Object.entries(n).every(([k, c]) => state.count(k) >= c);
     const choices = this.knownRecipes().map(rid => ({ label: ITEMS[rid].name, value: rid, icon: itemIcon(rid, 32), note: `${has(COOK_RECIPES[rid].needs) ? '✓ ' : ''}${needsText(COOK_RECIPES[rid].needs)}` }));
-    if (inChapter(2) && !story().ch2.swapped) choices.unshift({ label: RECIPES.fishpie.name, value: 'fishpie', note: RECIPES.fishpie.needs });
+    if (inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) choices.unshift({ label: RECIPES.fishpie.name, value: 'fishpie', note: RECIPES.fishpie.needs });
     const pick_ = await ui.say({ text: 'The oven. Cook something?', choices: [...choices, { label: 'Not now', value: null }] }, { cancelValue: null });
     if (!pick_) return;
     if (pick_ === 'fishpie') return this.cookFishPie();
@@ -1933,6 +1996,7 @@ export class WorldScene extends Phaser.Scene {
     await this.reactFx(npc, pr.react);
     await ui.say(rest, opts);
     s.pranks.push(npc.id);
+    this.drawPrankMarker(npc, npc.id);
     state.addFriendPoints(npc.id, 5);
     sfx.heart(); this.heartsFx(npc, 4);
     ui.toast(PRANK_AFTER(s.pranks.length));
