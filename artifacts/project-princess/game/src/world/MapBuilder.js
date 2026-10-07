@@ -1,0 +1,244 @@
+// Helper for writing region maps in code. A map is a grid of ground letters
+// (see src/art/paint/tiles.js) plus a list of objects (trees, houses...).
+// Everything is deterministic, so every player sees the same world.
+
+import { OBJECTS } from '../art/paint/objects.js';
+import { hash, rng } from '../util.js';
+
+const SOLID_GROUND = '~rWVRY';
+const GRASSY = '.,"L';
+
+const DRESS_KINDS = new Set(['house', 'brickhouse', 'weatherboard', 'terrace', 'loddonunit', 'glasgowhouse', 'timunit', 'unit', 'hphouse']);
+
+export class MapBuilder {
+  constructor({ id, w, h, fill = '.', seed = 1 }) {
+    Object.assign(this, { id, w, h });
+    this.ground = Array.from({ length: h }, () => Array(w).fill(fill));
+    this.occ = Array.from({ length: h }, () => Array(w).fill(null)); // object occupying each tile
+    this.reserved = Array.from({ length: h }, () => Array(w).fill(false));
+    this.objects = [];
+    this.rand = rng(seed);
+    this.exits = []; this.entries = {}; this.spawns = []; this.npcs = []; this.lanes = []; this.decor = []; this.plots = [];
+  }
+
+  inside(x, y) { return x >= 0 && y >= 0 && x < this.w && y < this.h; }
+  get(x, y) { return this.inside(x, y) ? this.ground[y][x] : null; }
+  set(x, y, c) { if (this.inside(x, y)) this.ground[y][x] = c; return this; }
+  fill(x, y, w, h, c) { for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) this.set(i, j, c); return this; }
+  hline(x0, x1, y, c) { return this.fill(Math.min(x0, x1), y, Math.abs(x1 - x0) + 1, 1, c); }
+  vline(x, y0, y1, c) { return this.fill(x, Math.min(y0, y1), 1, Math.abs(y1 - y0) + 1, c); }
+  ellipse(cx, cy, rx, ry, c, only = null) {
+    for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) {
+      if (((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 && (!only || only.includes(this.get(x, y)))) this.set(x, y, c);
+    }
+    return this;
+  }
+  // A patch of tall grass (wild encounters happen here). Only covers lawn.
+  wildGrass(cx, cy, rx = 2.4, ry = 1.4) { return this.ellipse(cx, cy, rx, ry, '"', ['.', ',']); }
+  // Keep an area clear of random scatter (pet homes, spawn points).
+  reserve(cx, cy, r) {
+    for (let y = Math.floor(cy - r); y <= cy + r; y++) for (let x = Math.floor(cx - r); x <= cx + r; x++) {
+      if (this.inside(x, y) && Math.hypot(x - cx, y - cy) <= r) this.reserved[y][x] = true;
+    }
+    return this;
+  }
+
+  free(x, y, w = 1, h = 1) {
+    for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) if (!this.inside(i, j) || this.occ[j][i]) return false;
+    return true;
+  }
+
+  // Take away any objects overlapping a rectangle (to lay a road through).
+  clear(x, y, w, h) {
+    this.objects = this.objects.filter(o => {
+      const hit = o.x < x + w && o.x + o.w > x && o.y < y + h && o.y + o.h > y;
+      if (hit) for (let j = o.y; j < o.y + o.h; j++) for (let i = o.x; i < o.x + o.w; i++) if (this.inside(i, j)) this.occ[j][i] = false;
+      return !hit;
+    });
+    return this;
+  }
+
+  // Place an object with its footprint's top-left at tile x,y.
+  // opts: v (variant), text (sign text), id, interact
+  put(kind, x, y, opts = {}) {
+    const def = OBJECTS[kind];
+    if (!def) throw new Error(`Unknown object kind: ${kind}`);
+    const [fw, fh] = def.foot;
+    // Flat things (rugs, mats) and wall decorations can overlap other objects.
+    const layered = def.flat || def.roof || def.deck || def.above || opts.onWall;
+    if (!layered && !this.free(x, y, fw, fh)) return null;
+    const o = { kind, x, y, w: fw, h: fh, v: opts.v ?? (Array.isArray(def.variants) ? def.variants[0] : ''), ...opts };
+    this.objects.push(o);
+    if (!layered) for (let j = y; j < y + fh; j++) for (let i = x; i < x + fw; i++) this.occ[j][i] = o;
+    return o;
+  }
+  fenceH(x0, x1, y, style, gaps = []) { for (let x = x0; x <= x1; x++) if (!gaps.includes(x)) this.put('fence', x, y, { style }); return this; }
+  fenceV(x, y0, y1, style, gaps = []) { for (let y = y0; y <= y1; y++) if (!gaps.includes(y)) this.put('fence', x, y, { style }); return this; }
+  sign(x, y, text) { return this.put('sign', x, y, { text }); }
+  // Street art: a random piece, or (paste) a random wall of wheat-paste
+  // posters. Random each session, not seeded, so the walls change.
+  graffiti(x, y, paste = false) {
+    const v = paste ? `paste-${Math.floor(Math.random() * 10)}` : ['piece', 'kooka', 'tags', 'kelly', 'devil', 'bubble'][Math.floor(Math.random() * 6)];
+    return this.put('graffiti', x, y, { v });
+  }
+
+  // Trees around the edge, leaving gaps on paths/roads so exits stay open.
+  border(variants = ['oak']) {
+    for (let x = 0; x < this.w; x++) for (const y of [0, this.h - 1]) this.borderTree(x, y, variants);
+    for (let y = 0; y < this.h; y++) for (const x of [0, this.w - 1]) this.borderTree(x, y, variants);
+    return this;
+  }
+  borderTree(x, y, variants) {
+    if (!GRASSY.includes(this.get(x, y))) return;
+    this.put('tree', x, y, { v: variants[Math.floor(this.rand() * variants.length)] });
+  }
+
+  // Randomly sprinkle objects over grass inside an area.
+  // kinds: [[kind, weight, variants?], ...]
+  scatter([ax, ay, aw, ah], density, kinds, { clearance = 1, on = GRASSY } = {}) {
+    const total = kinds.reduce((s, k) => s + k[1], 0);
+    for (let y = ay; y < ay + ah; y++) for (let x = ax; x < ax + aw; x++) {
+      if (this.rand() > density) continue;
+      if (!on.includes(this.get(x, y)) || this.reserved[y]?.[x] || !this.free(x, y)) continue;
+      if (this.nearBuilt(x, y, clearance)) continue;
+      let roll = this.rand() * total, k = kinds[0];
+      for (const kk of kinds) { roll -= kk[1]; if (roll <= 0) { k = kk; break; } }
+      const [kind, , variants] = k;
+      const [fw, fh] = OBJECTS[kind].foot;
+      if (!this.free(x, y, fw, fh)) continue;
+      this.put(kind, x, y, variants ? { v: variants[Math.floor(this.rand() * variants.length)] } : {});
+    }
+    return this;
+  }
+  nearBuilt(x, y, r) {
+    for (let j = -r; j <= r; j++) for (let i = -r; i <= r; i++) {
+      const c = this.get(x + i, y + j), o = this.occ[y + j]?.[x + i];
+      if (c && !GRASSY.includes(c) && c !== '=' ) return true;
+      if (o && o.kind !== 'tree' && o.kind !== 'bush' && o.kind !== 'rock') return true;
+    }
+    return false;
+  }
+
+  // Gameplay markers
+  // to = null makes a locked exit that shows `lines` instead.
+  exit(x, y, w, h, to, entry, label, lines = null, extra = {}) { this.exits.push({ x, y, w, h, to, entry, label, lines, ...extra }); return this; }
+  entry(name, x, y, dir = 'down') { this.entries[name] = { x, y, dir }; return this; }
+  // An entry along a whole edge: you arrive as far along it (0..1) as you
+  // left the other map's exit. axis 'y' runs down a left/right edge.
+  edgeEntry(name, axis, at, from, to, dir) {
+    this.entries[name] = axis === 'y' ? { x: at, y: from, dir, axis, span: [from, to] } : { x: from, y: at, dir, axis, span: [from, to] };
+    return this;
+  }
+  // A garden plot you can plant in (see systems state.farm). Walkable soil.
+  plot(id, x, y, label = '') { this.set(x, y, 'd'); this.plots.push({ id, x, y, label: label || `Plot ${this.plots.length + 1}` }); this.reserve(x, y, 0.5); return this; }
+  forage(x, y, items) { this.spawns.push({ x, y, items }); this.reserve(x, y, 0.5); return this; }
+  npc(id, x, y, extra = {}) { this.npcs.push({ id, x, y, ...extra }); this.reserve(x, y, 1); return this; }
+  lane(def) { this.lanes.push(def); return this; }
+  ducks(cx, cy, rx, ry, n) { this.decor.push({ kind: 'duck', cx, cy, rx, ry, n }); return this; }
+  magpies(points) { this.decor.push({ kind: 'magpie', points }); return this; }
+
+  // Front-garden dressing: pot plants, garden beds, toys and bikes in the
+  // lawn just in front of (and beside) houses, so streets look lived in.
+  // Everything placed here is walk-through, so it never blocks a path.
+  // Set b.noDress = true in a map to skip it.
+  dress() {
+    if (this.noDress) return;
+    const grassy = (x, y) => '.,L'.includes(this.get(x, y) || '-') && this.free(x, y) && !this.reserved[y]?.[x];
+    const pickOf = (list, r) => list[Math.floor(r * list.length) % list.length];
+    const pots = ['succulent', 'fern', 'geranium', 'lavender', 'herbs'];
+    for (const o of [...this.objects]) {
+      if (!DRESS_KINDS.has(o.kind)) continue;
+      const fy = o.y + o.h;
+      for (let x = o.x - 1; x <= o.x + o.w; x++) {
+        const r = hash(x * 7 + this.w, fy * 13 + o.x);
+        if (!grassy(x, fy)) continue;
+        if (r < 0.22) this.put('potplant', x, fy, { v: pickOf(pots, hash(x, fy)) });
+        else if (r < 0.36 && grassy(x + 1, fy)) { this.put('flowerbed', x, fy, { v: pickOf(['mixed', 'roses', 'natives'], hash(fy, x)) }); x++; }
+        else if (r < 0.40) this.put(pickOf(['gnome', 'birdbath', 'ball', 'trike', 'bike', 'hosereel'], hash(x + 3, fy)), x, fy, {});
+      }
+      // an aircon unit or meter box down one side
+      const side = hash(o.x, o.y) > 0.5 ? o.x - 1 : o.x + o.w, sy = o.y + o.h - 1;
+      if (grassy(side, sy) && hash(o.y, o.x) > 0.45) this.put(hash(side, sy) > 0.5 ? 'acunit' : 'meterbox', side, sy, {});
+    }
+  }
+
+  // Exits on the map edge that sit on a road or footpath grow to cover the
+  // whole width of it (road, tram tracks and both footpaths), so you can walk
+  // off anywhere along the road, not just one tile of it.
+  widenExits(solid) {
+    const ROADISH = '#+xzf';
+    const inExit = (x, y) => this.exits.some(e => x >= e.x && x < e.x + e.w && y >= e.y && y < e.y + e.h);
+    const road = (x, y) => x >= 0 && y >= 0 && x < this.w && y < this.h && ROADISH.includes(this.ground[y][x]);
+    // A tile joins the exit only if the road carries on into the map from it
+    // (so a road running along the edge doesn't become one long exit).
+    const ok = (x, y, dx, dy) => road(x, y) && !solid[y * this.w + x] && !inExit(x, y) && [1, 2, 3].every(k => road(x + dx * k, y + dy * k));
+    for (const e of this.exits) {
+      const vertical = (e.x === 0 || e.x + e.w === this.w) && e.w === 1, horizontal = (e.y === 0 || e.y + e.h === this.h) && e.h === 1;
+      if (vertical && !horizontal) {
+        if (![...Array(e.h)].some((_, j) => ROADISH.includes(this.ground[e.y + j][e.x]))) continue;
+        const dx = e.x === 0 ? 1 : -1;
+        while (ok(e.x, e.y - 1, dx, 0)) { e.y--; e.h++; }
+        while (ok(e.x, e.y + e.h, dx, 0)) e.h++;
+      } else if (horizontal && !vertical) {
+        if (![...Array(e.w)].some((_, i) => ROADISH.includes(this.ground[e.y][e.x + i]))) continue;
+        const dy = e.y === 0 ? 1 : -1;
+        while (ok(e.x - 1, e.y, 0, dy)) { e.x--; e.w++; }
+        while (ok(e.x + e.w, e.y, 0, dy)) e.w++;
+      }
+    }
+  }
+
+  // Where a side street meets a main road, the footpath strip between them
+  // becomes road (no pavement laid across the mouth of a street). A footpath
+  // tile with road on both sides, in a short run, is that strip; a long run
+  // is a proper median and stays. The same goes for a footpath at the map
+  // edge cutting off the end of a road.
+  joinRoads() {
+    const R = c => c === '#' || c === '+' || c === 'x' || c === 'z';
+    const g = (x, y) => this.ground[y]?.[x];
+    const fix = [];
+    // footpath 1 to 3 tiles deep with road on both sides, in a run at most 6 wide
+    for (const vert of [true, false]) {
+      const W = vert ? this.w : this.h, H = vert ? this.h : this.w, at = (u, v) => (vert ? g(u, v) : g(v, u));
+      const cand = new Set();
+      for (let u = 0; u < W; u++) for (let v = 1; v < H; v++) {
+        if (at(u, v) !== 'f' || !R(at(u, v - 1))) continue;
+        let k = v; while (k < H && at(u, k) === 'f' && k - v < 3) k++;
+        if (k < H && R(at(u, k))) for (let j = v; j < k; j++) cand.add(j * W + u);
+      }
+      for (let v = 0; v < H; v++) for (let u = 0; u < W; u++) {
+        if (!cand.has(v * W + u) || cand.has(v * W + u - 1) && u > 0) continue;
+        let e = u; while (e < W && cand.has(v * W + e)) e++;
+        if (e - u <= 6) for (let j = u; j < e; j++) { const [x, y] = vert ? [j, v] : [v, j]; if (!this.occ[y][x]) fix.push([x, y]); }
+      }
+    }
+    // a footpath on the map edge with a road (a few lanes wide, not one running along the edge) ending at it
+    const span = (x, y, sx, sy) => { let n = 0; for (let k = -8; k <= 8; k++) if (R(g(x + sx * k, y + sy * k))) n++; return n; };
+    for (let y = 0; y < this.h; y++) for (const [x, ix] of [[0, 1], [this.w - 1, this.w - 2]]) if (g(x, y) === 'f' && R(g(ix, y)) && R(g(ix - (x ? 1 : -1), y)) && span(ix, y, 0, 1) <= 8 && !this.occ[y][x]) fix.push([x, y]);
+    for (let x = 0; x < this.w; x++) for (const [y, iy] of [[0, 1], [this.h - 1, this.h - 2]]) if (g(x, y) === 'f' && R(g(x, iy)) && R(g(x, iy - (y ? 1 : -1))) && span(x, iy, 1, 0) <= 8 && !this.occ[y][x]) fix.push([x, y]);
+    for (const [x, y] of fix) this.ground[y][x] = '#';
+  }
+
+  finish() {
+    this.joinRoads();
+    this.dress();
+    // Work out which way each fence joins up.
+    for (const o of this.objects) if (o.kind === 'fence') {
+      const n = (dx, dy) => this.occ[o.y + dy]?.[o.x + dx]?.kind === 'fence' ? 1 : 0;
+      const mask = n(-1, 0) | n(1, 0) << 1 | n(0, -1) << 2 | n(0, 1) << 3;
+      o.v = `${o.style || 'picket'}:${mask}`;
+    }
+    const solid = new Uint8Array(this.w * this.h);
+    for (let y = 0; y < this.h; y++) for (let x = 0; x < this.w; x++) {
+      const o = this.occ[y][x];
+      if (SOLID_GROUND.includes(this.ground[y][x]) || (o && OBJECTS[o.kind].solid !== false)) solid[y * this.w + x] = 1;
+    }
+    this.widenExits(solid);
+    return {
+      id: this.id, w: this.w, h: this.h,
+      ground: this.ground.map(r => r.join('')),
+      objects: this.objects, solid,
+      exits: this.exits, entries: this.entries, spawns: this.spawns, npcs: this.npcs, lanes: this.lanes, decor: this.decor, plots: this.plots,
+    };
+  }
+}

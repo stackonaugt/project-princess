@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#263d32">
+    <meta name="description" content="Private authoring studio for Project Princess game content.">
+    <title>Project Princess Studio</title>
+    <link rel="stylesheet" href="studio.css">
+  </head>
+  <body>
+    <div id="studio-root">
+      <a class="skip-link" href="#workspace">Skip to workspace</a>
+
+      <aside class="rail" aria-label="Studio navigation">
+        <a class="brand" href="#workspace" aria-label="Project Princess Studio home">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="brand-copy">
+            <strong>Princess</strong>
+            <small>AUTHORING STUDIO</small>
+          </span>
+        </a>
+
+        <div class="rail-rule" aria-hidden="true"></div>
+
+        <nav class="primary-nav" aria-label="Primary">
+          <p class="nav-label">WORKSPACE</p>
+          <a class="nav-item is-current" href="#workspace" aria-current="page">
+            <span class="nav-icon icon-overview" aria-hidden="true"></span>
+            <span>Overview</span>
+          </a>
+          <a class="nav-item" href="#content">
+            <span class="nav-icon icon-content" aria-hidden="true"></span>
+            <span>Game content</span>
+            <span class="nav-chevron" aria-hidden="true">›</span>
+          </a>
+          <a class="nav-item" href="#assets">
+            <span class="nav-icon icon-assets" aria-hidden="true"></span>
+            <span>Art &amp; assets</span>
+          </a>
+          <a class="nav-item" href="#settings">
+            <span class="nav-icon icon-settings" aria-hidden="true"></span>
+            <span>Project settings</span>
+          </a>
+        </nav>
+
+        <div class="rail-bottom">
+          <div class="local-note">
+            <span class="local-indicator" aria-hidden="true"></span>
+            <span><strong>Private workspace</strong><small>Changes stay on this project</small></span>
+          </div>
+          <a class="profile-link" href="#account">
+            <span class="profile-stamp" aria-hidden="true">PP</span>
+            <span class="profile-copy"><strong>Project owner</strong><small>Creator access</small></span>
+            <span class="profile-more" aria-hidden="true">···</span>
+          </a>
+        </div>
+      </aside>
+
+      <div class="studio-frame">
+        <header class="topbar">
+          <div class="breadcrumbs" aria-label="Breadcrumb">
+            <span>Project Princess</span>
+            <span class="crumb-divider" aria-hidden="true">/</span>
+            <strong>Overview</strong>
+          </div>
+          <div class="topbar-tools">
+            <span class="save-state"><span class="save-dot" aria-hidden="true"></span>All changes saved</span>
+            <span class="topbar-divider" aria-hidden="true"></span>
+            <button class="icon-button help-button" type="button" aria-label="Help and documentation">?</button>
+          </div>
+        </header>
+
+        <main id="workspace" class="workspace">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line" aria-hidden="true"></span>CREATOR WORKSPACE</p>
+              <h1>Good to see you.</h1>
+              <p class="intro">Shape the world of Project Princess, one thoughtful detail at a time.</p>
+            </div>
+            <span class="project-chip"><span class="chip-square" aria-hidden="true"></span>PERSONAL PROJECT</span>
+          </div>
+
+          <section class="welcome-panel" aria-labelledby="welcome-title">
+            <div class="welcome-copy">
+              <p class="welcome-kicker">PROJECT PRINCESS <span aria-hidden="true">·</span> MELBOURNE, AU</p>
+              <h2 id="welcome-title">A little world<br>with a lot of heart.</h2>
+              <p>Your private studio for the places, pets and stories that make this adventure yours.</p>
+              <a class="text-link" href="#content">Browse game content <span aria-hidden="true">→</span></a>
+            </div>
+            <div class="welcome-art" aria-hidden="true">
+              <div class="sun-disc"></div>
+              <div class="cloud cloud-one"></div>
+              <div class="cloud cloud-two"></div>
+              <div class="horizon"></div>
+              <div class="hill hill-back"></div>
+              <div class="hill hill-front"></div>
+              <div class="block-house">
+                <span class="house-roof"></span>
+                <span class="house-body"></span>
+                <span class="house-door"></span>
+                <span class="house-window window-one"></span>
+                <span class="house-window window-two"></span>
+              </div>
+              <span class="pixel-flower flower-one"></span>
+              <span class="pixel-flower flower-two"></span>
+              <span class="pixel-flower flower-three"></span>
+              <span class="art-caption">A PLACE TO MAKE YOUR OWN</span>
+            </div>
+          </section>
+
+          <section class="content-section" id="content" aria-labelledby="content-title">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">YOUR MATERIALS</p>
+                <h2 id="content-title">Game content</h2>
+              </div>
+              <p class="section-hint">Choose a collection to edit its saved data.</p>
+            </div>
+
+            <div class="collection-layout">
+              <nav class="collection-list" aria-label="Game content collections">
+                <a href="#collection-editor" class="collection-item">
+                  <span class="collection-symbol symbol-pets" aria-hidden="true"><i></i><i></i></span>
+                  <span class="collection-text"><strong>Pets</strong><small>Characters, traits and behaviour</small></span>
+                  <span class="collection-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="#collection-editor" class="collection-item">
+                  <span class="collection-symbol symbol-regions" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span class="collection-text"><strong>Regions</strong><small>Places, routes and encounters</small></span>
+                  <span class="collection-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="#collection-editor" class="collection-item">
+                  <span class="collection-symbol symbol-quests" aria-hidden="true"><i></i><i></i><i></i></span>
+                  <span class="collection-text"><strong>Quests &amp; dialogue</strong><small>Guidance, conversations and story</small></span>
+                  <span class="collection-arrow" aria-hidden="true">↗</span>
+                </a>
+                <a href="#collection-editor" class="collection-item">
+                  <span class="collection-symbol symbol-items" aria-hidden="true"><i></i></span>
+                  <span class="collection-text"><strong>Items &amp; moves</strong><small>Things to find, use and learn</small></span>
+                  <span class="collection-arrow" aria-hidden="true">↗</span>
+                </a>
+              </nav>
+
+              <section class="editor-empty" id="collection-editor" aria-labelledby="empty-title">
+                <div class="empty-illustration" aria-hidden="true">
+                  <span class="paper-shadow"></span>
+                  <span class="paper-sheet"><i></i><i></i><i></i></span>
+                  <span class="empty-spark spark-a"></span>
+                  <span class="empty-spark spark-b"></span>
+                </div>
+                <h3 id="empty-title">Pick up where you like.</h3>
+                <p>Select a collection to view and edit its saved game data. Your artwork remains yours to add.</p>
+                <span class="editor-hint"><span class="hint-key">TIP</span> Start with a collection on the left</span>
+              </section>
+            </div>
+          </section>
+
+          <footer class="workspace-footer">
+            <span>Made for the maker, not the player.</span>
+            <span class="footer-right"><span class="footer-mark" aria-hidden="true"></span>PROJECT PRINCESS STUDIO</span>
+          </footer>
+        </main>
+      </div>
+    </div>
+    <script type="module" src="./studio.js"></script>
+  </body>
+</html>

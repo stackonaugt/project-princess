@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Project Princess"
+description = "An existing Phaser game: a cosy pet-collecting adventure set around Melbourne. This artifact preserves the original source and assets and serves the game for browser preview."
+version = "1.0.0"
+id = "artifacts/project-princess"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 19204
+
+[services.development]
+run = "pnpm --filter @workspace/project-princess run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/project-princess", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/project-princess/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "19204"
+BASE_PATH = "/"
