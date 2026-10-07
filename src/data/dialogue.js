@@ -229,6 +229,7 @@ export const PEOPLE = {
       ],
       ['Gardening is mostly fighting snails and losing gracefully.'],
       ['Community gardens are the best kind of property: everyone shares it and nobody profits off it.'],
+      ['Got stale bread? The ducks on the creek go mad for it. Feed them enough and, well. Ducks remember a friend. You might get something special.'],
     ],
     hints: {
       poppy: 'There is a frenchie by the lake who keeps digging under my fence. She has never found anything. She will never stop.',
@@ -1195,6 +1196,7 @@ export const PEOPLE = {
       ['They call me Crazy Jeff because in 1987 I bowled barefoot in a hailstorm. And won. And then did it again.'],
       ['The jack is the little white ball. Get closer than the other bloke. That\'s it. That\'s the whole game. Fifty years and it never gets old.'],
       ['Barefoot bowls Friday nights. Young people come for the cheap jugs, stay for the glory.'],
+      ['Beat us old blokes a few times and the committee might have to dig something out of the cabinet for you. Not that you will.'],
     ],
     battle: {
       challenge: ['Crazy Jeff cracks his knuckles. "You\'ve got the look of a bowler. Let\'s see if you\'ve got the weight."'],
@@ -1205,7 +1207,7 @@ export const PEOPLE = {
     },
   },
   bowler1: { role: 'Bowls every day. Has opinions on the green', lines: [['Green\'s running fast today. Too fast. Crazy Jeff had it shaved. Don\'t tell him I said.'], ['Forty years at this club. Seen four presidents. Jeff\'s the only one who\'s bowled in a hailstorm.']] },
-  bowler2: { role: 'Bowls every day. Mostly for the afternoon tea', lines: [['I don\'t come for the bowls. I come for the scones at three o\'clock. The bowls is just what happens between.'], ['Mind the ditch. I fell in it in 2003 and they still bring it up.']] },
+  bowler2: { role: 'Bowls every day. Mostly for the afternoon tea', lines: [['I don\'t come for the bowls. I come for the scones at three o\'clock. The bowls is just what happens between.'], ['Mind the ditch. I fell in it in 2003 and they still bring it up.'], ['There\'s a cup in the cabinet nobody\'s won since 1987. Keep beating Jeff and see what happens.']] },
   ghost: {
     role: 'Haunts Reservoir Station after dark',
     lines: [

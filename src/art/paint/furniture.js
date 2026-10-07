@@ -470,6 +470,18 @@ export const FURNITURE = {
       p.blob(11, 5, 2, '#e8c040'); p.r('#f4f4f0', 2, 5, 2, 1);
     },
   },
+  // The Brunswick Bowls Club Newcomer's Cup, won off the old blokes: a gold cup on a little plinth.
+  trophy: {
+    foot: [1, 1], tex: [16, 24], variants: ['bowls'],
+    paint(p) {
+      p.shadow(8, 23, 12);
+      box(p, 3, 15, 10, 8, wood); p.r(woodD, 4, 19, 8, 1); p.r('#d8c070', 6, 17, 4, 1);
+      p.r('#c89a20', 6, 13, 4, 2); p.r('#c89a20', 7, 10, 2, 3);
+      p.r('#e8b830', 3, 2, 10, 8); p.r('#f8d860', 4, 2, 3, 6); p.r('#b88a18', 11, 3, 2, 7);
+      p.r('#e8b830', 1, 3, 2, 4); p.r('#e8b830', 13, 3, 2, 4); p.r('#b88a18', 1, 6, 1, 1); p.r('#b88a18', 14, 6, 1, 1);
+      p.r('#3a2a10', 5, 6, 6, 1);
+    },
+  },
   sidetable: {
     foot: [1, 1], tex: [16, 18], variants: ['oak', 'marble', 'glass', 'cane', 'stump'],
     paint(p, v) {

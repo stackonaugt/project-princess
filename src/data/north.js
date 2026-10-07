@@ -189,6 +189,7 @@ export const NORTH_PEOPLE = {
       ['Fifty years I fish here. Caught a lot of carp. Caught one eel this long. Nobody believes me. The eel believes me.'],
       ['The black swans. Beautiful. Also, they will chase you to the car park. Respect the swans.'],
       ['My wife says "Kostas, buy fish at the market like a normal person." Where is the fun in that?'],
+      ['You feed the ducks, they remember you. Feed them every day and one day, maybe, a little one decides you are family. I have seen it.'],
     ],
     hints: {
       poppy: 'A little black Frenchie up Plenty Rd at Loddon Ave. Chases ducks. Never catches. My kind of dog.',

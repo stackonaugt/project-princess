@@ -2,7 +2,7 @@
 // whenever you walk to another suburb or catch a train.
 
 import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
-import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS, npcZone } from '../data/regions.js';
+import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS, npcZone, invalidateMap } from '../data/regions.js';
 import { SHOPS } from '../data/shops.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
@@ -25,6 +25,11 @@ const GATES = {
 const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
 
 // What you can catch where: [item, weight, junk?]. Bait halves the junk.
+// Where there are ducks to feed (with stale bread), and how many old-bloke
+// wins at bowls earn the Newcomer's Cup.
+const DUCK_ZONES = ['lake', 'wetlands', 'coburglake', 'altona', 'gardens', 'flinders'];
+const BOWLS_TROPHY = 5;
+
 const FISH_TABLES = {
   lake: [['redfin', 40], ['carp', 35], ['eel', 10], ['oldboot', 15, true]],
   wetlands: [['yabby', 40], ['eel', 25], ['carp', 20], ['oldboot', 15, true]],
@@ -49,7 +54,7 @@ import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
 import { custom, objectTexture, tuftTexture, fitScale, cropTexture, exitSignTexture } from '../art/textures.js';
 import { Crowd } from '../world/crowd.js';
-import { Player, Pet, Npc, Sibling, toWorld } from '../world/entities.js';
+import { Player, Pet, Npc, Sibling, Duckling, toWorld } from '../world/entities.js';
 import { Traffic } from '../world/traffic.js';
 import { state } from '../systems/state.js';
 import { controls } from '../systems/controls.js';
@@ -105,6 +110,8 @@ export class WorldScene extends Phaser.Scene {
     // Chapter 3: both boys are out together, the other one tags along.
     this.sibling = null;
     if (this.twinsTogether()) this.sibling = new Sibling(this, spawn.x + 10, spawn.y + 2, state.data.hero === 'hadrian' ? 'aleksy' : 'hadrian');
+    // The duckling you won feeding the ducks waddles along behind everyone.
+    this.duckling = state.data.side.duckling ? new Duckling(this, spawn.x - 8, spawn.y + 6) : null;
 
     // Which pets are here: your team follows you everywhere; pets you've
     // found relax at home; everyone else is out in their own patch.
@@ -278,7 +285,7 @@ export class WorldScene extends Phaser.Scene {
       else if (this.region.home && ['bed', 'single', 'cot'].includes(o.kind)) this.interactables.push({ kind: 'sleep', x, y: y - 4, r: Math.max(18, o.w * 9), bubble: 'fx-bubble-zzz', cot: o.kind === 'cot' });
       else {
         const lines = flavourFor(o.kind, o.v);
-        if (lines) this.interactables.push({ kind: 'look', x, y: y - 4, r: Math.max(16, o.w * 8), lines, bubble: 'fx-bubble-dots', quiet: true });
+        if (lines) this.interactables.push({ kind: 'look', x, y: y - 4, r: Math.max(16, o.w * 8), lines, bubble: 'fx-bubble-dots', quiet: true, bin: o.kind === 'bin' ? `${this.regionId}:${o.x},${o.y}` : null });
       }
       const light = LIGHT_SOURCES[o.kind];
       if (light) {
@@ -647,7 +654,7 @@ export class WorldScene extends Phaser.Scene {
 
   async interact(t = this.findTarget()) {
     if (this.player.seat) { if (!ui.blocking() && this.time.now - this.player.satAt > 300) this.player.stand(); return; }
-    if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.goFishing();
+    if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.waterAction();
     if (!t || ui.blocking() || this.leaving) return;
     this.player.target = null; this.pending = null;
     this.player.setVelocity(0, 0);
@@ -662,7 +669,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
-    if (t.kind === 'look') return ui.say(pick(t.lines));
+    if (t.kind === 'look') return t.bin ? this.checkBin(t) : ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
     if (t.kind === 'plot') return this.usePlot(t);
     if (t.kind === 'cook') return this.cook();
@@ -694,6 +701,27 @@ export class WorldScene extends Phaser.Scene {
     return ui.say([who === 'Franco' ? `Franco claps his hands. "Megalo! I deliver it today. Myself. In the van."` : `Olly nods. "Good choice. I'll drop them round on my way home. Swap the old ones out for you."`]);
   }
 
+  // ------------------------------------------------------------ bins
+  // A rummage in a wheelie bin: now and then there is something in it. Each
+  // bin can only be checked once a day.
+  async checkBin(t) {
+    const f = state.data.flags, day = state.data.day;
+    if (f.binDay !== day) { f.binDay = day; f.bins = []; }
+    if (f.bins.includes(t.bin) || Math.random() > 0.35) { if (!f.bins.includes(t.bin)) f.bins.push(t.bin); return ui.say(pick(t.lines)); }
+    f.bins.push(t.bin);
+    const r = Math.random();
+    if (r < 0.45) {
+      const n = 1 + Math.floor(Math.random() * 4);
+      state.addMoney(n); sfx.pickup(); ui.toast(`+$${n}`);
+      ui.say([pick(['You lift the lid. Under a pizza box: a few coins.', 'Someone has binned a jar of loose change. You rescue it.', 'A gold coin glints at the bottom. Worth the smell.']), `You found $${n}.`]);
+    } else {
+      const id = pick(['lemon', 'lemon', 'bread', 'feather', ...Object.keys(ITEMS).filter(k => ITEMS[k].crop)].filter(k => ITEMS[k]));
+      state.addItem(id); sfx.pickup(); ui.toast(`+1 ${ITEMS[id].name}`, itemIcon(id, 32));
+      ui.say([pick(['You lift the lid. On top, perfectly fine:', 'Wedged under the lid, of all things:', 'Somebody has thrown out a good one:']) + ` ${ITEMS[id].name.toLowerCase()}.`]);
+    }
+    this.save();
+  }
+
   // ------------------------------------------------------------ fishing
   // Water in front of you (or one tile further)?
   waterAhead() {
@@ -701,16 +729,51 @@ export class WorldScene extends Phaser.Scene {
     const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 1) / T);
     return [1, 2].some(k => this.map.ground[ty + v[1] * k]?.[tx + v[0] * k] === '~');
   }
+  // Facing water: feed the ducks (with bread, where there are ducks) or fish.
+  async waterAction() {
+    const ducks = DUCK_ZONES.includes(this.regionId) && state.count('bread') > 0;
+    if (!ducks) return this.goFishing();
+    if (this.emilioWaiting()) return this.emilio();
+    if (!state.hasUpgrade('rod')) return this.feedDucks();
+    const c = await ui.say({ text: 'Ducks paddle over, eyeing your bag.', choices: [{ label: 'Feed the ducks', value: 'ducks' }, { label: 'Go fishing', value: 'fish' }, { label: 'Not now', value: null }] }, { cancelValue: null });
+    if (c === 'ducks') return this.feedDucks();
+    if (c === 'fish') return this.goFishing();
+  }
+
+  // Feed the ducks (the bowls game reskinned): a slice of stale bread, a duck
+  // feather back. Ten really good feeds and a duckling decides you are its mum.
+  // Nobody tells you that outright: Chris and a few others only hint.
+  emilioWaiting() { return this.regionId === 'lake' && state.count('bread') > 0 && !state.isFound('emilio'); }
+  // The lake's secret (Chris tells you at 10 hearts): toss stale bread in at Edwardes Lake.
+  async emilio() {
+    state.removeItem('bread');
+    state.data.minutes += 10;
+    await ui.say(['You tear off some stale bread and toss it in.', 'The water goes very still. Then a big old duck glides out of the reeds, wearing a little top hat.', '"Quack," he says, gravely. He eats the bread, tips his hat, and climbs out after you.']);
+    await this.winPet('emilio');
+    return this.save();
+  }
+
+  async feedDucks() {
+    state.removeItem('bread');
+    state.data.minutes += 10;
+    const r = await ui.bowls({ mode: 'ducks' });
+    const side = state.data.side;
+    if (r && r.best !== null) { state.addItem('duckfeather'); ui.toast('+1 Duck feather', itemIcon('duckfeather', 32)); }
+    if (r && r.best !== null && r.best <= 40 && !side.duckling) {
+      side.duckWins++;
+      if (side.duckWins >= 10) {
+        side.duckling = true; sfx.found();
+        this.duckling = new Duckling(this, this.player.x - 8, this.player.y + 6);
+        await ui.say(['The ducks have been watching you for a while now.', 'A tiny fluffy duckling hops out of the water, shakes itself off, and plants itself at your feet.', 'It peeps. It is not going anywhere. You have a duckling now.']);
+        ui.banner('A duckling!', 'It follows you everywhere');
+      }
+    }
+    this.save();
+  }
+
   async goFishing() {
     if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
-    // The lake's secret (Chris tells you at 10 hearts): cast stale bread at Edwardes Lake.
-    if (this.regionId === 'lake' && state.count('bread') > 0 && !state.isFound('emilio')) {
-      state.removeItem('bread');
-      state.data.minutes += 10;
-      await ui.say(['You tear off some stale bread and toss it in.', 'The water goes very still. Then a big old duck glides out of the reeds, wearing a little top hat.', '"Quack," he says, gravely. He eats the bread, tips his hat, and climbs out after you.']);
-      await this.winPet('emilio');
-      return this.save();
-    }
+    if (this.emilioWaiting()) return this.emilio();
     const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
     const bait = state.count('bait') > 0;
     if (bait) state.removeItem('bait');
@@ -980,6 +1043,16 @@ export class WorldScene extends Phaser.Scene {
       state.data.flags.bowlsDay = state.data.day;
       state.addMoney(10); sfx.pickup();
       await ui.say(['Crazy Jeff: "Now THAT is bowls! Here, ten bucks from the honesty tin. Do not tell the committee."', 'You got $10.'], { name: 'Crazy Jeff', portrait: npcIcon('crazyjeff') });
+    }
+    // Beat the old blokes enough times and the club gives you a trophy for home.
+    const side = state.data.side;
+    if (r.rival && r.best < r.rival && !side.trophy) {
+      side.bowlsWins++;
+      if (side.bowlsWins >= BOWLS_TROPHY) {
+        side.trophy = true; sfx.found(); invalidateMap('home');
+        await ui.say(['Crazy Jeff clears his throat. The old blokes take their hats off.', '"By order of the committee: the Brunswick Bowls Club Newcomer\'s Cup. First one we have given out since 1987."', 'It is very shiny and slightly dented. They will drop it round to the house.'], { name: 'Crazy Jeff', portrait: npcIcon('crazyjeff') });
+        ui.banner('The Newcomer\'s Cup!', 'It is on the shelf at home');
+      }
     }
     this.save();
   }
@@ -2060,6 +2133,7 @@ export class WorldScene extends Phaser.Scene {
       else this.player.target = { x, y: y + 8 };
     }
     this.sibling?.update(this.player, blocked);
+    this.duckling?.update(this.player, blocked);
     for (const p of this.pets) p.update(this.player, dt, blocked);
     for (const n of this.npcs) if (!n.gone) n.update(this.player, dt, blocked);
     this.crowd.update(this.player, dt, blocked);

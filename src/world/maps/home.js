@@ -71,7 +71,8 @@ export function buildHome() {
   b.put('picture', 20, 8, { v: 'dog', onWall: true });
   b.put('picture', 22, 8, { v: 'family', onWall: true });
   b.put('doormat', 16, 17);
-  b.put('boxes', 22, 16, { v: 'stack' });
+  if (state.data.side?.trophy) b.put('trophy', 22, 16, { v: 'bowls' });   // the Newcomer's Cup from the bowls club
+  else b.put('boxes', 22, 16, { v: 'stack' });
   b.put('boxes', 21, 17, { v: 'open' });
 
   // Bedrooms

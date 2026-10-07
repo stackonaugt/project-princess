@@ -177,6 +177,26 @@ export class Sibling extends Actor {
   }
 }
 
+// The duckling you win by feeding the ducks: waddles along at the very back.
+export class Duckling extends Phaser.GameObjects.Image {
+  constructor(scene, x, y) {
+    super(scene, x, y, 'foe-duck', 0);
+    scene.add.existing(this);
+    this.setOrigin(0.5, 1).setScale(0.6);
+    this.setDepth(y);
+  }
+  update(player, frozen) {
+    const trail = this.scene.trail, gap = 7 * (this.scene.pets.filter(p => p.mode === 'follow').length + 1) + 2;
+    const t = trail.length > gap ? trail[trail.length - 1 - gap] : { x: player.x - 8, y: player.y + 6 };
+    const dx = t.x - this.x, dy = t.y - this.y, d = Math.hypot(dx, dy);
+    if (d > 140) this.setPosition(t.x, t.y);
+    else if (!frozen && d > 2) this.setPosition(this.x + dx * 0.18, this.y + dy * 0.18);
+    if (Math.abs(dx) > 1) this.setFlipX(dx < 0);
+    this.setAngle(!frozen && d > 3 ? Math.sin(this.scene.time.now / 70) * 8 : 0);
+    this.setDepth(this.y);
+  }
+}
+
 // ---------------------------------------------------------------- Pets
 // mode: 'wild' (in its own patch), 'home' (relaxing at your place) or
 // 'follow' (on your team, trailing behind you).

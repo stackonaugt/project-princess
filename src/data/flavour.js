@@ -32,6 +32,7 @@ export const FLAVOUR = {
   car: [['A parked car. There is a sun shade in the windscreen that says "BACK OFF, I AM HOT".'], ['A parked car with a P-plate. It has been parked very, very carefully.']],
   trolley: [['An abandoned shopping trolley. A Melbourne native, roaming free far from its home supermarket.']],
   crate: [['A milk crate. Possibly Salami\'s. Probably Salami\'s.']],
+  trophy: [['The Brunswick Bowls Club Newcomer\'s Cup. Engraved underneath: "1987". They scratched that out and wrote your name in biro.'], ['You give the cup a polish. You can see your face in it. Slightly dented.']],
   bin: [['A wheelie bin. Red for rubbish, yellow for recycling, green for garden. Everyone gets it wrong.'], ['It is not bin night. You check anyway. Everyone checks anyway.']],
   letterbox: [['The letterbox is full of pizza menus and one very sad electricity bill.']],
   bench: [['You sit down for a moment. Your feet thank you.'], ['A little plaque on the bench reads "For Jan, who loved this spot".']],
