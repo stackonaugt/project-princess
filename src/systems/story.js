@@ -12,7 +12,8 @@
 import { state } from './state.js';
 import { PETS } from '../data/pets.js';
 import { ITEMS } from '../data/items.js';
-import { CH1, CH3_PRANKS, CH4 } from '../data/story.js';
+import { CH1, CH3_PRANKS, CH4, PRANKS } from '../data/story.js';
+import { NPCS } from '../data/npcs.js';
 import { petLevel } from './battle.js';
 import { isEvolved } from './forms.js';
 import { isMeetingDay, weekday } from '../data/routines.js';
@@ -55,7 +56,11 @@ export function objectives(n = chapterNow()) {
       { text: `Swap it for Cr Bentleigh's lunch in the civic centre foyer before the spill vote on ${weekday(c.deadline || 1)}, day ${c.deadline || '?'}`, done: !!c.swapped },
     ];
   }
-  if (n === 3) return [{ text: `Prank ${CH3_PRANKS} of Helen's friends: Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim or Nicholas${count(s.pranks.length, CH3_PRANKS)}`, done: s.pranks.length >= CH3_PRANKS }];
+  if (n === 3) return [
+    { text: `Prank ${CH3_PRANKS} of Helen's friends: Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim or Nicholas. Visit them first to look for a prank${count(s.pranks.length, CH3_PRANKS)}`, done: s.pranks.length >= CH3_PRANKS },
+    // Each prank you have planned: buy the thing, then go back and pull it.
+    ...state.data.side.scouted.filter(id => PRANKS[id]).map(id => ({ text: `${PRANKS[id].label} on ${NPCS[id]?.name || id}: ${state.count(PRANKS[id].item) || s.pranks.includes(id) ? 'go back and pull it' : `buy it at ${PRANKS[id].where}`}`, done: s.pranks.includes(id) })),
+  ];
   if (n === 4) {
     const rooms = CH4.rooms.filter(id => state.hasUpgrade(id)).length;
     return [

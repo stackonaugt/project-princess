@@ -4,7 +4,7 @@
 // in, and the sandwich shop and boba tea in the middle with the food court
 // tables. Coles (Deb), Bakers Delight (Thuy), the chemist (Mei), the
 // newsagency (Kostas), Everything $2 (Raj), Curl Up & Dye (Shaz, chat only).
-// Bill at his usual table, Connie walking her laps.
+// Bill at his usual table, Connie walking her laps, Lyn at the Lincraft stall.
 //
 //   y0-1 top wall   y2-4 Coles   x1-5 / x38-42 side shops   y23 bottom wall, doors at x21-22
 import { MapBuilder } from '../MapBuilder.js';
@@ -15,7 +15,7 @@ export function buildSummerhillMall() {
   b.set(21, 23, 'D').set(22, 23, 'D');
 
   // Coles across the whole back wall
-  b.put('colesfront', 1, 2);
+  b.put('colesfront', 1, 2, { shop: 'summerfresh', keeper: 'deb' });
   b.npc('deb', 12, 5, { face: 'down' });
   // Down the left side: Bakers Delight at the back, then the chemist and the newsagency
   b.put('mallshop', 1, 6, { v: 'bakers' }); b.npc('thuy', 6, 8, { face: 'left' });
@@ -32,6 +32,8 @@ export function buildSummerhillMall() {
   for (const x of [15, 19, 23, 27]) { b.put('table', x, 12); b.put('stool', x - 1, 12); b.put('stool', x + 1, 12); }
   for (const x of [17, 21, 25]) { b.put('table', x, 15); b.put('stool', x - 1, 15); b.put('stool', x + 1, 15); }
   b.npc('bill', 20, 11, { face: 'down' });
+  // Lincraft's stall: craft bits, prank supplies and paint for the house.
+  b.put('foodstall', 29, 15, { v: 'lincraft' }); b.npc('lyn', 31, 17, { face: 'down' });
   b.sign(29, 10, ['Food court.', 'Sangas and boba. Bill has had the same table since 1996. Do not sit there.']);
 
   // A coin ride, benches and big pot plants

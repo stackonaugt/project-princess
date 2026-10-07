@@ -2,7 +2,8 @@
 // whenever you walk to another suburb or catch a train.
 
 import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
-import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS } from '../data/regions.js';
+import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS, npcZone } from '../data/regions.js';
+import { SHOPS } from '../data/shops.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
@@ -48,7 +49,7 @@ import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
 import { custom, objectTexture, tuftTexture, fitScale, cropTexture, exitSignTexture } from '../art/textures.js';
 import { Crowd } from '../world/crowd.js';
-import { Player, Pet, Npc, toWorld } from '../world/entities.js';
+import { Player, Pet, Npc, Sibling, toWorld } from '../world/entities.js';
 import { Traffic } from '../world/traffic.js';
 import { state } from '../systems/state.js';
 import { controls } from '../systems/controls.js';
@@ -101,6 +102,9 @@ export class WorldScene extends Phaser.Scene {
     this.player = new Player(this, spawn.x, spawn.y, spawn.dir);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.layer);
+    // Chapter 3: both boys are out together, the other one tags along.
+    this.sibling = null;
+    if (this.twinsTogether()) this.sibling = new Sibling(this, spawn.x + 10, spawn.y + 2, state.data.hero === 'hadrian' ? 'aleksy' : 'hadrian');
 
     // Which pets are here: your team follows you everywhere; pets you've
     // found relax at home; everyone else is out in their own patch.
@@ -267,6 +271,7 @@ export class WorldScene extends Phaser.Scene {
       else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
       else if (o.kind === 'tramstop' && TRAM_STOPS[this.regionId]) this.interactables.push({ kind: 'tram', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (o.shop) for (let tx = o.x + 1; tx < o.x + o.w; tx += 3) this.interactables.push({ kind: 'shopfront', shop: o.shop, keeper: o.keeper, x: (tx + 0.5) * T, y: (o.y + o.h) * T - 2, r: 20, quiet: true, bubble: 'fx-bubble-dots' });
       else if (o.kind === 'agendaboard') this.interactables.push({ kind: 'agenda', x, y: y - 6, r: 20, bubble: 'fx-bubble-read' });
       else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
       else if (this.region.home && o.kind === 'counter' && o.v === 'stove') this.interactables.push({ kind: 'cook', x, y: y - 6, r: 20, bubble: 'fx-bubble-dots' });
@@ -661,6 +666,12 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'sleep') return this.sleep(t);
     if (t.kind === 'plot') return this.usePlot(t);
     if (t.kind === 'cook') return this.cook();
+    if (t.kind === 'shopfront') {
+      // Walk up to the shop itself (Coles) and buy straight away, while it is staffed.
+      const keeper = this.npcs.find(n => n.id === t.keeper && !n.gone);
+      if (!keeper) return ui.say([`${SHOPS[t.shop]?.name || 'The shop'} is closed. The lights are off and the trolleys are chained up.`]);
+      return ui.shop(t.shop);
+    }
     if (t.kind === 'lunch') return this.lunch(t);
     if (t.kind === 'forsale') return this.forSale(t);
   }
@@ -906,9 +917,10 @@ export class WorldScene extends Phaser.Scene {
       const giftable = state.bagItems().filter(id => !ITEMS[id].story && !ITEMS[id].deco);
       if (f.giftedDay !== day && giftable.length) choices.push({ label: 'Give a gift', value: 'gift' });
       // The story: pranks (Chapter 3) and party invitations (Chapter 4)
-      if (inChapter(3) && PRANKS[npc.id] && !story().pranks.includes(npc.id)) choices.push({ label: `Prank: ${PRANKS[npc.id].label}`, value: 'prank' });
+      if (inChapter(3) && PRANKS[npc.id] && !story().pranks.includes(npc.id)) choices.push(state.data.side.scouted.includes(npc.id) ? { label: `Prank: ${PRANKS[npc.id].label}`, value: 'prank' } : { label: 'Look for a prank', value: 'prank' });
       if (inChapter(4) && !NO_INVITE.includes(npc.id) && !story().invited.includes(npc.id)) choices.push({ label: 'Invite to the party', value: 'invite' });
-      if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
+      // Only behind their own counter: no shop when you bump into them elsewhere.
+      if (info.shop && npcZone(npc.id) === this.regionId && npc.spot?.at !== 'home') choices.push({ label: 'Shop', value: 'shop' });
       if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
       if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
       if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
@@ -1467,11 +1479,18 @@ export class WorldScene extends Phaser.Scene {
     state.save();
   }
 
-  // Pick (or change) who you are playing as.
+  // Who you play: Helen, except Chapter 3 (both twins, swap between them)
+  // and free play after Chapter 4, when anyone can be picked.
+  twinsTogether() { return inChapter(3) && state.data.hero !== 'helen'; }
+  canPickHero() { return !!story().done[4]; }
   async pickHero(canCancel = false) {
+    if (this.twinsTogether()) return this.swapTwins();
+    if (!this.canPickHero()) return ui.say(['You are Helen for now. Once the election is done, you can play as anyone.']);
     const id = await ui.chooseHero(canCancel);
     if (!id) return;
-    if (id === 'helen' && inChapter(3)) return ui.say(['Mum is at Nanna and Pop\'s, looking after them. Today belongs to the boys.']);
+    this.setHero(id);
+  }
+  setHero(id) {
     const first = !state.data.startGiven;
     state.data.hero = id;
     if (first) {
@@ -1480,11 +1499,23 @@ export class WorldScene extends Phaser.Scene {
     }
     this.player.refreshLook();
     this.save();
-    if (first) ui.toast(`${HEROES[id].name}'s treats are in your bag`);
+  }
+  // Chapter 3: swap places with your brother.
+  swapTwins() {
+    const d = state.data, other = d.hero === 'hadrian' ? 'aleksy' : 'hadrian';
+    const sx = this.sibling?.x, sy = this.sibling?.y;
+    if (this.sibling) {
+      this.sibling.hero = d.hero; this.sibling.setPosition(this.player.x, this.player.y); this.sibling.dir = null; this.sibling.setDir(this.player.dir);
+      this.player.body.reset(sx, sy);
+    }
+    d.hero = other; this.player.refreshLook(); this.trail.length = 0; this.save();
+    ui.toast(`Now playing as ${HEROES[other].name}`);
   }
 
   async intro(firstVisit) {
-    if (this.firstLoad && !state.data.hero) await this.pickHero(false);
+    if (this.firstLoad && !state.data.hero) this.setHero('helen');
+    // Older saves that picked a twin go back to Helen until free play.
+    if (this.firstLoad && state.data.hero !== 'helen' && !inChapter(3) && !this.canPickHero()) this.setHero('helen');
     if (!this.firstLoad) {
       if (firstVisit && this.region.name === this.suburb.name) ui.toast(`New station unlocked: ${this.suburb.name}`);
       return;
@@ -1626,7 +1657,7 @@ export class WorldScene extends Phaser.Scene {
     s.chapter = n;
     this.save();
     if (n === 4) {
-      if (s.heroBefore) { d.hero = s.heroBefore; s.heroBefore = null; this.player.refreshLook(); }
+      if (s.heroBefore || d.hero !== 'helen') { d.hero = 'helen'; s.heroBefore = null; this.player.refreshLook(); this.sibling?.destroy(); this.sibling = null; }
       await ui.news({ lines: NEWS_OPEN(s.ch2.deposed) });
     }
     if (n === 1) {
@@ -1644,7 +1675,8 @@ export class WorldScene extends Phaser.Scene {
     }
     if (n === 3) {
       if (d.hero === 'helen') { s.heroBefore = 'helen'; d.hero = 'hadrian'; this.player.refreshLook(); }
-      await ui.say(['Helen: "Right, I\'m off to Nanna and Pop\'s. Dad\'s in charge. Be good, boys!"', 'The front door closes. The boys look at each other.', 'You are playing as the twins until Helen gets home. Swap between them in Settings.']);
+      if (!this.sibling) this.sibling = new Sibling(this, this.player.x + 10, this.player.y + 2, 'aleksy');
+      await ui.say(['Helen: "Right, I\'m off to Nanna and Pop\'s. Dad\'s in charge. Be good, boys!"', 'The front door closes. The boys look at each other.', 'You are playing as both twins until Helen gets home. Swap between them with Swap twins in Settings.']);
     }
     if (n === 4) await ui.say(['Helen: "Right, team. The September Babies Bash. We\'re going to throw the party of the century, and the whole town is invited."', 'Check the Story app on your Pawphone for the to-do list.']);
     this.save();
@@ -1772,9 +1804,18 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // Chapter 3: a prank on one of Helen's friends.
+  // Chapter 3: first you visit and spot something, the boys hatch a plan and
+  // go and buy what they need, then come back and pull the prank.
   async prank(npc, opts) {
-    const s = story(), pr = PRANKS[npc.id];
-    if (pr.item && !state.count(pr.item)) return ui.say([PRANK_NEED(pr.label, ITEMS[pr.item].name.toLowerCase())], opts);
+    const s = story(), pr = PRANKS[npc.id], side = state.data.side;
+    if (!side.scouted.includes(npc.id)) {
+      await ui.say(pr.scout, opts);
+      await ui.say(pr.plan);
+      side.scouted.push(npc.id);
+      ui.toast(`New prank on the to-do list: ${pr.label}`);
+      return this.save();
+    }
+    if (pr.item && !state.count(pr.item)) return ui.say([PRANK_NEED(pr)], opts);
     if (pr.item) state.removeItem(pr.item);
     const [setup, ...rest] = pr.lines;
     await ui.say([setup], opts);
@@ -1973,6 +2014,7 @@ export class WorldScene extends Phaser.Scene {
       else if (!this.player.target) this.pending = null;
       else this.player.target = { x, y: y + 8 };
     }
+    this.sibling?.update(this.player, blocked);
     for (const p of this.pets) p.update(this.player, dt, blocked);
     for (const n of this.npcs) if (!n.gone) n.update(this.player, dt, blocked);
     this.crowd.update(this.player, dt, blocked);

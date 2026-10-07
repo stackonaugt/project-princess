@@ -123,5 +123,7 @@ export function buildHome() {
   b.entry('bed', 3, 15, 'down').entry('front', 16, 16, 'up').entry('back', 21, 2, 'down');
   b.entry('cot', 2, 4, 'down');           // the twins wake up in their room
   b.entry('start', 3, 15, 'down');
-  return b.finish();
+  const map = b.finish();
+  map.wallPaint = state.data.wallPaint || null;   // paint from the Lincraft stall at Summerhill
+  return map;
 }

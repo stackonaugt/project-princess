@@ -22,9 +22,9 @@ import { SH_SHOPS } from './summerhill.js';
 
 export const SHOPS = {
   petshop: { name: 'The Leash You Can Do', where: 'Hope St, Brunswick', tabs: ['treats', 'gear'] },
-  bunnings: { name: 'Bunnings Warehouse', where: 'Kororoit Creek Rd, Altona North', tabs: ['seeds', 'tools', 'upgrades', 'plants', 'party', 'gifts', 'pranks'], gifts: ['seedling', 'olive', 'gloves', 'fertiliser'] },
-  milkbar: { name: 'James\'s Milk Bar', where: 'Reservoir Station', tabs: ['sell', 'seeds', 'treats', 'gifts', 'pranks'], seeds: ['tomato', 'strawberry', 'chilli', 'basil'], gifts: ['gaytime', 'icedcoffee', 'flowers', 'paperback', 'byzbook', 'modeltrain', 'bread'] },
-  bookshop: { name: 'Brunswick Bound', where: 'Sydney Rd, Brunswick', tabs: ['books'] },
+  bunnings: { name: 'Bunnings Warehouse', where: 'Kororoit Creek Rd, Altona North', tabs: ['seeds', 'tools', 'upgrades', 'plants', 'party', 'gifts', 'pranks'], gifts: ['seedling', 'olive', 'gloves', 'fertiliser'], pranks: ['whoopee'] },
+  milkbar: { name: 'James\'s Milk Bar', where: 'Reservoir Station', tabs: ['sell', 'seeds', 'treats', 'gifts', 'pranks'], pranks: ['wigglescd'], seeds: ['tomato', 'strawberry', 'chilli', 'basil'], gifts: ['gaytime', 'icedcoffee', 'flowers', 'paperback', 'byzbook', 'modeltrain', 'bread'] },
+  bookshop: { name: 'Brunswick Bound', where: 'Sydney Rd, Brunswick', tabs: ['books', 'pranks'], pranks: ['bookmark'] },
   anaconda: { name: 'Anaconda', where: 'Plenty Rd, Preston', tabs: ['fishing', 'gifts'], gifts: ['thermos', 'headtorch', 'bike'] },
   cozzo: { name: 'Franco Cozzo', where: 'Barkly St, Footscray', tabs: ['furniture'] },
   fishvan: { name: 'Spiro\'s Fish Van', where: 'Kororoit Creek Rd, Altona North', tabs: ['fish'] },

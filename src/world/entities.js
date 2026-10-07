@@ -149,6 +149,34 @@ export class Player extends Actor {
   }
 }
 
+// The other twin in Chapter 3: trots along right behind you on the trail.
+export class Sibling extends Actor {
+  constructor(scene, x, y, hero) {
+    super(scene, x, y, playerTexture(hero, 'down')[0], 32);
+    this.hero = hero; this.body.enable = false;
+    this.setDir('down');
+  }
+  setDir(dir) {
+    this.dir = dir;
+    const [tex, flip] = playerTexture(this.hero, dir);
+    if (this.texture.key !== tex) { this.setTexture(tex, this.scene.textures.get(tex).has(0) ? 0 : undefined); this.applyScale(); }
+    this.setFlipX(flip);
+  }
+  update(player, frozen) {
+    const trail = this.scene.trail, gap = 4;
+    const t = trail.length > gap ? trail[trail.length - 1 - gap] : { x: player.x + 10, y: player.y + 2 };
+    const dx = t.x - this.x, dy = t.y - this.y, d = Math.hypot(dx, dy);
+    if (d > 120) this.setPosition(t.x, t.y);
+    else if (!frozen && d > 2) this.setPosition(this.x + dx * 0.2, this.y + dy * 0.2);
+    const moving = !frozen && d > 3;
+    if (moving) this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    const anim = `${this.texture.key}-walk`;
+    if (moving && this.scene.anims.exists(anim)) this.anims.play(anim, true);
+    else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); this.setBob(moving); }
+    this.syncExtras();
+  }
+}
+
 // ---------------------------------------------------------------- Pets
 // mode: 'wild' (in its own patch), 'home' (relaxing at your place) or
 // 'follow' (on your team, trailing behind you).
