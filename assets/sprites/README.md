@@ -18,13 +18,15 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 | `enemies/` | `<enemy id>.png`, e.g. `bag.png`, `recycling.png` | Things you battle (animals facing right; bins and objects facing the front) | 16x16 (bins 16x20, people 16x32) |
 | `vehicles/` | `tram.png`, `train-h.png`, `car-h-red.png`, ... | Trams, trains, cars and bikes | Same size as the template |
 
-Pet ids: `princess`, `salami`, `spooky`, `poppy`, `stanley` (see `src/data/pets.js`). Evolved forms: `pets/princess-evolved.png` (Flamcess), `pets/poppy-evolved.png` (Floppy), and `portraits/<id>-evolved.png`.
-Gear icons: `items/gear-lead.png`, `gear-collar`, `gear-harness`, `gear-bell`, `gear-bandana`, `gear-pouch`, `gear-bowtie`.
-People ids: `trish`, `gordon`, `gaz`, `marisol`, `commuter`, `pearman`, `jordan`, `abby`, `pina`, `james`, `chris`, `nathan`, `rose`, `slinks`, `mem`, `corni`, `sinead`, `tim`, `nicholas`, `binman`, `hipster`, `golfer`, `stranger`, `olly`, `paddy`, `lesley`, `malcolm`, `kirsty`, `dahlia`, `rayna`, `deanna`, `wren`, `bazza`, `sam`, `sal`, `macca`, `ed` (see `src/data/npcs.js`).
-Enemy ids: `bag`, `streetcat`, `dog`, `rat`, `boy`, `balls`, `commuter`, `ibis`, `scooter`, `duck`, `magpie`, `recycling`, `garbage`, `compost`, `alleycat`, `nonna`, `cavoodle`, `ristretto`, `sourdough`, `recordplayer`, `bulldog`, `golfball`, `fiveiron`, `buggy`, `weed`, `ice`, `fentanyl` (see `src/data/enemies.js`).
-Item ids: `chicken`, `sardine`, `carrot`, `cheese`, `snag`, `croissant`, `lemon`, `tennis`, `ribbon`, `feather`.
-Tile names: `grass`, `flowers`, `tallgrass`, `path`, `road`, `tram`, `crossing`, `rail`, `footpath`, `concrete`, `platform`, `bluestone`, `water`, `bridge`, `sand`, `soil`, `gravel`, `mulch`, `lawn`, `parkgravel`, `zebra`, `carpark`, `driveway`, and indoors `wall`, `timber`, `bathtile`, `carpet`, `lino`, `doorway`.
-Object kinds and variants: look at the file names in `templates/objects/`.
+**The template file names are the ids.** Every pet, person, enemy, item, vehicle and object in the game has a template in `templates/` under the name it loads from, so the easiest way to find an id is to look there.
+
+- Pets: `princess`, `salami`, `spooky`, `poppy`, `rusty`, `stanley`, `girlie`, `chloe`, `ziggy`, `emilio` (see `src/data/pets.js`). Evolved forms are `pets/<id>-evolved.png` and `portraits/<id>-evolved.png`: Flamcess, Sopressa, Poltergeist Spooky, Floppy, Even Rustier and Centurionely.
+- Player: `helen`, `hadrian` and `aleksy`, each with `-down`, `-up` and `-left`.
+- People: over a hundred, in `templates/npcs/` (ids from `src/data/npcs.js` and the suburb files `src/data/north.js`, `east.js` and `summerhill.js`).
+- Enemies: in `templates/enemies/` (ids from `src/data/enemies.js` and the suburb files).
+- Items: treats, crops, presents, drinks and gear (`gear-lead`, `gear-collar`...) in `templates/items/`.
+- Objects: `<kind>-<variant>.png` in `templates/objects/`. `objects/<kind>.png` replaces every variant of that kind. Fences take their style as the variant (`fence-picket.png`, `fence-colorbond.png`...).
+- Tile names: `grass`, `flowers`, `tallgrass`, `path`, `road`, `tram`, `crossing`, `rail`, `footpath`, `concrete`, `platform`, `bluestone`, `water`, `bridge`, `sand`, `soil`, `gravel`, `mulch`, `lawn`, `parkgravel`, `zebra`, `carpark`, `driveway`, and indoors `wall`, `timber`, `bathtile`, `carpet`, `lino`, `doorway`.
 
 ## Rules of thumb
 
