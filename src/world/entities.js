@@ -26,6 +26,23 @@ export class Actor extends Phaser.Physics.Arcade.Sprite {
     this.bob = 0;
   }
   applyScale() { this.setScale(fitScale(this.scene, this.texture.key, this.slot)); }
+  // Cutscenes: walk or run through world points at a speed (px/s), ignoring
+  // physics and AI until done. Resolves when it arrives.
+  scriptTo(points, speed = 60) {
+    this.scripted = true; this.setVelocity(0, 0); if (this.body) this.body.enable = false;
+    const anim = () => `${this.texture.key}-walk`;
+    return new Promise(res => {
+      const step = i => {
+        if (i >= points.length || !this.active) { this.anims.stop(); this.setFrame?.(0); if (this.body) { this.body.enable = true; this.body.reset(this.x, this.y); } this.scripted = false; return res(); }
+        const [x, y] = points[i], d = Math.hypot(x - this.x, y - this.y);
+        if (this.setDir) this.setDir(Math.abs(x - this.x) > Math.abs(y - this.y) ? (x > this.x ? 'right' : 'left') : (y > this.y ? 'down' : 'up'));
+        else this.setFlipX(x < this.x);
+        if (this.scene.anims.exists(anim())) { this.anims.play(anim(), true); this.anims.timeScale = speed > 60 ? 1.8 : 1; }
+        this.scene.tweens.add({ targets: this, x, y, duration: Math.max(60, d / speed * 1000), onUpdate: () => { this.setDepth(this.y); this.syncExtras(); }, onComplete: () => step(i + 1) });
+      };
+      step(0);
+    });
+  }
   // Physics body in world pixels, centred on the feet.
   fitBody(w, h) {
     const s = this.scaleX, fw = this.frame.realWidth, fh = this.frame.realHeight;
@@ -227,6 +244,7 @@ export class Pet extends Actor {
 
   update(player, dt, frozen) {
     const d = this.data_;
+    if (this.scripted) return this.syncExtras?.();   // a cutscene is moving it (Actor.scriptTo)
     if (this.mode === 'follow') return this.follow(player, dt, frozen);
     if (frozen || this.asleep) {
       this.setVelocity(0, 0); this.anims.stop(); this.setBob(false);
@@ -352,6 +370,7 @@ export class Npc extends Actor {
     return true;
   }
   update(player, dt, frozen) {
+    if (this.scripted) return this.syncExtras?.();   // a cutscene is moving it (Actor.scriptTo)
     let moving = false;
     this.wait -= dt;
     if (this.seat) {   // having a sit: get up after a while and wander back

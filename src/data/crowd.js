@@ -22,7 +22,6 @@ export const CROWD = Array.from({ length: CROWD_COUNT }, (_, i) => {
   if (r() < 0.15) look.coat = pick(['#5a4a3a', '#2a2a30', '#8a6a4a']);
   if (r() < 0.12) look.hivis = true;
   if (r() < 0.12) look.beard = look.hair;
-  if (r() < 0.1) look.hood = look.shirt;
   if (r() < 0.1) look.holding = pick(['book', 'vape']);
   return { id: `crowd${i}`, look };
 });

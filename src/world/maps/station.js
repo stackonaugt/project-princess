@@ -54,7 +54,6 @@ export function buildStation() {
   b.put('bluepillar', 23, 11); b.put('bluepillar', 27, 11);
   b.put('stanchion', 6, 12); b.put('stanchion', 34, 12);
   b.put('bench', 30, 11);
-  b.put('waysign', 21, 3, { v: 'lohse-up' });   // the way back to Lohse St Reserve is across the zebra crossing
   b.sign(17, 11, ['Laverton Station. Werribee line.', 'Tap your myki at the reader to catch a train to anywhere you have already been.']);
 
   // Side platform: long shelters with beige panel walls

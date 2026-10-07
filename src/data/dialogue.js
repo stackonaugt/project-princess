@@ -51,6 +51,7 @@ export const PEOPLE = {
         '"She was always going to end up with Princess, wasn\'t she."',
       ],
       6: ['Trish: "You are family now, love. That means you get the good tupperware. The one with the lid."'],
+      10: ['Trish sits you down at the kitchen table at 72 Woods St. Gordon is sent out of the room.', '"Right. There is one thing I have never told anyone. Not even Helen."'],
     },
     helpsInBattle: 'Trish turns up with a casserole. Everyone feels better.',
   },

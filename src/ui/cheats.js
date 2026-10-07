@@ -42,6 +42,7 @@ export function openCheats(panel, close) {
     h('div', { class: 'm-scroll' },
       h('div', { class: 'note' }, h('h4', {}, 'Go anywhere'), h('div', { class: 'row' }, zoneSel, btn('Go', () => go(zoneSel.value)))),
       h('div', { class: 'note' }, h('h4', {}, 'Time'),
+        h('div', { class: 'row' }, btn(d.settings.paused ? 'Unpause time' : 'Pause time', e => { d.settings.paused = !d.settings.paused; e.currentTarget.textContent = d.settings.paused ? 'Unpause time' : 'Pause time'; done(d.settings.paused ? 'Time is paused. The clock stays put until you unpause it.' : 'Time is running again.'); })),
         h('div', { class: 'row' }, hourSel, btn('Set time', () => { d.minutes = Number(hourSel.value) * 60; done(`It is now ${hourSel.selectedOptions[0].textContent}.`); })),
         h('div', { class: 'row' },
           btn('Next day', () => { const news = state.newDay(); state.save(); close(); setTimeout(() => world().scene.restart({ region: 'home', entry: world().bedEntry(), newDay: true, news }), 50); }),

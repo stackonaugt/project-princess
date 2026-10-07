@@ -58,7 +58,6 @@ export function buildLohse() {
   b.exit(0, 0, 1, 26, 'woods', 'east', 'Woods St');   // Lohse St carries on into Woods St all the way along
   b.exit(18, 27, 2, 1, 'station', 'north', 'Laverton Station');
   b.exit(39, 24, 1, 2, 'civic', 'west', 'Civic Parade, Altona');
-  b.put('waysign', 36, 22, { v: 'civic-right' }); b.put('waysign', 21, 22, { v: 'station-down' });
   b.entry('east', 38, 26, 'left').edgeEntry('west', 'y', 1, 0, 25, 'right').entry('south', 18, 26, 'up');
 
   // Council motions that change the reserve (data/council.js)

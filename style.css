@@ -352,7 +352,8 @@ body.touch .bt-btn { min-height: 52px; }
 .app-garden .m-head { background: #3a8a2a; } .app-garden .m-head h2 { color: #fff; }
 .app-calendar { --parch: #ffffff; --parch-light: #ffffff; --parch-dark: #dcdce4; --wood: #d83a3a; --wood-dark: #a02020; --wood-light: #f08a8a; --ink: #1e1e24; }
 .app-menu { --parch: #eeeef2; --parch-light: #ffffff; --parch-dark: #c8ccd4; --wood: #6a6e78; --wood-dark: #44474f; --wood-light: #9a9ea8; --ink: #1e1e24; }
-.app-cheats { --parch: #2a2a32; --parch-light: #3a3a44; --parch-dark: #5a5e68; --wood: #c8302a; --wood-dark: #801a14; --ink: #f4f4f0; }
+.app-cheats { --parch: #f0f0f2; --parch-light: #ffffff; --parch-dark: #c8ccd4; --wood: #c8302a; --wood-dark: #801a14; --wood-light: #f08a8a; --ink: #1e1e24; color: var(--ink); }
+.app-cheats .cheat-select { background: #fff; color: #1e1e24; }
 .phone-bar { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 2px 10px 8px; }
 .phone-bar b { color: #a01a4a; }
 .phone-screen { border-radius: 20px; padding: 18px 12px 20px; flex: 1; overflow-y: auto;
@@ -424,6 +425,9 @@ body.touch .bt-btn { min-height: 52px; }
 .kara-lane { position: relative; height: 26px; background: #2a1a3a; border-radius: 13px; overflow: hidden; }
 .kara-now { position: absolute; left: 15%; top: 0; bottom: 0; width: 3px; background: #f5d63a; box-shadow: 0 0 6px #f5d63a; }
 .kara-cue { position: absolute; top: 5px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: #fff; border: 2px solid #1e1a18; }
+.kara-line.cur.words { background: none; color: var(--ink); }
+.kara-line.cur.words span { transition: color .1s; } .kara-line.cur.words .kara-beat { text-decoration: underline 2px; text-underline-offset: 3px; } .kara-line.cur.words .lit { color: #e2506a; }
+.kara-cue.word { width: 12px; height: 12px; margin-left: -6px; top: 7px; }
 .kara-cue.perfect { background: #f5d63a; } .kara-cue.good { background: #5aa83a; } .kara-cue.miss { background: #6a6e78; opacity: .5; }
 .kara-fb { margin: 0; font-weight: 700; min-height: 1.3em; } .kara-fb.perfect { color: #c8302a; } .kara-fb.good { color: #3a8a2a; } .kara-fb.miss { color: #6a6e78; }
 .kara-btn { font-size: 22px; min-width: 50%; touch-action: manipulation; }

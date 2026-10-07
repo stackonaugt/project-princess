@@ -4,6 +4,9 @@ import { state } from '../systems/state.js';
 import { sfx } from '../systems/sfx.js';
 import { bus } from '../bus.js';
 
+// Settings > Day length: how much slower the clock runs than normal.
+const DAY_LENGTHS = [[1, 'Normal'], [1.5, 'Long'], [2, 'Longer'], [3, 'Longest']];
+
 export function openMenu(panel, close) {
   const d = state.data;
   const msg = h('p', { class: 'small center', role: 'status' });
@@ -25,6 +28,10 @@ export function openMenu(panel, close) {
           .map(([v, l]) => h('div', {}, h('b', {}, v), h('span', {}, l)))),
       h('div', { class: 'set-group' },
         row('Sound', h('button', { class: 'set-toggle' + (d.settings.sound ? ' on' : ''), 'aria-pressed': d.settings.sound, onclick: e => { d.settings.sound = !d.settings.sound; e.currentTarget.classList.toggle('on', d.settings.sound); state.save(); sfx.select(); } }, h('i'))),
+        row('Day length', h('button', { class: 'wood-btn small', onclick: e => {
+          const opts = DAY_LENGTHS, i = (opts.findIndex(o => o[0] === (d.settings.dayLength || 1)) + 1) % opts.length;
+          d.settings.dayLength = opts[i][0]; e.currentTarget.textContent = opts[i][1]; state.save(); sfx.select();
+        } }, (DAY_LENGTHS.find(o => o[0] === (d.settings.dayLength || 1)) || DAY_LENGTHS[0])[1])),
         row('Character', h('button', { class: 'wood-btn small', onclick: () => { close(); setTimeout(() => bus.emit('game:hero'), 50); } }, 'Change')),
         canFull ? row('Full screen', h('button', { class: 'wood-btn small', onclick: () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) }, 'Toggle')) : null),
       h('div', { class: 'set-group' }, h('h4', {}, 'Saving'),

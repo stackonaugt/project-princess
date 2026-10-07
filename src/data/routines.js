@@ -66,10 +66,10 @@ ROUTINES.fairy = d => (d.day % 3 === 0 && d.minutes >= 9 * 60 && d.minutes < 17 
 ROUTINES.mem = ROUTINES.corni = d => (d.minutes >= 19 * 60 && d.minutes < 23 * 60 ? 'pub' : 'home');
 // Pearman ducks up to the Edinburgh Castle on Friday and Saturday evenings.
 ROUTINES.pearman = d => (['Friday', 'Saturday'].includes(weekday(d.day)) && d.minutes >= 17 * 60 && d.minutes < 21 * 60 ? 'pub' : 'sydney');
-// Ward: the bottle shop till 7pm, then home to Betty on Moreland Rd.
-ROUTINES.ward = d => (d.minutes < 19 * 60 ? 'shop' : 'home');
-// Shannon closes Brunswick Bound at 8pm and heads home.
-ROUTINES.shannon = d => (d.minutes < 20 * 60 ? 'shop' : null);
+// Ward: the bottle shop from 10am till 7pm, otherwise home with Betty on Moreland Rd.
+ROUTINES.ward = d => (d.minutes >= 10 * 60 && d.minutes < 19 * 60 ? 'shop' : 'home');
+// Shannon opens Brunswick Bound at 9am, closes at 8pm and heads home.
+ROUTINES.shannon = d => (d.minutes >= 9 * 60 && d.minutes < 20 * 60 ? 'shop' : null);
 // Tim and Nicholas walk Stanley round Edwardes Lake every evening.
 ROUTINES.tim = ROUTINES.nicholas = d => (d.minutes >= 17 * 60 + 30 && d.minutes < 19 * 60 ? 'lake' : 'glasgow');
 
@@ -91,7 +91,7 @@ const NIGHT_OWLS = { mrwilkinson: 14 * 60, possumpat: 17 * 60 };
 const SHOP_HOURS = {
   milkbar: [6, 23], spells: [7, 23], vapeshop: [9, 23], coffeecart: [6.5, 15], donuts: [7, 18], fruit: [7, 17], qvdeli: [7, 17],
   souvenirs: [9, 18], chemist: [8, 21], hotbread: [7, 18], twodollar: [9, 18], pide: [6, 19], deli: [7, 17], fruitveg: [7, 17],
-  opshop: [10, 17], gelateria: [11, 25], bunnings: [6, 21], fishvan: [8, 18], anaconda: [9, 21], cozzo: [9, 18], petshop: [9, 18],
+  opshop: [10, 17], gelateria: [11, 25], bottleshop: [10, 22], bookshop: [9, 19], bunnings: [6, 21], fishvan: [8, 18], anaconda: [9, 21], cozzo: [9, 18], petshop: [9, 18],
 };
 const spread = id => [...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) % 997, 7) / 997;   // 0..1, fixed per person
 export function onDuty(spot, info, d, home = false) {

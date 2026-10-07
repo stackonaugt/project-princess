@@ -16,8 +16,8 @@
 //   EAST_MOVES    -> MOVES (moves.js)
 //   EAST_PLACES   -> PLACES (dialogue.js)    zone taglines
 //
-// The real places are Holmes St (Adam's unit), 199 Nicholson St (where Helen
-// and Paddy used to live), the Nicholson St milk bar strip, Fleming Park and
+// The real places are Holmes St (Adam's unit), 199 Nicholson St (where Seb
+// and Sinead used to live), the Nicholson St milk bar strip, Fleming Park and
 // the Brunswick Bowls Club, and Lygon St from the owner's Street View shots.
 // Adam, Chelsea, Hatman, Mr Wilkinson, James the tradie, Nonna Concetta,
 // Abby's aunt and Michael are real people the owner knows: keep them
@@ -81,7 +81,7 @@ export const EAST_PEOPLE = {
       ['Unit 1. The one at the front. I get every delivery for the whole block and I have made peace with it.'],
       ['Trams out the front, the auto parts shop on the corner, and a bakery two minutes away. It is perfect.'],
       ['The 96 goes past my window every six minutes. I have stopped hearing it. My guests have not.'],
-      ['Helen and Paddy used to live up on Nicholson St, you know. Before the twins. Before the mayoring.'],
+      ['Seb and Sinead used to live up at 199 Nicholson. First September Babies party ever. The neighbours still talk about it.'],
     ],
     hints: {
       salami: 'A tabby comes up the driveway most afternoons, sits on my doormat and judges me. I think she lives on Donald St.',

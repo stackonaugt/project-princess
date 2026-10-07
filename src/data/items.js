@@ -104,6 +104,7 @@ export const ITEMS = {
   bookmark:   { name: 'Tassel bookmark', price: 2, story: true, art: { kind: 'packet', body: '#c8443a', label: '#e8c040', cap: '#e8c040' }, desc: 'Fancy. Perfect for losing someone\'s place in a very long book.' },
   grapejuice: { name: 'Grape juice', price: 3, story: true, art: { kind: 'wine', body: '#6a2a5a', label: '#f4e8c8', cap: '#3a1a2a' }, desc: 'In a wine bottle. From a distance, it is a shiraz. Up close, it is for kids.' },
   crayons:    { name: 'Crayons', price: 2, story: true, art: { kind: 'packet', body: '#e8c040', label: '#3a9a4a', cap: '#c8443a' }, desc: 'Twenty-four colours. Enough to redraw an entire train timetable. With dinosaurs.' },
+  bubbles:    { name: 'Bubble wand', price: 2, story: true, art: { kind: 'packet', body: '#f0a830', label: '#8ad0e8', cap: '#f4f4f0' }, desc: 'A little bottle of bubble mix shaped like a vape. Mango scented, sort of.' },
   wigglescd:  { name: 'Wiggles CD', price: 5, story: true, art: { kind: 'globe', body: '#e8c040', label: '#c8443a', cap: '#3a7ac8' }, desc: 'Hot Potato, Fruit Salad, the hits. Guaranteed to start a dance-off.' },
   // Party decorations (deco: true) from Bunnings, for the September Babies Bash.
   bunting:    { name: 'Bunting', price: 6, deco: true, desc: 'Ten metres of little triangle flags. Gets tangled just by looking at it.' },
@@ -153,7 +154,10 @@ export const ITEMS = {
 import { EAST_ITEMS } from './east.js';
 Object.assign(ITEMS, EAST_ITEMS);   // Brunswick East
 
+import { COOK_ITEMS } from './cooking.js';
+Object.assign(ITEMS, COOK_ITEMS);   // cooking: pantry, dishes, cook books
+
 // Pets only eat treats and crops. Drinks, presents and fertiliser are for people and plants.
-export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco;
+export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco && !ITEMS[id].ingredient;
 
 Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston

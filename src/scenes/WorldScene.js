@@ -8,10 +8,11 @@ import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
 import { isAt, onDuty, inMeeting, isMeetingDay, weekday } from '../data/routines.js';
 import { todayJobs } from '../ui/calendar.js';
-import { MOTIONS, MOTION_ORDER, ALLIES, AGAINST, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
-const COUNCILLORS = ['paddy', ...ALLIES, ...AGAINST, ...Object.keys(SWING)];
+import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
+const COUNCILLORS = COUNCIL_ALL;
+import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF } from '../data/cooking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
 // What blocks a gated exit until you beat its keeper (`gate` on an exit).
@@ -215,15 +216,11 @@ export class WorldScene extends Phaser.Scene {
       tex.refresh();
     }
     this.add.image(0, 0, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1000);
-    // The camera can scroll past the top and bottom edges (see onResize), so
-    // repeat the edge rows outwards rather than showing the page background.
-    const { w, h } = this.map, rowH = T * GROUND_SCALE;
-    for (let i = 1; i <= 16; i++) {
-      this.add.image(0, i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
-        .setCrop(0, (h - 1) * rowH, w * rowH, rowH);
-      if (i <= 6) this.add.image(0, -i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
-        .setCrop(0, 0, w * rowH, rowH);
-    }
+    // The camera can scroll past the top edge (under the HUD, see onResize),
+    // so repeat the top row upwards. Past the bottom is solid black.
+    const { w } = this.map, rowH = T * GROUND_SCALE;
+    for (let i = 1; i <= 6; i++) this.add.image(0, -i * T, key).setOrigin(0).setScale(1 / GROUND_SCALE).setDepth(-1001)
+      .setCrop(0, 0, w * rowH, rowH);
     // Water sparkles
     for (let y = 0; y < this.map.h; y++) for (let x = 0; x < this.map.w; x++) {
       if (this.map.ground[y][x] !== '~' || hash(x, y, 5) > 0.3) continue;
@@ -257,6 +254,7 @@ export class WorldScene extends Phaser.Scene {
       o.sprite = img;
       if (def.flat) img.setDepth(-900 + y / 1000);
       if (def.deck) img.setDepth(-990);
+      if (def.above) img.setDepth(8600 + y / 1000);   // over roofs and the skyrail, never over people (keep its art above head height)
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
       if (SEATS.includes(o.kind) && !o.forSale) {   // somewhere to sit: one place per tile of a bench
         const n = o.kind === 'bench' ? o.w : 1, slots = [];
@@ -293,6 +291,12 @@ export class WorldScene extends Phaser.Scene {
     const free = (x, y) => x > 0 && y > 0 && x < W - 1 && y < H - 1 && !this.map.solid[y * W + x];
     // Way signs only outdoors: inside and in the yard the way out is obvious.
     const signs = !this.region.indoor && !this.region.home;
+    // What a sign mustn't cover: the drawn area of every standing object (flat rugs and roofs aside)
+    const boxes = this.map.objects.filter(o => !OBJECTS[o.kind]?.flat).map(o => {
+      const [tw, th] = OBJECTS[o.kind]?.tex || [o.w * T, o.h * T], cx = (o.x + o.w / 2) * T, by = (o.y + o.h) * T;
+      return { x0: cx - tw / 2 + 2, x1: cx + tw / 2 - 2, y0: by - th + 2, y1: by };
+    });
+    const placed = [];
     for (const e of this.map.exits) {
       const dir = e.x === 0 && e.w === 1 ? 'left' : e.x + e.w === W && e.w === 1 ? 'right' : e.y === 0 && e.h === 1 ? 'up' : e.y + e.h === H && e.h === 1 ? 'down' : null;
       if (!dir) continue;   // doors in the middle of a map are easy to spot
@@ -309,19 +313,36 @@ export class WorldScene extends Phaser.Scene {
         continue;
       }
       if (!e.label || !signs) continue;
-      // Beside the exit if there's room; for a long exit (a whole edge), on the
-      // first free spot along it, nearest the middle.
-      const spots = vertical ? [[inX, e.y - 1], [inX, e.y + e.h], [inX + (dir === 'left' ? 1 : -1), e.y - 1]] : [[e.x - 1, inY], [e.x + e.w, inY], [e.x - 1, inY + (dir === 'up' ? 1 : -1)]];
-      const n = vertical ? e.h : e.w, mid = Math.floor(n / 2);
-      for (let k = 0; k < n; k++) {
-        const i = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2), j = inX + (dir === 'left' ? 1 : dir === 'right' ? -1 : 0), kk = inY + (dir === 'up' ? 1 : dir === 'down' ? -1 : 0);
-        if (i >= 0 && i < n) spots.push(vertical ? [j, e.y + i] : [e.x + i, kk]);
-      }
-      const [sx, sy] = spots.find(([x, y]) => free(x, y) && !'#+xzP'.includes(this.map.ground[y]?.[x])) || spots.find(([x, y]) => free(x, y)) || spots[0];
+      // One sign per place: a second exit to the same zone (or with the same
+      // label) close by doesn't get another sign on top of the first.
+      const ex = (e.x + e.w / 2) * T, ey = (e.y + e.h / 2) * T;
+      if (placed.some(p => (p.to === e.to || p.label === e.label) && Math.hypot(p.ex - ex, p.ey - ey) < 14 * T)) continue;
       const key = exitSignTexture(this, e.label, dir);
       const tw = this.textures.get(key).getSourceImage().width, th = this.textures.get(key).getSourceImage().height;
-      // Keep the whole sign on the map so it can be read
-      const x = Phaser.Math.Clamp((sx + 0.5) * T, tw / 2 + 1, W * T - tw / 2 - 1), y = Phaser.Math.Clamp((sy + 1) * T - 2, th + 1, H * T - 1);
+      // Candidate spots: beside the exit, then along it from the middle, then a
+      // few rows further in. The first one on open ground (not road) where the
+      // sign doesn't overlap a building, a tree or another sign wins.
+      const n = vertical ? e.h : e.w, mid = Math.floor(n / 2), spots = [];
+      for (let d = 0; d < 5; d++) {
+        const ix = inX + (dir === 'left' ? d : dir === 'right' ? -d : 0), iy = inY + (dir === 'up' ? d : dir === 'down' ? -d : 0);
+        spots.push(vertical ? [ix, e.y - 1] : [e.x - 1, iy], vertical ? [ix, e.y + e.h] : [e.x + e.w, iy]);
+        for (let k = 0; k < n; k++) {
+          const i = mid + (k % 2 ? -1 : 1) * Math.ceil(k / 2);
+          if (i >= 0 && i < n) spots.push(vertical ? [ix, e.y + i] : [e.x + i, iy]);
+        }
+        spots.push(vertical ? [ix, e.y - 2] : [e.x - 2, iy], vertical ? [ix, e.y + e.h + 1] : [e.x + e.w + 1, iy]);
+      }
+      const at = ([sx, sy]) => ({ x: Phaser.Math.Clamp((sx + 0.5) * T, tw / 2 + 1, W * T - tw / 2 - 1), y: Phaser.Math.Clamp((sy + 1) * T - 2, th + 1, H * T - 1) });
+      const clear = ([sx, sy]) => {
+        const { x, y } = at([sx, sy]), r = { x0: x - tw / 2, x1: x + tw / 2, y0: y - th, y1: y };
+        const hit = q => q.x0 < r.x1 && q.x1 > r.x0 && q.y0 < r.y1 && q.y1 > r.y0;
+        return !boxes.some(hit) && !placed.some(p => hit(p.r));
+      };
+      const road = ([x, y]) => '#+xzP'.includes(this.map.ground[y]?.[x]);
+      const spot = spots.find(sp => free(...sp) && !road(sp) && clear(sp)) || spots.find(sp => free(...sp) && clear(sp))
+        || spots.find(sp => free(...sp) && !road(sp)) || spots[0];
+      const { x, y } = at(spot);
+      placed.push({ to: e.to, label: e.label, ex, ey, r: { x0: x - tw / 2, x1: x + tw / 2, y0: y - th, y1: y } });
       this.add.image(x, y, key).setOrigin(0.5, 1).setDepth(y + 8);
     }
   }
@@ -518,10 +539,12 @@ export class WorldScene extends Phaser.Scene {
     if (!this.textures.exists('fx-edgefade')) {
       const t = this.textures.createCanvas('fx-edgefade', 4, T), c = t.getContext();
       const g = c.createLinearGradient(0, 0, 0, T);
-      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.85)');
+      g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
       c.fillStyle = g; c.fillRect(0, 0, 4, T); t.refresh();
     }
     this.add.image(0, this.map.h * T, 'fx-edgefade').setOrigin(0, 1).setDisplaySize(this.map.w * T, T).setDepth(8990);
+    // and a black band below it, over anything that pokes past the edge (cars, tall art, the night overlay)
+    this.add.rectangle(-64, this.map.h * T, this.map.w * T + 128, 40 * T, 0x000000).setOrigin(0).setDepth(9450);
     cam.startFollow(this.player, true, 0.2, 0.2);
     this.onResize();
   }
@@ -630,7 +653,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'travel') return this.travel();
     if (t.kind === 'tram') return this.tram();
     if (t.kind === 'seat') return this.sitDown(t);
-    if (t.kind === 'crowd') { t.ref.wait = 5; t.ref.setVelocity(0, 0); t.ref.faceTowards(this.player.x, this.player.y); return ui.say([this.crowd.line()], { name: 'Passer-by' }); }
+    if (t.kind === 'crowd') { t.ref.wait = 5; t.ref.setVelocity(0, 0); t.ref.faceTowards(this.player.x, this.player.y); return ui.say([this.crowd.line()], { name: this.crowd.name() }); }
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
@@ -863,6 +886,7 @@ export class WorldScene extends Phaser.Scene {
 
   // ------------------------------------------------------------ people, items, trains
   async talkToNpc(npc) {
+    if (this.party?.guests.includes(npc.id)) return this.partyChat(npc);
     const info = npc.info, day = state.data.day;
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
@@ -887,6 +911,8 @@ export class WorldScene extends Phaser.Scene {
       if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
       if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
       if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
+      if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
+      if (npc.id === 'betty' && weekday(day) === BAKE_OFF.day) choices.push({ label: 'Enter the bake-off', value: 'bakeoff' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
       if (!choices.length) break;
@@ -903,6 +929,8 @@ export class WorldScene extends Phaser.Scene {
       if (act === 'shop') { await ui.shop(info.shop); }
       if (act === 'karaoke') { await this.karaoke(npc, opts); break; }
       if (act === 'bowls') { await this.bowls(npc, opts); break; }
+      if (act === 'party') await this.streetParty(npc, opts);
+      if (act === 'bakeoff') await this.bakeOff(npc, opts);
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'prank') await this.prank(npc, opts);
       if (act === 'invite') await this.invite(npc, opts);
@@ -945,17 +973,59 @@ export class WorldScene extends Phaser.Scene {
   // Councillors: their view on the next motion, and whether they'll back Paddy.
   async askCouncillor(npc, act, opts) {
     const id = npc.id, next = MOTION_ORDER.find(m => state.motionUnlocked(m) && !state.motionPassed(m));
-    const ally = ALLIES.includes(id), against = AGAINST.includes(id);
     const need = SWING[id] ? state.swingHearts(SWING[id]) : 0, won = !SWING[id] || state.friendHearts(id) >= need;
-    const words = COUNCIL_VIEWS[id];
+    const words = COUNCIL_VIEWS[id], name = NPCS[id].name;
     if (act === 'vote') {
       if (!next) return ui.say([words.nothing], opts);
-      return ui.say([`"${MOTIONS[next].title}?"`, ally ? words.yes : against ? words.no : won ? words.yes : words.unsure], opts);
+      const v = MOTIONS[next].votes, sw = v.swing[id];
+      const line = v.yes.includes(id) || (sw && state.swingWon(next, id)) ? (words.yes || `${name}: "Yes from me. Easy."`)
+        : v.no.includes(id) ? (words.no || `${name}: "No. Not this one. Not ever."`)
+        : `(${name} ${sw.hint}.)`;
+      return ui.say([`"${MOTIONS[next].title}?"`, line], opts);
     }
-    if (ally) return ui.say([words.backYes], opts);
-    if (against) return ui.say([words.backNo], opts);
+    if (['paddy', 'rayna', 'deanna'].includes(id)) return ui.say([words.backYes], opts);
+    if (['lesley', 'malcolm'].includes(id)) return ui.say([words.backNo], opts);
     if (won) return ui.say([words.backYes], opts);
-    return ui.say([words.backMaybe, `(${NPCS[id].name} would need ${need} hearts to back Paddy. You have ${state.friendHearts(id)}. Gifts help.)`], opts);
+    return ui.say([words.backMaybe, `(${name} would need ${need} hearts to back Paddy. You have ${state.friendHearts(id)}. Gifts help.)`], opts);
+  }
+  // Paddy's tip for the first motion on the board someone is still undecided on.
+  councilTip() {
+    const m = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id) && state.councilVote(id).undecided.length && !state.councilVote(id).passed);
+    return m ? MOTIONS[m].tip : null;
+  }
+  // The street party for the community garden motion: three homegrown dishes.
+  streetPartyOpen() { return state.motionUnlocked('gardenplus') && !state.motionPassed('gardenplus') && Object.entries(MOTIONS.gardenplus.votes.swing).some(([w, h]) => h.party && !state.swingWon('gardenplus', w)); }
+  async streetParty(npc, opts) {
+    const dishes = state.bagItems().filter(id => ITEMS[id].homegrown).flatMap(id => Array(state.count(id)).fill(id)).slice(0, 3);
+    if (dishes.length < 3) return ui.say(['Chris: "A street party for the garden? Love it. Bring three dishes made from veggies you grew yourself. Soups, sugo, a tart. Then we party."', `(You have ${dishes.length} of 3.)`], opts);
+    dishes.forEach(id => state.removeItem(id));
+    sfx.found();
+    const who = Object.entries(MOTIONS.gardenplus.votes.swing).filter(([, h]) => h.party).map(([w]) => w);
+    who.forEach(w => state.winOver('gardenplus', w));
+    await ui.say(['Chris strings up bunting between the bean poles. Half of Reservoir turns up with folding chairs.', `Your ${dishes.map(id => ITEMS[id].name.toLowerCase()).join(', ')} disappear in minutes.`,
+      `${who.map(w => NPCS[w].name).join(' and ')} wander through, eat seconds, and shake Chris's hand. "Fine. The garden feeds people. I'm convinced."`, 'They will vote yes on expanding the community garden.'], opts);
+    this.save();
+  }
+  // The Moreland Rd Bake-Off, Saturdays at Betty's.
+  async bakeOff(npc, opts) {
+    const week = Math.floor(state.data.day / 7);
+    if (state.data.flags.bakeoffWeek === week) return ui.say([BAKE_OFF.done], opts);
+    await ui.say(BAKE_OFF.intro, opts);
+    const baked = state.bagItems().filter(id => ITEMS[id].baked && COOK_RECIPES[id]);
+    if (!baked.length) return ui.say([BAKE_OFF.noEntry], opts);
+    const pickId = await ui.say({ text: 'What are you entering?', choices: [...baked.map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32) })), { label: 'Not today', value: null }] }, { ...opts, cancelValue: null });
+    if (!pickId) return;
+    state.removeItem(pickId); state.data.flags.bakeoffWeek = week;
+    const r = rng(state.data.day * 17 + 3), rivals = [...BAKE_OFF.rivals].sort(() => r() - 0.5).slice(0, 3).map(x => ({ ...x, score: 5 + Math.floor(r() * 5) }));
+    const mine = COOK_RECIPES[pickId].score + Math.floor(Math.random() * 3) + (ITEMS[pickId].homegrown ? 1 : 0);
+    await ui.say(rivals.map(x => `${x.name} brings ${x.dish}. Betty takes a bite... ${x.score} out of 12.`), opts);
+    await ui.say([`Your ${ITEMS[pickId].name.toLowerCase()}. Betty chews. Betty closes her eyes. ${mine} out of 12.`], opts);
+    const place = rivals.filter(x => x.score > mine).length, prize = BAKE_OFF.prize[place] || 0;
+    if (prize) state.addMoney(prize);
+    if (place === 0) { state.addItem('blueribbon'); sfx.found(); this.heartsFx(npc, 8); }
+    else if (prize) sfx.pickup(); else sfx.sad();
+    await ui.say([BAKE_OFF.results[place] + (prize ? ` You win $${prize}.` : ' Better luck next Saturday.'), ...(place === 0 ? [BAKE_OFF.win] : [])], opts);
+    this.save();
   }
 
   async chatNpc(npc, opts) {
@@ -980,6 +1050,13 @@ export class WorldScene extends Phaser.Scene {
       if (info.greetsPets && state.data.party.length) {
         const names = state.data.party.map(id => form(id).name);
         lines = [`${info.name} crouches down. "${names.join('! ')}! Hello, hello! Who\'s a good team? You are. All of you."`, ...lines];
+      }
+      // Paddy at home in the evening: a tip on winning over council
+      if (npc.id === 'paddy' && this.region.home && state.data.minutes >= 18 * 60 && Math.random() < 0.7) { const tip = this.councilTip(); if (tip) lines = [`Paddy: "${tip}"`]; }
+      // Shannon knows which book each councillor would vote for (the street library)
+      if (npc.id === 'shannon' && state.motionUnlocked('bookswap') && !state.motionPassed('bookswap') && Math.random() < 0.7) {
+        const left = Object.keys(MOTIONS.bookswap.votes.swing).filter(w => !state.swingWon('bookswap', w));
+        if (left.length) lines = ['Shannon: "Shopping for the council? I\'ve got a book for every one of them."', BOOK_RECS[pick(left)]];
       }
       // Paddy's advice once a day, before anything else.
       if (npc.id === 'paddy' && f.talkedDay !== day && !npc.spot.leave) lines = [...lines, this.paddyAdvice()];
@@ -1029,6 +1106,7 @@ export class WorldScene extends Phaser.Scene {
     const reward = fi.rewards?.[hearts];
     if (reward?.item) { state.addItem(reward.item, reward.n || 1); await ui.say(`You got: ${reward.n || 1} ${ITEMS[reward.item].name}.`, opts); }
     if (reward?.money) { state.addMoney(reward.money); await ui.say(`You got: $${reward.money}.`, opts); }
+    for (const rid of RECIPE_ORDER) { const h = COOK_RECIPES[rid].learn?.hearts; if (h && h[0] === npc.id && h[1] <= hearts && !state.data.recipes.includes(rid)) { state.data.recipes.push(rid); sfx.found(); await ui.say(TEACH_LINES[rid], opts); } }
     if (hearts >= 4 && fi.assist) await ui.say(`${npc.info.name} has your back now. Battle near their part of town and they might turn up to help.`);
   }
 
@@ -1053,6 +1131,16 @@ export class WorldScene extends Phaser.Scene {
     }[reaction];
     if (reaction === 'love' || reaction === 'like') { sfx.heart(); this.heartsFx(npc, reaction === 'love' ? 8 : 3); } else if (reaction === 'dislike') sfx.sad();
     const lines = [text];
+    // A present that wins a councillor over on a motion (data/council.js)
+    for (const id of MOTION_ORDER) {
+      const sw = MOTIONS[id].votes.swing[npc.id];
+      if (sw?.gift === item && state.motionUnlocked(id) && !state.motionPassed(id) && !state.swingWon(id, npc.id)) {
+        state.winOver(id, npc.id); sfx.found();
+        lines.push(`${n}: ${sw.won}`, `${n} will vote yes on "${MOTIONS[id].title}".`);
+      }
+    }
+    // A loved present can teach a recipe (data/cooking.js, learn: { gift })
+    if (reaction === 'love') for (const rid of RECIPE_ORDER) if (COOK_RECIPES[rid].learn?.gift === npc.id && !state.data.recipes.includes(rid)) { state.data.recipes.push(rid); lines.push(...TEACH_LINES[rid]); }
     // A request from the board?
     const req = state.todaysRequests().find(q => q.who === npc.id && q.item === item && !q.done);
     if (req) {
@@ -1329,6 +1417,19 @@ export class WorldScene extends Phaser.Scene {
       this.lockedExit = ex;
       return this.bounceBack(ex, GATES[ex.gate] || ['The way is closed.']);
     }
+    // Nobody leaves the party early, least of all the host.
+    if (ex.to && this.party) {
+      if (this.lockedExit === ex) return;
+      this.lockedExit = ex;
+      return this.bounceBack(ex, ['You can\'t leave your own party! Go and talk to your guests.']);
+    }
+    // A shop is open while its shopkeeper is in: the door is locked once they go home.
+    const shut = ex.to && this.shutShop(ex.to);
+    if (shut) {
+      if (this.lockedExit === ex) return;
+      this.lockedExit = ex;
+      return this.bounceBack(ex, shut);
+    }
     if (ex.to && ex.team && state.foundIds().length) return this.chooseTeamThenGo(ex);
     // Walking into another suburb takes 20 minutes, 10 once the bike lane motion passes.
     const frac = ex.w > 1 && (ex.y === 0 || ex.y + ex.h === this.map.h) ? (tx - ex.x) / (ex.w - 1) : ex.h > 1 ? (ty - ex.y) / (ex.h - 1) : null;
@@ -1336,6 +1437,18 @@ export class WorldScene extends Phaser.Scene {
     if (this.lockedExit === ex) return;
     this.lockedExit = ex;
     this.bounceBack(ex, ex.label ? ex.lines || [`The way to ${ex.label} is closed for now.`] : ['The way is closed.']);
+  }
+  // Lines for a locked shop door, or null if the shop is open (or not a shop).
+  shutShop(to) {
+    const z = ZONES[to];
+    if (!z?.indoor || z.home || to === 'civiccentre') return null;   // the council keeps its own hours (meetings)
+    const keepers = getMap(to).npcs.filter(n => NPCS[n.id]?.shop || n.counter);
+    const inAt = d => keepers.some(n => n.at ? isAt(n.id, n.at, d) : onDuty(n, NPCS[n.id], d));
+    if (!keepers.length || inAt(state.data)) return null;
+    let h = DAY_START / 60;
+    while (h < 24 && !inAt({ ...state.data, minutes: h * 60 })) h += 0.5;
+    const hr = Math.floor(h) % 12 || 12, mins = h % 1 ? ':30' : '', late = state.data.minutes >= h * 60;
+    return [`${z.name} is closed. The lights are off and the door is locked.`, `It opens at ${hr}${mins}${h < 12 ? 'am' : 'pm'}${late ? ' tomorrow' : ''}.`];
   }
   bounceBack(ex, lines) {
     sfx.bump();
@@ -1420,7 +1533,7 @@ export class WorldScene extends Phaser.Scene {
     const d = state.data;
     let day = d.day;
     while (!isMeetingDay(day) || (day === d.day && d.council.metDay === day)) day++;
-    const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id)).map(id => MOTIONS[id].title);
+    const ready = state.meetingMotions().map(id => MOTIONS[id].title);
     const silly = sillyFor(day, d.council.silly).map(i => SILLY_MOTIONS[i]);
     const items = ['Acknowledgement of Country', ...ready, ...silly, 'General business (Cr Bentleigh has 14 points of order)'];
     return [`AGENDA: Council meeting, ${day === d.day ? 'tonight' : `${weekday(day)}, day ${day}`}, 6:30pm.`, ...items.map((t, i) => `${i + 1}. ${t}.`).reduce((a, l) => { const last = a[a.length - 1]; if (last && last.length + l.length < 130) a[a.length - 1] = `${last} ${l}`; else a.push(l); return a; }, [])];
@@ -1443,7 +1556,7 @@ export class WorldScene extends Phaser.Scene {
       c2.deposed = true; story().done[2] = d.day; sfx.sad();
       await ui.card({ kicker: 'Chapter 2', title: 'Paddy is rolled', lines: CHAPTERS[2].failed });
     }
-    const ready = MOTION_ORDER.filter(id => !state.motionPassed(id) && state.motionReady(id));
+    const ready = state.meetingMotions();
     if (!ready.length) {
       await say('lesley', ['POINT OF ORDER! The agenda is in the WRONG FONT!']);
       await say('paddy', ['Noted, Councillor. Again. No community motions are ready tonight. Chip in on the noticeboard in the foyer, everyone.', 'On to general business.']);
@@ -1463,7 +1576,7 @@ export class WorldScene extends Phaser.Scene {
       await ui.say(m.debate);
       await say('paddy', [`All those in favour?`, `${r.yes.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ')}. ${r.yes.length} for.`, `Against: ${r.no.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ')}. ${r.no.length} against.`]);
       if (r.passed) { sfx.found(); await say('paddy', ['The motion is CARRIED!', m.effect]); }
-      else { sfx.sad(); await say('lesley', ['HA! DEFEATED!']); await say('paddy', ['The motion is lost. We go again next week. Maybe bring Kirsty or Dahlia some flowers.']); }
+      else { sfx.sad(); await say('lesley', ['HA! DEFEATED!']); await say('paddy', [`The motion is lost. We go again next week. Still undecided: ${r.undecided.map(id => NPCS[id].name.replace(/^Cr /, '')).join(', ') || 'nobody'}.`]); }
     }
     await say('paddy', ['That concludes tonight\'s business. Meeting closed. Drive safely, and mind the pelicans.']);
     this.save();
@@ -1585,11 +1698,31 @@ export class WorldScene extends Phaser.Scene {
   lesleyHere() { return this.npcs.some(n => n.id === 'lesley' && !n.gone); }
 
   // The kitchen stove: cook the dodgy fish pie.
+  // The kitchen: the fish pie in Chapter 2, then everything in data/cooking.js.
+  knownRecipes() {
+    // Cook books in your bag teach their recipes for good.
+    for (const id of state.bagItems()) for (const rid of ITEMS[id].cookbook || []) if (!state.data.recipes.includes(rid)) { state.data.recipes.push(rid); ui.toast(`New recipe: ${ITEMS[rid].name}`, itemIcon(rid, 32)); }
+    return RECIPE_ORDER.filter(rid => COOK_RECIPES[rid].learn === 'start' || state.data.recipes.includes(rid));
+  }
   async cook() {
+    const needsText = n => Object.entries(n).map(([k, c]) => `${c} ${ITEMS[k].name.toLowerCase()}`).join(', ');
+    const has = n => Object.entries(n).every(([k, c]) => state.count(k) >= c);
+    const choices = this.knownRecipes().map(rid => ({ label: ITEMS[rid].name, value: rid, icon: itemIcon(rid, 32), note: `${has(COOK_RECIPES[rid].needs) ? '✓ ' : ''}${needsText(COOK_RECIPES[rid].needs)}` }));
+    if (inChapter(2) && !story().ch2.swapped) choices.unshift({ label: RECIPES.fishpie.name, value: 'fishpie', note: RECIPES.fishpie.needs });
+    const pick_ = await ui.say({ text: 'The oven. Cook something?', choices: [...choices, { label: 'Not now', value: null }] }, { cancelValue: null });
+    if (!pick_) return;
+    if (pick_ === 'fishpie') return this.cookFishPie();
+    const r = COOK_RECIPES[pick_];
+    if (!has(r.needs)) return ui.say([`You need ${needsText(r.needs)}.`, 'Veggies come from your garden. Flour, sugar, butter, milk, eggs and choc chips are on the Pantry shelf at Coles.']);
+    for (const [k, c] of Object.entries(r.needs)) for (let i = 0; i < c; i++) state.removeItem(k);
+    state.addItem(pick_);
+    sfx.found(); ui.toast(`+1 ${ITEMS[pick_].name}`, itemIcon(pick_, 32));
+    await ui.say([r.text]);
+    this.save();
+  }
+  async cookFishPie() {
     const fish = Object.keys(ITEMS).find(id => ITEMS[id].fish && state.count(id) >= CH2_RECIPE.fish);
     const r = RECIPES.fishpie;
-    const pick = await ui.say({ text: 'The new oven. It still has the plastic on the dials. Cook something?', choices: [{ label: r.name, value: 'fishpie', note: r.needs }, { label: 'Not now', value: null }] }, { cancelValue: null });
-    if (!pick) return;
     if (!fish || state.count('lemon') < CH2_RECIPE.lemon || state.count('laxatives') < CH2_RECIPE.laxatives) return ui.say([`You need ${r.needs}. Catch a fish at Edwardes Lake, Edgars Creek or Kororoit Creek. Lemons grow on every second tree in Melbourne.`, 'Laxatives: Stavros\'s deli at Preston Market has some behind the counter, and so does the milk bar on Nicholson St, Brunswick East.']);
     state.removeItem(fish); state.removeItem('lemon'); state.removeItem('laxatives');
     state.addItem('fishpie');
@@ -1612,13 +1745,23 @@ export class WorldScene extends Phaser.Scene {
     const go = await ui.say({ text: `Send ${form(pet.id).name} to cause a distraction?`, choices: [{ label: 'Go on, cause chaos', value: true }, { label: 'Not yet', value: false }] }, { cancelValue: false });
     if (!go) return;
     const lesley = this.npcs.find(n => n.id === 'lesley' && !n.gone);
-    pet.pause?.(3); this.heartsFx(pet, 4); sfx.encounter();
-    await ui.say(LUNCH.distract(form(pet.id).name), { name: 'Cr Lesley Bentleigh', portrait: npcIcon('lesley') });
-    lesley?.setVisible(false);
+    // The pet tears round the reception desk, past the booths and back, three times
+    const P = (x, y) => [(x + 0.5) * T, (y + 0.75) * T], start = [pet.x, pet.y], lap = [P(8, 3), P(14, 3), P(15, 5), P(20, 7), P(20, 10), P(14, 8), P(8, 5)];
+    sfx.encounter(); this.heartsFx(pet, 4);
+    const running = pet.scriptTo([...lap, ...lap, ...lap, start], 150);
+    const watch = this.time.addEvent({ delay: 120, loop: true, callback: () => lesley?.active && lesley.faceTowards(pet.x, pet.y) });
+    const [line1, ...yell] = LUNCH.distract(form(pet.id).name);
+    await ui.say([line1]);
+    await ui.say(yell.slice(0, -1), { name: 'Cr Lesley Bentleigh', portrait: npcIcon('lesley') });
+    // ...and she storms off out the front door to find a ranger
+    watch.remove();
+    if (lesley) { await lesley.scriptTo([P(20, 11), P(13, 13), P(13, 14)], 70); lesley.setVisible(false); }
+    await running;
+    await ui.say(yell.slice(-1));
     state.removeItem('fishpie');
     t.sprite.setTint(0xc8a050);
     await ui.say(LUNCH.swap);
-    lesley?.setVisible(true);
+    if (lesley) { lesley.setVisible(true); await lesley.scriptTo([P(13, 13), P(20, 11), P(21, 9)], 70); lesley.setDir('right'); }
     await ui.say(LUNCH.eat, { name: 'Cr Lesley Bentleigh', portrait: npcIcon('lesley') });
     c2.swapped = true; c2.sickUntil = state.data.day + 7;
     if (lesley) this.removeNpc(lesley);
@@ -1706,7 +1849,7 @@ export class WorldScene extends Phaser.Scene {
   async partyTime() {
     const s = story(), d = state.data;
     if (!d.flags.partyNow || this.regionId !== 'yard' || this.partying) return;
-    this.partying = true; delete d.flags.partyNow;
+    this.partying = true;
     const guests = attendees();
     // Everyone who RSVP'd turns up in the backyard.
     const free = [];
@@ -1720,14 +1863,43 @@ export class WorldScene extends Phaser.Scene {
     const decos = Object.keys(ITEMS).filter(k => ITEMS[k].deco && state.count(k));
     this.partyDecor(decos);
     ui.banner('The September Babies Bash', `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'}`);
-    await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.', 'Helen: "Right! Party games!"']);
-    const score = await ui.party(guests);
-    // Stories round the fire pit, then Helen has had a big night.
-    for (const id of guests.slice(0, 4)) {
-      const npc = this.npcs.find(n => n.id === id);
-      if (npc) { this.facePlayerTo(npc.x, npc.y); this.heartsFx(npc, 2); }
-      await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), { name: NPCS[id]?.name, portrait: npcIcon(id) });
-    }
+    await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.',
+      guests.length ? 'Helen: "Go and say hello to everyone! Party games in a bit."' : 'Helen: "Right! Party games!"']);
+    // Mingle: talk to the guests to hear their stories. Every three stories
+    // (or once you have heard everyone) a party game starts.
+    this.party = { guests, heard: [], score: 0, games: 0 };
+    if (guests.length) ui.toast('Mingle! Talk to your guests.');
+    else this.partyGames();
+  }
+  // A guest at the party: their story the first time, a happy line after.
+  async partyChat(npc) {
+    const p = this.party, id = npc.id, opts = { name: NPCS[id]?.name, portrait: npcIcon(id) };
+    npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
+    if (p.heard.includes(id)) return ui.say([pick(PARTY_MINGLE)(NPCS[id]?.name || 'A guest')], opts);
+    p.heard.push(id);
+    this.heartsFx(npc, 2);
+    await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), opts);
+    const left = p.guests.length - p.heard.length;
+    if (p.heard.length % 3 === 0 || !left) await this.partyGames();
+    else { const n = Math.min(left, 3 - p.heard.length % 3); ui.toast(`${n} more ${n === 1 ? 'chat' : 'chats'} till the next game.`); }
+  }
+  // Run the next party game, or every game left once everyone has been heard.
+  async partyGames() {
+    const p = this.party;
+    if (!p || this.partyGaming) return;
+    this.partyGaming = true;
+    const all = p.heard.length >= p.guests.length;
+    do {
+      p.games++;
+      p.score = await ui.party(p.guests, { only: p.games, score: p.score });
+    } while (all && p.games < 3);
+    this.partyGaming = false;
+    if (p.games >= 3) return this.partyEnd();
+    ui.toast('Back to mingling!');
+  }
+  async partyEnd() {
+    const s = story(), d = state.data, { guests, score } = this.party;
+    this.party = null; delete d.flags.partyNow;
     state.data.minutes = Math.max(state.data.minutes, 23 * 60);
     await ui.say(PARTY_END.slice(0, 3), { name: 'Helen' });
     this.tweens.add({ targets: this.player, angle: { from: -12, to: 12 }, duration: 350, yoyo: true, repeat: 3 });
@@ -1776,11 +1948,11 @@ export class WorldScene extends Phaser.Scene {
     const dt = Math.min(0.05, delta / 1000);
     const blocked = ui.blocking() || this.leaving;
 
-    if (!blocked) {
-      state.data.minutes += delta / MS_PER_GAME_MINUTE;
+    if (!blocked && !state.data.settings.paused) {
+      state.data.minutes += delta / (MS_PER_GAME_MINUTE * (state.data.settings.dayLength || 1));   // Settings: longer days
       if (state.data.minutes >= DAY_END) this.endDay();
     }
-    const label = `${state.data.day}${timeLabel(state.data.minutes)}${state.isRaining()}`;
+    const label = `${state.data.day}${timeLabel(state.data.minutes)}${state.isRaining()}${state.data.settings.paused}`;
     if (label !== this.lastLabel) { this.lastLabel = label; ui.updateHud(this.regionId); }
 
     this.player.update(controls.vector(), blocked);

@@ -65,7 +65,7 @@ export class MapBuilder {
     if (!def) throw new Error(`Unknown object kind: ${kind}`);
     const [fw, fh] = def.foot;
     // Flat things (rugs, mats) and wall decorations can overlap other objects.
-    const layered = def.flat || def.roof || def.deck || opts.onWall;
+    const layered = def.flat || def.roof || def.deck || def.above || opts.onWall;
     if (!layered && !this.free(x, y, fw, fh)) return null;
     const o = { kind, x, y, w: fw, h: fh, v: opts.v ?? (Array.isArray(def.variants) ? def.variants[0] : ''), ...opts };
     this.objects.push(o);
@@ -188,7 +188,39 @@ export class MapBuilder {
     }
   }
 
+  // Where a side street meets a main road, the footpath strip between them
+  // becomes road (no pavement laid across the mouth of a street). A footpath
+  // tile with road on both sides, in a short run, is that strip; a long run
+  // is a proper median and stays. The same goes for a footpath at the map
+  // edge cutting off the end of a road.
+  joinRoads() {
+    const R = c => c === '#' || c === '+' || c === 'x' || c === 'z';
+    const g = (x, y) => this.ground[y]?.[x];
+    const fix = [];
+    // footpath 1 to 3 tiles deep with road on both sides, in a run at most 6 wide
+    for (const vert of [true, false]) {
+      const W = vert ? this.w : this.h, H = vert ? this.h : this.w, at = (u, v) => (vert ? g(u, v) : g(v, u));
+      const cand = new Set();
+      for (let u = 0; u < W; u++) for (let v = 1; v < H; v++) {
+        if (at(u, v) !== 'f' || !R(at(u, v - 1))) continue;
+        let k = v; while (k < H && at(u, k) === 'f' && k - v < 3) k++;
+        if (k < H && R(at(u, k))) for (let j = v; j < k; j++) cand.add(j * W + u);
+      }
+      for (let v = 0; v < H; v++) for (let u = 0; u < W; u++) {
+        if (!cand.has(v * W + u) || cand.has(v * W + u - 1) && u > 0) continue;
+        let e = u; while (e < W && cand.has(v * W + e)) e++;
+        if (e - u <= 6) for (let j = u; j < e; j++) { const [x, y] = vert ? [j, v] : [v, j]; if (!this.occ[y][x]) fix.push([x, y]); }
+      }
+    }
+    // a footpath on the map edge with a road (a few lanes wide, not one running along the edge) ending at it
+    const span = (x, y, sx, sy) => { let n = 0; for (let k = -8; k <= 8; k++) if (R(g(x + sx * k, y + sy * k))) n++; return n; };
+    for (let y = 0; y < this.h; y++) for (const [x, ix] of [[0, 1], [this.w - 1, this.w - 2]]) if (g(x, y) === 'f' && R(g(ix, y)) && R(g(ix - (x ? 1 : -1), y)) && span(ix, y, 0, 1) <= 8 && !this.occ[y][x]) fix.push([x, y]);
+    for (let x = 0; x < this.w; x++) for (const [y, iy] of [[0, 1], [this.h - 1, this.h - 2]]) if (g(x, y) === 'f' && R(g(x, iy)) && R(g(x, iy - (y ? 1 : -1))) && span(x, iy, 1, 0) <= 8 && !this.occ[y][x]) fix.push([x, y]);
+    for (const [x, y] of fix) this.ground[y][x] = '#';
+  }
+
   finish() {
+    this.joinRoads();
     this.dress();
     // Work out which way each fence joins up.
     for (const o of this.objects) if (o.kind === 'fence') {

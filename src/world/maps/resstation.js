@@ -17,7 +17,7 @@ export function buildResStation() {
 
   // Station forecourt, garden beds and black fence
   b.fill(8, 7, 25, 6, 'c');
-  b.put('resstation', 14, 8);
+  b.put('resstation', 14, 8); b.put('reswing', 14, 8);
   b.put('myki', 17, 11, { travel: true });
   b.put('busshelter', 10, 11); b.put('wayfinding', 9, 9);
   b.put('bikerack', 28, 11);

@@ -51,10 +51,11 @@ export function buildMoreland() {
   b.wildGrass(33, 23, 4, 1.4); b.wildGrass(8, 23, 4, 1.3);
   b.put('tree', 24, 22, { v: 'lemon' });
 
-  b.exit(19, 0, 4, 1, null, null, 'Lygon St, Coburg', ['Lygon St carries on north into Coburg.', 'Roadworks. There are always roadworks up there.']);
+  b.exit(19, 0, 4, 1, null, null, 'Roadworks', ['Lygon St is dug up going north. There are always roadworks up there.', 'Head east along Moreland Rd to get to Coburg.']);
+  b.exit(43, 12, 1, 4, 'coburg', 'west', 'Bell St, Coburg');   // east along Moreland Rd, up Lygon St to Bell St
   b.exit(19, 25, 4, 1, 'holmes', 'east', 'Holmes St, Brunswick East');
   b.exit(0, 12, 1, 4, 'albion', 'moreland', 'Sydney Rd, Brunswick');
-  b.entry('north', 20, 1, 'down').entry('south', 20, 24, 'up').entry('west', 1, 13, 'right');
+  b.entry('north', 20, 1, 'down').entry('south', 20, 24, 'up').entry('west', 1, 13, 'right').entry('east', 42, 12, 'left');
 
   b.lane({ axis: 'x', pos: 13.5, dir: -1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-red', 'veh-car-h-white', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 14.5, dir: 1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });

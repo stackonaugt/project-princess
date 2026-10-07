@@ -142,7 +142,7 @@ export const NPCS = {
     name: 'Cr Deanna Grimes', look: { hair: '#b8955a', hairStyle: 'wavy', skin: '#f2c8a8', shirt: '#5a3a8a', shirtPattern: 'plaid', shirtAccent: ['#c8b8e8', '#2a1a4a'], pants: '#2a2a30', shoes: '#1a1a1a' },
   },
   shannon: {
-    name: 'Shannon', shop: 'bookshop', look: { hair: '#241612', hairStyle: 'curly', skin: '#f6d6c0', shirt: '#7a1a2a', shirtPattern: 'dots', shirtAccent: '#f4efe0', pants: '#2a2a34', shoes: '#1a1a1a', lips: '#c0505a', holding: 'book' },
+    name: 'Shannon', shop: 'bookshop', look: { hair: '#6b3f1f', hairStyle: 'curly', skin: '#f6d6c0', shirt: '#7a1a2a', shirtPattern: 'dots', shirtAccent: '#f4efe0', pants: '#2a2a34', shoes: '#1a1a1a', lips: '#c0505a', holding: 'book' },
   },
   bazza: {
     name: 'Bazza', shop: 'anaconda', look: { hair: '#8a4a22', hairStyle: 'cap', cap: '#e8643a', skin: '#e8b48a', shirt: '#e8643a', pants: '#5a5a48', shoes: '#4a3a2a', beard: true },

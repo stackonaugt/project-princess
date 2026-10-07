@@ -76,7 +76,7 @@ export const NORTH_NPCS = {
   },
   // Real friends of the owner (keep them affectionate)
   betty: {
-    name: 'Betty', gift: ['lasagne', 'doro', 'bananabread', 'dumplings', 'lamington', 'curry', 'sambusa', 'scones'],
+    name: 'Betty', gift: ['lasagne', 'roast', 'bananabread', 'shepherds', 'lamington', 'crumble', 'quiche', 'scones'],
     look: { hair: '#141010', hairStyle: 'long', skin: '#8a5a3e', shirt: '#1e1e22', pants: '#1e1e22', shoes: '#2a2a2a', lips: '#7a3a3a' },
   },
   alison: {
@@ -309,15 +309,16 @@ export const NORTH_PEOPLE = {
     lines: [
       ['You\'re here! Good. I made too much again. I always make too much. That is the correct amount.'],
       ['Ward is at the bottle shop on Sydney Rd all day. He comes home with a new beer I have never heard of. I still drink tea.'],
-      ['Monday, lasagne. Tuesday, doro wat. Wednesday, banana bread. I cook whatever the neighbours taught me last. Everyone teaches me something.'],
-      ['Injera takes days. The batter has to ferment. You cannot rush it. Scones, you can rush. Nobody can tell.'],
+      ['Monday, lasagne. Tuesday, a roast. Wednesday, banana bread. I cook whatever is in season and whatever is on special.'],
+      ['Pastry takes patience. Cold butter, cold hands. Scones, you can rush. Nobody can tell.'],
       ['Everybody on Moreland Rd knows when I am cooking. They walk slower past the gate. I see them.'],
     ],
     giftLine: 'Here, take this, it\'s still warm. No, you are not full. Nobody leaves my house hungry. Not even the front gate.',
     heartScenes: {
-      3: ['Betty: "My recipe book is just a shoebox of cards from everyone on this street. Nonna\'s lasagne. Mrs Nguyen\'s dumplings. Mine is the banana bread."'],
-      5: ['Betty roasts green coffee beans in a pan until the whole street smells amazing. "Coffee ceremony. Three rounds. You stay for all three."'],
+      3: ['Betty: "My recipe book is just a shoebox of cards from everyone on this street. Nonna\'s lasagne. The quiche from next door. Mine is the banana bread."'],
+      5: ['Betty puts the kettle on and brings out the good teapot. "Three cups. You stay for all three. That is the rule of this house."'],
       7: ['Betty presses a takeaway container into your hands. "For your mum and dad. Tell them it is from Betty. They will know."'],
+      8: ['Betty pulls a card out of the shoebox, the oldest one, soft as cloth. "My Victoria sponge. I don\'t give this to just anyone."'],
     },
     helpsInBattle: 'Betty marches over with a plate of food. Your pet eats and is instantly, completely restored.',
   },
@@ -370,7 +371,7 @@ export const NORTH_FRIENDS = {
   nell: { loves: ['cardigan', 'flowers', 'jacobs'], likes: ['paperback', 'baklava', 'tomato'], dislikes: ['takis'], assist: { heal: 0.2, selfDef: 1 } },
   inspector: { loves: ['modeltrain', 'icedcoffee'], likes: ['snag', 'croissant'], dislikes: ['goon', 'oldboot'] },
   dimi: { loves: ['croissant', 'baklava'], likes: ['icedcoffee', 'pide', 'drpepper'], dislikes: ['moscato'] },
-  betty: { loves: ['flowers', 'olivejar', 'baklava'], likes: ['tomato', 'chilli', 'icedcoffee', 'lemon'], dislikes: ['twinkie'], rewards: { 7: { item: 'doro', n: 3 } }, assist: { heal: 0.5 } },
+  betty: { loves: ['flowers', 'olivejar', 'baklava'], likes: ['tomato', 'chilli', 'icedcoffee', 'lemon'], dislikes: ['twinkie'], rewards: { 7: { item: 'roast', n: 3 } }, assist: { heal: 0.5 } },
   alison: { loves: ['cheese', 'reeses'], likes: ['icedcoffee', 'sambusa', 'tomato'], dislikes: ['basil', 'lemon'], assist: { foeAtk: 1, foeDef: 1 } },
 };
 
@@ -399,6 +400,10 @@ export const NORTH_ITEMS = {
   dumplings: { name: 'Pork dumplings', gift: true, loved: true, art: { kind: 'plate', body: '#f0e8d0', label: '#3f8a3e' }, desc: 'Betty learned these from her neighbour. Pleated by hand, every single one. Bring your own vinegar.' },
   lamington: { name: 'Lamingtons', gift: true, loved: true, art: { kind: 'cake', body: '#f0e0b0', cap: '#5a3020', label: '#f4f4f0' }, desc: 'Sponge, chocolate, coconut. Betty says the jam ones are for people who have earned them.' },
   curry:    { name: 'Chicken curry', gift: true, loved: true, art: { kind: 'plate', body: '#e8a030', label: '#f4f0e6' }, desc: 'Betty\'s Friday curry, with rice and a dollop of yoghurt. Mild for the twins. Not that mild.' },
+  roast:    { name: 'Roast chicken', gift: true, loved: true, art: { kind: 'plate', body: '#c8803a', label: '#f0d070' }, desc: 'Crispy skin, roast potatoes, gravy in a jug. Betty\'s Sunday roast, any day of the week.' },
+  shepherds: { name: 'Shepherd\'s pie', gift: true, loved: true, art: { kind: 'plate', body: '#e8c878', label: '#8a4a2a' }, desc: 'Mince underneath, buttery mash on top, crunchy bits on the corners. The corners are the best bit.' },
+  crumble:  { name: 'Apple crumble', gift: true, loved: true, art: { kind: 'cake', body: '#d8a050', cap: '#f4f0e6', label: '#c8302a' }, desc: 'Stewed apples under a golden crumble, with a scoop of ice cream already melting.' },
+  quiche:   { name: 'Quiche Lorraine', gift: true, loved: true, art: { kind: 'cake', body: '#f0d070', cap: '#c8903a', label: '#f4f0e6' }, desc: 'Bacon, egg and a very short pastry. Betty says real men eat it. Everyone eats it.' },
   scones:   { name: 'Scones', gift: true, loved: true, art: { kind: 'cake', body: '#f0d8a0', cap: '#d8a860', label: '#c8302a' }, desc: 'Jam first, then cream. Betty will not be taking questions.' },
 };
 

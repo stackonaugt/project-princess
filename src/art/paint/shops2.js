@@ -89,6 +89,13 @@ export const SHOPS2 = {
         if (k === 2) { p.r('#e8e0c8', x0 + x + 4, top + 58, 14, 10); p.r('#c8a070', x0 + x + 4, top + 58, 14, 2); }  // a cream armchair
         if (k === 3) { p.r('#8a5a32', x0 + x + 3, top + 64, 16, 2); p.r('#8a5a32', x0 + x + 4, top + 66, 2, 4); p.r('#8a5a32', x0 + x + 16, top + 66, 2, 4); }   // a dining table
       }
+      // the front door, over the exit (tile 22, the sixth from the left): dark frame, glass, a red sign and a mat
+      const dx = x0 + 82;
+      p.r('#141416', dx - 2, top + 42, 20, H - top - 42); p.r('#c8302a', dx - 2, top + 42, 20, 4);
+      p.r('#a8c0cc', dx, top + 47, 16, H - top - 48); p.r('#141416', dx + 7, top + 47, 2, H - top - 48);
+      p.r('#d8e8ee', dx + 1, top + 48, 3, 6); p.r('#e8c040', dx + 5, top + 58, 1, 4); p.r('#e8c040', dx + 10, top + 58, 1, 4);   // handles
+      p.r('#c8302a', dx + 2, top + 50, 12, 5); p.r('#f4f4f0', dx + 3, top + 52, 10, 1);
+      p.r('#6a4a3a', dx - 1, H - 3, 18, 3);
       outline(p.ctx, 0, 0, 196, H);
     },
   },

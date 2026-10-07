@@ -141,6 +141,7 @@ export const PRANKS = {
   mem: { item: 'rubbermouse', react: 'jump', label: 'Rubber mouse', lines: ['You leave a rubber mouse with a tiny plaster cast in Mem\'s lab coat pocket.', 'Mem: "Oh! A broken femur. Poor thing. Wait. Who has been reading my thesis?"'] },
   rose: { item: 'bookmark', react: 'shake', label: 'Swap the bookmark', lines: ['Rose has a bookmark in a nine hundred page novel. You move it back to page one.', 'Rose: "...Have I read this? I have read this. Haven\'t I? Oh no."'] },
   slinks: { item: 'grapejuice', react: 'shake', label: 'Grape juice', lines: ['You swap Slinks\'s glass of shiraz for grape juice.', 'Slinks takes a sip. "Hmm. Fruit forward. Very... young. VERY young."', 'Slinks: "Boys. Where is my wine."'] },
+  sinead: { item: 'bubbles', react: 'shake', label: 'Bubble vape', lines: ['You swap Sinead\'s Mango Ice vape for a bubble wand that looks just like it.', 'Sinead takes a big puff. A stream of bubbles floats out over Loddon Ave.', 'Sinead: "Okay. That is actually very calming. I am charging you for the session."'] },
   tim: { item: 'crayons', react: 'jump', label: 'Toy train timetable', lines: ['You swap the Upfield line timetable on Tim\'s fridge for one you drew yourself. Every train is a dinosaur.', 'Tim: "Twenty minute frequency, all day, on a T-rex? That\'s better service than the real thing."'] },
   nicholas: { item: 'wigglescd', react: 'spin', label: 'Dance-off', lines: ['You put on the Wiggles at full volume and challenge Nicholas to a dance-off.', 'Nicholas does a perfect pirouette. You fall over. Twice.', 'Nicholas: "I won, but you two have real stage presence."'] },
 };
@@ -199,6 +200,13 @@ export const PARTY_STORIES = {
   trish: ['"When Helen was little she ran a pet school for the neighbourhood snails. Charged them a leaf each. Some things never change!"'],
 };
 export const PARTY_STORY_DEFAULT = name => [`${name} tells a long story about a parking ticket in Footscray. It has a twist. Everybody gasps.`];
+// Guests you have already heard from.
+export const PARTY_MINGLE = [
+  name => `${name} is deep in a chat about rent prices by the esky.`,
+  name => `${name}: "Best party in Laverton. Don't tell anyone in Altona."`,
+  name => `${name} is teaching the twins a dance. It is mostly stomping.`,
+  name => `${name} raises a sausage in a toast to you.`,
+];
 export const PARTY_END = [
   'It gets late. The fairy lights glow, the twins are asleep in a pile of party hats, and the music gets softer.',
   'Helen: "Has everyone had a drink? Have I had a drink? I think I\'ve had... a few drinks."',
