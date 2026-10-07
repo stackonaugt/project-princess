@@ -30,7 +30,10 @@ const FLOWERS = ['#f5e66b', '#f28bb0', '#ffffff', '#b79cf0', '#f29a5b'];
 const ROADLIKE = '#+xzPk';
 const T = 16;
 
+// Painted walls: white, unless the map says otherwise (Lincraft paint at home).
+let WALL_PAINT = null;
 export function paintGround(p, map, grass, custom = {}) {
+  WALL_PAINT = map.wallPaint || null;
   const get = (x, y) => (x < 0 || y < 0 || x >= map.w || y >= map.h) ? null : map.ground[y][x];
   for (let ty = 0; ty < map.h; ty++) for (let tx = 0; tx < map.w; tx++) {
     const c = map.ground[ty][tx];
@@ -94,7 +97,7 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       const upper = below === 'W' && below2 !== null && !WALLISH.includes(below2);
       const room = face ? below : below2;
       const tiled = room === 'T' || room === 'n';
-      const paint = '#f2f0ea', shadeL = '#e2dfd6', grout = '#cfd3d4';
+      const paint = WALL_PAINT || '#f2f0ea', shadeL = WALL_PAINT ? shade(WALL_PAINT, -0.08) : '#e2dfd6', grout = '#cfd3d4';
       const cap = '#6a6460', capL = '#7e7872';
       const tiles = (y0) => { for (let y = y0; y < T; y += 4) p.r(grout, sx, sy + y, T, 1); for (let x = (ty % 2) * 2; x < T; x += 4) p.r(grout, sx + x, sy + y0, 1, T - y0); };
       if (face && room === 'U') {
@@ -106,7 +109,7 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       } else if (face) {
         p.r(paint, sx, sy, T, T);
         if (tiled) { p.r('#f8f8f6', sx, sy + 4, T, T - 4); tiles(4); }
-        else { p.r(shadeL, sx, sy, T, 1); p.r('#ebe8e0', sx, sy + 5, T, 1); }   // picture rail
+        else { p.r(shadeL, sx, sy, T, 1); p.r(WALL_PAINT ? shade(WALL_PAINT, -0.04) : '#ebe8e0', sx, sy + 5, T, 1); }   // picture rail
         p.r('#ffffff', sx, sy + T - 3, T, 3); p.r('#d8d4cc', sx, sy + T - 3, T, 1);
         if (!upper && get(tx, ty - 1) !== 'W') p.r(cap, sx, sy, T, 2);
       } else if (upper) {

@@ -27,6 +27,9 @@ export const SH_NPCS = {
   raj: {
     name: 'Raj', shop: 'twodollar', look: { hair: '#1a1614', hairStyle: 'short', skin: '#b07a52', shirt: '#e8c040', shirtPattern: 'stripes', shirtAccent: '#c8443a', pants: '#2a3a58', shoes: '#4a3a2a', beard: true },
   },
+  lyn: {
+    name: 'Lyn', shop: 'lincraft', look: { hair: '#b0563a', hairStyle: 'bun', skin: '#f0c8a8', shirt: '#7a5ab8', blazer: '#e8a0b8', pants: '#3a3a48', shoes: '#4a3a2a', glasses: '#6a3a8a' },
+  },
   shaz: {
     name: 'Shaz', look: { hair: '#e8d0a0', hairStyle: 'wavy', streak: '#f07ab0', skin: '#f2c0a0', shirt: '#c89a5a', shirtPattern: 'leopard', shirtAccent: '#3a2a1a', pants: '#1e1e24', shoes: '#c8443a', hoops: '#e8c040', lips: '#c8304a' },
   },
@@ -105,6 +108,18 @@ export const SH_PEOPLE = {
     ],
     heartScenes: {
       3: ['Raj: "Rent here went up again. I said to the landlord, what am I, a $5 shop now? He did not laugh."'],
+    },
+  },
+  lyn: {
+    role: 'Runs the Lincraft stall in the middle of Summerhill. Has opinions about glitter',
+    lines: [
+      ['Welcome to Lincraft! Yarn, googly eyes, felt, paint. If you can stick it to something, I sell it.'],
+      ['Glitter is not a craft supply. Glitter is a lifestyle. You will be finding it in 2040.'],
+      ['Painting the house? I mix any colour you like. As long as you like one of six.'],
+      ['Twins, shopping on their own? Your dad knows? Well. Googly eyes never hurt anyone. Much.'],
+    ],
+    heartScenes: {
+      3: ['Lyn: "I knitted the jumper on the big gum at the Botha Ave roundabout. Don\'t tell the council. Well. Tell Paddy."'],
     },
   },
   shaz: {
@@ -213,11 +228,14 @@ export const SH_ITEMS = {
 };
 
 export const SH_SHOPS = {
-  summerfresh: { name: 'Coles', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['treats', 'pantry', 'seeds', 'gifts'], pantry: ['flour', 'sugar', 'butter', 'milk', 'egg', 'chocchips', 'lemon'], seeds: ['carrot', 'potato', 'zucchini', 'pumpkin', 'strawberry', 'basil', 'tomato'], gifts: ['timtams', 'icedcoffee', 'gaytime', 'flowers'] },
+  summerfresh: { name: 'Coles', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['treats', 'pantry', 'seeds', 'gifts', 'pranks'], pranks: ['grapejuice'], pantry: ['flour', 'sugar', 'butter', 'milk', 'egg', 'chocchips', 'lemon'], seeds: ['carrot', 'potato', 'zucchini', 'pumpkin', 'strawberry', 'basil', 'tomato'], gifts: ['timtams', 'icedcoffee', 'gaytime', 'flowers'] },
   chemist: { name: 'Summerhill Discount Chemist', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['handcream', 'sunscreen'] },
   newsagent: { name: 'Summerhill Newsagency', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['puzzlebook', 'bdaycard', 'paperback'] },
   hotbread: { name: 'Bakers Delight', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['sausageroll', 'vanillaslice', 'fingerbun'] },
-  twodollar: { name: 'Everything $2', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts', 'pranks'], gifts: ['fidget', 'fakeplant', 'flowers'] },
+  twodollar: { name: 'Everything $2', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts', 'pranks'], gifts: ['fidget', 'fakeplant', 'flowers'], pranks: ['bubbles', 'whoopee'] },
+  // Lincraft (the owner asked for the real name): craft bits for pranks, and wall paint for home.
+  lincraft: { name: 'Lincraft', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['pranks', 'paint'], pranks: ['googly', 'rubbermouse', 'crayons'],
+    paints: [['Builder\'s White', null, 0], ['Sage Green', '#b8c8a8', 40], ['Musk Stick Pink', '#f0c4c8', 40], ['Bondi Blue', '#a8c8e0', 40], ['Banana Custard', '#f0e0a0', 40], ['Terracotta', '#d8a088', 40], ['Lavender Haze', '#c8b8e0', 40]] },
 };
 
 export const SH_FRIENDS = {
@@ -226,6 +244,7 @@ export const SH_FRIENDS = {
   kostas: { loves: ['puzzlebook', 'byzbook', 'olive'], likes: ['lemon', 'paperback', 'sausageroll'], dislikes: ['fidget'] },
   thuy: { loves: ['chilli', 'basil', 'thermos'], likes: ['tomato', 'icedcoffee', 'flowers'], dislikes: ['vanillaslice'], assist: { heal: 0.35 } },
   raj: { loves: ['fidget', 'mangoice', 'takis'], likes: ['sausageroll', 'drpepper', 'chilli'], dislikes: ['fakeplant'] },
+  lyn: { loves: ['googly', 'flowers', 'vanillaslice'], likes: ['timtams', 'icedcoffee', 'fakeplant'], dislikes: ['oldboot'], assist: { foeDef: 1 } },
   shaz: { loves: ['handcream', 'moscato', 'flowers'], likes: ['vanillaslice', 'fakeplant', 'timtams'], dislikes: ['oldboot'], assist: { foeAtk: 1, damage: 0.08 } },
   connie: { loves: ['lemon', 'tomato', 'fingerbun'], likes: ['puzzlebook', 'flowers', 'olive'], dislikes: ['takis'], assist: { damage: 0.14 } },
   bill: { loves: ['sausageroll', 'melbbitter', 'nineteen84'], likes: ['puzzlebook', 'vb', 'potato'], dislikes: ['orangewine'], assist: { foeAtk: 1, foeDef: 1 } },

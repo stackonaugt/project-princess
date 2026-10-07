@@ -71,7 +71,8 @@ export function buildHome() {
   b.put('picture', 20, 8, { v: 'dog', onWall: true });
   b.put('picture', 22, 8, { v: 'family', onWall: true });
   b.put('doormat', 16, 17);
-  b.put('boxes', 22, 16, { v: 'stack' });
+  if (state.data.side?.trophy) b.put('trophy', 22, 16, { v: 'bowls' });   // the Newcomer's Cup from the bowls club
+  else b.put('boxes', 22, 16, { v: 'stack' });
   b.put('boxes', 21, 17, { v: 'open' });
 
   // Bedrooms
@@ -123,5 +124,7 @@ export function buildHome() {
   b.entry('bed', 3, 15, 'down').entry('front', 16, 16, 'up').entry('back', 21, 2, 'down');
   b.entry('cot', 2, 4, 'down');           // the twins wake up in their room
   b.entry('start', 3, 15, 'down');
-  return b.finish();
+  const map = b.finish();
+  map.wallPaint = state.data.wallPaint || null;   // paint from the Lincraft stall at Summerhill
+  return map;
 }

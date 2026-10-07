@@ -101,6 +101,19 @@ function nshop(p, v) {
 }
 
 export const NORTH = {
+  // Meghan's pram (it follows her about; see Npc in entities.js). Whitlam peeks out.
+  pram: {
+    foot: [1, 1], tex: [18, 20], variants: ['cat'],
+    paint(p) {
+      p.shadow(9, 19, 14);
+      p.r('#1e1e22', 3, 15, 3, 3); p.r('#1e1e22', 12, 15, 3, 3);
+      p.r('#2a3a58', 2, 8, 14, 7); p.r('#3a4a6a', 2, 8, 14, 1); p.r('#1e2a40', 2, 14, 14, 1);
+      p.r('#2a3a58', 9, 3, 7, 6); p.r('#3a4a6a', 10, 3, 5, 1);
+      p.r('#9a9aa2', 4, 5, 5, 4); p.r('#9a9aa2', 4, 4, 1, 1); p.r('#9a9aa2', 8, 4, 1, 1); p.r('#e8c040', 5, 6, 1, 1); p.r('#e8c040', 7, 6, 1, 1);
+      p.r('#c8b8e0', 3, 9, 12, 2);
+      p.r('#5a5e66', 0, 7, 3, 1); p.r('#5a5e66', 2, 7, 1, 2);
+    },
+  },
   nshop: { foot: [4, 3], tex: [64, 66], variants: Object.keys(NSHOPS), paint(p, v) { nshop(p, v); } },
 
   // Coburg Town Hall, Bell St, from the owner's photo: red brick with cream
@@ -539,6 +552,14 @@ export const NORTH_FOE_ART = {
     for (let y = 4; y < 10; y += 2) p.r('#a8acb4', 3, y, 10, 1);
     p.r('#c8302a', 13, 1, 3, 2); p.r('#5a5e66', 14, 3, 1, 8);
     p.blob(4, 13, 1.6, '#1e1e22'); p.blob(12, 13, 1.6, '#1e1e22');
+  }],
+  whitlam: [16, 16, p => {                                  // a grey cat sitting up in a navy pram
+    p.r('#2a3a58', 2, 7, 12, 6); p.r('#3a4a6a', 2, 7, 12, 1); p.r('#1e2a40', 2, 12, 12, 1);
+    p.r('#2a3a58', 2, 3, 5, 5); p.r('#3a4a6a', 3, 3, 3, 1);                  // the hood
+    p.r('#1e1e22', 3, 13, 3, 3); p.r('#1e1e22', 10, 13, 3, 3); p.r('#5a5e66', 4, 14, 1, 1); p.r('#5a5e66', 11, 14, 1, 1);
+    p.r('#9a9aa2', 7, 3, 6, 5); p.r('#9a9aa2', 7, 2, 2, 1); p.r('#9a9aa2', 11, 2, 2, 1); p.r('#c8c8d0', 8, 6, 4, 1);
+    p.r('#e8c040', 9, 4, 1, 1); p.r('#e8c040', 11, 4, 1, 1); p.r('#c8302a', 7, 8, 2, 2);   // eyes, and a rosette
+    p.r('#c8b8e0', 4, 8, 9, 2); p.r('#e8d8f0', 4, 8, 9, 1);                  // the blanket
   }],
   // Alison's team: her toastie, her "boob pillows", and Alison herself, as a slug.
   toastie: [16, 16, p => {                                  // the same toasted sandwich, sun-dried tomato peeking out

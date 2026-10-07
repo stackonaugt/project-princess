@@ -135,17 +135,44 @@ export const RECIPES = {
 };
 
 // Chapter 3: the twins' pranks. Talk to one of these friends and pick "Prank".
+// Each prank goes: visit the friend (scout), the twins hatch a plan (plan),
+// buy the thing (where), then come back and pull it (lines).
 export const PRANKS = {
-  paddy: { item: 'whoopee', react: 'jump', label: 'Whoopee cushion', lines: ['You hide a whoopee cushion under the cushion of Dad\'s chair.', 'Paddy sits down. PFFFFRRRRT.', 'Paddy: "That was the CHAIR. Everyone heard that it was the chair. ...Boys?"'] },
-  corni: { item: 'googly', react: 'shake', label: 'Googly eyes', lines: ['You stick googly eyes on every can of Guinness in Corni\'s fridge.', 'Corni opens the fridge. Forty eyes look back at him.', 'Corni: "Mein Gott. They are watching me. I cannot drink something that is watching me."'] },
-  mem: { item: 'rubbermouse', react: 'jump', label: 'Rubber mouse', lines: ['You leave a rubber mouse with a tiny plaster cast in Mem\'s lab coat pocket.', 'Mem: "Oh! A broken femur. Poor thing. Wait. Who has been reading my thesis?"'] },
-  rose: { item: 'bookmark', react: 'shake', label: 'Swap the bookmark', lines: ['Rose has a bookmark in a nine hundred page novel. You move it back to page one.', 'Rose: "...Have I read this? I have read this. Haven\'t I? Oh no."'] },
-  slinks: { item: 'grapejuice', react: 'shake', label: 'Grape juice', lines: ['You swap Slinks\'s glass of shiraz for grape juice.', 'Slinks takes a sip. "Hmm. Fruit forward. Very... young. VERY young."', 'Slinks: "Boys. Where is my wine."'] },
-  sinead: { item: 'bubbles', react: 'shake', label: 'Bubble vape', lines: ['You swap Sinead\'s Mango Ice vape for a bubble wand that looks just like it.', 'Sinead takes a big puff. A stream of bubbles floats out over Loddon Ave.', 'Sinead: "Okay. That is actually very calming. I am charging you for the session."'] },
-  tim: { item: 'crayons', react: 'jump', label: 'Toy train timetable', lines: ['You swap the Upfield line timetable on Tim\'s fridge for one you drew yourself. Every train is a dinosaur.', 'Tim: "Twenty minute frequency, all day, on a T-rex? That\'s better service than the real thing."'] },
-  nicholas: { item: 'wigglescd', react: 'spin', label: 'Dance-off', lines: ['You put on the Wiggles at full volume and challenge Nicholas to a dance-off.', 'Nicholas does a perfect pirouette. You fall over. Twice.', 'Nicholas: "I won, but you two have real stage presence."'] },
+  paddy: { item: 'whoopee', react: 'jump', label: 'Whoopee cushion', where: 'Bunnings (Pranks tab) or the $2 shop at Summerhill',
+    scout: ['Dad sinks into his armchair with a groan. "Ahh. My chair. The only thing in this house that never talks back."'],
+    plan: ['Hadrian: "His chair. He LOVES his chair."', 'Aleksy: "Whoopee cushion. Under the cushion. Bunnings has them, or the $2 shop."'],
+    lines: ['You hide a whoopee cushion under the cushion of Dad\'s chair.', 'Paddy sits down. PFFFFRRRRT.', 'Paddy: "That was the CHAIR. Everyone heard that it was the chair. ...Boys?"'] },
+  corni: { item: 'googly', react: 'shake', label: 'Googly eyes', where: 'the Lincraft stall at Summerhill',
+    scout: ['Corni opens his fridge. It is wall to wall Guinness. "My little friends. Always there for me."'],
+    plan: ['Aleksy: "His little friends need faces."', 'Hadrian: "Googly eyes! Lincraft at Summerhill has a jar of a million."'],
+    lines: ['You stick googly eyes on every can of Guinness in Corni\'s fridge.', 'Corni opens the fridge. Forty eyes look back at him.', 'Corni: "Mein Gott. They are watching me. I cannot drink something that is watching me."'] },
+  mem: { item: 'rubbermouse', react: 'jump', label: 'Rubber mouse', where: 'the Lincraft stall at Summerhill',
+    scout: ['Mem pats her lab coat pocket. "Lab mice, all present. Well, not in my pocket. That would be weird."'],
+    plan: ['Hadrian: "What if there WAS a mouse in her pocket?"', 'Aleksy: "A fake one. With a broken leg. Lincraft has rubber mice."'],
+    lines: ['You leave a rubber mouse with a tiny plaster cast in Mem\'s lab coat pocket.', 'Mem: "Oh! A broken femur. Poor thing. Wait. Who has been reading my thesis?"'] },
+  rose: { item: 'bookmark', react: 'shake', label: 'Swap the bookmark', where: 'Brunswick Bound on Sydney Rd',
+    scout: ['Rose is on page 847 of a 900 page novel. "Nearly there. Do NOT tell me how it ends."'],
+    plan: ['Aleksy: "Page 847..."', 'Hadrian: "...what if it was page one? We need a bookmark. Brunswick Bound sells fancy ones."'],
+    lines: ['Rose has a bookmark in a nine hundred page novel. You move it back to page one.', 'Rose: "...Have I read this? I have read this. Haven\'t I? Oh no."'] },
+  slinks: { item: 'grapejuice', react: 'shake', label: 'Grape juice', where: 'Coles at Summerhill',
+    scout: ['Slinks swirls a glass of shiraz. "Notes of blackberry. Notes of a long week at the department."'],
+    plan: ['Hadrian: "It\'s purple. Grape juice is purple."', 'Aleksy: "Coles sells grape juice in a bottle that looks like wine!"'],
+    lines: ['You swap Slinks\'s glass of shiraz for grape juice.', 'Slinks takes a sip. "Hmm. Fruit forward. Very... young. VERY young."', 'Slinks: "Boys. Where is my wine."'] },
+  sinead: { item: 'bubbles', react: 'shake', label: 'Bubble vape', where: 'the $2 shop at Summerhill',
+    scout: ['Sinead takes a long puff of her Mango Ice. "Don\'t vape, boys. Do as I say, not as I do."'],
+    plan: ['Aleksy: "The $2 shop has bubble wands that look JUST like that."', 'Hadrian: "Swap it. Swap it now. Well, after we buy it."'],
+    lines: ['You swap Sinead\'s Mango Ice vape for a bubble wand that looks just like it.', 'Sinead takes a big puff. A stream of bubbles floats out over Loddon Ave.', 'Sinead: "Okay. That is actually very calming. I am charging you for the session."'] },
+  tim: { item: 'crayons', react: 'jump', label: 'Toy train timetable', where: 'the Lincraft stall at Summerhill',
+    scout: ['Tim taps the Upfield line timetable on his fridge. "Every ten minutes. One day. One glorious day."'],
+    plan: ['Hadrian: "We could make him a better timetable."', 'Aleksy: "With dinosaurs. Lincraft has crayons."'],
+    lines: ['You swap the Upfield line timetable on Tim\'s fridge for one you drew yourself. Every train is a dinosaur.', 'Tim: "Twenty minute frequency, all day, on a T-rex? That\'s better service than the real thing."'] },
+  nicholas: { item: 'wigglescd', react: 'spin', label: 'Dance-off', where: 'James\'s milk bar at Reservoir Station',
+    scout: ['Nicholas does a little spin on the spot. "Twelve years of ballet. The body never forgets."'],
+    plan: ['Aleksy: "Dance-off."', 'Hadrian: "DANCE-OFF. We need the Wiggles. James at the milk bar has the CD."'],
+    lines: ['You put on the Wiggles at full volume and challenge Nicholas to a dance-off.', 'Nicholas does a perfect pirouette. You fall over. Twice.', 'Nicholas: "I won, but you two have real stage presence."'] },
 };
-export const PRANK_NEED = (label, item) => `You need a ${item} for that. Try the Pranks tab at Bunnings, the $2 shop at Summerhill or James's milk bar.`;
+const ITEM_A = { whoopee: 'a whoopee cushion', googly: 'googly eyes', rubbermouse: 'a rubber mouse', bookmark: 'a bookmark', grapejuice: 'grape juice', bubbles: 'a bubble wand', crayons: 'crayons', wigglescd: 'the Wiggles CD' };
+export const PRANK_NEED = pr => `You need ${ITEM_A[pr.item] || 'the right thing'} for that. Try ${pr.where}.`;
 export const PRANK_AFTER = n => `"Got one!" Pranks pulled: ${n} of 3.`;
 
 // Chapter 4: the news (the morning it starts) and the election result.
@@ -206,6 +233,20 @@ export const PARTY_MINGLE = [
   name => `${name}: "Best party in Laverton. Don't tell anyone in Altona."`,
   name => `${name} is teaching the twins a dance. It is mostly stomping.`,
   name => `${name} raises a sausage in a toast to you.`,
+];
+// Paddy at the party: a line if you chat, then his speech at the end.
+export const PADDY_PARTY = [
+  'Paddy: "Have you had a snag? Have a snag. I\'m saving my speech for later. It\'s a good one. I wrote it on a napkin."',
+  'Paddy: "The twins have had four fairy breads each. This is fine. This is democracy."',
+  'Paddy: "Don\'t tell Lesley, but this is the best turnout of any event in Hobsons Bay this year. Including council."',
+];
+export const PADDY_SPEECH = [
+  'Paddy taps his glass with a fork. Clink clink clink. The music stops. Somebody shushes the twins. The twins shush back.',
+  '"Thanks, everyone. Seriously. Thank you all for coming. Look at this backyard. Look at all of you."',
+  '"First up: Hadrian and Aleksy. Happy birthday, boys. You are the loudest, funniest, stickiest little blokes I know, and I love you to bits."',
+  '"And Helen. You held this whole family together while I was off fighting about bike lanes. You ran a pet school. You threw this party. You are amazing, and I don\'t say it enough."',
+  '"On council, all I\'m trying to do is make Hobsons Bay a place where kids like ours can grow up: more trees, safe streets, a lemon tree or two, and a council that listens."',
+  '"So whatever happens next week, thank you for being here. Now eat something. There are forty sausages left and I am not taking them home."',
 ];
 export const PARTY_END = [
   'It gets late. The fairy lights glow, the twins are asleep in a pile of party hats, and the music gets softer.',

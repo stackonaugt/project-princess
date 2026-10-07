@@ -26,6 +26,7 @@ export const ITEMS = {
   lemon:     { name: 'Backyard lemon', price: 2,     desc: 'Every Reservoir backyard has a lemon tree. This is proof.' },
   tennis:    { name: 'Tennis ball', price: 4,        desc: 'Slightly damp. Nobody knows why.' },
   ribbon:    { name: 'Pink ribbon', price: 8,        desc: 'Perfect for a pom-pom.' },
+  duckfeather: { name: 'Duck feather', price: 4,   desc: 'Soft, brown and a bit damp. A thank you from the ducks.' },
   feather:   { name: 'Magpie feather', price: 6,     desc: 'Dropped mid-swoop. A trophy of survival.' },
   pear:      { name: 'Pear', price: 3, art: { kind: 'pear', body: '#c8d050', label: '#3f8a3e' }, desc: 'From Pearman. Do not ask where he has been keeping it. Actually, he will tell you anyway.' },
   pancit:    { name: 'Pancit', price: 8, gift: true, art: { kind: 'plate', body: '#e8c878', label: '#3f8a3e', cap: '#f4f0e6' }, desc: 'Tita Liza\'s pancit bihon. Long noodles, for a long life. Still warm.' },

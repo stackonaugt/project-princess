@@ -6,11 +6,15 @@
 //
 // Every motion splits the council its own way (`votes`): some vote yes, some
 // no, and the undecided can be won over (`swing`), each in their own way:
-//   { hearts: n }   be friends enough (doubled while Paddy is not mayor)
 //   { gift: id }    give them that present (lemonade, a bike, the right book)
 //   { party: true } throw the street party at the community garden
-// Paddy drops a tip about it at home in the evening (`tip`). Won-over
-// councillors are kept in state.data.council.won[motion].
+//   { pet: true }   talk to them with a pet on your team
+// The board never says how. You find out by asking the councillor about the
+// vote, or from Paddy's tip at home in the evening (`tip`); then it goes on
+// your To Do list (`todo`, state.data.council.known). Motions come up one at
+// a time: the next one goes on the board once the last has passed. Won-over
+// councillors are kept in state.data.council.won[motion]. Friendship only
+// quietly helps the silly motions.
 //
 // A motion that passes changes the world (`effect`, handled in state.passMotion
 // and the maps that check state.motionPassed(id)).
@@ -26,7 +30,7 @@
 export const SWING = { kirsty: 4, dahlia: 2 };
 export const MAX_PER_MEETING = 2;
 export const COUNCIL_ALL = ['paddy', 'rayna', 'deanna', 'lesley', 'malcolm', 'kirsty', 'dahlia'];
-const LEMONADE = { gift: 'lemonade', hint: 'wants to taste these lemons before voting', won: '"Oh, that\'s GOOD lemonade. Fine. Plant the tree."' };
+const LEMONADE = { gift: 'lemonade', hint: 'wants to taste these lemons before voting', todo: 'make lemonade (two lemons and sugar, at the stove) and give them a glass', won: '"Oh, that\'s GOOD lemonade. Fine. Plant the tree."' };
 export const ALLIES = ['paddy', 'rayna', 'deanna'];
 export const AGAINST = ['lesley', 'malcolm'];
 
@@ -58,9 +62,9 @@ export const MOTIONS = {
     debate: ['Cr Grimes: "Safe bike lanes all the way in. Fewer cars, cleaner air, happier calves."', 'Cr Bentleigh: "BIKE LANES! IN THIS ECONOMY?"'],
     effect: 'The long walks between suburbs now take half the time.',
     votes: { yes: ['paddy', 'deanna', 'dahlia'], no: ['lesley', 'kirsty'], swing: {
-      malcolm: { gift: 'bike', hint: 'goes quiet whenever anyone mentions bikes', won: '"A bike? For ME? I always wanted one. With a BELL. Yes. Bike lanes. Yes."' },
-      rayna: { hearts: 3, hint: 'is worried about parking outside her mum\'s. A friend could talk her round' } } },
-    tip: 'Malcolm is only against the bike lanes because he\'s bitter he never got a bike as a kid. Anaconda on Plenty Rd sells a lovely red one.',
+      malcolm: { gift: 'bike', hint: 'goes quiet whenever anyone mentions bikes', todo: 'give Malcolm a bike (Anaconda, Plenty Rd)', won: '"A bike? For ME? I always wanted one. With a BELL. Yes. Bike lanes. Yes."' },
+      rayna: { gift: 'flowers', hint: 'is worried her mum will be cross about losing her car park', todo: 'give Rayna flowers for her mum, to smooth it over', won: '"Flowers for Mum? She\'ll forgive anything for tulips. Bike lane, yes."' } } },
+    tip: 'Malcolm is only against the bike lanes because he\'s bitter he never got a bike as a kid. Anaconda on Plenty Rd sells a lovely red one. And Rayna\'s mum will kill her over the car park. Flowers for her mum might help.',
   },
   gardenplus: {
     title: 'Expand the Edgars Creek community garden',
@@ -69,8 +73,8 @@ export const MOTIONS = {
     debate: ['Cr Kellandra: "Four more plots. Fresh food, grown by locals, for locals."', 'Cr Dismay: "That land could be a car park."'],
     effect: 'Four more plots at the community garden in Reservoir.',
     votes: { yes: ['paddy', 'dahlia', 'deanna'], no: ['lesley', 'malcolm'], swing: {
-      kirsty: { party: true, hint: 'thinks nobody actually eats what the garden grows' },
-      rayna: { party: true, hint: 'wants to see the community turn up for it first' } } },
+      kirsty: { party: true, hint: 'thinks nobody actually eats what the garden grows', todo: 'throw a street party at the community garden (three homegrown dishes, talk to Chris Bates)' },
+      rayna: { party: true, hint: 'wants to see the community turn up for it first', todo: 'throw a street party at the community garden (three homegrown dishes, talk to Chris Bates)' } } },
     tip: 'Throw a street party at the community garden. Cook three dishes with veggies you grew yourself, then talk to Chris Bates. Kirsty and Rayna will come round.',
   },
   dogpark: {
@@ -79,8 +83,10 @@ export const MOTIONS = {
     sponsor: 'rayna',
     debate: ['Cr Hawley: "Dogs need space to run. So do toddlers, frankly."', 'Cr Bentleigh: "DOGS! EVERYWHERE! UNLEASHED!"'],
     effect: 'Pets on your team get a little friendship every day you visit Lohse St Reserve.',
-    votes: { yes: ['paddy', 'rayna', 'deanna'], no: ['lesley', 'malcolm'], swing: { kirsty: { hearts: 4, hint: 'is not sure about dogs. A friend might change her mind' }, dahlia: { hearts: 2, hint: 'likes dogs, likes you, mostly' } } },
-    tip: 'Kirsty and Dahlia are on the fence about the dog park. A little friendship goes a long way. So do flowers.',
+    votes: { yes: ['paddy', 'rayna', 'deanna'], no: ['lesley', 'malcolm'], swing: {
+      kirsty: { pet: true, hint: 'has never actually met a nice dog', todo: 'introduce Kirsty to one of your pets (talk to her with a pet on your team)', won: '"Oh. Oh, she\'s lovely. Is she smiling at me? Fine. FINE. Dog park."' },
+      dahlia: { gift: 'chicken', hint: 'wants a treat for her own dog, Biscuit, who is very good', todo: 'give Dahlia a chicken treat for her dog Biscuit', won: '"For Biscuit? He\'ll lose his mind. A yes from both of us."' } } },
+    tip: 'Kirsty has never met a nice dog. Take one of the pets to see her. And Dahlia would do anything for her dog Biscuit. A chicken treat would do it.',
   },
   bookswap: {
     title: 'A street library at Lohse St Reserve',
@@ -89,12 +95,12 @@ export const MOTIONS = {
     debate: ['Mayor Paddy: "A little box of free books. Take one, leave one. That is the whole motion."', 'Cr Dismay: "Who will police the books?"'],
     effect: 'A free book appears in the street library at Lohse St Reserve every day.',
     votes: { yes: ['paddy'], no: [], swing: {
-      lesley: { gift: 'nineteen84', hint: 'says she has never read a book she agreed with', won: '"Big Brother is watching. I KNEW it. The only true book. Fine. One little library."' },
-      malcolm: { gift: 'thedry', hint: 'only reads crime, in his car, at lunch', won: '"A murder in a drought? This is my sort of thing. Street library, carried."' },
-      kirsty: { gift: 'prideprejudice', hint: 'likes manners, money and a good marriage plot', won: '"Ten thousand a year and a man who learns his lesson? Yes. I\'ll vote for books."' },
-      rayna: { gift: 'fourthwing', hint: 'wants something with dragons in it', won: '"DRAGONS. This is going in my slideshow. Yes to the library!"' },
-      deanna: { gift: 'cloudstreet', hint: 'loves a big messy family story', won: '"Two families, one house, a talking pig. That\'s my street. Yes."' },
-      dahlia: { gift: 'monkeygrip', hint: 'wants a Melbourne book', won: '"Carlton share houses and heartbreak. That was my twenties. A yes from me."' } } },
+      lesley: { gift: 'nineteen84', hint: 'says she has never read a book she agreed with', todo: 'give Lesley the right book (ask Shannon at Brunswick Bound)', won: '"Big Brother is watching. I KNEW it. The only true book. Fine. One little library."' },
+      malcolm: { gift: 'thedry', hint: 'only reads crime, in his car, at lunch', todo: 'give Malcolm the right book (ask Shannon at Brunswick Bound)', won: '"A murder in a drought? This is my sort of thing. Street library, carried."' },
+      kirsty: { gift: 'prideprejudice', hint: 'likes manners, money and a good marriage plot', todo: 'give Kirsty the right book (ask Shannon at Brunswick Bound)', won: '"Ten thousand a year and a man who learns his lesson? Yes. I\'ll vote for books."' },
+      rayna: { gift: 'fourthwing', hint: 'wants something with dragons in it', todo: 'give Rayna the right book (ask Shannon at Brunswick Bound)', won: '"DRAGONS. This is going in my slideshow. Yes to the library!"' },
+      deanna: { gift: 'cloudstreet', hint: 'loves a big messy family story', todo: 'give Deanna the right book (ask Shannon at Brunswick Bound)', won: '"Two families, one house, a talking pig. That\'s my street. Yes."' },
+      dahlia: { gift: 'monkeygrip', hint: 'wants a Melbourne book', todo: 'give Dahlia the right book (ask Shannon at Brunswick Bound)', won: '"Carlton share houses and heartbreak. That was my twenties. A yes from me."' } } },
     tip: 'Every councillor has a book they\'d vote for anything for. Shannon at Brunswick Bound knows them all. Ask her.',
   },
   trees: {
@@ -104,9 +110,9 @@ export const MOTIONS = {
     debate: ['Cr Grimes: "Shade, birds, cooler footpaths. Trees are infrastructure."', 'Cr Bentleigh: "LEAVES! IN MY GUTTERS!"'],
     effect: 'New street trees and native garden beds along Allen St.',
     votes: { yes: ['paddy', 'deanna', 'rayna'], no: ['lesley', 'malcolm'], swing: {
-      kirsty: { hearts: 4, hint: 'thinks trees are a cost. A friend could show her they are an asset' },
-      dahlia: { gift: 'seedling', hint: 'wants to plant one with her own hands', won: '"A bottlebrush! I\'ll plant it myself. Yes to trees."' } } },
-    tip: 'Dahlia would back the street trees if she could plant one herself. A native seedling from Bunnings would do it.',
+      kirsty: { gift: 'olive', hint: 'thinks trees are a cost. Show her one that pays its way', todo: 'give Kirsty an olive tree from Bunnings (it pays its way in olives)', won: '"Free olives, every year? That\'s a return on investment. Yes to trees."' },
+      dahlia: { gift: 'seedling', hint: 'wants to plant one with her own hands', todo: 'give Dahlia a native seedling from Bunnings to plant herself', won: '"A bottlebrush! I\'ll plant it myself. Yes to trees."' } } },
+    tip: 'Dahlia would back the street trees if she could plant one herself. A native seedling from Bunnings would do it. And Kirsty only likes trees that pay their way. An olive tree, maybe?',
   },
 };
 export const MOTION_ORDER = Object.keys(MOTIONS);

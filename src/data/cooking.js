@@ -71,6 +71,16 @@ export const BAKE_OFF = {
   intro: ['Betty: "It\'s Saturday! Bake-off day! Three locals, one judge, no mercy."', '"Bring me something you baked yourself. Shop-bought gets you banned for life. I can tell."'],
   noEntry: 'Betty: "Nothing baked in that bag, love. Cookies, scones, a tart: anything from your own oven. The kitchen\'s at home."',
   done: 'Betty: "You\'ve had your go this week. Same time next Saturday. Practise your sponge."',
+  // Meghan Hopper enters every week and nearly always wins. Only a secret
+  // recipe (one somebody taught you: Nonna's oil cake, Betty's sponge, Trish's
+  // lemon delicious) gets the bonus that can beat her.
+  meghan: { name: 'Meghan Hopper', dishes: ['a nine layer torte with a perfect mirror glaze', 'a pavlova shaped like the Labor rose', 'a croquembouche taller than Whitlam'], score: 10 },
+  secretBonus: 2,
+  rivalry: ['Betty: "Oh, while you\'re here. The Moreland Rd Bake-Off. Every Saturday, here at mine."',
+    '"And every Saturday, Meghan Hopper wins it. Nine layer tortes. Mirror glazes. She pushes her cat around in a PRAM, and she still has time to temper chocolate."',
+    '"I\'m not bitter. I\'m a little bitter. Help me beat her, love. You\'ll need a special recipe, something somebody has handed down. Nothing from a book will do it."'],
+  beatMeghan: ['Betty screams. Ward drops a beer in the next room.', 'Betty: "YOU BEAT MEGHAN HOPPER! Twelve years! TWELVE YEARS!"', 'Meghan Hopper: "Congratulations! Genuinely! I\'ll be demanding a recount, but genuinely!"'],
+  lostToMeghan: 'Betty: "Meghan. Again. It\'s that glaze. You need something special, love. A recipe somebody gave you."',
   rivals: [
     { name: 'Nonna Concetta', dish: 'a ricotta cake heavy enough to anchor a boat' },
     { name: 'Hakan', dish: 'a tray of baklava, glistening with honey' },

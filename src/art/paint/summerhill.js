@@ -216,11 +216,11 @@ export const SUMMERHILL = {
   },
   // Food court stalls: a menu board, a counter, a bain-marie.
   foodstall: {
-    foot: [4, 2], tex: [68, 54], variants: ['dimsum', 'kebab', 'sushi', 'sandwich', 'boba'], lined: true,
+    foot: [4, 2], tex: [68, 54], variants: ['dimsum', 'kebab', 'sushi', 'sandwich', 'boba', 'lincraft'], lined: true,
     paint(p, v) {
       const sx = 2, W = 64, top = 2, base = 53;
       const [c, name, fg] = { dimsum: ['#c8302a', 'DIM SUM', '#f8d050'], kebab: ['#e8823a', 'KEBABS', '#f4efe0'], sushi: ['#1e2a48', 'SUSHI', '#f4efe0'],
-        sandwich: ['#3a8a3a', 'SANGA SHACK', '#f8d050'], boba: ['#f07ab0', 'BUBBLE TROUBLE', '#2a2a30'] }[v];
+        sandwich: ['#3a8a3a', 'SANGA SHACK', '#f8d050'], boba: ['#f07ab0', 'BUBBLE TROUBLE', '#2a2a30'], lincraft: ['#7a3a8a', 'LINCRAFT', '#f4efe0'] }[v];
       box(p, sx, top, W, 10, c); centred(p, name, sx + W / 2, top + 3, fg);
       box(p, sx + 2, top + 11, W - 4, 14, '#1e1e22');
       for (let i = 0; i < 4; i++) { p.r(['#e8c040', '#f4efe0', '#e8823a', '#3a8a4a'][i], sx + 5 + i * 14, top + 13, 10, 6); p.r('#f4efe0', sx + 5 + i * 14, top + 20, 10, 1); }
@@ -229,6 +229,12 @@ export const SUMMERHILL = {
       if (v === 'dimsum') for (let i = 0; i < 5; i++) { p.blob(sx + 8 + i * 12, top + 32, 4, '#c8a060'); p.r('#f4efe0', sx + 6 + i * 12, top + 30, 5, 2); }
       else if (v === 'kebab') { p.r('#8a5a2e', sx + 10, top + 14, 6, 16); p.r('#a8703a', sx + 11, top + 15, 2, 14); for (let i = 0; i < 4; i++) p.r(['#e8302a', '#3a8a4a', '#f4efe0', '#e8c040'][i], sx + 24 + i * 9, top + 32, 7, 3); }
       else if (v === 'sandwich') for (let i = 0; i < 5; i++) { const x = sx + 6 + i * 12; p.r('#e8c070', x, top + 31, 9, 2); p.r(['#3a8a3a', '#e8302a', '#f8d050'][i % 3], x, top + 33, 9, 1); p.r('#e8c070', x, top + 34, 9, 2); }
+      else if (v === 'lincraft') {
+        // balls of yarn, a row of paint tins and a jar of googly eyes
+        for (let i = 0; i < 4; i++) p.blob(sx + 8 + i * 7, top + 33, 3, ['#e8607a', '#5a9ad8', '#f8d050', '#6ac06a'][i]);
+        for (let i = 0; i < 3; i++) { const x = sx + 38 + i * 8; p.r('#c8ccd0', x, top + 30, 6, 7); p.r(['#b8c8a8', '#f0c4c8', '#a8c8e0'][i], x, top + 32, 6, 3); }
+        for (let i = 0; i < 3; i++) { p.r('#f4f4f0', sx + 6 + i * 16, top + 13, 4, 4); p.r('#1e1e22', sx + 7 + i * 16, top + 15, 2, 2); }
+      }
       else if (v === 'boba') for (let i = 0; i < 6; i++) { const x = sx + 5 + i * 10; p.r(['#e8c8a0', '#c8a0e8', '#a0e8c8', '#f8b0c8'][i % 4], x, top + 30, 6, 8); p.r('#2a1a1a', x + 1, top + 35, 4, 2); p.r('#f4f4f0', x + 3, top + 27, 1, 4); }
       else for (let i = 0; i < 12; i++) { p.r('#f4f4f0', sx + 4 + i * 5, top + 32, 4, 3); p.r(['#e8823a', '#2a2a30', '#f07ab0'][i % 3], sx + 5 + i * 5, top + 32, 2, 1); }
       p.r(shade(c, -0.3), sx, base - 3, W, 3);

@@ -1,6 +1,6 @@
 // Characters that walk around: the player, pets and townsfolk.
 import { TILE as T, WALK_SPEED, RUN_SPEED, PET_SPEED } from '../config.js';
-import { custom, fitScale, frameCount, playerTexture } from '../art/textures.js';
+import { custom, fitScale, frameCount, playerTexture, objectTexture } from '../art/textures.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from '../systems/state.js';
 import { petTex } from '../systems/forms.js';
@@ -146,6 +146,54 @@ export class Player extends Actor {
       this.setBob(false);
     }
     this.syncExtras();
+  }
+}
+
+// The other twin in Chapter 3: trots along right behind you on the trail.
+export class Sibling extends Actor {
+  constructor(scene, x, y, hero) {
+    super(scene, x, y, playerTexture(hero, 'down')[0], 32);
+    this.hero = hero; this.body.enable = false;
+    this.setDir('down');
+  }
+  setDir(dir) {
+    this.dir = dir;
+    const [tex, flip] = playerTexture(this.hero, dir);
+    if (this.texture.key !== tex) { this.setTexture(tex, this.scene.textures.get(tex).has(0) ? 0 : undefined); this.applyScale(); }
+    this.setFlipX(flip);
+  }
+  update(player, frozen) {
+    const trail = this.scene.trail, gap = 4;
+    const t = trail.length > gap ? trail[trail.length - 1 - gap] : { x: player.x + 10, y: player.y + 2 };
+    const dx = t.x - this.x, dy = t.y - this.y, d = Math.hypot(dx, dy);
+    if (d > 120) this.setPosition(t.x, t.y);
+    else if (!frozen && d > 2) this.setPosition(this.x + dx * 0.2, this.y + dy * 0.2);
+    const moving = !frozen && d > 3;
+    if (moving) this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
+    const anim = `${this.texture.key}-walk`;
+    if (moving && this.scene.anims.exists(anim)) this.anims.play(anim, true);
+    else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); this.setBob(moving); }
+    this.syncExtras();
+  }
+}
+
+// The duckling you win by feeding the ducks: waddles along at the very back.
+export class Duckling extends Phaser.GameObjects.Image {
+  constructor(scene, x, y) {
+    super(scene, x, y, 'foe-duck', 0);
+    scene.add.existing(this);
+    this.setOrigin(0.5, 1).setScale(0.6);
+    this.setDepth(y);
+  }
+  update(player, frozen) {
+    const trail = this.scene.trail, gap = 7 * (this.scene.pets.filter(p => p.mode === 'follow').length + 1) + 2;
+    const t = trail.length > gap ? trail[trail.length - 1 - gap] : { x: player.x - 8, y: player.y + 6 };
+    const dx = t.x - this.x, dy = t.y - this.y, d = Math.hypot(dx, dy);
+    if (d > 140) this.setPosition(t.x, t.y);
+    else if (!frozen && d > 2) this.setPosition(this.x + dx * 0.18, this.y + dy * 0.18);
+    if (Math.abs(dx) > 1) this.setFlipX(dx < 0);
+    this.setAngle(!frozen && d > 3 ? Math.sin(this.scene.time.now / 70) * 8 : 0);
+    this.setDepth(this.y);
   }
 }
 
@@ -323,7 +371,16 @@ export class Npc extends Actor {
     this.idle = !this.path && !spot.counter && !spot.still && !scene.region?.indoor ? 2 + Math.random() * 6 : null;
     this.goal = null;
     this.setInteractive({ useHandCursor: true });
+    // Meghan pushes Whitlam about in a pram, out in front of her.
+    if (info?.pram) this.pram = scene.add.image(pos.x, pos.y, objectTexture(scene, { kind: 'pram', v: 'cat' })).setOrigin(0.5, 1);
   }
+  syncExtras() {
+    super.syncExtras();
+    if (!this.pram) return;
+    const [dx, dy] = { left: [-12, 0], right: [12, 0], up: [0, -6], down: [0, 8] }[this.dir] || [0, 8];
+    this.pram.setPosition(this.x + dx, this.y + dy).setDepth(this.y + dy).setFlipX(this.dir === 'left').setVisible(this.visible).setAlpha(this.alpha);
+  }
+  destroy(fromScene) { this.pram?.destroy(); super.destroy(fromScene); }
   setDir(dir) {
     this.dir = dir;
     if (this.customArt) { this.setFlipX(dir === 'left'); return; }

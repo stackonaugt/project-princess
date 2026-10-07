@@ -17,7 +17,7 @@ import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party', pantry: 'Pantry' };
+const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party', pantry: 'Pantry', paint: 'Paint' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -44,7 +44,12 @@ export function openShop(panel, close, shopId = 'petshop') {
     if (tab === 'treats') return (shop.treats || Object.keys(ITEMS).filter(id => !ITEMS[id].local)).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
     if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
     if (tab === 'pantry') return (shop.pantry || []).map(itemRow);
-    if (tab === 'pranks') return Object.values(PRANKS).map(pr => pr.item).map(itemRow);
+    if (tab === 'pranks') return (shop.pranks || Object.values(PRANKS).map(pr => pr.item)).map(itemRow);
+    // Lincraft's paint: the walls at home change colour straight away.
+    if (tab === 'paint') return shop.paints.map(([name, colour, price]) => ({
+      name, desc: 'Enough for every wall in the house. Lyn will even lend you a roller.', price, owned: (state.data.wallPaint || null) === colour, ownedLabel: 'On the walls ✓',
+      act: () => { if (!state.spend(price)) { sfx.bump(); return; } state.data.wallPaint = colour; invalidateMap('home'); sfx.pickup(); state.save(); msg.textContent = `The walls at home are ${name} now.`; render(); },
+    }));
     if (tab === 'remedies') return (shop.remedies || []).map(itemRow);
     if (tab === 'spells') return SPELL_ORDER.map(id => {
       const sp = SPELLS[id], price = spellPrice(id, state.data.day), on = state.data.spell?.id === id && state.data.spell.day === state.data.day;

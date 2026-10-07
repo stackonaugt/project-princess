@@ -48,7 +48,11 @@ function fresh() {
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
     npcDay: {},        // npc id -> last day they gave a gift
-    council: { given: {}, passed: [], lost: {}, silly: [], won: {} },   // motions (data/council.js): items chipped in, passed ids, id -> day it lost a vote, SILLY_MOTIONS indexes that passed, motion -> councillors won over
+    council: { given: {}, passed: [], lost: {}, silly: [], won: {}, known: [] },   // motions (data/council.js): items chipped in, passed ids, id -> day it lost a vote, SILLY_MOTIONS indexes that passed, motion -> councillors won over
+    wallPaint: null,   // the colour of the walls at home (Lincraft paint, Summerhill)
+    // Side missions and mini-games: pranks scoped out (Chapter 3), duck feeding,
+    // bowls wins, the bake-off rivalry (0 untold, 1 Betty asked, 2 Meghan beaten).
+    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0 },
     recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
@@ -93,7 +97,9 @@ function sanitise(raw) {
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
-  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, metDay: raw.council.metDay };
+  if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, known: Array.isArray(raw.council.known) ? raw.council.known : [], metDay: raw.council.metDay };
+  if (typeof raw.wallPaint === 'string') d.wallPaint = raw.wallPaint;
+  if (raw.side && typeof raw.side === 'object') Object.assign(d.side, raw.side, { scouted: Array.isArray(raw.side.scouted) ? raw.side.scouted : [] });
   if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
   if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); }
@@ -305,7 +311,9 @@ export const state = {
   // Council motions (data/council.js)
   // Motions go up on the noticeboard one at a time as you settle in: the
   // first once you have found two pets, another with each pet after that.
-  motionUnlocked(id) { return this.motionPassed(id) || MOTION_ORDER.indexOf(id) < this.foundCount(); },   // one more motion per pet found
+  // One motion on the board at a time: the next goes up once the last has
+  // passed (and you have found one more pet than the motions before it).
+  motionUnlocked(id) { const i = MOTION_ORDER.indexOf(id); return this.motionPassed(id) || (i < this.foundCount() && MOTION_ORDER.slice(0, i).every(m => this.motionPassed(m))); },
   motionPassed(id) { return this.data.council.passed.includes(id); },
   motionGiven(id) { return this.data.council.given[id] || (this.data.council.given[id] = {}); },
   motionReady(id) { return motionReady(id, this.data.council.given[id]); },
@@ -327,9 +335,11 @@ export const state = {
   swingWon(motion, who) {
     const w = MOTIONS[motion].votes.swing[who];
     if (!w) return false;
-    if (w.hearts) return this.friendHearts(who) >= this.swingHearts(w.hearts);
     return (this.data.council.won[motion] || []).includes(who);
   },
+  // What an undecided councillor wants, once you have found out (To Do list).
+  swingKnown(motion, who) { return this.data.council.known.includes(`${motion}:${who}`); },
+  learnSwing(motion, who) { const k = `${motion}:${who}`; if (this.data.council.known.includes(k)) return false; this.data.council.known.push(k); return true; },
   winOver(motion, who) { const a = this.data.council.won[motion] || (this.data.council.won[motion] = []); if (!a.includes(who)) a.push(who); },
   // How each councillor votes on a motion right now.
   councilVote(motion) {

@@ -2,7 +2,8 @@
 // whenever you walk to another suburb or catch a train.
 
 import { ENCOUNTER_RATE, TILE as T, GROUND_SCALE, MIN_TILES_SHORT_SIDE, MS_PER_GAME_MINUTE, DAY_START, DAY_END, FRIENDSHIP } from '../config.js';
-import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS } from '../data/regions.js';
+import { ZONES, SUBURBS, SUBURB_ORDER, getMap, TRAM_STOPS, npcZone, invalidateMap } from '../data/regions.js';
+import { SHOPS } from '../data/shops.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { PEOPLE } from '../data/dialogue.js';
@@ -12,7 +13,7 @@ import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SI
 const COUNCILLORS = COUNCIL_ALL;
 import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF } from '../data/cooking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, PADDY_SPEECH, PADDY_PARTY, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
 // What blocks a gated exit until you beat its keeper (`gate` on an exit).
@@ -24,6 +25,11 @@ const GATES = {
 const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
 
 // What you can catch where: [item, weight, junk?]. Bait halves the junk.
+// Where there are ducks to feed (with stale bread), and how many old-bloke
+// wins at bowls earn the Newcomer's Cup.
+const DUCK_ZONES = ['lake', 'wetlands', 'coburglake', 'altona', 'gardens', 'flinders'];
+const BOWLS_TROPHY = 5;
+
 const FISH_TABLES = {
   lake: [['redfin', 40], ['carp', 35], ['eel', 10], ['oldboot', 15, true]],
   wetlands: [['yabby', 40], ['eel', 25], ['carp', 20], ['oldboot', 15, true]],
@@ -48,7 +54,7 @@ import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
 import { custom, objectTexture, tuftTexture, fitScale, cropTexture, exitSignTexture } from '../art/textures.js';
 import { Crowd } from '../world/crowd.js';
-import { Player, Pet, Npc, toWorld } from '../world/entities.js';
+import { Player, Pet, Npc, Sibling, Duckling, toWorld } from '../world/entities.js';
 import { Traffic } from '../world/traffic.js';
 import { state } from '../systems/state.js';
 import { controls } from '../systems/controls.js';
@@ -101,6 +107,11 @@ export class WorldScene extends Phaser.Scene {
     this.player = new Player(this, spawn.x, spawn.y, spawn.dir);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.layer);
+    // Chapter 3: both boys are out together, the other one tags along.
+    this.sibling = null;
+    if (this.twinsTogether()) this.sibling = new Sibling(this, spawn.x + 10, spawn.y + 2, state.data.hero === 'hadrian' ? 'aleksy' : 'hadrian');
+    // The duckling you won feeding the ducks waddles along behind everyone.
+    this.duckling = state.data.side.duckling ? new Duckling(this, spawn.x - 8, spawn.y + 6) : null;
 
     // Which pets are here: your team follows you everywhere; pets you've
     // found relax at home; everyone else is out in their own patch.
@@ -267,13 +278,14 @@ export class WorldScene extends Phaser.Scene {
       else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
       else if (o.kind === 'tramstop' && TRAM_STOPS[this.regionId]) this.interactables.push({ kind: 'tram', x, y: y - 6, bubble: 'fx-bubble-read' });
+      else if (o.shop) for (let tx = o.x + 1; tx < o.x + o.w; tx += 3) this.interactables.push({ kind: 'shopfront', shop: o.shop, keeper: o.keeper, x: (tx + 0.5) * T, y: (o.y + o.h) * T - 2, r: 20, quiet: true, bubble: 'fx-bubble-dots' });
       else if (o.kind === 'agendaboard') this.interactables.push({ kind: 'agenda', x, y: y - 6, r: 20, bubble: 'fx-bubble-read' });
       else if (o.kind === 'noticeboard') this.interactables.push({ kind: 'council', x, y: y - 6, r: 24, bubble: 'fx-bubble-alert' });
       else if (this.region.home && o.kind === 'counter' && o.v === 'stove') this.interactables.push({ kind: 'cook', x, y: y - 6, r: 20, bubble: 'fx-bubble-dots' });
       else if (this.region.home && ['bed', 'single', 'cot'].includes(o.kind)) this.interactables.push({ kind: 'sleep', x, y: y - 4, r: Math.max(18, o.w * 9), bubble: 'fx-bubble-zzz', cot: o.kind === 'cot' });
       else {
         const lines = flavourFor(o.kind, o.v);
-        if (lines) this.interactables.push({ kind: 'look', x, y: y - 4, r: Math.max(16, o.w * 8), lines, bubble: 'fx-bubble-dots', quiet: true });
+        if (lines) this.interactables.push({ kind: 'look', x, y: y - 4, r: Math.max(16, o.w * 8), lines, bubble: 'fx-bubble-dots', quiet: true, bin: o.kind === 'bin' ? `${this.regionId}:${o.x},${o.y}` : null });
       }
       const light = LIGHT_SOURCES[o.kind];
       if (light) {
@@ -642,7 +654,7 @@ export class WorldScene extends Phaser.Scene {
 
   async interact(t = this.findTarget()) {
     if (this.player.seat) { if (!ui.blocking() && this.time.now - this.player.satAt > 300) this.player.stand(); return; }
-    if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.goFishing();
+    if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.waterAction();
     if (!t || ui.blocking() || this.leaving) return;
     this.player.target = null; this.pending = null;
     this.player.setVelocity(0, 0);
@@ -657,10 +669,16 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
     if (t.kind === 'sign') return ui.say(t.lines);
-    if (t.kind === 'look') return ui.say(pick(t.lines));
+    if (t.kind === 'look') return t.bin ? this.checkBin(t) : ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
     if (t.kind === 'plot') return this.usePlot(t);
     if (t.kind === 'cook') return this.cook();
+    if (t.kind === 'shopfront') {
+      // Walk up to the shop itself (Coles) and buy straight away, while it is staffed.
+      const keeper = this.npcs.find(n => n.id === t.keeper && !n.gone);
+      if (!keeper) return ui.say([`${SHOPS[t.shop]?.name || 'The shop'} is closed. The lights are off and the trolleys are chained up.`]);
+      return ui.shop(t.shop);
+    }
     if (t.kind === 'lunch') return this.lunch(t);
     if (t.kind === 'forsale') return this.forSale(t);
   }
@@ -683,6 +701,27 @@ export class WorldScene extends Phaser.Scene {
     return ui.say([who === 'Franco' ? `Franco claps his hands. "Megalo! I deliver it today. Myself. In the van."` : `Olly nods. "Good choice. I'll drop them round on my way home. Swap the old ones out for you."`]);
   }
 
+  // ------------------------------------------------------------ bins
+  // A rummage in a wheelie bin: now and then there is something in it. Each
+  // bin can only be checked once a day.
+  async checkBin(t) {
+    const f = state.data.flags, day = state.data.day;
+    if (f.binDay !== day) { f.binDay = day; f.bins = []; }
+    if (f.bins.includes(t.bin) || Math.random() > 0.35) { if (!f.bins.includes(t.bin)) f.bins.push(t.bin); return ui.say(pick(t.lines)); }
+    f.bins.push(t.bin);
+    const r = Math.random();
+    if (r < 0.45) {
+      const n = 1 + Math.floor(Math.random() * 4);
+      state.addMoney(n); sfx.pickup(); ui.toast(`+$${n}`);
+      ui.say([pick(['You lift the lid. Under a pizza box: a few coins.', 'Someone has binned a jar of loose change. You rescue it.', 'A gold coin glints at the bottom. Worth the smell.']), `You found $${n}.`]);
+    } else {
+      const id = pick(['lemon', 'lemon', 'bread', 'feather', ...Object.keys(ITEMS).filter(k => ITEMS[k].crop)].filter(k => ITEMS[k]));
+      state.addItem(id); sfx.pickup(); ui.toast(`+1 ${ITEMS[id].name}`, itemIcon(id, 32));
+      ui.say([pick(['You lift the lid. On top, perfectly fine:', 'Wedged under the lid, of all things:', 'Somebody has thrown out a good one:']) + ` ${ITEMS[id].name.toLowerCase()}.`]);
+    }
+    this.save();
+  }
+
   // ------------------------------------------------------------ fishing
   // Water in front of you (or one tile further)?
   waterAhead() {
@@ -690,16 +729,51 @@ export class WorldScene extends Phaser.Scene {
     const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 1) / T);
     return [1, 2].some(k => this.map.ground[ty + v[1] * k]?.[tx + v[0] * k] === '~');
   }
+  // Facing water: feed the ducks (with bread, where there are ducks) or fish.
+  async waterAction() {
+    const ducks = DUCK_ZONES.includes(this.regionId) && state.count('bread') > 0;
+    if (!ducks) return this.goFishing();
+    if (this.emilioWaiting()) return this.emilio();
+    if (!state.hasUpgrade('rod')) return this.feedDucks();
+    const c = await ui.say({ text: 'Ducks paddle over, eyeing your bag.', choices: [{ label: 'Feed the ducks', value: 'ducks' }, { label: 'Go fishing', value: 'fish' }, { label: 'Not now', value: null }] }, { cancelValue: null });
+    if (c === 'ducks') return this.feedDucks();
+    if (c === 'fish') return this.goFishing();
+  }
+
+  // Feed the ducks (the bowls game reskinned): a slice of stale bread, a duck
+  // feather back. Ten really good feeds and a duckling decides you are its mum.
+  // Nobody tells you that outright: Chris and a few others only hint.
+  emilioWaiting() { return this.regionId === 'lake' && state.count('bread') > 0 && !state.isFound('emilio'); }
+  // The lake's secret (Chris tells you at 10 hearts): toss stale bread in at Edwardes Lake.
+  async emilio() {
+    state.removeItem('bread');
+    state.data.minutes += 10;
+    await ui.say(['You tear off some stale bread and toss it in.', 'The water goes very still. Then a big old duck glides out of the reeds, wearing a little top hat.', '"Quack," he says, gravely. He eats the bread, tips his hat, and climbs out after you.']);
+    await this.winPet('emilio');
+    return this.save();
+  }
+
+  async feedDucks() {
+    state.removeItem('bread');
+    state.data.minutes += 10;
+    const r = await ui.bowls({ mode: 'ducks' });
+    const side = state.data.side;
+    if (r && r.best !== null) { state.addItem('duckfeather'); ui.toast('+1 Duck feather', itemIcon('duckfeather', 32)); }
+    if (r && r.best !== null && r.best <= 40 && !side.duckling) {
+      side.duckWins++;
+      if (side.duckWins >= 10) {
+        side.duckling = true; sfx.found();
+        this.duckling = new Duckling(this, this.player.x - 8, this.player.y + 6);
+        await ui.say(['The ducks have been watching you for a while now.', 'A tiny fluffy duckling hops out of the water, shakes itself off, and plants itself at your feet.', 'It peeps. It is not going anywhere. You have a duckling now.']);
+        ui.banner('A duckling!', 'It follows you everywhere');
+      }
+    }
+    this.save();
+  }
+
   async goFishing() {
     if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
-    // The lake's secret (Chris tells you at 10 hearts): cast stale bread at Edwardes Lake.
-    if (this.regionId === 'lake' && state.count('bread') > 0 && !state.isFound('emilio')) {
-      state.removeItem('bread');
-      state.data.minutes += 10;
-      await ui.say(['You tear off some stale bread and toss it in.', 'The water goes very still. Then a big old duck glides out of the reeds, wearing a little top hat.', '"Quack," he says, gravely. He eats the bread, tips his hat, and climbs out after you.']);
-      await this.winPet('emilio');
-      return this.save();
-    }
+    if (this.emilioWaiting()) return this.emilio();
     const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
     const bait = state.count('bait') > 0;
     if (bait) state.removeItem('bait');
@@ -901,14 +975,17 @@ export class WorldScene extends Phaser.Scene {
     // Talking starts the chat straight away; then a menu of anything else
     // (a gift, the shop, a rematch...), if there is anything else.
     await this.chatNpc(npc, opts);
+    // Betty asks for help beating Meghan Hopper at the bake-off (a side mission on the To Do list).
+    if (npc.id === 'betty' && !state.data.side.bake) { await ui.say(BAKE_OFF.rivalry, opts); state.data.side.bake = 1; ui.toast('Added to your To Do list'); this.save(); }
     for (;;) {
       const choices = [];
       const giftable = state.bagItems().filter(id => !ITEMS[id].story && !ITEMS[id].deco);
       if (f.giftedDay !== day && giftable.length) choices.push({ label: 'Give a gift', value: 'gift' });
       // The story: pranks (Chapter 3) and party invitations (Chapter 4)
-      if (inChapter(3) && PRANKS[npc.id] && !story().pranks.includes(npc.id)) choices.push({ label: `Prank: ${PRANKS[npc.id].label}`, value: 'prank' });
+      if (inChapter(3) && PRANKS[npc.id] && !story().pranks.includes(npc.id)) choices.push(state.data.side.scouted.includes(npc.id) ? { label: `Prank: ${PRANKS[npc.id].label}`, value: 'prank' } : { label: 'Look for a prank', value: 'prank' });
       if (inChapter(4) && !NO_INVITE.includes(npc.id) && !story().invited.includes(npc.id)) choices.push({ label: 'Invite to the party', value: 'invite' });
-      if (info.shop) choices.push({ label: 'Shop', value: 'shop' });
+      // Only behind their own counter: no shop when you bump into them elsewhere.
+      if (info.shop && npcZone(npc.id) === this.regionId && npc.spot?.at !== 'home') choices.push({ label: 'Shop', value: 'shop' });
       if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
       if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
       if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
@@ -967,6 +1044,16 @@ export class WorldScene extends Phaser.Scene {
       state.addMoney(10); sfx.pickup();
       await ui.say(['Crazy Jeff: "Now THAT is bowls! Here, ten bucks from the honesty tin. Do not tell the committee."', 'You got $10.'], { name: 'Crazy Jeff', portrait: npcIcon('crazyjeff') });
     }
+    // Beat the old blokes enough times and the club gives you a trophy for home.
+    const side = state.data.side;
+    if (r.rival && r.best < r.rival && !side.trophy) {
+      side.bowlsWins++;
+      if (side.bowlsWins >= BOWLS_TROPHY) {
+        side.trophy = true; sfx.found(); invalidateMap('home');
+        await ui.say(['Crazy Jeff clears his throat. The old blokes take their hats off.', '"By order of the committee: the Brunswick Bowls Club Newcomer\'s Cup. First one we have given out since 1987."', 'It is very shiny and slightly dented. They will drop it round to the house.'], { name: 'Crazy Jeff', portrait: npcIcon('crazyjeff') });
+        ui.banner('The Newcomer\'s Cup!', 'It is on the shelf at home');
+      }
+    }
     this.save();
   }
 
@@ -978,10 +1065,18 @@ export class WorldScene extends Phaser.Scene {
     if (act === 'vote') {
       if (!next) return ui.say([words.nothing], opts);
       const v = MOTIONS[next].votes, sw = v.swing[id];
+      // A councillor who wants to meet a pet: bring one along on your team.
+      if (sw?.pet && !state.swingWon(next, id) && state.data.party.length) {
+        state.winOver(next, id); sfx.found(); this.heartsFx(npc, 3); this.save();
+        return ui.say([`"${MOTIONS[next].title}?"`, `${PETS.find(p => p.id === state.data.party[0])?.name || 'Your pet'} trots up and sits on ${name}'s foot.`, `${name}: ${sw.won}`], opts);
+      }
       const line = v.yes.includes(id) || (sw && state.swingWon(next, id)) ? (words.yes || `${name}: "Yes from me. Easy."`)
         : v.no.includes(id) ? (words.no || `${name}: "No. Not this one. Not ever."`)
         : `(${name} ${sw.hint}.)`;
-      return ui.say([`"${MOTIONS[next].title}?"`, line], opts);
+      await ui.say([`"${MOTIONS[next].title}?"`, line], opts);
+      // Now you know what they want: it goes on the To Do list.
+      if (sw && !state.swingWon(next, id) && state.learnSwing(next, id)) { ui.toast('Added to your To Do list'); this.save(); }
+      return;
     }
     if (['paddy', 'rayna', 'deanna'].includes(id)) return ui.say([words.backYes], opts);
     if (['lesley', 'malcolm'].includes(id)) return ui.say([words.backNo], opts);
@@ -991,7 +1086,10 @@ export class WorldScene extends Phaser.Scene {
   // Paddy's tip for the first motion on the board someone is still undecided on.
   councilTip() {
     const m = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id) && state.councilVote(id).undecided.length && !state.councilVote(id).passed);
-    return m ? MOTIONS[m].tip : null;
+    if (!m) return null;
+    // Paddy's tip puts everyone still undecided on your To Do list.
+    if (state.councilVote(m).undecided.map(w => state.learnSwing(m, w)).some(Boolean)) setTimeout(() => ui.toast('Added to your To Do list'), 300);
+    return MOTIONS[m].tip;
   }
   // The street party for the community garden motion: three homegrown dishes.
   streetPartyOpen() { return state.motionUnlocked('gardenplus') && !state.motionPassed('gardenplus') && Object.entries(MOTIONS.gardenplus.votes.swing).some(([w, h]) => h.party && !state.swingWon('gardenplus', w)); }
@@ -1016,8 +1114,11 @@ export class WorldScene extends Phaser.Scene {
     const pickId = await ui.say({ text: 'What are you entering?', choices: [...baked.map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32) })), { label: 'Not today', value: null }] }, { ...opts, cancelValue: null });
     if (!pickId) return;
     state.removeItem(pickId); state.data.flags.bakeoffWeek = week;
-    const r = rng(state.data.day * 17 + 3), rivals = [...BAKE_OFF.rivals].sort(() => r() - 0.5).slice(0, 3).map(x => ({ ...x, score: 5 + Math.floor(r() * 5) }));
-    const mine = COOK_RECIPES[pickId].score + Math.floor(Math.random() * 3) + (ITEMS[pickId].homegrown ? 1 : 0);
+    const r = rng(state.data.day * 17 + 3), M = BAKE_OFF.meghan;
+    const rivals = [{ name: M.name, dish: M.dishes[Math.floor(r() * M.dishes.length)], score: M.score + (r() < 0.5 ? 1 : 0), meghan: true },
+      ...[...BAKE_OFF.rivals].sort(() => r() - 0.5).slice(0, 2).map(x => ({ ...x, score: 5 + Math.floor(r() * 5) }))];
+    const secret = typeof COOK_RECIPES[pickId].learn === 'object' && !COOK_RECIPES[pickId].learn.book;
+    const mine = COOK_RECIPES[pickId].score + Math.floor(Math.random() * 3) + (ITEMS[pickId].homegrown ? 1 : 0) + (secret ? BAKE_OFF.secretBonus : 0);
     await ui.say(rivals.map(x => `${x.name} brings ${x.dish}. Betty takes a bite... ${x.score} out of 12.`), opts);
     await ui.say([`Your ${ITEMS[pickId].name.toLowerCase()}. Betty chews. Betty closes her eyes. ${mine} out of 12.`], opts);
     const place = rivals.filter(x => x.score > mine).length, prize = BAKE_OFF.prize[place] || 0;
@@ -1025,6 +1126,9 @@ export class WorldScene extends Phaser.Scene {
     if (place === 0) { state.addItem('blueribbon'); sfx.found(); this.heartsFx(npc, 8); }
     else if (prize) sfx.pickup(); else sfx.sad();
     await ui.say([BAKE_OFF.results[place] + (prize ? ` You win $${prize}.` : ' Better luck next Saturday.'), ...(place === 0 ? [BAKE_OFF.win] : [])], opts);
+    // The rivalry: beat Meghan Hopper (once) for Betty.
+    if (place === 0 && state.data.side.bake < 2) { state.data.side.bake = 2; await ui.say(BAKE_OFF.beatMeghan, opts); state.addFriendPoints('betty', 50); ui.toast('Side mission done: Meghan Hopper beaten!'); }
+    else if (place > 0 && rivals.some(x => x.meghan && x.score > mine)) await ui.say([BAKE_OFF.lostToMeghan], opts);
     this.save();
   }
 
@@ -1467,11 +1571,18 @@ export class WorldScene extends Phaser.Scene {
     state.save();
   }
 
-  // Pick (or change) who you are playing as.
+  // Who you play: Helen, except Chapter 3 (both twins, swap between them)
+  // and free play after Chapter 4, when anyone can be picked.
+  twinsTogether() { return inChapter(3) && state.data.hero !== 'helen'; }
+  canPickHero() { return !!story().done[4]; }
   async pickHero(canCancel = false) {
+    if (this.twinsTogether()) return this.swapTwins();
+    if (!this.canPickHero()) return ui.say(['You are Helen for now. Once the election is done, you can play as anyone.']);
     const id = await ui.chooseHero(canCancel);
     if (!id) return;
-    if (id === 'helen' && inChapter(3)) return ui.say(['Mum is at Nanna and Pop\'s, looking after them. Today belongs to the boys.']);
+    this.setHero(id);
+  }
+  setHero(id) {
     const first = !state.data.startGiven;
     state.data.hero = id;
     if (first) {
@@ -1480,11 +1591,23 @@ export class WorldScene extends Phaser.Scene {
     }
     this.player.refreshLook();
     this.save();
-    if (first) ui.toast(`${HEROES[id].name}'s treats are in your bag`);
+  }
+  // Chapter 3: swap places with your brother.
+  swapTwins() {
+    const d = state.data, other = d.hero === 'hadrian' ? 'aleksy' : 'hadrian';
+    const sx = this.sibling?.x, sy = this.sibling?.y;
+    if (this.sibling) {
+      this.sibling.hero = d.hero; this.sibling.setPosition(this.player.x, this.player.y); this.sibling.dir = null; this.sibling.setDir(this.player.dir);
+      this.player.body.reset(sx, sy);
+    }
+    d.hero = other; this.player.refreshLook(); this.trail.length = 0; this.save();
+    ui.toast(`Now playing as ${HEROES[other].name}`);
   }
 
   async intro(firstVisit) {
-    if (this.firstLoad && !state.data.hero) await this.pickHero(false);
+    if (this.firstLoad && !state.data.hero) this.setHero('helen');
+    // Older saves that picked a twin go back to Helen until free play.
+    if (this.firstLoad && state.data.hero !== 'helen' && !inChapter(3) && !this.canPickHero()) this.setHero('helen');
     if (!this.firstLoad) {
       if (firstVisit && this.region.name === this.suburb.name) ui.toast(`New station unlocked: ${this.suburb.name}`);
       return;
@@ -1564,7 +1687,9 @@ export class WorldScene extends Phaser.Scene {
     const silly = sillyFor(d.day, d.council.silly);
     const results = state.holdMeeting(d.day);
     for (const i of silly) {
-      const who = pick(['rayna', 'deanna', 'kirsty', 'dahlia', 'malcolm']), yes = sillyYes(d.day, i);
+      // Friendship with council quietly helps the silly motions along.
+      const avg = COUNCIL_ALL.reduce((n, c) => n + state.friendHearts(c), 0) / COUNCIL_ALL.length;
+      const who = pick(['rayna', 'deanna', 'kirsty', 'dahlia', 'malcolm']), yes = Math.min(7, sillyYes(d.day, i) + (avg >= 3) + (avg >= 6));
       await say(who, [`I move that we ${SILLY_MOTIONS[i][0].toLowerCase()}${SILLY_MOTIONS[i].slice(1)}.`]);
       await ui.say([`Cr ${pick(['Hawley', 'Grimes', 'Bishopp', 'Kellandra'])}: ${pick(SILLY_DEBATE.yes)}`, `Cr ${pick(['Bentleigh', 'Dismay'])}: ${pick(SILLY_DEBATE.no)}`]);
       if (yes >= 4) { d.council.silly.push(i); sfx.found(); await say('paddy', [`${yes} for, ${7 - yes} against. CARRIED! Someone tell the newsletter.`]); }
@@ -1626,7 +1751,7 @@ export class WorldScene extends Phaser.Scene {
     s.chapter = n;
     this.save();
     if (n === 4) {
-      if (s.heroBefore) { d.hero = s.heroBefore; s.heroBefore = null; this.player.refreshLook(); }
+      if (s.heroBefore || d.hero !== 'helen') { d.hero = 'helen'; s.heroBefore = null; this.player.refreshLook(); this.sibling?.destroy(); this.sibling = null; }
       await ui.news({ lines: NEWS_OPEN(s.ch2.deposed) });
     }
     if (n === 1) {
@@ -1644,7 +1769,8 @@ export class WorldScene extends Phaser.Scene {
     }
     if (n === 3) {
       if (d.hero === 'helen') { s.heroBefore = 'helen'; d.hero = 'hadrian'; this.player.refreshLook(); }
-      await ui.say(['Helen: "Right, I\'m off to Nanna and Pop\'s. Dad\'s in charge. Be good, boys!"', 'The front door closes. The boys look at each other.', 'You are playing as the twins until Helen gets home. Swap between them in Settings.']);
+      if (!this.sibling) this.sibling = new Sibling(this, this.player.x + 10, this.player.y + 2, 'aleksy');
+      await ui.say(['Helen: "Right, I\'m off to Nanna and Pop\'s. Dad\'s in charge. Be good, boys!"', 'The front door closes. The boys look at each other.', 'You are playing as both twins until Helen gets home. Swap between them with Swap twins in Settings.']);
     }
     if (n === 4) await ui.say(['Helen: "Right, team. The September Babies Bash. We\'re going to throw the party of the century, and the whole town is invited."', 'Check the Story app on your Pawphone for the to-do list.']);
     this.save();
@@ -1772,9 +1898,18 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // Chapter 3: a prank on one of Helen's friends.
+  // Chapter 3: first you visit and spot something, the boys hatch a plan and
+  // go and buy what they need, then come back and pull the prank.
   async prank(npc, opts) {
-    const s = story(), pr = PRANKS[npc.id];
-    if (pr.item && !state.count(pr.item)) return ui.say([PRANK_NEED(pr.label, ITEMS[pr.item].name.toLowerCase())], opts);
+    const s = story(), pr = PRANKS[npc.id], side = state.data.side;
+    if (!side.scouted.includes(npc.id)) {
+      await ui.say(pr.scout, opts);
+      await ui.say(pr.plan);
+      side.scouted.push(npc.id);
+      ui.toast(`New prank on the to-do list: ${pr.label}`);
+      return this.save();
+    }
+    if (pr.item && !state.count(pr.item)) return ui.say([PRANK_NEED(pr)], opts);
     if (pr.item) state.removeItem(pr.item);
     const [setup, ...rest] = pr.lines;
     await ui.say([setup], opts);
@@ -1855,7 +1990,14 @@ export class WorldScene extends Phaser.Scene {
     const free = [];
     for (let y = 6; y <= 13; y++) for (let x = 3; x <= 18; x++) if (!this.solidAt((x + 0.5) * T, (y + 0.75) * T)) free.push([x, y]);
     free.sort((a, b) => hash(a[0], a[1], d.day) - hash(b[0], b[1], d.day));
-    guests.forEach((id, i) => {
+    // Paddy is at the party too (he gives a speech at the end).
+    const people = guests.includes('paddy') ? guests : [...guests, 'paddy'];
+    if (!this.npcs.some(n => n.id === 'paddy' && !n.gone)) people.forEach((id, i) => {
+      if (id !== 'paddy') return;
+      const [x, y] = free[(i + 3) % free.length], npc = this.spawnNpc({ id, x, y, face: 'down' });
+      npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400 }); this.npcs.push(npc);
+    });
+    guests.filter(id => id !== 'paddy').forEach((id, i) => {
       const [x, y] = free[i % free.length], npc = this.spawnNpc({ id, x, y, face: 'down' });
       npc.setAlpha(0); this.tweens.add({ targets: npc, alpha: 1, duration: 400, delay: i * 120 });
       this.npcs.push(npc);
@@ -1865,9 +2007,9 @@ export class WorldScene extends Phaser.Scene {
     ui.banner('The September Babies Bash', `${guests.length} ${guests.length === 1 ? 'guest' : 'guests'}`);
     await ui.say([guests.length ? `${guests.length} ${guests.length === 1 ? 'friend turns' : 'friends turn'} up! The backyard is full of fairy lights, bunting and people holding plates.` : 'Nobody you invited could make it. The twins don\'t mind. More cake.',
       guests.length ? 'Helen: "Go and say hello to everyone! Party games in a bit."' : 'Helen: "Right! Party games!"']);
-    // Mingle: talk to the guests to hear their stories. Every three stories
+    // Mingle: talk to the guests to hear their stories. Every two stories
     // (or once you have heard everyone) a party game starts.
-    this.party = { guests, heard: [], score: 0, games: 0 };
+    this.party = { guests: guests.filter(id => id !== 'paddy'), heard: [], score: 0, games: 0 };
     if (guests.length) ui.toast('Mingle! Talk to your guests.');
     else this.partyGames();
   }
@@ -1875,38 +2017,54 @@ export class WorldScene extends Phaser.Scene {
   async partyChat(npc) {
     const p = this.party, id = npc.id, opts = { name: NPCS[id]?.name, portrait: npcIcon(id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
+    if (id === 'paddy') return ui.say([pick(PADDY_PARTY)], opts);
     if (p.heard.includes(id)) return ui.say([pick(PARTY_MINGLE)(NPCS[id]?.name || 'A guest')], opts);
     p.heard.push(id);
     this.heartsFx(npc, 2);
     await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), opts);
     const left = p.guests.length - p.heard.length;
-    if (p.heard.length % 3 === 0 || !left) await this.partyGames();
-    else { const n = Math.min(left, 3 - p.heard.length % 3); ui.toast(`${n} more ${n === 1 ? 'chat' : 'chats'} till the next game.`); }
+    if (p.heard.length % 2 === 0 || !left) await this.partyGames();
+    else ui.toast('One more chat till the next game.');
   }
   // Run the next party game, or every game left once everyone has been heard.
   async partyGames() {
     const p = this.party;
     if (!p || this.partyGaming) return;
     this.partyGaming = true;
+    // Behind the bar, the dance floor, karaoke, then trivia (which ends on the score).
+    const GAMES = [1, 2, 'karaoke', 3];
     const all = p.heard.length >= p.guests.length;
     do {
-      p.games++;
-      p.score = await ui.party(p.guests, { only: p.games, score: p.score });
-    } while (all && p.games < 3);
+      const g = GAMES[p.games++];
+      if (g === 'karaoke') {
+        await ui.say(['Paddy wheels out the karaoke machine. "Who\'s first? Not me. Definitely me."']);
+        const r = await ui.karaoke({ intro: 'Paddy hands you the mic. "Make your mother proud. She\'s right there."' });
+        p.score += r?.stars || 0;
+      } else p.score = await ui.party(p.guests, { only: g, score: p.score });
+    } while (all && p.games < GAMES.length);
     this.partyGaming = false;
-    if (p.games >= 3) return this.partyEnd();
+    if (p.games >= GAMES.length) return this.partyEnd();
     ui.toast('Back to mingling!');
   }
   async partyEnd() {
     const s = story(), d = state.data, { guests, score } = this.party;
     this.party = null; delete d.flags.partyNow;
     state.data.minutes = Math.max(state.data.minutes, 23 * 60);
+    // Paddy taps a glass.
+    const paddy = this.npcs.find(n => n.id === 'paddy' && !n.gone);
+    if (paddy) { paddy.faceTowards(this.player.x, this.player.y); this.cameras.main.pan(paddy.x, paddy.y - 16, 600); this.reactFx(paddy, 'jump'); }
+    await ui.say(PADDY_SPEECH, { name: 'Paddy', portrait: npcIcon('paddy') });
+    this.cameras.main.pan(this.player.x, this.player.y, 400);
     await ui.say(PARTY_END.slice(0, 3), { name: 'Helen' });
     this.tweens.add({ targets: this.player, angle: { from: -12, to: 12 }, duration: 350, yoyo: true, repeat: 3 });
     await new Promise(r => this.time.delayedCall(1500, r));
     this.player.angle = 90;
     await ui.say(PARTY_END.slice(3));
+    // Lights out: the party is over and everyone goes home.
+    this.cameras.main.fadeOut(900, 0, 0, 0);
+    await new Promise(r => this.cameras.main.once('camerafadeoutcomplete', r));
     this.player.angle = 0;
+    for (const n of [...this.npcs]) if (!n.gone && (guests.includes(n.id) || n.id === 'paddy')) this.removeNpc(n);
     // The drinks and decorations get used up.
     let need = CH4.drinks;
     for (const id of Object.keys(ITEMS).filter(k => ITEMS[k].drink)) while (need > 0 && state.count(id)) { state.removeItem(id); need--; }
@@ -1918,15 +2076,16 @@ export class WorldScene extends Phaser.Scene {
     s.done[4] = d.day;
     this.save();
     await ui.say(['A week later, Hobsons Bay votes.']);
-    this.cameras.main.fadeOut(500, 0, 0, 0);
-    await new Promise(r => this.cameras.main.once('camerafadeoutcomplete', r));
     await ui.news({ lines: NEWS_RESULT(votes, won, s.ch2.deposed), votes });
-    this.cameras.main.fadeIn(500, 0, 0, 0);
-    if (won) { sfx.found(); this.heartsFx(this.player, 10); }
+    if (won) sfx.found();
     await ui.card({ kicker: 'The end, for now', title: won ? 'Mayor Paddy!' : 'So close!', lines: THE_END, button: 'Keep playing' });
     s.chapter = 5;
     this.partying = false;
-    this.save();
+    // Helen wakes up in bed the next morning, the backyard empty.
+    const news = state.newDay();
+    state.save();
+    this.leaving = true;
+    this.scene.restart({ region: 'home', entry: this.bedEntry(), newDay: true, news: [...news, 'Helen wakes up with a party hat stuck to her face. Now anyone can be played: Settings > Character.'] });
   }
 
   syncRoutines() {
@@ -1973,6 +2132,8 @@ export class WorldScene extends Phaser.Scene {
       else if (!this.player.target) this.pending = null;
       else this.player.target = { x, y: y + 8 };
     }
+    this.sibling?.update(this.player, blocked);
+    this.duckling?.update(this.player, blocked);
     for (const p of this.pets) p.update(this.player, dt, blocked);
     for (const n of this.npcs) if (!n.gone) n.update(this.player, dt, blocked);
     this.crowd.update(this.player, dt, blocked);

@@ -18,6 +18,7 @@ export function openMenu(panel, close) {
   const mail = (kind, line) => h('div', { class: 'set-mail' },
     h('a', { class: 'wood-btn', href: `mailto:sebastian@horey.com.au?subject=${encodeURIComponent(`${kind.toUpperCase()}: Project Princess`)}`, target: '_blank', rel: 'noopener' }, kind === 'Bug report' ? 'Report Bug' : 'Feature Request'),
     h('p', { class: 'small' }, line));
+  const twins = d.story?.chapter === 3 && !d.story.done?.[3] && d.hero !== 'helen', free = !!d.story?.done?.[4];
   const found = state.foundCount(), friends = Object.values(d.friends).filter(f => f.met).length;
 
   panel.replaceChildren(
@@ -32,7 +33,8 @@ export function openMenu(panel, close) {
           const opts = DAY_LENGTHS, i = (opts.findIndex(o => o[0] === (d.settings.dayLength || 1)) + 1) % opts.length;
           d.settings.dayLength = opts[i][0]; e.currentTarget.textContent = opts[i][1]; state.save(); sfx.select();
         } }, (DAY_LENGTHS.find(o => o[0] === (d.settings.dayLength || 1)) || DAY_LENGTHS[0])[1])),
-        row('Character', h('button', { class: 'wood-btn small', onclick: () => { close(); setTimeout(() => bus.emit('game:hero'), 50); } }, 'Change')),
+        // Helen until free play; in Chapter 3 you swap between the twins.
+        twins || free ? row(twins ? 'Twins' : 'Character', h('button', { class: 'wood-btn small', onclick: () => { close(); setTimeout(() => bus.emit('game:hero'), 50); } }, twins ? 'Swap twins' : 'Change')) : null,
         canFull ? row('Full screen', h('button', { class: 'wood-btn small', onclick: () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) }, 'Toggle')) : null),
       h('div', { class: 'set-group' }, h('h4', {}, 'Saving'),
         h('p', { class: 'small' }, 'Your game saves itself every few seconds on this device.'),
