@@ -4,6 +4,7 @@
 import { shade } from './painter.js';
 import { carSide } from './cars.js';
 import { hash } from '../../util.js';
+import { paintAllenHouse } from './allen-house.js';
 
 function box(p, x, y, w, h, c) {
   p.r(c, x, y, w, h); p.r(shade(c, 0.18), x, y, w, 1); p.r(shade(c, -0.22), x, y + h - 1, w, 1);
@@ -98,26 +99,7 @@ export const LAVERTON = {
   // Helen and Paddy's new place on Allen St
   hphouse: {
     foot: [8, 3], tex: [136, 92], variants: ['allen'],
-    paint(p) {
-      const sx = 4, W = 128, H = 92, top = 52;
-      veneer(p, { W, H, sx, roof: '#b4553a', brick: '#d4a86a', wallTop: top, roofH: 34, seed: 4 });
-      // antenna on the chimney
-      p.r('#5a5d64', sx + W - 26, 2, 1, 14); p.r('#5a5d64', sx + W - 32, 4, 12, 1); p.r('#5a5d64', sx + W - 30, 7, 8, 1);
-      p.r('#5a3a2a', sx, H - 4, W, 4); // garden bed edge
-      window_(p, sx + 10, top + 10, 24, 18, { box: true }); window_(p, sx + 42, top + 10, 24, 18, { box: true });
-      // porch with white posts, steps, lamp, security door
-      p.r('#c9c5bb', sx + 70, top + 30, 28, 10); p.r('#b5b1a7', sx + 70, top + 30, 28, 1);
-      p.r('#f4f0e6', sx + 70, top, 3, 36); p.r('#f4f0e6', sx + 92, top, 3, 36);
-      door(p, sx + 76, top + 8, 11, 22, '#3a3a40');
-      p.r('#f4f0e6', sx + 88, top + 20, 4, 10); for (let i = 0; i < 4; i++) p.r('#f4f0e6', sx + 73 + i * 4, top + 22, 1, 8); p.r('#f4f0e6', sx + 73, top + 22, 18, 1);
-      p.r('#f5e6a0', sx + 82, top + 2, 4, 3);
-      p.r('#d4d0c8', sx + 76, H - 6, 16, 3); p.r('#c4c0b6', sx + 74, H - 3, 20, 3); // steps
-      // enclosed side porch: dark louvres over corrugated iron
-      p.r('#2a2e33', sx + 98, top + 4, 26, 18); for (let j = 5; j < 22; j += 2) p.r('#3a3e44', sx + 99, top + j, 24, 1);
-      p.r('#b8bcc4', sx + 98, top + 22, 26, 14); for (let i = 99; i < 124; i += 2) p.r('#9a9ea6', sx + i, top + 22, 1, 14);
-      p.r('#f4f0e6', sx + 97, top, 2, 38); p.r('#f4f0e6', sx + 124, top, 2, 38);
-      p.r('#d8dcdf', sx + 112, top + 28, 10, 8); p.r('#9a9ea6', sx + 113, top + 30, 8, 1); // air con
-    },
+    paint: paintAllenHouse,
   },
   // The back of Helen and Paddy's place, seen from the yard
   hpback: {
