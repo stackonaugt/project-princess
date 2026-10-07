@@ -82,7 +82,7 @@ export const NORTH_NPCS = {
   // Meghan Hopper: Bell St regular, pushes her cat in a pram, wins every bake-off.
   meghan: {
     name: 'Meghan Hopper', pram: true,
-    look: { hair: '#7a4a2a', hairStyle: 'long', skin: '#f2c8a8', shirt: '#c8302a', blazer: '#2a2a30', pants: '#2a2a30', shoes: '#1e1e22', lips: '#b83a4a' },
+    look: { hair: '#24181c', hairStyle: 'long', skin: '#f6d6c4', shirt: '#1e1e24', blazer: '#c4eadc', pants: '#2a2a30', shoes: '#1e1e22', lips: '#d8606a' },   // from Seb's photo: long dark hair with a fringe, mint blazer, black top
   },
   alison: {
     name: 'Alison', look: { hair: '#6a4a2a', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#d8d8d4', pants: '#1e1e24', shoes: '#f4f4f0' },
