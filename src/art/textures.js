@@ -197,7 +197,7 @@ function createAnims(scene) {
     if (scene.anims.exists(key)) return;
     scene.anims.create({ key, frames: frames.map(f => ({ key: tex, frame: f })), frameRate: rate, repeat: -1 });
   };
-  const walkFrames = (tex, n) => custom.has(tex) ? (n > 2 ? [...Array(n - 1).keys()].map(i => i + 1) : [...Array(n).keys()]) : [1, 0, 2, 0];
+  const walkFrames = (tex, n) => custom.has(tex) && n === 3 ? [1, 0, 2, 0] : custom.has(tex) ? (n > 2 ? [...Array(n - 1).keys()].map(i => i + 1) : [...Array(n).keys()]) : [1, 0, 2, 0];
   const playerKeys = ['down', 'up', 'left', 'right'].flatMap(d => [`player-${d}`, ...Object.keys(HEROES).map(h => `player-${h}-${d}`)]);
   for (const tex of playerKeys) {
     if (!scene.textures.exists(tex)) continue;
