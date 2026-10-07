@@ -13,6 +13,7 @@ import { painter, outline, textWidth } from './paint/painter.js';
 import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
 import { drawPerson } from './paint/people.js';
+import { drawHelen } from './paint/helen.js';
 import { OBJECTS } from './paint/objects.js';
 import { ITEM_ART, GEAR_ART, paintSeedPacket, paintDrink, paintBook } from './paint/items.js';
 import { ITEMS } from '../data/items.js';
@@ -87,7 +88,7 @@ export function buildTextures(scene) {
 
   // Player
   for (const [id, hero] of Object.entries(HEROES)) for (const dir of ['down', 'up', 'left'])
-    stripTexture(scene, `player-${id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, hero.look, dir, STEPS[i]), true);
+    stripTexture(scene, `player-${id}-${dir}`, 16, 32, 3, (p, i) => id === 'helen' ? drawHelen(p, dir, STEPS[i]) : drawPerson(p, hero.look, dir, STEPS[i]), true);
   // Pets
   for (const pet of PETS) {
     const frames = PET_FRAMES[pet.sprite], pal = { ...BASE_PALETTE, ...pet.pal };
@@ -246,4 +247,3 @@ export function frameDataURL(scene, key, frame = 0, size = 64) {
   g.drawImage(f.source.image, f.cutX, f.cutY, f.cutWidth, f.cutHeight, 0, 0, c.width, c.height);
   return (urlCache[id] = c.toDataURL());
 }
-
