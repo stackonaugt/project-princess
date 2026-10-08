@@ -14,6 +14,7 @@
 //   Q  terrazzo (civic centre foyer)   U  patterned blue carpet (council chamber, brick walls)
 import { hash } from '../../util.js';
 import { shade } from './painter.js';
+import { terrainContours, traceTerrain } from './terrain-curves.js';
 
 export const TILE_NAMES = {
   '.': 'grass', ',': 'flowers', '"': 'tallgrass', '=': 'path', '#': 'road', '+': 'tram', 'x': 'crossing',
@@ -35,8 +36,14 @@ let WALL_PAINT = null;
 export function paintGround(p, map, grass, custom = {}) {
   WALL_PAINT = map.wallPaint || null;
   const get = (x, y) => (x < 0 || y < 0 || x >= map.w || y >= map.h) ? null : map.ground[y][x];
+  const court = map.id === 'allen';
   for (let ty = 0; ty < map.h; ty++) for (let tx = 0; tx < map.w; tx++) {
     const c = map.ground[ty][tx];
+    if (c === '~' || (court && '#f'.includes(c))) {
+      if (custom.grass) p.ctx.drawImage(custom.grass, tx * T, ty * T, T, T);
+      else grassBase(p, tx, ty, tx * T, ty * T, grass);
+      continue;
+    }
     const img = custom[TILE_NAMES[c]];
     if (img) { p.ctx.drawImage(img, 0, 0, img.width, img.height, tx * T, ty * T, T, T); continue; }
     // A custom grass tile also goes under flowers and tall grass.
@@ -44,6 +51,32 @@ export function paintGround(p, map, grass, custom = {}) {
     if (under) p.ctx.drawImage(under, 0, 0, under.width, under.height, tx * T, ty * T, T, T);
     paintTile(p, c, tx, ty, tx * T, ty * T, get, grass, !!under);
   }
+  roundedSurface(p, map, grass, custom, get, '~w', '~', '#2f6aa3');
+  if (court) {
+    roundedSurface(p, map, grass, custom, get, '#f', 'f', '#9c9686');
+    roundedSurface(p, map, grass, custom, get, '#', '#', '#e2dccf');
+  }
+  // Bridges keep their planks and interaction footprint over the curved water.
+  for (let y=0;y<map.h;y++) for (let x=0;x<map.w;x++) if (get(x,y)==='w') {
+    if (custom.bridge) p.ctx.drawImage(custom.bridge,x*T,y*T,T,T);
+    else paintTile(p,'w',x,y,x*T,y*T,get,grass,false,true);
+  }
+}
+
+function roundedSurface(p,map,grass,custom,get,letters,material,edge) {
+  const loops=terrainContours(map,letters,T);
+  if (!loops.length) return;
+  p.ctx.save(); traceTerrain(p.ctx,loops); p.ctx.clip('evenodd');
+  for (let y=0;y<map.h;y++) for (let x=0;x<map.w;x++) {
+    let near=false;
+    for (let dy=-1;dy<=1&&!near;dy++) for (let dx=-1;dx<=1;dx++) if (letters.includes(get(x+dx,y+dy)||'!')) { near=true; break; }
+    if (!near) continue;
+    const img=custom[TILE_NAMES[material]];
+    if (img) p.ctx.drawImage(img,x*T,y*T,T,T);
+    else paintTile(p,material,x,y,x*T,y*T,get,grass,false,true);
+  }
+  traceTerrain(p.ctx,loops); p.ctx.strokeStyle=edge; p.ctx.lineWidth=material==='~'?2:2.5; p.ctx.stroke();
+  p.ctx.restore();
 }
 
 function same(get, x, y, set) { const c = get(x, y); return c === null || set.includes(c); }
@@ -60,16 +93,16 @@ function grassBase(p, tx, ty, sx, sy, g) {
   }
 }
 
-function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
+function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false, smooth = false) {
   const r = hash(tx, ty), r2 = hash(ty + 7, tx + 3);
   switch (c) {
     case '~': case 'w': {
       p.r('#4a90cf', sx, sy, T, T);
       const W = '~w';
-      if (!same(get, tx, ty - 1, W)) { p.r('#2f6aa3', sx, sy, T, 3); p.r(g[2], sx, sy, T, 1); }
-      if (!same(get, tx - 1, ty, W)) p.r('#3c7bb8', sx, sy, 2, T);
-      if (!same(get, tx + 1, ty, W)) p.r('#3c7bb8', sx + T - 2, sy, 2, T);
-      if (!same(get, tx, ty + 1, W)) p.r('#a8d8f2', sx, sy + T - 2, T, 2);
+      if (!smooth && !same(get, tx, ty - 1, W)) { p.r('#2f6aa3', sx, sy, T, 3); p.r(g[2], sx, sy, T, 1); }
+      if (!smooth && !same(get, tx - 1, ty, W)) p.r('#3c7bb8', sx, sy, 2, T);
+      if (!smooth && !same(get, tx + 1, ty, W)) p.r('#3c7bb8', sx + T - 2, sy, 2, T);
+      if (!smooth && !same(get, tx, ty + 1, W)) p.r('#a8d8f2', sx, sy + T - 2, T, 2);
       p.r('#5a9ed8', sx + 3 + Math.floor(r * 7), sy + 5 + Math.floor(r2 * 6), 4, 1);
       if (c === 'w') {
         p.r('#8a5a2e', sx, sy + 1, T, 14);
@@ -209,7 +242,7 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       p.r('#53555c', sx + Math.floor(r2 * 13), sy + Math.floor(r * 11), 1, 1);
       const roadU = same(get, tx, ty - 1, ROADLIKE), roadD = same(get, tx, ty + 1, ROADLIKE);
       const roadL = same(get, tx - 1, ty, ROADLIKE), roadR = same(get, tx + 1, ty, ROADLIKE);
-      if (c === '#' || c === 'P') asphalt(p, c, tx, ty, sx, sy, r, r2, get, roadU, roadD, roadL, roadR);
+      if (c === '#' || c === 'P') asphalt(p, c, tx, ty, sx, sy, r, r2, get, roadU, roadD, roadL, roadR, smooth);
       if (c === '+' && (get(tx - 1, ty) === '+' || get(tx + 1, ty) === '+') && !(get(tx, ty - 1) === '+' && get(tx, ty + 1) === '+')) {
         // tram tracks running east-west
         p.r('#3e4046', sx, sy + 3, T, 2); p.r('#3e4046', sx, sy + 11, T, 2);
@@ -223,7 +256,7 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
         if (vert) { p.r('#b8bcc4', sx + 4, sy, 1, T); p.r('#b8bcc4', sx + 11, sy, 1, T); p.r('#3e4046', sx + 5, sy, 1, T); p.r('#3e4046', sx + 12, sy, 1, T); }
         else { p.r('#b8bcc4', sx, sy + 4, T, 1); p.r('#b8bcc4', sx, sy + 11, T, 1); p.r('#3e4046', sx, sy + 5, T, 1); p.r('#3e4046', sx, sy + 12, T, 1); }
         return;
-      } else {
+      } else if (!smooth) {
         // centre line dashes for two-lane roads
         if ((roadL || roadR) && roadD && !roadU && get(tx, ty + 1) === '#' && tx % 2 === 0) p.r('#e8e4d8', sx + 4, sy + 15, 8, 1);
         if ((roadU || roadD) && roadR && !roadL && get(tx + 1, ty) === '#' && ty % 2 === 0) p.r('#e8e4d8', sx + 15, sy + 4, 1, 8);
@@ -233,10 +266,10 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
         for (let i = 1; i < T; i += 5) vert ? p.r('#ece8dc', sx + 1, sy + i, T - 2, 3) : p.r('#ece8dc', sx + i, sy + 1, 3, T - 2);
       }
       if (c === 'P') { p.r('#ece8dc', sx, sy + 1, 1, T - 2); if (get(tx, ty + 1) !== 'P') p.r('#ece8dc', sx, sy + T - 2, T, 1); }
-      if (!roadU) p.r('#9a9ca2', sx, sy, T, 1);
-      if (!roadD) p.r('#46484e', sx, sy + T - 1, T, 1);
-      if (!roadL) p.r('#9a9ca2', sx, sy, 1, T);
-      if (!roadR) p.r('#46484e', sx + T - 1, sy, 1, T);
+      if (!smooth && !roadU) p.r('#9a9ca2', sx, sy, T, 1);
+      if (!smooth && !roadD) p.r('#46484e', sx, sy + T - 1, T, 1);
+      if (!smooth && !roadL) p.r('#9a9ca2', sx, sy, 1, T);
+      if (!smooth && !roadR) p.r('#46484e', sx + T - 1, sy, 1, T);
       return;
     }
     case 'r': case 'B': {
@@ -261,7 +294,7 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false) {
       crack(p, tx, ty, sx, sy, '#9e9686', 0.07);
       if (r2 > 0.9) { p.r('#6a8a3a', sx + 7, sy + 6, 1, 2); p.r('#8aaa4a', sx + 6, sy + 6, 1, 1); p.r('#6a8a3a', sx + 9, sy + 7, 1, 1); } // weeds in the seam
       if (hash(tx * 3, ty * 5 + 1) > 0.93) { p.r('#c8823a', sx + 3, sy + 12, 2, 1); p.r('#a8602a', sx + 12, sy + 3, 1, 2); }   // gum leaves
-      kerbs(p, sx, sy, get, tx, ty);
+      if (!smooth) kerbs(p, sx, sy, get, tx, ty);
       return;
     }
     case 'R': { roofTile(p, tx, ty, sx, sy, get); return; }
@@ -448,13 +481,13 @@ function kerbs(p, sx, sy, get, tx, ty) {
   if (road(get(tx - 1, ty))) { p.r('#8e887a', sx, sy, 1, T); p.r('#e2dccf', sx + 1, sy, 1, T); }
 }
 // Asphalt: grain, tyre wear, patches, oil, manholes and gutter drains.
-function asphalt(p, c, tx, ty, sx, sy, r, r2, get, U, D, L, R) {
+function asphalt(p, c, tx, ty, sx, sy, r, r2, get, U, D, L, R, smooth = false) {
   speckle(p, tx, ty, sx, sy, ['#686a71', '#54565d', '#62646b'], 7);
   const horiz = L && R && !(U && D && !L);
   if (c === '#') {
     // tyre wear: darker bands where wheels run
-    if (horiz && U && D) { p.r('rgba(35,35,42,0.16)', sx, sy + 3, T, 3); p.r('rgba(35,35,42,0.16)', sx, sy + 10, T, 3); }
-    else if (U && D && !L !== !R) { p.r('rgba(35,35,42,0.16)', sx + 3, sy, 3, T); p.r('rgba(35,35,42,0.16)', sx + 10, sy, 3, T); }
+    if (!smooth && horiz && U && D) { p.r('rgba(35,35,42,0.16)', sx, sy + 3, T, 3); p.r('rgba(35,35,42,0.16)', sx, sy + 10, T, 3); }
+    else if (!smooth && U && D && !L !== !R) { p.r('rgba(35,35,42,0.16)', sx + 3, sy, 3, T); p.r('rgba(35,35,42,0.16)', sx + 10, sy, 3, T); }
     if (r > 0.86 && r < 0.9) { p.r('#53555c', sx + 2, sy + 3, 10, 7); p.r('#4c4e55', sx + 2, sy + 3, 10, 1); }   // patch
     if (r2 > 0.965 && U && D && L && R) {   // manhole
       p.blob(sx + 8, sy + 8, 4, '#4a4c52'); p.blob(sx + 8, sy + 8, 3, '#5a5c62');

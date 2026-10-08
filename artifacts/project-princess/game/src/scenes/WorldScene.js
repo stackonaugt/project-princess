@@ -907,9 +907,12 @@ export class WorldScene extends Phaser.Scene {
 
   async petSchoolLesson(pet, opts) {
     const id = pet.id, day = state.data.day, school = state.data.side.school;
-    if (school.lessonDay[id] === day) return ui.say([`${form(id).name} has already had a lesson today. The report card says to practise again tomorrow.`], opts);
-    const result = await ui.training({ id, name: form(id).name, behaviour: pet.data_.behaviour, day });
+    const practice = school.lessonDay[id] === day;
+    if (practice && !await ui.say({ text: `${form(id).name} has earned today’s lesson reward. Have another practice without extra XP?`, choices: [{label:'Practise again',value:true},{label:'Later',value:false}] }, opts)) return;
+    const hero = state.data.hero || 'helen';
+    const result = await ui.training({ id, name: form(id).name, behaviour: pet.data_.behaviour, species: pet.data_.species, day, hero, heroName: HEROES[hero]?.name || 'Helen', skills: school.skills?.[id] || {}, practice });
     if (!result) return;
+    if (practice) return ui.say([`${form(id).name} finished another ${result.title.toLowerCase()} practice. Come back tomorrow for a new daily reward and lesson choices.`],opts);
     school.lessonDay[id] = day;
     const xp = 8 + result.score * 8;
     gainXp(petFighter(id), xp);
@@ -919,7 +922,7 @@ export class WorldScene extends Phaser.Scene {
     school.skills[id][result.drill] = (school.skills[id][result.drill] || 0) + result.score;
     state.addPoints(id, 2 + result.score * 2);
     this.save();
-    await ui.say([`${form(id).name} practised ${result.drill.toLowerCase()}: ${result.score}/3 successful behaviours and ${xp} training XP.`, `Gold stars: ${school.stamps[id] || 0}. You can practise another activity tomorrow.`], opts);
+    await ui.say([`${form(id).name} practised ${result.title.toLowerCase()}: ${result.score}/3 clean runs and ${xp} training XP.`, `Gold stars: ${school.stamps[id] || 0}. Extra practice is always available; tomorrow brings new lesson choices.`], opts);
     if (canEvolve(id)) await this.evolveInWorld(pet);
   }
 

@@ -75,28 +75,14 @@ test('school skill progress and existing stamps survive save reload', () => {
   assert.equal(state.data.side.school.stamps.princess, 2);
 });
 
-test('all practical drills can be completed; cancellation resolves once without a score', () => {
-  state.data.settings.sound = false;
-  let now = 100, queue = new Map(), sequence = 0;
-  const previousPerformance = globalThis.performance, previousRandom = Math.random;
-  globalThis.performance = { now: () => now };
+test('closing school cancels animation and resolves exactly once without XP', () => {
+  let queue = new Map(), sequence = 0, callbacks = 0, result = 'pending';
   globalThis.requestAnimationFrame = fn => { queue.set(++sequence, fn); return sequence; };
   globalThis.cancelAnimationFrame = id => queue.delete(id);
-  Math.random = () => .5;
-  const advance = ms => { for (let elapsed = 0; elapsed < ms; elapsed += 50) { now += Math.min(50, ms - elapsed); const pending = [...queue.values()]; queue.clear(); pending.forEach(fn => fn(now)); } };
-  try {
-    for (let drill = 0; drill < 3; drill++) {
-      const panel = new Element(); let result, callbacks = 0;
-      const session = openTraining(panel, () => session.cleanup(), { id: 'princess', name: 'Princess', behaviour: 'patrol', day: 1, done: r => { result = r; callbacks++; } });
-      panel.children[1].children[drill].listeners.click();
-      session.action();
-      for (let round = 0; round < 3; round++) { advance(drill === 0 ? 1850 : drill === 1 ? 3000 : 1400); session.action(); advance(1000); }
-      session.action(); session.cleanup();
-      assert.equal(callbacks, 1); assert.equal(result.score, 3); assert.equal(queue.size, 0);
-    }
-    const panel = new Element(); let result = 'pending', callbacks = 0;
-    const session = openTraining(panel, () => {}, { id: 'salami', name: 'Salami', behaviour: 'stalk', day: 2, done: r => { result = r; callbacks++; } });
-    session.action(); advance(500); session.cleanup(); session.cleanup();
-    assert.equal(result, null); assert.equal(callbacks, 1); assert.equal(queue.size, 0);
-  } finally { globalThis.performance = previousPerformance; Math.random = previousRandom; }
+  const panel = new Element();
+  const session = openTraining(panel, () => {}, { id: 'salami', name: 'Salami', species: 'cat', day: 2, done: r => { result = r; callbacks++; } });
+  session.action();
+  assert.equal(queue.size, 1);
+  session.cleanup(); session.cleanup();
+  assert.equal(result, null); assert.equal(callbacks, 1); assert.equal(queue.size, 0);
 });

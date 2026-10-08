@@ -53,7 +53,7 @@ export const ui = {
       if (this.dialog) return this.cancelDialog();
       if (this.modalOpen && this.modalOpen !== 'party') return this.closeModal();
     });
-    bus.on('input:dir', (dx, dy) => { if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); });
+    bus.on('input:dir', (dx, dy) => { if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); else if (this.modalOpen) this.modalDir?.(dx,dy); });
     bus.on('input:dex', () => this.toggle('dex'));
     bus.on('input:bag', () => this.toggle('bag'));
     bus.on('input:menu', () => this.toggle('phone'));
@@ -257,6 +257,8 @@ export const ui = {
     this.openModal(which);
   },
   openModal(which) {
+    if (this._trainingCleanup) { const cleanup = this._trainingCleanup; this._trainingCleanup = null; cleanup(); }
+    this.modalDir = null;
     if (this._fishCleanup) { const cleanup = this._fishCleanup; this._fishCleanup = null; cleanup(); }
     const panel = $('modalPanel');
     panel.replaceChildren();
@@ -281,7 +283,7 @@ export const ui = {
     if (which === 'karaoke') { const f = openKaraoke(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'bowls') { const f = openBowls(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
-    if (which === 'training') { const t = openTraining(panel, close, this._trainingOpts); this.modalAction = t.action; this._trainingCleanup = t.cleanup; }
+    if (which === 'training') { const t = openTraining(panel, close, this._trainingOpts); this.modalAction = t.action; this.modalDir = t.direction; this._trainingCleanup = t.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
     $('modal').hidden = false;
@@ -296,6 +298,7 @@ export const ui = {
     this._fromPhone = false;
     phoneClosed();
     this.modalAction = null;
+    this.modalDir = null;
     if (this._trainingCleanup) { const c = this._trainingCleanup; this._trainingCleanup = null; c(); }
     if (this._fishCleanup) { const c = this._fishCleanup; this._fishCleanup = null; c(); }
     $('modal').hidden = true;

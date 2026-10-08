@@ -98,3 +98,30 @@ Note: GitHub Pages only works on **public** repos with a free account. A private
 Most edits happen in `src/data/` (pets, people, words, shops, the story) and `src/world/maps/` (one file per zone). [CLAUDE.md](CLAUDE.md) explains how everything fits together, every mechanic, and what is planned next. `node tools/balance.mjs` simulates battles after any change to stats or levels.
 
 Built with [Phaser 3](https://phaser.io). The pets belong to their humans.
+
+
+### Pet school lessons and curved terrain (October 2026)
+
+Pet school offers three choices from six activities: recall, settle and stay,
+obstacle course, fetch, find the toy and loose lead walking. Choices rotate by
+pet and day. Pets have different pacing and preferences; saved skill progress
+adds longer stays, a second hurdle, tighter throw targets and a fourth scent box.
+Existing Recall, Settle and Obstacle course skill records still count.
+
+Pets walk using their loaded sprite frames during lessons. A replacement PNG
+with only one frame can bob, but needs walk frames to show moving legs. The
+person accompanying the pet uses the selected character’s name, such as Helen.
+The obstacle course waits for a jump at the hurdle; an early jump does not end
+the run. Restart this run is always available during play. Empty scent boxes
+stay open and early settle rewards can be tried again. Each activity has three
+runs. One lesson per pet per day earns XP and friendship; extra practice remains
+available without additional rewards. Cancelling a lesson gives no reward.
+
+Allen St’s road and footpath edges and water banks use continuous rounded
+contours traced from the existing map tiles, preserving bridges and custom tile
+textures. This also applies to map editor ground changes. Terrain collision,
+objects, exits and editor tile coordinates still use the existing grid.
+
+Verification: `node --test tools/playtest.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs`
+from `artifacts/project-princess/`. Mobile layout and lesson feel should also be
+checked in the live game.

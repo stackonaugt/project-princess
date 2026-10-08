@@ -1,92 +1,82 @@
-// Practical training: watching and cueing a moving pet, not answering a quiz.
 import { h } from './dom.js';
-import { petIcon } from './images.js';
-import { sfx } from '../systems/sfx.js';
+import { petWalkFrames, heroIcon } from './images.js';
+import { ACTIVITIES, TrainingSession, lessonPlan } from '../systems/training.js';
 
-export function openTraining(panel, close, { id, name, behaviour, day, done }) {
-  const energetic = ['zoomies', 'patrol'].includes(behaviour);
-  const cat = ['stalk', 'aloof', 'phase'].includes(behaviour);
-  const drills = cat ? ['Recall', 'Settle', 'Pounce course'] : ['Recall', 'Settle', 'Obstacle course'];
-  let drill = (day + [...id].reduce((n, c) => n + c.charCodeAt(0), 0)) % 3;
-  let round = 0, score = 0, running = false, finished = false, raf = 0;
-  let start = 0, attentionAt = 0, settleAt = 0, answered = false, feedbackUntil = 0, last = 0;
-  const status = h('p', { role: 'status', 'aria-live': 'polite' });
-  const pet = h('img', { src: petIcon(id, 64), alt: name, class: 'pix', style: 'position:absolute;width:64px;height:64px;object-fit:contain;bottom:12px;left:20%;image-rendering:pixelated;transition:filter .15s' });
-  const marker = h('div', { style: 'position:absolute;left:64%;bottom:12px;width:10px;height:32px;background:#b47b44;border:2px solid #67452d' });
-  const trainer = h('span', { style: 'position:absolute;left:8%;bottom:12px' }, 'Handler');
-  const board = h('div', { style: 'position:relative;height:150px;background:#a8c989;border:3px solid #67452d;border-radius:8px;overflow:hidden' }, trainer, marker, pet);
-  const tally = h('p');
-  const instructions = h('p');
-  const action = h('button', { class: 'wood-btn', onclick: () => act() }, 'Start');
-  const chooser = h('div', { class: 'center' }, ...drills.map((label, index) => h('button', { class: 'wood-btn small', onclick: () => { if (!running) { drill = index; explain(); } } }, label)));
+export function openTraining(panel, close, opts) {
+  const plan = lessonPlan(opts), frames = petWalkFrames(opts.id,64);
+  const heroName = opts.heroName || 'Helen';
+  let activity = plan.choices[0], session = null, raf = 0, last = 0, cleaned = false, lastFrame = -1;
+  const title = key => /cat/i.test(opts.species || '') && key==='fetch' ? 'Feather chase' : /cat/i.test(opts.species || '') && key==='agility' ? 'Pounce trail' : ACTIVITIES[key].title;
+  const instructions = h('p', { class: 'training-help' });
+  const status = h('p', { class:'training-status',role:'status','aria-live':'polite' });
+  const tally = h('p',{class:'training-tally'});
+  const pet = h('img',{class:'pix training-pet',src:frames[0],alt:opts.name});
+  const hero = h('div',{class:'training-person'},h('img',{class:'pix',src:heroIcon(opts.hero || 'helen'),alt:''}),h('span',{},heroName));
+  const props = h('div',{class:'training-props'});
+  const board = h('div',{class:'training-board','aria-label':`${heroName} and ${opts.name} practise together`},props,hero,pet);
+  const meter = h('progress',{class:'training-meter',max:1,value:0,'aria-label':'Training progress'});
+  const action = h('button',{class:'wood-btn',onclick:()=>act()},'Start practice');
+  const retry = h('button',{class:'wood-btn small',hidden:true,onclick:()=>{session?.retry();render();}},'Restart this run');
+  const boxes = h('div',{class:'training-box-buttons'});
+  const chooser = h('div',{class:'training-choices'},...plan.choices.map(key=>h('button',{class:'wood-btn small',onclick:()=>{activity=key;explain();}},title(key))));
   function explain() {
-    instructions.textContent = drill === 0 ? `Wait until ${name} looks towards the handler, then call once. A distracted pet needs a moment to check in.` : drill === 1 ? `Let ${name} move about, then settle. Reward after one full second of stillness. Rewarding movement starts another attempt.` : `Press Jump as ${name} reaches the hurdle. Watch their approach, rather than tapping repeatedly.`;
-    marker.hidden = drill !== 2; trainer.hidden = drill !== 0;
-    status.textContent = `${drills[drill]}: ${energetic ? 'quick and easily distracted' : cat ? 'independent and curious' : 'steady and patient'}. Three attempts.`;
+    instructions.textContent = `${title(activity)}. ${ACTIVITIES[activity].help}`;
+    status.textContent = `${plan.detail} ${opts.practice ? 'Extra practice today; no additional XP.' : 'Choose one of today’s three activities.'}`;
+    tally.textContent = `Day ${opts.day}. ${title(activity)} stage ${plan.level(activity)+1}.`;
+    chooser.children && [...chooser.children].forEach((button,i)=>button.setAttribute('aria-pressed',plan.choices[i]===activity));
   }
-  function next(now) {
-    round++; start = now; answered = false; feedbackUntil = 0;
-    attentionAt = 1000 + Math.random() * 1400;
-    settleAt = 1300 + Math.random() * 1300;
-    action.textContent = drill === 0 ? 'Call' : drill === 1 ? 'Reward' : 'Jump';
-    tally.textContent = `Attempt ${round}/3. Successful behaviours: ${score}.`;
+  function act(box=null) {
+    if (session?.complete) return close();
+    if (!session) {
+      session=new TrainingSession(opts,activity); chooser.hidden=true; retry.hidden=false;
+      session.action(); last=0; raf=requestAnimationFrame(tick);
+      if (activity==='scent') boxes.replaceChildren(...Array.from({length:session.boxCount},(_,i)=>h('button',{class:'wood-btn small',onclick:()=>{session.focus=i;act(i);}},`Box ${i+1}`)));
+    } else session.action(box);
+    render();
   }
-  function resolveAttempt(success, now) {
-    if (answered) return;
-    answered = true; if (success) { score++; sfx.select(); } else sfx.sad();
-    status.textContent = success ? drill === 0 ? `${name} comes back. Reward that check-in!` : drill === 1 ? `${name} stays settled. Calmly rewarded.` : `${name} clears the hurdle!` : drill === 0 ? 'Still distracted. Give them space before calling.' : drill === 1 ? 'A little too early. Wait for a full second of calm.' : 'Missed the hurdle. Try a later or earlier cue next time.';
-    feedbackUntil = now + 1000;
-    action.disabled = true;
-  }
-  function act() {
-    if (finished) return close();
-    const now = performance.now();
-    if (!running) { running = true; chooser.hidden = true; next(now); raf = requestAnimationFrame(tick); return; }
-    if (answered) return;
-    const elapsed = now - start;
-    const pace = energetic ? 2300 : 3000;
-    const success = drill === 0 ? elapsed >= attentionAt && elapsed <= attentionAt + (energetic ? 850 : 1200) : drill === 1 ? elapsed >= settleAt + 1000 && elapsed <= settleAt + 2100 : Math.abs((elapsed / pace) - 0.62) <= (energetic ? 0.13 : 0.16);
-    resolveAttempt(success, now);
+  function render() {
+    if (!session) return;
+    if (status.textContent!==session.status) status.textContent=session.status;
+    tally.textContent=`Run ${session.round}/3. Clean runs: ${session.score}. ${session.complete ? 'Practice complete.' : ''}`;
+    action.textContent=session.complete?'Finish':session.label;
+    action.disabled=session.phase==='feedback' || (activity==='scent'&&session.clock<1500);
+    retry.hidden=session.complete || session.phase==='feedback';
+    pet.style.left=`${session.petX}%`;
+    pet.style.transform=`translateX(-50%) translateY(${session.petY}px) scaleX(${session.flip?-1:1}) ${activity==='settle'&&session.stage==='calm'?'scaleY(.8)':''}`;
+    const frame=session.moving&&frames.length>1?1+Math.floor(session.clock/135)%(frames.length-1):0;
+    if (frame!==lastFrame) { pet.src=frames[frame];lastFrame=frame; }
+    pet.classList.toggle('training-bob',session.moving&&frames.length===1);
+    hero.style.left=`${session.heroX}%`;
+    hero.classList.toggle('training-person-walking',!!session.heroMoving);
+    const decorations=[];
+    if (activity==='lead') decorations.push(h('div',{class:'training-lead',style:{left:`${session.heroX}%`,width:`${Math.max(0,session.petX-session.heroX)}%`}}));
+    if (activity==='agility') for (const hurdle of session.hurdles) decorations.push(h('div',{class:'training-hurdle',style:{left:`${hurdle}%`,height:opts.id==='poppy'?'22px':'32px'}},h('span',{},'Jump')));
+    if (activity==='fetch') {
+      decorations.push(h('div',{class:'training-target',style:{left:`${session.target}%`}},'Aim here'));
+      decorations.push(h('span',{class:'training-toy',style:{left:`${session.stage==='play'?session.aim:session.stage==='return'?session.petX:session.ball}%`}},plan.toy==='feather'?'Feather':'Toy'));
+    }
+    if (activity==='scent') for (let i=0;i<session.boxCount;i++) {
+      decorations.push(h('div',{class:`training-box ${session.openBoxes.includes(i)?'open':''}`,style:{left:`${20+i*(60/(session.boxCount-1))}%`}},session.clock<1500&&i===session.box?'Toy':session.openBoxes.includes(i)?'Empty':String(i+1)));
+      if (boxes.children[i]) { boxes.children[i].disabled=session.clock<1500||session.openBoxes.includes(i)||session.phase!=='playing'||session.stage!=='play';boxes.children[i].setAttribute('aria-pressed',i===session.focus); }
+    }
+    if (activity==='recall'&&session.stage==='play') decorations.push(h('span',{class:'training-distraction',style:{left:'78%'}},['Bird','Sniff spot','Rolling toy'][(opts.day+session.round)%3]));
+    props.replaceChildren(...decorations);
+    meter.hidden=!['settle','lead'].includes(activity);
+    meter.value=activity==='settle'?(session.calm||0):Math.max(0,Math.min(1,1-Math.abs((session.gap||8)-8)/18));
+    meter.setAttribute('aria-label',activity==='settle'?'Calm behaviour':'Loose lead');
   }
   function tick(now) {
-    // Returning from a hidden tab must not consume all the remaining attempts.
-    if (last && now - last > 250) { start += now - last; if (feedbackUntil) feedbackUntil += now - last; }
-    last = now;
-    const elapsed = now - start;
-    if (answered) {
-      if (drill === 0 && score && status.textContent.includes('comes back')) pet.style.left = '12%';
-      if (now >= feedbackUntil) {
-        if (round === 3) {
-          finished = true; running = false; action.disabled = false; action.textContent = 'Finish';
-          tally.textContent = `${score}/3 successful behaviours. Training complete.`;
-          return;
-        }
-        next(now); action.disabled = false;
-      }
-    } else if (drill === 0) {
-      const attentive = elapsed >= attentionAt && elapsed <= attentionAt + (energetic ? 850 : 1200);
-      pet.style.left = `${55 + Math.sin(elapsed / 330) * 8}%`;
-      pet.style.transform = attentive ? 'scaleX(-1)' : '';
-      status.textContent = attentive ? `${name} is looking at you. Call now!` : `${name} is sniffing. Wait for a check-in.`;
-      if (elapsed > attentionAt + 1500) resolveAttempt(false, now);
-    } else if (drill === 1) {
-      const still = elapsed >= settleAt;
-      pet.style.left = still ? '48%' : `${48 + Math.sin(elapsed / 220) * 18}%`;
-      pet.style.transform = still ? 'scaleY(.8)' : '';
-      status.textContent = still ? elapsed >= settleAt + 1000 ? 'One second of calm. Reward now.' : 'Settling. Wait a full second...' : `${name} is still moving. Let them settle.`;
-      if (elapsed > settleAt + 2300) resolveAttempt(false, now);
-    } else {
-      const progress = elapsed / (energetic ? 2300 : 3000);
-      pet.style.left = `${8 + Math.min(1, progress) * 90}%`;
-      pet.style.transform = '';
-      status.textContent = 'Cue the jump near the hurdle.';
-      if (progress > .83) resolveAttempt(false, now);
-    }
-    if (answered && drill === 2) pet.style.transform = status.textContent.includes('clears') ? 'translateY(-35px)' : '';
-    raf = requestAnimationFrame(tick);
+    const delta=last?now-last:0;last=now;
+    // Suspend the practice clock while the browser tab is hidden.
+    if (delta<250) session.advance(delta);
+    render(); if (!session.complete) raf=requestAnimationFrame(tick);
   }
-  panel.replaceChildren(h('div', { class: 'm-head' }, h('h2', {}, `${name}: pet school`), h('button', { class: 'wood-btn small', onclick: close }, 'Stop')), chooser, instructions, board, status, tally, h('div', { class: 'center' }, action));
+  const body=h('div',{class:'m-scroll training-content'},chooser,instructions,board,meter,boxes,status,tally,h('div',{class:'training-controls'},action,retry));
+  panel.replaceChildren(h('div',{class:'m-head'},h('h2',{},`${opts.name}: pet school`),h('button',{class:'wood-btn small',onclick:close},'Stop')),body);
   explain();
-  let cleaned = false;
-  return { action: act, cleanup() { if (cleaned) return; cleaned = true; cancelAnimationFrame(raf); done(finished ? { score, drill: drills[drill] } : null); } };
+  return {
+    action:()=>act(),
+    direction(dx) { if (session&&activity==='scent') { session.focus=(session.focus+dx+session.boxCount)%session.boxCount;render(); } },
+    cleanup() { if (cleaned) return;cleaned=true;cancelAnimationFrame(raf);opts.done(session?.complete?{score:session.score,drill:activity,title:title(activity)}:null); },
+  };
 }
