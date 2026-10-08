@@ -17,6 +17,25 @@ function stride(rows, n = 4) {
   return top.concat(legs);
 }
 
+// Marty: floppy curly ears, brown-grey coat and orange harness.
+const cavoodle = [
+  '................',
+  '.........ccaa...',
+  '........caaaab..',
+  '.......bbacaaa..',
+  '.......bbbaaen..',
+  '..aa...bbbaaann.',
+  '.aca....bbaca...',
+  '..aaa...hhahh...',
+  '...acaaahhaaa...',
+  '...aacaahhaab...',
+  '...acaaahhaab...',
+  '....baaaaabb....',
+  '....ab....ab....',
+  '....ac....ac....',
+  '...bbc...bbc....',
+  '................',
+];
 const poodle = [
   '................',
   '..pp......www...',
@@ -322,6 +341,7 @@ const emilio = [
 ];
 
 export const PET_FRAMES = {
+  cavoodle: [cavoodle, stride(cavoodle, 4)],
   kitten:    [kitten, stride(kitten, 4)],
   emilio:    [emilio, stride(emilio, 3)],
   sopressa:  [sopressa, stride(sopressa)],

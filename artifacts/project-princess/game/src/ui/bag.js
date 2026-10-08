@@ -6,6 +6,8 @@ import { PETS } from '../data/pets.js';
 import { itemIcon, petIcon } from './images.js';
 import { GEAR, GEAR_ORDER } from '../data/gear.js';
 import { form } from '../systems/forms.js';
+import { givePhoneTreat, isHealingTreat } from '../systems/pet-care.js';
+import { petFighter } from '../systems/battle.js';
 import { sfx } from '../systems/sfx.js';
 
 // Bag tabs, like the shops: each item lands in the first tab that fits.
@@ -22,7 +24,7 @@ const kindOf = id => KINDS.find(([, , test]) => test(ITEMS[id], id))[0];
 let tab = 'treats';
 
 export function openBag(panel, close) {
-  let selected = null;
+  let selected = null, careMessage = null;
   const render = () => {
     const all = state.bagItems(), have = new Set(all.map(kindOf));
     const tabs = [...KINDS.filter(([k]) => have.has(k)).map(([k, label]) => [k, label]), ['gear', 'Gear']];
@@ -34,6 +36,16 @@ export function openBag(panel, close) {
       return h('div', { class: 'note bag-detail' },
         h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: itemIcon(selected, 48), alt: '', width: 40, height: 40 }), h('h4', {}, `${ITEMS[selected].name} ×${state.count(selected)}`)),
         h('p', {}, ITEMS[selected].desc),
+        careMessage ? h('p', { role: 'status', class: 'small' }, careMessage) : null,
+        isHealingTreat(selected) && state.foundCount() ? h('div', { style: { maxHeight: '160px', overflowY: 'auto' } },
+          h('p', { class: 'small' }, 'Give this treat to restore energy:'),
+          ...state.foundIds().map(id => {
+            const f = petFighter(id), full = f.hp >= f.maxHp;
+            return h('button', { class: 'wood-btn small gear-pet', disabled: full, onclick: () => {
+              const result = givePhoneTreat(id, selected); careMessage = result.reason;
+              if (result.ok) sfx.pickup(); render();
+            } }, h('img', { class: 'pix', src: petIcon(id, 24), alt: '', width: 24, height: 24 }), `${f.name} · ${f.hp}/${f.maxHp}${full ? ' (full)' : ''}`);
+          })) : null,
         h('p', { class: 'small' }, fans.length ? `Loved by ${fans.join(' and ')}.` : ITEMS[selected].drink || ITEMS[selected].gift ? 'A present for a friend. Not for pets.' : ITEMS[selected].farm ? 'For the garden. Use it when you water a bed.' : ITEMS[selected].story || ITEMS[selected].deco ? 'Hang on to this. You will know when you need it.' : 'Give it to a pet to see how they feel about it.'));
     })() : h('div', { class: 'note bag-detail' }, h('p', {}, all.length ? 'Tap an item to look at it.' : 'Your bag is empty. Look for treats around town, and chat to people. Some of them are very generous.'));
     panel.replaceChildren(
@@ -43,9 +55,9 @@ export function openBag(panel, close) {
       h('div', { class: 'm-scroll' },
         tab === 'gear' ? gearNote(render) : h('div', { class: 'bag-grid' }, ...items.map(id => h('button', {
           class: 'slot' + (id === selected ? ' on' : ''), 'aria-label': ITEMS[id].name,
-          onclick: () => { selected = id; sfx.select(); render(); },
+          onclick: () => { selected = id; careMessage = null; sfx.select(); render(); },
         }, h('img', { class: 'pix', src: itemIcon(id, 48), alt: '' }), h('b', {}, state.count(id))))),
-        tab === 'gear' ? null : h('p', { class: 'small center' }, 'Treats go to pets: talk to one you have met. Drinks and presents are for your friends around town.')));
+        tab === 'gear' ? null : h('p', { class: 'small center' }, 'Choose a food treat above to restore a pet’s energy. Toys are given in person. Drinks and presents are for your friends around town.')));
   };
   render();
 }

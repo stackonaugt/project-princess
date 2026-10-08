@@ -217,6 +217,7 @@ export const state = {
     const r = this.pet(id);
     if (r.found) return false;
     Object.assign(r, { found: true, day: this.data.day, date: new Date().toISOString() });
+    if (this.data.party.length < MAX_TEAM && !this.data.party.includes(id)) this.data.party.push(id);
     bus.emit('petdex:changed');
     return true;
   },

@@ -4,6 +4,7 @@ import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { timeLabel } from '../systems/clock.js';
 import { appIcon } from './appicons.js';
+import { needsMartyCare } from '../systems/pet-care.js';
 import { sfx } from '../systems/sfx.js';
 import { cheatsOn } from './cheats.js';
 
@@ -31,6 +32,7 @@ export function openPhone(panel, close, openApp) {
     h('div', { class: 'phone' + (flipped ? '' : ' flip') },
       h('div', { class: 'phone-bar' }, h('span', {}, timeLabel(d.minutes)), h('b', {}, 'Pawphone'), h('span', {}, `Day ${d.day} · $${d.money}`)),
       h('div', { class: 'phone-screen' },
+        needsMartyCare() ? h('button', { class: 'wood-btn small', onclick: () => openApp('bag') }, 'Marty could use a treat. Open Bag') : null,
         h('div', { class: 'phone-apps' }, ...APPS.filter(a => !a.cheat || cheatsOn()).map(a => h('button', {
           class: 'app', onclick: () => { sfx.select(); openApp(a.id); },
         }, h('span', { class: 'app-icon', style: { background: a.colour } }, h('img', { class: 'pix', src: appIcon(a.icon), alt: '' })), h('span', { class: 'app-label' }, a.label))))),

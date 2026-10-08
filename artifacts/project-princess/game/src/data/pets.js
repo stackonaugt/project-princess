@@ -153,6 +153,19 @@ export let PETS = [
     loves: ['bread', 'redfin', 'tomato'], likes: ['carrot', 'zucchini', 'strawberry'], dislikes: ['chilli', 'lemon'],
     stats: { hp: 90, attack: 62, defence: 80, speed: 44, special: 76 },
   },
+  {
+    id: 'marty', name: 'Marty', species: 'Cavoodle', type: 'smelly', sprite: 'cavoodle',
+    pal: { a: '#655c52', b: '#403d3b', c: '#8d867d', e: '#171616', n: '#24201d', h: '#cf7335' },
+    owner: 'Trish and Gordon', region: 'laverton', zone: 'woods', home: [20, 11], range: 1.5,
+    homeSpot: { zone: 'yard', x: 18, y: 8 }, behaviour: 'wander', sleeps: [19 * 60, 26 * 60],
+    loves: ['chicken', 'cheese', 'snag'], likes: ['egg', 'sardine', 'tennis'], dislikes: ['lemon', 'chilli'],
+    stats: { hp: 72, attack: 64, defence: 58, speed: 52, special: 60 },
+    bio: 'Trish and Gordon’s brown-grey cavoodle. Soft curls, orange harness, spectacularly questionable perfume.',
+    clue: 'Trish and Gordon can introduce you on Woods St during the day.',
+    funFact: 'Gordon is the source of all the best human food.', favouriteSpot: 'Beside Gordon on the couch.',
+    lines: ['Marty sniffs your shoes, then leans against your leg.', 'His orange harness is clean. The rest of him is debatable.'],
+    night: ['Marty is ready for a couch nap.'], rain: ['Wet cavoodle. The smell has somehow become stronger.'], asleep: ['Marty snores into his curls.'],
+  },
 ];
 
 
