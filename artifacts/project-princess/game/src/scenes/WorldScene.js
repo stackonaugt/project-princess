@@ -1,3 +1,4 @@
+import { beginMartyCare, martyApproach } from '../systems/pet-care.js';
 import { CRAFT_RECIPES } from '../data/crafting.js';
 import { craft,craftReason } from '../systems/crafting.js';
 import { COMPETITORS,SHOW_DOGS,DIVISIONS } from '../data/dog-show.js';
@@ -83,6 +84,7 @@ export class WorldScene extends Phaser.Scene {
     this.newDay = !!data.newDay;
     this.news = data.news || [];
     this.firstLoad = !!data.firstLoad;
+    this.martyApproached = false;
     this.leaving = false; this.endingDay = false; this.pending = null; this.lockedExit = null;
   }
 
@@ -864,7 +866,8 @@ export class WorldScene extends Phaser.Scene {
         d.bio,
         `${d.name} was added to your Petdex.`,
       ];
-      if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
+      if (state.inParty(id)) lines.push(`${d.name} has joined your team. Your first three recruits fill any empty team slots automatically.`);
+    if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
       else lines.push('Come back every day for a chat. Pets love treats, too.');
       const joined = this.joinTeam(pet);
       if (joined) lines.push(`${d.name} falls in behind you. She is on your team now!`);
@@ -942,7 +945,7 @@ export class WorldScene extends Phaser.Scene {
   async parkTutorial() {
     if (this.regionId !== 'lohse' || state.data.flags.parkTutorial || !readyTeam().length) return;
     state.data.flags.parkTutorial = true;
-    const practice = await ui.say({ text: 'The long grass is where you find wild play-fights. Walking on the road skips them. Practise here to earn XP, and rest at home to refill your pets’ energy. Rose on Donald St and Adam on Holmes St offer gentler first matches when you bring one pet, so you can befriend a second.', choices: [{ label: 'Try a gentle practice fight', value: true }, { label: 'Explore first', value: false }] });
+    const practice = await ui.say({ text: 'The long grass is where you find wild play-fights. Walking on the road skips them. Practise here to earn XP, and rest at home to refill your pets’ energy. Trish and Gordon can introduce you to Marty on Woods St during the day. His first play-fight is gentle, and you can befriend him as a second pet.', choices: [{ label: 'Try a gentle practice fight', value: true }, { label: 'Explore first', value: false }] });
     if (practice) {
       const result = await this.startBattle({ wild: { id: 'bag', level: 2 } });
       if (result.outcome === 'lose') await this.lostBattle();
@@ -953,10 +956,13 @@ export class WorldScene extends Phaser.Scene {
   // A pet you have just found trots straight onto your team if there's room.
   joinTeam(pet) {
     const party = state.data.party;
-    if (party.length >= 3 || party.includes(pet.id)) return false;
-    state.setParty([...party, pet.id]);
+    if (!party.includes(pet.id)) {
+      if (party.length >= 3) return false;
+      state.setParty([...party, pet.id]);
+    }
+    if (pet.mode === 'follow') return false;
     pet.collider?.destroy(); pet.collider = null;
-    pet.mode = 'follow'; pet.index = state.data.party.length - 1;
+    pet.mode = 'follow'; pet.index = state.data.party.indexOf(pet.id);
     this.trail.length = 0;
     return true;
   }
@@ -1037,6 +1043,10 @@ export class WorldScene extends Phaser.Scene {
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
     if(npc.id.startsWith('show'))return this.showCompetitor(npc,opts);
+    if (npc.id === 'trish' && !state.isFound('marty')) {
+      const gordon = this.npcs.find(n => n.id === 'gordon' && !n.gone);
+      if (gordon) return this.challenge(gordon, TRAINERS.gordon, { name: 'Trish and Gordon', portrait: npcIcon('trish') });
+    }
     const trainer = TRAINERS[npc.id];
     const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
     // Trainers you have never beaten go straight to their challenge.
@@ -1066,7 +1076,7 @@ export class WorldScene extends Phaser.Scene {
       if (npc.id === 'betty' && weekday(day) === BAKE_OFF.day) choices.push({ label: 'Enter the bake-off', value: 'bakeoff' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (npc.id === 'paddy' && inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) choices.push({ label: 'Plan a clean campaign for Paddy', value: 'cleanCampaign' });
-      if (trainer && !done) choices.push({ label: 'Play-fight', value: 'fight' });
+      if (trainer && (!done || npc.id === 'gordon')) choices.push({ label: 'Play-fight', value: 'fight' });
       if (!choices.length) break;
       const act = await ui.say({ text: 'Anything else?', choices: [...choices, { label: 'Goodbye', value: null }] }, { ...opts, cancelValue: null });
       if (!act) break;
@@ -1393,7 +1403,13 @@ export class WorldScene extends Phaser.Scene {
         sfx.pickup();
         await ui.say(SCHOOL_LINES[npc.id] || `${t.name}: ${SCHOOL_DEFAULT}`, opts);
       }
+      const firstMarty = t.prize === 'marty' && !state.isFound('marty');
       if (t.prize) await this.winPet(t.prize);
+      if (firstMarty) {
+        beginMartyCare();
+        await ui.say(['Marty’s worn out after that play-fight. Gordon gives you two chicken neckies for the road.', 'Open your Pawphone, choose Bag, then choose a chicken necky and give it to Marty to restore his energy. You can do this for any of your pets.'], { name: 'Trish and Gordon', portrait: npcIcon('gordon') });
+        ui.toast('Marty could use a treat. Pawphone → Bag.');
+      }
       this.save();
     } else {
       const fine = Math.min(fineFor(npc.id, t), state.data.money);
@@ -1414,11 +1430,22 @@ export class WorldScene extends Phaser.Scene {
     state.addPoints(id, FRIENDSHIP.talk);
     sfx.found();
     const pet = this.pets.find(p => p.id === id);
-    if (pet) this.heartsFx(pet, 6);
+    if (pet) { this.heartsFx(pet, 6); this.joinTeam(pet); }
+    this.syncFollowers();
     ui.banner('New Petdex entry!', d.name);
     const lines = [`You befriended ${d.name}, the ${typeName(d.type).toLowerCase()} type ${d.species.toLowerCase()}!`, `${d.name} was added to your Petdex, and will hang out at your place on Allen St.`];
     if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
     await ui.say(lines, { name: d.name, portrait: petPortrait(id) });
+  }
+
+  // Once per visit, the neighbours call out as Helen passes their garden.
+  checkMartyEncounter() {
+    if (!martyApproach(this.regionId, this.player.x / T, this.player.y / T, this.martyApproached, this.npcs.some(n => n.id === 'gordon' && !n.gone))) return false;
+    const npc = this.npcs.find(n => n.id === 'gordon' && !n.gone);
+    this.martyApproached = true;
+    npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
+    this.challenge(npc, TRAINERS.gordon, { name: 'Trish and Gordon', portrait: npcIcon('trish') });
+    return true;
   }
 
   // Tall grass: a chance of something jumping out each new tile you step on.
@@ -1548,6 +1575,15 @@ export class WorldScene extends Phaser.Scene {
 
   // Pets that ran home stop following you.
   syncFollowers() {
+    for (const id of readyTeam()) {
+      let pet = this.pets.find(p => p.id === id);
+      if (!pet) {
+        const d = PETS.find(p => p.id === id);
+        pet = new Pet(this, d, { mode: 'follow', index: state.data.party.indexOf(id), near: this.player });
+        pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }); });
+        this.pets.push(pet);
+      } else if (pet.mode !== 'follow') this.joinTeam(pet);
+    }
     for (const pet of this.pets.filter(p => p.mode === 'follow' && !state.inParty(p.id))) {
       this.pets.splice(this.pets.indexOf(pet), 1);
       this.tweens.add({ targets: pet, alpha: 0, duration: 300, onComplete: () => pet.destroy() });
@@ -2343,7 +2379,7 @@ export class WorldScene extends Phaser.Scene {
     this.updateDecor(dt, blocked);
     this.updateLighting();
     this.updateRain();
-    if (!blocked) { this.checkExits(); this.checkEncounter(); }
+    if (!blocked && !this.checkMartyEncounter()) { this.checkExits(); this.checkEncounter(); }
     if (!blocked && time > (this.nextStoryCheck || 0)) { this.nextStoryCheck = time + 1000; this.checkStory(); }
     if (this.lunchSpot) this.lunchSpot.sprite.setVisible(this.lesleyHere());
 

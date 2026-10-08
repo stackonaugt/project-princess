@@ -16,7 +16,7 @@ import { state } from './state.js';
 import { BALANCE } from '../config.js';
 
 // The level each pet is at when you first befriend them.
-export const START_LEVEL = { princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14 };
+export const START_LEVEL = { marty: 5, princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14 };
 export const MAX_LEVEL = 30;
 // Moves of these types use the special stat instead of attack.
 const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy']);
@@ -94,6 +94,7 @@ export const readyTeam = () => state.data.party.filter(id => state.isFound(id) &
 export function trainerTeam(id) {
   const team = TRAINERS[id].team;
   const party = readyTeam();
+  if (id === 'gordon' && !state.data.beaten.gordon && !state.isFound('marty')) return [['pet:marty', 3]];
   if (party.length !== 1 || state.data.beaten[id]) return team;
   const lv = petLevel(party[0]);
   if (id === 'rose' || id === 'adam') return [[team.at(-1)[0], Math.min(team.at(-1)[1], Math.max(4, lv))]];

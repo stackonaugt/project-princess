@@ -172,6 +172,38 @@ try {
   await page.getByRole('button',{name:'Stop mixing',exact:true}).waitFor();
   await page.getByRole('button',{name:'Cancel',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.__pp.ui.modalOpen),false,'Cancelling baking must close and clean up');
+  // Follow the new Woods encounter and care tutorial in this disposable save.
+  await page.evaluate(()=>{
+    const {state,ui,game}=window.__pp;
+    state.data.minutes=9*60;state.data.day=1;state.data.story.chapter=0;
+    ui.closeModal();ui.dialog=null;document.getElementById('dialog').hidden=true;
+    game.scene.getScene('World').scene.restart({region:'woods',entry:'allen'});
+  });
+  await page.waitForFunction(()=>window.__pp.game.scene.getScene('World').regionId==='woods'&&window.__pp.game.scene.getScene('World').npcs?.some(n=>n.id==='gordon'));
+  const marty = await page.evaluate(async()=>{
+    const {state,ui,game}=window.__pp,world=game.scene.getScene('World');
+    const say=ui.say,battle=world.startBattle;
+    let encounter=null;
+    try {
+      // Only dialogue and the battle result are accelerated; recruitment and
+      // follower spawning run through the real challenge and winPet methods.
+      ui.say=async()=>true;
+      world.startBattle=async opts=>{encounter=opts.trainer;return {outcome:'win'};};
+      world.player.setPosition(20.5*16,12.5*16);
+      if(!world.checkMartyEncounter())throw new Error('Woods approach failed');
+      for(let frame=0;frame<100&&!state.data.flags.martyCare;frame++)await new Promise(resolve=>setTimeout(resolve,10));
+      if(!state.data.flags.martyCare)throw new Error('Marty challenge did not complete');
+    } finally {ui.say=say;world.startBattle=battle;}
+    return {encounter,found:state.isFound('marty'),party:state.data.party,hp:state.pet('marty').hp,care:state.data.flags.martyCare,texture:game.textures.exists('pet-marty'),following:world.pets.some(p=>p.id==='marty'&&p.mode==='follow')};
+  });
+  assert.equal(marty.encounter,'gordon');assert.ok(marty.found&&marty.party.includes('marty')&&marty.following&&marty.texture&&marty.care&&marty.hp>0);
+  await page.evaluate(()=>window.__pp.ui.openModal('phone'));
+  await page.getByRole('button',{name:'Marty could use a treat. Open Bag',exact:true}).click();
+  await page.getByRole('button',{name:/^Marty ·/}).click();
+  await page.getByRole('status').filter({hasText:/Marty loves the treat/}).waitFor();
+  assert.equal(await page.evaluate(()=>window.__pp.state.pet('marty').hp),null,'Bag treatment must fully restore Marty');
+  assert.equal(await page.evaluate(()=>window.__pp.state.data.flags.martyCare),false,'Successful treatment must clear the tutorial');
+  await page.evaluate(()=>window.__pp.ui.closeModal());
   // Catch errors from the first few title-screen frames as well as initial loading.
   await page.waitForTimeout(300);
 } catch (error) {

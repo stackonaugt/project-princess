@@ -86,3 +86,82 @@ test('closing school cancels animation and resolves exactly once without XP', ()
   session.cleanup(); session.cleanup();
   assert.equal(result, null); assert.equal(callbacks, 1); assert.equal(queue.size, 0);
 });
+
+const { PET_BY_ID } = await import('../game/src/data/pets.js');
+const { MOVES, PET_MOVES } = await import('../game/src/data/moves.js');
+const { petFighter, foeFighter, damage } = await import('../game/src/systems/battle.js');
+const { effectiveness } = await import('../game/src/data/types.js');
+const { givePhoneTreat, beginMartyCare, needsMartyCare, martyApproach } = await import('../game/src/systems/pet-care.js');
+const { PET_FRAMES } = await import('../game/src/art/sprites.js');
+
+function newPetSave() { state.useSlot(3); state.deleteSlot(3); state.useSlot(3); }
+
+test('every recruitment route fills empty team slots and preserves the chosen team when full', () => {
+  newPetSave();
+  for (const id of ['princess', 'marty', 'salami', 'spooky']) assert.equal(state.findPet(id), true);
+  assert.deepEqual(state.data.party, ['princess', 'marty', 'salami']);
+  assert.equal(state.findPet('marty'), false);
+  state.setParty(['marty']); state.findPet('poppy');
+  assert.deepEqual(state.data.party, ['marty', 'poppy']);
+  state.save(); state.useSlot(3);
+  assert.deepEqual(state.data.party, ['marty', 'poppy']);
+});
+
+test('Marty has a curly cavoodle sprite, Stinky matchup and all four moves', () => {
+  assert.equal(PET_BY_ID.marty.owner, 'Trish and Gordon');
+  assert.equal(effectiveness('smelly', 'fairy'), 2);
+  assert.equal(MOVES.gordonfood.name, 'Human Food from Gordon');
+  assert.deepEqual(PET_MOVES.marty, ['smellpoo', 'bite', 'growl', 'gordonfood']);
+  assert.ok(MOVES.gordonfood.effect.heal > 0);
+  assert.equal(PET_FRAMES.cavoodle.length, 2);
+  assert.notDeepEqual(...PET_FRAMES.cavoodle);
+  for (const rows of PET_FRAMES.cavoodle) { assert.equal(rows.length, 16); assert.ok(rows.every(r => r.length === 16)); }
+});
+
+test('first Marty match is level three even with two pets; rematches return to full strength', () => {
+  newPetSave(); state.findPet('princess'); state.pet('princess').level = 5;
+  assert.deepEqual(trainerTeam('gordon'), [['pet:marty', 3]]);
+  state.findPet('salami'); assert.deepEqual(trainerTeam('gordon'), [['pet:marty', 3]]);
+  state.data.beaten.gordon = 1;
+  assert.deepEqual(trainerTeam('gordon'), [['pet:marty', 8]]);
+});
+
+test('a fresh Princess wins the gentle match using Claw Attack against worst-case Smell Poo hits', () => {
+  newPetSave(); state.findPet('princess'); state.pet('princess').level = 5;
+  const princess = petFighter('princess'), marty = foeFighter('pet:marty', 3), random = Math.random;
+  try {
+    for (let turn = 0; turn < 20 && princess.hp > 0 && marty.hp > 0; turn++) {
+      Math.random = () => 0.5; marty.hp -= damage(princess, marty, MOVES.clawattack).dmg;
+      if (marty.hp <= 0) break;
+      let sample = 0; Math.random = () => sample++ === 0 ? 0 : 0.999;
+      princess.hp -= damage(marty, princess, MOVES.smellpoo).dmg;
+    }
+    assert.ok(marty.hp <= 0 && princess.hp > 0, `Princess ${princess.hp}, Marty ${marty.hp}`);
+  } finally { Math.random = random; }
+});
+
+test('Woods approach respects location, owner schedule, repeat visits and progression', () => {
+  newPetSave(); state.findPet('princess');
+  assert.ok(martyApproach('woods', 20, 12, false, true));
+  assert.equal(martyApproach('woods', 20, 12, true, true), false);
+  assert.equal(martyApproach('woods', 20, 12, false, false), false);
+  assert.equal(martyApproach('lohse', 20, 12, false, true), false);
+  assert.equal(martyApproach('woods', 4, 12, false, true), false);
+  state.findPet('marty'); assert.equal(martyApproach('woods', 20, 12, false, true), false);
+});
+
+test('phone care restores real HP, consumes one food, clears tutorial and survives reload', () => {
+  newPetSave(); state.findPet('marty'); beginMartyCare();
+  assert.ok(needsMartyCare()); assert.equal(state.count('chicken'), 2);
+  assert.equal(givePhoneTreat('marty', 'tennis').ok, false);
+  assert.equal(givePhoneTreat('princess', 'chicken').ok, false);
+  const result = givePhoneTreat('marty', 'chicken');
+  assert.ok(result.ok && result.healed > 0); assert.equal(result.reaction, 'love');
+  assert.equal(state.count('chicken'), 1); assert.equal(state.pet('marty').hp, null);
+  assert.equal(needsMartyCare(), false);
+  assert.equal(givePhoneTreat('marty', 'chicken').ok, false);
+  assert.equal(state.count('chicken'), 1);
+  state.useSlot(3); assert.equal(state.pet('marty').hp, null);
+  state.pet('marty').hp = 0; assert.ok(givePhoneTreat('marty', 'chicken').ok);
+  assert.ok(petFighter('marty').hp > 0);
+});

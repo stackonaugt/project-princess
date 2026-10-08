@@ -14,7 +14,7 @@ export const TYPES = {
   street:  { name: 'Street',  colour: '#d0802e', blurb: 'Raised on milk crates and nerve.',             strong: ['psychic', 'plastic'],              resist: ['steel', 'rock'] },
   ghost:   { name: 'Ghost',   colour: '#5b4a8c', blurb: 'Here one minute, behind you the next.',       strong: ['psychic', 'old'],                  resist: ['street'] },
   psychic: { name: 'Psychic', colour: '#a24fc9', blurb: 'Knows what you did. Is disappointed.',        strong: ['street', 'smelly'],                resist: ['steel', 'psychic'] },
-  smelly:  { name: 'Smelly',  colour: '#7a8a3a', blurb: 'You smell it before you see it.',             strong: ['psychic', 'fairy', 'leather'],     resist: ['plastic', 'steel'] },
+  smelly:  { name: 'Stinky',  colour: '#7a8a3a', blurb: 'You smell it before you see it.',             strong: ['psychic', 'fairy', 'leather'],     resist: ['plastic', 'steel'] },
   old:     { name: 'Old',     colour: '#8a7a6a', blurb: 'Has seen it all. Was not impressed.',         strong: ['street', 'plastic'],               resist: ['rock', 'steel'] },
   plastic: { name: 'Plastic', colour: '#4ab8c8', blurb: 'Lightweight, flexible, will outlive us all.', strong: ['smelly', 'steel', 'water'],        resist: ['fire', 'plastic'] },
   steel:   { name: 'Steel',   colour: '#7a8698', blurb: 'Cold, hard and hard to bend.',                strong: ['fire', 'leather'],                 resist: ['steel', 'rock'] },
