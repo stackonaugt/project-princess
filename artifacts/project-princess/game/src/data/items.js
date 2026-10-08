@@ -163,4 +163,6 @@ Object.assign(ITEMS, COOK_ITEMS);   // cooking: pantry, dishes, cook books
 export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco && !ITEMS[id].ingredient;
 
 Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston
+import { CRAFT_ITEMS } from './crafting.js';
+Object.assign(ITEMS,CRAFT_ITEMS);
 ITEMS = authoredValue('data/items.js', 'ITEMS', ITEMS);

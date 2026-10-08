@@ -1,3 +1,8 @@
+import { CRAFT_RECIPES } from '../data/crafting.js';
+import { craft,craftReason } from '../systems/crafting.js';
+import { COMPETITORS,SHOW_DOGS,DIVISIONS } from '../data/dog-show.js';
+import { showReady,divisionDone,divisionProgress } from '../systems/show-progress.js';
+import { awardSkill, skill, trainingXp } from '../systems/player-skills.js';
 // The main game scene: one region at a time. Restarted (with new data)
 // whenever you walk to another suburb or catch a train.
 
@@ -63,7 +68,7 @@ import { controls } from '../systems/controls.js';
 import { darkness, isNight, timeLabel } from '../systems/clock.js';
 import { sfx } from '../systems/sfx.js';
 import { ui } from '../ui/ui.js';
-import { setImageScene, petPortrait, npcIcon, itemIcon } from '../ui/images.js';
+import { setImageScene, petPortrait, npcIcon, itemIcon, petIcon } from '../ui/images.js';
 import { bus } from '../bus.js';
 import { hash, pick, clamp, rng } from '../util.js';
 const SEATS = ['bench', 'stool', 'armchair'];   // objects you (and people nearby) can sit on
@@ -281,7 +286,8 @@ export class WorldScene extends Phaser.Scene {
         this.attachObjectTap(img, [target]);
         continue;
       }
-      if (o.forSale) this.interactables.push({ kind: 'forsale', id: o.forSale, x, y: def.flat ? (o.y + o.h / 2) * T : y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots' });
+      if (o.interact) this.interactables.push({kind:o.interact, x, y:y-6, r:24, bubble:'fx-bubble-dots'});
+      else if (o.forSale) this.interactables.push({ kind: 'forsale', id: o.forSale, x, y: def.flat ? (o.y + o.h / 2) * T : y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots' });
       else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
       else if (o.kind === 'tramstop' && TRAM_STOPS[this.regionId]) this.interactables.push({ kind: 'tram', x, y: y - 6, bubble: 'fx-bubble-read' });
@@ -380,6 +386,7 @@ export class WorldScene extends Phaser.Scene {
   buildDecor() {
     this.ducks = []; this.magpies = [];
     for (const d of this.map.decor) {
+      if(d.kind==='showdog'){const pos=toWorld(d.x,d.y);this.add.sprite(pos.x,pos.y,`foe-show-${d.id}`,0).setOrigin(.5,1).setDepth(pos.y);}
       if (d.kind === 'duck') for (let i = 0; i < d.n; i++) {
         const a = Math.random() * Math.PI * 2, r = Math.random();
         const duck = this.add.sprite((d.cx + 0.5 + Math.cos(a) * d.rx * r) * T, (d.cy + 0.5 + Math.sin(a) * d.ry * r) * T, 'fx-duck', 0).play('fx-duck-swim');
@@ -461,7 +468,8 @@ export class WorldScene extends Phaser.Scene {
       if (companion) { n++; extra.push('A compatible neighbour is thriving beside it. Companion planting adds one more.'); }
       if (state.inParty('poppy')) { n++; extra.push(`${form('poppy').name} digs with total enthusiasm and finds an extra one.`); }
       if (state.inParty('stanley') && Math.random() < 0.4) { n++; extra.push(`${form('stanley').name} points, sternly, at one you missed.`); }
-      state.addItem(f.crop, n);
+      n += Math.floor((skill('gathering').level - 1) / 3);
+      state.addItem(f.crop, n); awardSkill('gathering', 20);
       sfx.found(); this.heartsFx(t, 4);
       if (c.regrow) Object.assign(f, { growth: Math.max(0, c.days - c.regrow), watered: 0 });
       else { state.data.soil[p.id] = { family: c.family, crop: f.crop }; delete state.data.farm[p.id]; }
@@ -694,6 +702,10 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'crowd') { t.ref.wait = 5; t.ref.setVelocity(0, 0); t.ref.faceTowards(this.player.x, this.player.y); return ui.say([this.crowd.line()], { name: this.crowd.name() }); }
     if (t.kind === 'council') { ui.openModal('council'); return; }
     if (t.kind === 'agenda') { ui.say(this.agendaLines()); return; }
+    if (t.kind === 'workbench') return this.workbench();
+    if (t.kind === 'course') return this.coursePractice();
+    if (t.kind === 'sparring') return this.sparring();
+    if (t.kind === 'showdesk') return this.dogShow();
     if (t.kind === 'sign') return ui.say(t.lines);
     if (t.kind === 'look') return t.bin ? this.checkBin(t) : ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
@@ -807,7 +819,7 @@ export class WorldScene extends Phaser.Scene {
     for (const [id, w, j] of table) { r -= bait && j ? w / 2 : w; if (r <= 0) { fish = id; break; } }
     state.data.minutes += 10;
     const got = await ui.fish(fish, FISH_ZONE[fish] + (bait ? 0.06 : 0));
-    if (got) { state.addItem(got); state.data.stats.fish = (state.data.stats.fish || 0) + 1; ui.toast(`+1 ${ITEMS[got].name}`, itemIcon(got, 32)); }
+    if (got) { awardSkill('gathering',15); state.addItem(got); state.data.stats.fish = (state.data.stats.fish || 0) + 1; ui.toast(`+1 ${ITEMS[got].name}`, itemIcon(got, 32)); }
     this.save();
   }
 
@@ -914,7 +926,8 @@ export class WorldScene extends Phaser.Scene {
     if (!result) return;
     if (practice) return ui.say([`${form(id).name} finished another ${result.title.toLowerCase()} practice. Come back tomorrow for a new daily reward and lesson choices.`],opts);
     school.lessonDay[id] = day;
-    const xp = 8 + result.score * 8;
+    const xp = Math.round(trainingXp(result.score)*(state.count('trainingvest')?1.1:1));
+    awardSkill('handling',10+result.score*15);
     gainXp(petFighter(id), xp);
     if (result.score === 3) school.stamps[id] = (school.stamps[id] || 0) + 1;
     school.skills ??= {};
@@ -982,6 +995,7 @@ export class WorldScene extends Phaser.Scene {
   async giveTreat(pet, item, opts) {
     const d = pet.data_, rec = state.pet(d.id), name = ITEMS[item].name.toLowerCase();
     const reaction = d.loves.includes(item) ? 'love' : d.likes.includes(item) ? 'like' : d.dislikes.includes(item) ? 'dislike' : 'neutral';
+    this.player.perform('reward');if(reaction==='love')pet.perform('jump');
     state.removeItem(item);
     rec.giftedDay = state.data.day; rec.reactions[item] = reaction;
     state.data.stats.gifts++;
@@ -1022,6 +1036,7 @@ export class WorldScene extends Phaser.Scene {
     const info = npc.info, day = state.data.day;
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
+    if(npc.id.startsWith('show'))return this.showCompetitor(npc,opts);
     const trainer = TRAINERS[npc.id];
     const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
     // Trainers you have never beaten go straight to their challenge.
@@ -1047,6 +1062,7 @@ export class WorldScene extends Phaser.Scene {
       if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
       if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
       if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
+      if(npc.id==='betty') choices.push({label:'Practise a competition bake',value:'bakepractice'});
       if (npc.id === 'betty' && weekday(day) === BAKE_OFF.day) choices.push({ label: 'Enter the bake-off', value: 'bakeoff' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (npc.id === 'paddy' && inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) choices.push({ label: 'Plan a clean campaign for Paddy', value: 'cleanCampaign' });
@@ -1066,6 +1082,7 @@ export class WorldScene extends Phaser.Scene {
       if (act === 'karaoke') { await this.karaoke(npc, opts); break; }
       if (act === 'bowls') { await this.bowls(npc, opts); break; }
       if (act === 'party') await this.streetParty(npc, opts);
+      if(act==='bakepractice') await this.cook(true);
       if (act === 'bakeoff') await this.bakeOff(npc, opts);
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'cleanCampaign') await this.cleanCampaign(opts);
@@ -1183,14 +1200,16 @@ export class WorldScene extends Phaser.Scene {
     if (!baked.length) return ui.say([BAKE_OFF.noEntry], opts);
     const pickId = await ui.say({ text: 'What are you entering?', choices: [...baked.map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32) })), { label: 'Not today', value: null }] }, { ...opts, cancelValue: null });
     if (!pickId) return;
+    const prep=await ui.baking({name:ITEMS[pickId].name});if(!prep)return;
     state.removeItem(pickId); state.data.flags.bakeoffWeek = week;
+    state.data.side.bakeQuest.entries++;awardSkill('cooking',40+prep.score*5);
     const r = rng(state.data.day * 17 + 3), M = BAKE_OFF.meghan;
     const rivals = [{ name: M.name, dish: M.dishes[Math.floor(r() * M.dishes.length)], score: M.score + (r() < 0.5 ? 1 : 0), meghan: true },
       ...[...BAKE_OFF.rivals].sort(() => r() - 0.5).slice(0, 2).map(x => ({ ...x, score: 5 + Math.floor(r() * 5) }))];
     const secret = typeof COOK_RECIPES[pickId].learn === 'object' && !COOK_RECIPES[pickId].learn.book;
-    const mine = COOK_RECIPES[pickId].score + Math.floor(Math.random() * 3) + (ITEMS[pickId].homegrown ? 1 : 0) + (secret ? BAKE_OFF.secretBonus : 0);
+    const mine = COOK_RECIPES[pickId].score + prep.score + Math.floor((skill('cooking').level-1)/2) + (ITEMS[pickId].homegrown ? 1 : 0) + (secret ? BAKE_OFF.secretBonus : 0);
     await ui.say(rivals.map(x => `${x.name} brings ${x.dish}. Betty takes a bite... ${x.score} out of 12.`), opts);
-    await ui.say([`Your ${ITEMS[pickId].name.toLowerCase()}. Betty chews. Betty closes her eyes. ${mine} out of 12.`], opts);
+    await ui.say([`Your ${ITEMS[pickId].name.toLowerCase()}. Betty chews. Betty closes her eyes. ${mine} judging points.`], opts);
     const place = rivals.filter(x => x.score > mine).length, prize = BAKE_OFF.prize[place] || 0;
     if (prize) state.addMoney(prize);
     if (place === 0) { state.addItem('blueribbon'); sfx.found(); this.heartsFx(npc, 8); }
@@ -1424,6 +1443,84 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // Flash the screen, pause the world and run the BattleScene over it.
+  startActivity(opts) {
+    this.navigation.cancel();controls.release();this.player.setVelocity(0,0);this.player.target=null;this.pending=null;this.inBattle=true;
+    return new Promise(resolve=>{
+      this.scene.launch('Activity',{...opts,done:result=>{this.scene.resume();this.inBattle=false;this.stepsSinceBattle=0;this.syncFollowers();this.save();resolve(result);}});
+      this.scene.pause();
+    });
+  }
+  async workbench(){
+    if(!state.data.flags.craftStarter){state.data.flags.craftStarter=true;for(const[k,n]of Object.entries({timber:3,cord:3,cloth:3,bolts:1}))state.addItem(k,n);this.save();await ui.say(['Paddy has left a box of timber, fabric, cord and bolts beside the workbench. Enough for your first course kit and a rope ball.','You can buy more reclaimed supplies here. Making equipment builds your crafting skill.']);}
+    for(;;){
+      const choices=Object.entries(CRAFT_RECIPES).map(([id,r])=>({label:r.name,value:id,note:`${craftReason(id)||'Ready to make'} · `+Object.entries(r.needs).map(([k,n])=>`${ITEMS[k].name} ${state.count(k)}/${n}`).join(', ')}));
+      const id=await ui.say({text:`Yard workbench. Crafting level ${skill('crafting').level}.`,choices:[...choices,{label:'Buy reclaimed supplies ($24)',value:'supplies',note:'4 timber, 4 cloth, 3 cord and 2 bolts'},{label:'Put the tools away',value:null}]},{cancelValue:null});
+      if(!id)return;
+      if(id==='supplies'){if(!state.spend(24)){await ui.say('You need $24 for the supplies.');continue;}for(const[k,n]of Object.entries({timber:4,cloth:4,cord:3,bolts:2}))state.addItem(k,n);this.save();continue;}
+      const result=craft(id);if(!result.ok){await ui.say(result.reason);continue;}
+      this.player.perform?.('throw');await ui.say(`Made ${ITEMS[id].name.toLowerCase()}. +${result.xp} crafting XP.`);this.save();
+    }
+  }
+  async chooseCoursePet(dogsOnly=false){
+    const pets=state.visiblePets().filter(p=>state.isFound(p.id)&&(!dogsOnly||!/cat|bunny|duck|rabbit/i.test(p.species)));
+    if(!pets.length){await ui.say('Find a dog first. Then come back for practice.');return null;}
+    return ui.say({text:'Who is practising?',choices:[...pets.map(p=>({label:form(p.id).name,value:p.id,icon:petIcon(p.id,32)})),{label:'Later',value:null}]},{cancelValue:null});
+  }
+  async coursePractice(){
+    if(this.regionId==='yard'&&!state.count('coursekit'))return ui.say(['Craft a training course kit at the workbench on the left of the yard.','Jean lends equipment for practice at the Exhibition Building, too.']);
+    const pet=await this.chooseCoursePet();if(!pet)return;
+    const tier=await ui.say({text:'Choose a practice layout. Stations wait for your cues; mistakes can be recovered.',choices:[{label:'Novice: five stations',value:'novice'},...(state.count('weavekit')||this.regionId==='exhibition'?[{label:'City circuit: weave poles',value:'open'},{label:'Championship: seven stations',value:'champion'}]:[]),{label:'Later',value:null}]},{cancelValue:null});if(!tier)return;
+    const result=await this.startActivity({mode:'course',pet,tier,variant:state.data.day});if(result.cancelled)return;
+    const sh=state.data.side.show;if(result.passed)sh.practice++;
+    let xp=0;if(result.complete&&sh.practiceDay!==state.data.day){sh.practiceDay=state.data.day;xp=result.passed?35:10;awardSkill('handling',xp);gainXp(petFighter(pet),xp);}
+    this.save();await ui.say([`${form(pet).name}: ${result.score}/100. ${result.passed?'Qualifying practice recorded.':'Try again whenever you like.'}`,xp?`+${xp} pet XP and pet handling XP. Further practice today is for confidence, without extra XP.`:'Today’s practice XP has been earned. You can still improve your qualifying record.']);
+  }
+  async sparring(){
+    if(!await ui.say({text:'Practise player combat with the padded dummy? Move with the joystick or arrows. A attacks, B dodges, and Block raises your guard. Watch its warning circle.',choices:[{label:'Start sparring',value:true},{label:'Later',value:false}]},{cancelValue:false}))return;
+    const result=await this.startActivity({mode:'sparring'});if(result.cancelled)return;
+    const key=`spar:${state.data.hero||'helen'}`;let xp=0;
+    if(result.win&&state.data.flags[key]!==state.data.day){state.data.flags[key]=state.data.day;xp=45;awardSkill('combat',xp);}
+    this.save();await ui.say(result.win?`Practice complete. ${xp?`+${xp} combat XP.`:'Today’s combat XP has been earned.'} Your pets were watching with great interest.`:'Take a breather. No injuries, lost money or tired pets. Try moving away from the red warning circle before the swing lands.');
+  }
+  async showCompetitor(npc,opts){
+    if(npc.id==='showjean')return this.dogShow(opts);
+    const c=COMPETITORS.find(c=>c.id===npc.id);await ui.say([`${c.intro}`,`${c.dog.charAt(0).toUpperCase()+c.dog.slice(1)} is a ${SHOW_DOGS[c.dog].breed.toLowerCase()}.`,c.tip],opts);
+    if(await ui.say({text:'Check your division events with Jean?',choices:[{label:'Open show programme',value:true},{label:'Keep exploring',value:false}]},{...opts,cancelValue:false}))await this.dogShow();
+  }
+  async dogShow(opts={}){
+    const sh=state.data.side.show;
+    if(!sh.entered){
+      await ui.say(['Jean: "The school show has three divisions. Each has two friendly play-fights, a course and an obedience demonstration. You can leave between events; we keep your scores."','"Practise two qualifying courses, and earn six clean school runs in at least two activities with the dog you want to enter. We lend course equipment here."'],opts);
+      const pet=await this.chooseCoursePet(true);if(!pet)return;
+      if(!showReady(pet))return ui.say(['That dog needs more preparation. Check the Exhibition Dog Show quest in To Do.','Two qualifying practices and six clean school runs across two activities. You do not need six perfect lessons.'],opts);
+      if(!await ui.say({text:`Register ${form(pet).name}? This dog stays your partner throughout all three divisions. Entry is free.`,choices:[{label:'Register',value:true},{label:'Later',value:false}]},{...opts,cancelValue:false}))return;
+      sh.entered=true;sh.pet=pet;this.save();
+    }
+    for(;;){
+      const d=DIVISIONS.find(d=>!sh.claimed.includes(d.id));if(!d)return ui.say(['Jean: "Exhibition champion! Your rosette is in your bag. The practice ring stays open, and the other owners are always happy to share tips."'],opts);
+      const p=divisionProgress(d.id);
+      if(divisionDone(d.id)){
+        sh.claimed.push(d.id);state.addMoney(d.reward);gainXp(petFighter(sh.pet),50);awardSkill('handling',60);if(d.id==='champion')state.addItem('showrosette');this.save();
+        await ui.say([`Jean: "${d.name} complete. ${form(sh.pet).name} and ${HEROES[state.data.hero||'helen'].name} make a wonderful team."`,`$${d.reward}, 50 pet XP and 60 pet handling XP.`,d.id==='champion'?'The audience claps as Jean pins on your champion rosette. Mira promises a celebratory dog walk. Bear insists on a belly rub.':'Your next division is unlocked. Take a break or continue.'],opts);continue;
+      }
+      const event=await ui.say({text:`${d.name}. ${d.description}`,choices:[...d.rivals.map(id=>({label:`Play-fight: ${NPCS[id].name}${p.battles.includes(id)?' (won)':''}`,value:id,note:COMPETITORS.find(c=>c.id===id).tip})),{label:`Agility course${p.course?' (qualified)':''}`,value:'course'},{label:`Obedience: ${d.obedience}${p.obedience>=2?' (qualified)':''}`,value:'obedience'},{label:'Take a break',value:null}]},{...opts,cancelValue:null});if(!event)return;
+      if(event==='course'){
+        const r=await this.startActivity({mode:'course',tier:d.id,pet:sh.pet,variant:state.data.day});if(r.passed)p.course=Math.max(p.course,r.score);this.save();if(!r.cancelled)await ui.say(`${r.score}/100. ${r.passed?'Qualification saved.':'No qualification yet. Try again whenever you like.'}`,opts);
+      }else if(event==='obedience'){
+        const data=PETS.find(x=>x.id===sh.pet),hero=state.data.hero||'helen';
+        const r=await ui.training({id:sh.pet,name:form(sh.pet).name,behaviour:data.behaviour,species:data.species,day:state.data.day,hero,heroName:HEROES[hero].name,skills:state.data.side.school.skills[sh.pet]||{},practice:true,activity:d.obedience});
+        if(r){p.obedience=Math.max(p.obedience,r.score);this.save();await ui.say(`${r.score}/3 clean runs. ${r.score>=2?'Obedience qualification saved.':'Aim for two clean runs; the steward welcomes another attempt.'}`,opts);}
+      }else{
+        if(p.battles.includes(event)){await ui.say('That result is already saved. Choose another event or practise in the ring.',opts);continue;}
+        // Friendly exhibition matches use the registered dog, gentle division
+        // level caps, restored HP and no farmable battle XP. Division prizes pay XP.
+        const c=COMPETITORS.find(c=>c.id===event),party=[...state.data.party];
+        try{const r=await this.startBattle({wild:{id:`show-${c.dog}`,level:Math.min(d.level,petFighter(sh.pet).level+DIVISIONS.indexOf(d))},exhibition:true,exhibitionPet:sh.pet,exhibitionParty:party});if(r.outcome==='win')p.battles.push(event);}
+        finally{state.setParty(party);this.syncFollowers();this.save();}
+      }
+    }
+  }
+
   startBattle(opts) {
     this.navigation.cancel();
     this.inBattle = true; ui.battlePending = true;
@@ -1467,7 +1564,7 @@ export class WorldScene extends Phaser.Scene {
     this.forage = this.forage.filter(x => x !== f);
     state.takeForage(this.regionId, f.index);
     const n = Math.random() < (HEROES[state.data.hero]?.perk.forageBonus || 0) ? 2 : 1;
-    state.addItem(f.item, n); state.data.stats.treats += n;
+    state.addItem(f.item, n); awardSkill('gathering', 8); state.data.stats.treats += n;
     sfx.pickup();
     this.tweens.killTweensOf(f.sprite);
     this.tweens.add({ targets: f.sprite, y: f.sprite.y - 12, alpha: 0, duration: 400, onComplete: () => f.sprite.destroy() });
@@ -1930,18 +2027,22 @@ export class WorldScene extends Phaser.Scene {
     for (const id of state.bagItems()) for (const rid of ITEMS[id].cookbook || []) if (!state.data.recipes.includes(rid)) { state.data.recipes.push(rid); ui.toast(`New recipe: ${ITEMS[rid].name}`, itemIcon(rid, 32)); }
     return RECIPE_ORDER.filter(rid => COOK_RECIPES[rid].learn === 'start' || state.data.recipes.includes(rid));
   }
-  async cook() {
+  async cook(practice=false) {
     const needsText = n => Object.entries(n).map(([k, c]) => `${c} ${ITEMS[k].name.toLowerCase()}`).join(', ');
     const has = n => Object.entries(n).every(([k, c]) => state.count(k) >= c);
-    const choices = this.knownRecipes().map(rid => ({ label: ITEMS[rid].name, value: rid, icon: itemIcon(rid, 32), note: `${has(COOK_RECIPES[rid].needs) ? '✓ ' : ''}${needsText(COOK_RECIPES[rid].needs)}` }));
+    const choices = this.knownRecipes().filter(rid=>!practice||COOK_RECIPES[rid].baked).map(rid => ({ label: ITEMS[rid].name, value: rid, icon: itemIcon(rid, 32), note: `${has(COOK_RECIPES[rid].needs) ? '✓ ' : ''}${needsText(COOK_RECIPES[rid].needs)}` }));
     if (inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) choices.unshift({ label: RECIPES.fishpie.name, value: 'fishpie', note: RECIPES.fishpie.needs });
     const pick_ = await ui.say({ text: 'The oven. Cook something?', choices: [...choices, { label: 'Not now', value: null }] }, { cancelValue: null });
     if (!pick_) return;
     if (pick_ === 'fishpie') return this.cookFishPie();
     const r = COOK_RECIPES[pick_];
     if (!has(r.needs)) return ui.say([`You need ${needsText(r.needs)}.`, 'Veggies come from your garden. Flour, sugar, butter, milk, eggs and choc chips are on the Pantry shelf at Coles.']);
+    let preparation=null;
+    if(practice){preparation=await ui.baking({name:ITEMS[pick_].name});if(!preparation)return;}
     for (const [k, c] of Object.entries(r.needs)) for (let i = 0; i < c; i++) state.removeItem(k);
-    state.addItem(pick_);
+    state.addItem(pick_); awardSkill('cooking', 25);
+    const bq = state.data.side.bakeQuest; if (!bq.cooked.includes(pick_)) bq.cooked.push(pick_);
+    if(preparation){bq.practices++;bq.quality[pick_]=Math.max(Number(bq.quality[pick_])||0,preparation.score);awardSkill('cooking',preparation.score*5);}
     sfx.found(); ui.toast(`+1 ${ITEMS[pick_].name}`, itemIcon(pick_, 32));
     await ui.say([r.text]);
     this.save();

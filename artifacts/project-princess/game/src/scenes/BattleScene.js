@@ -43,6 +43,12 @@ export class BattleScene extends Phaser.Scene {
 
   init(data) {
     this.opts = data;
+    if (data.exhibition) {
+      const party = [...(data.exhibitionParty || state.data.party)];
+      const pets = [...new Set([...party, data.exhibitionPet].filter(Boolean))];
+      this.exhibitionSnapshot = { party, hp: Object.fromEntries(pets.map(id => [id, state.pet(id).hp])) };
+      for (const id of pets) state.pet(id).hp = null;
+    }
     this.trainer = data.trainer ? TRAINERS[data.trainer] : null;
     this.over = false;
   }
@@ -52,7 +58,7 @@ export class BattleScene extends Phaser.Scene {
     this.bg = this.add.graphics().setDepth(0);
     this.backgroundArt = this.add.image(0, 0, '__WHITE').setOrigin(0).setDepth(1).setVisible(false);
     this.foes = this.trainer ? R.trainerTeam(this.opts.trainer).map(([id, lv]) => R.foeFighter(id, lv)) : [R.foeFighter(this.opts.wild.id, this.opts.wild.level)];
-    this.team = R.readyTeam().map(R.petFighter);
+    this.team = (this.opts.exhibitionPet?[this.opts.exhibitionPet]:R.readyTeam()).map(R.petFighter);
     this.foe = this.foes[0];
     this.mine = this.team[0];
     this.participants = new Set([this.mine.petId]);
@@ -86,7 +92,7 @@ export class BattleScene extends Phaser.Scene {
     this.unit = Math.max(2, Math.min(8, Math.floor(Math.min(W / 62, field / 40))));
     this.horizon = Math.round(field * 0.4);
     this.foePos = { x: Math.round(W * 0.7), y: Math.round(Math.max(field * 0.52, this.horizon + 10 * this.unit)) };
-    this.minePos = { x: Math.round(W * 0.28), y: Math.round(field - 6 * this.unit) };
+    this.minePos = { x: Math.round(W * 0.23), y: Math.round(field - 6 * this.unit) };
     this.drawBg(W, H);
     if (!this.animating) {
       this.place(this.foeSpr, this.foe, this.foePos);
@@ -102,7 +108,9 @@ export class BattleScene extends Phaser.Scene {
     const tex = this.textures.get(key), fr = tex.has(0) ? tex.get(0) : tex.get();
     const tall = f && !f.petId && ENEMIES[f.id]?.tall;
     const target = (f?.petId ? petSize(f.petId) : tall ? 26 : fr.height > 18 && !custom.has(key) ? fr.height : 16) * this.unit;
-    return f?.petId || custom.has(key) || tall ? target / fr.height : this.unit;
+    const requested=f?.petId || custom.has(key) || tall ? target / fr.height : this.unit;
+    const field=this.scale.height-(B.panelHeight()||170);
+    return Math.min(requested,this.scale.width*.38/fr.width,Math.max(48,field*.40)/fr.height);
   }
   place(spr, f, pos) {
     if (!f || !spr.visible) return;
@@ -735,7 +743,7 @@ export class BattleScene extends Phaser.Scene {
     if (f.owned) await this.tw(spr, { alpha: 0, duration: 250 });
     B.show('foe', false);
     // Experience for every pet that took part and is still going
-    const xp = this.trainer?.noXp ? 0 : R.xpReward(f, !!this.trainer);
+    const xp = this.opts.exhibition || this.trainer?.noXp ? 0 : R.xpReward(f, !!this.trainer);
     for (const m of this.team.filter(t => xp && this.participants.has(t.petId) && t.hp > 0)) {
       const got = Math.round(xp * (R.gearBonus(m).xp || 1));
       const levels = R.gainXp(m, got);
@@ -776,11 +784,11 @@ export class BattleScene extends Phaser.Scene {
     sfx.faint();
     this.kod.push(f.petId);
     this.participants.delete(f.petId);
-    R.saveFighter(f);
-    state.setParty(state.data.party.filter(id => id !== f.petId));
+    if(!this.opts.exhibition) R.saveFighter(f);
+    if(!this.opts.exhibition) state.setParty(state.data.party.filter(id => id !== f.petId));
     spr.setFlipX(true);
     await Promise.all([
-      this.say(`${f.name} has had enough and runs home to Allen St!`),
+      this.say(this.opts.exhibition?`${f.name} rests beside the ring. Your team returns after the match.`:`${f.name} has had enough and runs home to Allen St!`),
       this.tw(spr, { x: -30 * this.unit, duration: 900, ease: 'Quad.easeIn' }),
       this.tw(spr, { y: spr.y - 3 * this.unit, duration: 110, yoyo: true, repeat: 3 }),
     ]);
@@ -799,7 +807,8 @@ export class BattleScene extends Phaser.Scene {
   finish(outcome) {
     if (this.over) return;
     this.over = true;
-    for (const f of this.team) if (f.hp > 0) R.saveFighter(f);
+    for (const f of this.team) if (!this.opts.exhibition && f.hp > 0) R.saveFighter(f);
+    if(this.exhibitionSnapshot){state.setParty(this.exhibitionSnapshot.party);for(const [id,hp]of Object.entries(this.exhibitionSnapshot.hp))state.pet(id).hp=hp;}
     state.save();
     this.cameras.main.fadeOut(300, 255, 255, 255);
     this.cameras.main.once('camerafadeoutcomplete', () => {

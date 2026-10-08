@@ -1,3 +1,4 @@
+import { animationFrames,frameAt } from '../data/animation-layouts.js';
 // Characters that walk around: the player, pets and townsfolk.
 import { TILE as T, WALK_SPEED, RUN_SPEED, PET_SPEED } from '../config.js';
 import { custom, fitScale, frameCount, playerTexture, objectTexture } from '../art/textures.js';
@@ -54,7 +55,16 @@ export class Actor extends Phaser.Physics.Arcade.Sprite {
     this.bubble.setTexture(key).setVisible(true);
     this.bubbleUntil = this.scene.time.now + ms;
   }
+  // Action poses share the same frame map as school and course sprites.
+  // Jump changes only the visual origin; collisions stay on the ground.
+  perform(action,ms=650){this.actionPose={action,start:this.scene.time.now,ms};}
   syncExtras() {
+    if(this.actionPose){const a=this.actionPose,t=this.scene.time.now-a.start;
+      if(t<a.ms){const frames=animationFrames(this.texture.key,frameCount(this.scene,this.texture.key),a.action,!custom.has(this.texture.key));
+        if(frames.length){this.anims.stop();this.setFrame(frameAt(frames,t,7));}
+        if(a.action==='jump')this.setOrigin(.5,1+Math.sin(t/a.ms*Math.PI)*7/this.displayHeight);
+      }else{this.actionPose=null;this.setOrigin(.5,1);this.bob=0;}
+    }
     const top = this.y - this.displayHeight;
     this.setDepth(this.y);
     this.shadow.setPosition(this.x, this.y).setDepth(this.y - 0.5).setAlpha(this.alpha).setVisible(this.visible && !this.seat);

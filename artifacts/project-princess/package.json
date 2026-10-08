@@ -14,7 +14,8 @@
     "smoke:build": "node tools/smoke-build.mjs",
     "verify:build": "pnpm run build && pnpm run check:build && pnpm run smoke:build",
     "serve": "vite preview --config vite.config.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test:progression": "node --test tools/progression.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs tools/playtest.test.mjs"
   },
   "devDependencies": {
     "sharp": "^0.34.5",

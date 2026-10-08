@@ -125,3 +125,59 @@ objects, exits and editor tile coordinates still use the existing grid.
 Verification: `node --test tools/playtest.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs`
 from `artifacts/project-princess/`. Mobile layout and lesson feel should also be
 checked in the live game.
+
+## Skills, yard activities and the Exhibition show
+
+Open **Pawphone → Skills** to see the selected character’s progress. Helen,
+Hadrian and Aleksy each keep cooking, crafting, pet handling, combat and
+gathering XP separately. Skills start at level 1 and cap at 10. Cooking adds
+bake-off points, gathering adds harvest yield every three levels, pet handling
+adds 5% successful lesson XP per level, and combat adds sparring damage and
+stamina. These are additive save fields; existing saves and pet levels remain.
+
+In the **Allen St yard**, use the workbench on the left for crafting. Paddy
+supplies the first materials free. More reclaimed supplies cost $24. Make a
+course kit, rope balls, weave poles (crafting level 2) and a training vest
+(level 3, +10% school XP). Use the course sign near the centre for dog practice
+and the sign by the driveway for **player sparring**. Player combat has its own
+HP, stamina, close-range attack, dodge, timed block and telegraphed dummy swings.
+A attacks, B dodges, arrows/WASD or joystick move. The on-screen Block button
+raises a guard. Practice carries no injuries or money penalty. One successful
+sparring reward per character per game day prevents repeatedly farming XP.
+This is an optional combat foundation for later quests, not new story combat.
+
+Walk into the **Royal Exhibition Building in Carlton Gardens**, directly north
+of the fountain, for the show interior. Jean lends course equipment, so you can
+practise without owning a yard kit. The programme has novice, city and
+championship divisions. Each requires two rival play-fights, a qualifying
+agility course and at least two clean obedience runs. Six fictional owners
+compete with a corgi, schnauzer, whippet, golden retriever, border collie and
+Bernese mountain dog. Talk to them for different training tips.
+
+Register one dog after two qualifying practices and six clean school runs
+across at least two activities. Each event saves independently. Jump in the
+green timing band, alternate left/right through weave poles, and hold a stay
+for two seconds before releasing with Come. Wrong cues can be retried. Each
+course has a three-minute rest limit. Rival levels use gentle division caps
+and the registered dog’s level, and friendly matches restore the party and HP.
+Division prizes pay once; battle retries do not pay XP. Completing all three
+earns an Exhibition champion rosette. Check **To Do** for preparation and show
+progress. Yard/exhibition course XP pays once per game day; further runs can
+still qualify and improve confidence.
+
+**Betty’s bake-off** now has a staged To Do quest. Talk to Betty on Moreland Rd
+to practise a baked recipe, using its normal ingredients. Mixing, oven timing
+and finishing each have a visible timing zone. Preparation can be cancelled
+without consuming ingredients or an entry. Saturday entries also use these
+three stages: performance and cooking level replace the old random score
+bonus. Special recipes, homegrown produce and friendship still matter.
+
+Park dirt/gravel paths and footpaths use joined rounded contours. Diagonal
+walkways stay continuous; separate water bodies keep their separate contours.
+Mobile battle stat boxes are narrower, and fighter sizes are capped to leave
+space beside the panels.
+
+Verification from `artifacts/project-princess/`:
+`node --test tools/*.test.mjs`. The publish workflow runs the progression tests
+and a production browser check of the Exhibition, Skills, live course, player
+sparring and baking cancellation on a phone-sized canvas.

@@ -1,6 +1,6 @@
 // Trace tile centres and round the joins into continuous banks and kerbs.
 const EDGES = { 1:[[3,0]], 2:[[0,1]], 3:[[3,1]], 4:[[1,2]], 5:[[3,0],[1,2]], 6:[[0,2]], 7:[[3,2]], 8:[[2,3]], 9:[[0,2]], 10:[[0,1],[2,3]], 11:[[1,2]], 12:[[1,3]], 13:[[0,1]], 14:[[3,0]] };
-export function terrainContours(map, letters, tile = 16) {
+export function terrainContours(map, letters, tile = 16, joinDiagonals = false) {
   const inside = (x,y) => x>=0 && y>=0 && x<map.w && y<map.h && letters.includes(map.ground[y][x]);
   const graph = new Map(), points = new Map();
   const connect = (a,b) => {
@@ -12,7 +12,8 @@ export function terrainContours(map, letters, tile = 16) {
   for (let y=0;y<=map.h;y++) for (let x=0;x<=map.w;x++) {
     const bits=(inside(x-1,y-1)?1:0)|(inside(x,y-1)?2:0)|(inside(x,y)?4:0)|(inside(x-1,y)?8:0);
     const v=[[x*tile,(y-.5)*tile],[(x+.5)*tile,y*tile],[x*tile,(y+.5)*tile],[(x-.5)*tile,y*tile]];
-    for (const [a,b] of EDGES[bits]||[]) connect(v[a],v[b]);
+    const edges=joinDiagonals&&bits===5?[[0,1],[2,3]]:joinDiagonals&&bits===10?[[3,0],[1,2]]:EDGES[bits]||[];
+    for (const [a,b] of edges) connect(v[a],v[b]);
   }
   const visited=new Set(), loops=[];
   for (const first of graph.keys()) {

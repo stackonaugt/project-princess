@@ -64,6 +64,8 @@ export function buildGardens() {
   b.forage(33, 42, ['lemon', 'carrot']);
   b.magpies([[12, 24], [50, 31]]);
 
+  b.exit(40,15,2,1,'exhibition','door','Dog show');
+  b.entry('exhibition',40,16,'down');
   b.exit(22, 0, 2, 1, 'nicholson', 'gardens', 'Nicholson St');
   b.exit(40, 45, 2, 1, 'swanston', 'west', 'Swanston St', null, { gate: 'bencarroll' });
   b.exit(0, 28, 1, 2, 'lygon', 'west', 'Lygon St');

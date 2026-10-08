@@ -62,3 +62,31 @@ The picker rejects missing, corrupt or incompatible files, symlinks, animation a
 ## Adjusting pet sizes
 
 Edit `src/data/pet-sizes.js`. Each number is that pet’s display height in world pixels; a tile is 16 and Helen is 32. For example, Salami starts at 10 and Chloe at 20. Raising a number makes the pet larger in both the world and fights; lowering it makes them smaller. This does not change their stats or collision footprint. Art frames may still be 16x16, 32x32, 64x64 or another square resolution. Keep the feet and standing pose aligned across frames, and keep transparent padding consistent.
+
+## Extra walk, arm and jump frames
+
+Continue exporting PNGs into the existing folders. The studio is not required.
+Frames form one horizontal row: normally 16×16 for pets, 16×32 for people,
+or any consistent larger multiple. Use frame 0 for idle; a five-frame sheet
+then gives four walking frames. Existing two-frame sheets alternate 0 and 1.
+Three-frame sheets keep the standing/left/right cycle.
+
+For action frames, edit `src/data/animation-layouts.js`. Indices start at zero:
+
+```js
+export const ANIMATION_LAYOUTS = {
+  'pet-princess': { idle: [0], walk: [1, 2, 3, 4], jump: [5, 6], sit: [7] },
+  'player-helen-down': { idle: [0], walk: [1, 2, 3, 4], wave: [5, 6], throw: [7, 8] },
+};
+```
+
+The examples need eight pet frames and nine player frames respectively. Add
+separate entries for `player-helen-up` and `player-helen-left` if those sheets
+have action poses, and for evolved pets’ actual texture keys. Keep feet and
+transparent padding aligned. Optional `frameWidth` and `frameHeight` select
+other frame dimensions. A four-frame sheet with no idle can explicitly use
+`walk: [0,1,2,3]`. Reserved action frames do not enter the normal walk cycle.
+
+Built-in people have arm poses. Your existing PNGs remain the artwork used;
+new arm/jump drawings are only used when you supply and map those frames.
+A pet with no drawn jump frames still visibly hops over course hurdles.

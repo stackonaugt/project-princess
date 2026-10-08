@@ -144,6 +144,34 @@ try {
   await page.locator('#title .slot-main').first().click();
   await page.waitForFunction(() => window.__pp?.game.scene.isActive('World'));
   assert.equal(await page.evaluate(() => window.__pp.state.data.money), 321, 'Saved progress must load');
+  // Exercise new activities in a disposable save on a phone-sized canvas.
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{
+    const {state,ui,game}=window.__pp;state.findPet('princess');state.setParty(['princess']);
+    ui.dialog=null;document.getElementById('dialog').hidden=true;
+    game.scene.getScene('World').scene.restart({region:'exhibition',entry:'door'});
+  });
+  await page.waitForFunction(()=>window.__pp.game.scene.getScene('World').regionId==='exhibition'&&window.__pp.game.scene.getScene('World').npcs?.some(n=>n.id==='showjean'));
+  await page.evaluate(()=>window.__pp.ui.openModal('skills'));
+  await page.getByText('Pet handling · Level 1',{exact:true}).waitFor();
+  await page.evaluate(()=>{window.__pp.ui.closeModal();window.__pp.game.scene.getScene('World').startActivity({mode:'course',pet:'princess',tier:'open',variant:0});});
+  await page.locator('.activity-overlay').waitFor();
+  await page.waitForFunction(()=>window.__pp.game.scene.isActive('Activity'));
+  assert.ok(await page.evaluate(()=>{
+    const s=window.__pp.game.scene.getScene('Activity');return Number.isFinite(s.dog.x)&&s.area.top>=document.querySelector('.activity-overlay').getBoundingClientRect().bottom&&s.hero.displayHeight>0;
+  }),'Course sprites and instructions must fit the phone layout');
+  await page.getByRole('button',{name:'Leave practice',exact:true}).click();
+  await page.waitForFunction(()=>window.__pp.game.scene.isActive('World')&&!window.__pp.ui.activity);
+  await page.evaluate(()=>{window.__pp.game.scene.getScene('World').startActivity({mode:'sparring'});});
+  await page.getByRole('button',{name:'Attack (A)',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Attack (A)',exact:true}).click();
+  assert.ok(await page.evaluate(()=>window.__pp.game.scene.getScene('Activity').session.stamina<window.__pp.game.scene.getScene('Activity').session.maxStamina),'Player attacks must consume stamina');
+  await page.getByRole('button',{name:'Leave practice',exact:true}).click();
+  await page.waitForFunction(()=>window.__pp.game.scene.isActive('World'));
+  await page.evaluate(()=>{window.__pp.ui.baking({name:'Test scones'});});
+  await page.getByRole('button',{name:'Stop mixing',exact:true}).waitFor();
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();
+  assert.equal(await page.evaluate(()=>window.__pp.ui.modalOpen),false,'Cancelling baking must close and clean up');
   // Catch errors from the first few title-screen frames as well as initial loading.
   await page.waitForTimeout(300);
 } catch (error) {

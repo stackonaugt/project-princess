@@ -41,6 +41,7 @@ jobs:
         run: |
           pnpm --filter @workspace/project-princess run test:site-config
           pnpm --filter @workspace/project-princess run test:navigation
+          pnpm --filter @workspace/project-princess run test:progression
           pnpm --filter @workspace/project-princess run test:studio-art
           pnpm --filter @workspace/project-princess run test:studio-archive
       - name: Build public game

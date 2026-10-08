@@ -38,13 +38,14 @@ import { shade } from './painter.js';
 
 export const FRAME_W = 16, FRAME_H = 32;
 
-export function drawPerson(p, look, dir, step) {
+export function drawPerson(p, look, dir, step, action = null) {
   const L = { skin: '#f2c79a', hair: '#6b3f1f', shirt: '#3fa38f', pants: '#33446e', shoes: '#3a2418', hairStyle: 'short', ...look };
   if (L.jersey) { L.shirt = L.jersey[0]; L.shirtPattern = L.shirtPattern || 'jersey'; L.shirtAccent = L.jersey; }
   L.sleeve = L.coat || L.blazer || L.shirt;
   L.twoPiece = !!look.pants;
   if (L.baby) return drawBaby(p, L, dir, step);
   const bob = step ? -1 : 0;
+  L.action=action;
   if (dir === 'left') side(p, L, step, bob); else front(p, L, dir === 'up', step, bob);
   if (dir !== 'up') extras(p, L, dir, bob);
   headwear(p, L, dir, bob);
@@ -313,7 +314,12 @@ function front(p, L, back, step, bob) {
   // arms swing opposite to the legs
   const sw = step === 1 ? 1 : step === 2 ? -1 : 0, sv = L.sleeve, hand = L.gloves || skin;
   const arm = (x, n, dk) => { p.r(sv, x, 18 + y, 2, n); pattern(p, L.blazer ? L.blazerPattern : L.shirtPattern, sv, L.blazer ? L.blazerAccent : L.shirtAccent, x, 18 + y, 2, n, y); p.r(L.blazer || L.shirtPattern ? DIM : shade(sv, dk), x + (dk < -0.22 ? 1 : 0), 18 + y, 1, n); };
-  arm(1, 5 + sw, -0.2); p.r(hand, 1, 23 + y + sw, 2, 2);
+  if (L.action) {
+    const wave=L.action.startsWith('wave'),phase=L.action.endsWith('1')?1:0;
+    if(wave){p.r(sv,1,17+y,2,3);p.r(sv,phase?1:0,13+y,2,5);p.r(hand,phase?1:0,11+y-phase,2,2);}
+    else {p.r(sv,0,18+y,3,3);p.r(hand,phase?0:1,phase?17+y:15+y,2,3);}
+  }
+  else { arm(1, 5 + sw, -0.2); p.r(hand, 1, 23 + y + sw, 2, 2); }
   arm(13, 5 - sw, -0.25); p.r(L.gloves ? shade(hand, -0.2) : sk2, 13, 23 + y - sw, 2, 2);
   // neck and head
   p.r(sk2, 6, 15 + y, 4, 2);
@@ -433,9 +439,10 @@ function side(p, L, step, bob) {
   if (hs === 'mullet') { p.r(hair, 10, 14 + y, 3, 4); p.r(hd, 10, 17 + y, 3, 1); p.r(hl, 11, 15 + y, 1, 1); }
   // arm
   const sw = step === 1 ? -2 : step === 2 ? 2 : 0;
-  p.r(shade(L.sleeve, -0.12), 7 + sw / 2, 18 + y, 3, 5);
-  pattern(p, L.blazer ? L.blazerPattern : L.shirtPattern, shade(L.sleeve, -0.12), L.blazer ? L.blazerAccent : L.shirtAccent, 7 + sw / 2, 18 + y, 3, 5, y);
-  p.r(L.gloves || skin, 7 + sw, 23 + y, 2, 2);
+  if (L.action) { p.r(L.sleeve,3,18+y,6,2);p.r(L.gloves||skin,1,L.action.startsWith('wave')?14+y-(L.action.endsWith('1')?2:0):18+y-(L.action.endsWith('1')?0:2),2,3); }
+  else p.r(shade(L.sleeve, -0.12), 7 + sw / 2, 18 + y, 3, 5);
+  if(!L.action) pattern(p, L.blazer ? L.blazerPattern : L.shirtPattern, shade(L.sleeve, -0.12), L.blazer ? L.blazerAccent : L.shirtAccent, 7 + sw / 2, 18 + y, 3, 5, y);
+  if(!L.action) p.r(L.gloves || skin, 7 + sw, 23 + y, 2, 2);
   // head in profile, facing left
   p.r(sk2, 7, 15 + y, 3, 2);
   p.r(skin, 4, 6 + y, 8, 9); p.r(skin, 3, 10 + y, 1, 2); // nose
