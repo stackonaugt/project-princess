@@ -61,5 +61,8 @@ export function buildYard() {
   }
   if (state.hasUpgrade('pool')) b.put('paddlingpool', 2, 8);
   b.put('flowerbed', 8, 1, { v: 'natives' }); b.put('gnome', 4, 5, { v: 'red' });
+  b.put('counter', 3, 11, {v:'kettle',interact:'workbench'});
+  b.put('sign', 16, 11, {interact:'course'});
+  b.put('sign', 18, 7, {interact:'sparring'});
   return b.finish();
 }

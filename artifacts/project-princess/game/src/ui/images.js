@@ -1,3 +1,4 @@
+import { animationFrames } from '../data/animation-layouts.js';
 // Turns game textures into <img> sources for the HTML interface.
 import { frameDataURL, frameCount, custom, customURL, playerTexture } from '../art/textures.js';
 import { petTex, isEvolved } from '../systems/forms.js';
@@ -17,3 +18,7 @@ export const npcIcon = id => {
 export const petPortrait = id => (isEvolved(id) && customURL[`portrait-${id}-evolved`]) || customURL[`portrait-${id}`] || petIcon(id, 128);
 export const hasPhoto = id => custom.has(`portrait-${id}`);
 export const heroIcon = id => scene ? frameDataURL(scene, playerTexture(id, 'down')[0], 0, 96) : '';
+
+export const spriteFrames=(key,size=64,action='walk')=>scene?animationFrames(key,frameCount(scene,key),action,!custom.has(key)).map(i=>frameDataURL(scene,key,i,size)):[''];
+export const heroFrames=(id,size=96,action='walk')=>spriteFrames(scene?playerTexture(id,'down')[0]:'',size,action);
+export const petActionFrames=(id,size=64,action='walk')=>spriteFrames(petTex(id),size,action);

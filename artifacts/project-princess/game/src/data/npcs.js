@@ -5,6 +5,7 @@
 //  gift   item id they give you once a day
 //  shop   the shop they open after a chat (data/shops.js)
 
+import { SHOW_NPCS } from './dog-show.js';
 import { PEOPLE } from './dialogue.js';
 import { EAST_NPCS } from './east.js';
 import { NORTH_NPCS } from './north.js';
@@ -257,6 +258,7 @@ export let NPCS = {
   ...SH_NPCS,
 };
 
+Object.assign(NPCS, SHOW_NPCS);
 Object.assign(NPCS, EAST_NPCS);   // Brunswick East
 Object.assign(NPCS, NORTH_NPCS);   // Coburg and Preston
 

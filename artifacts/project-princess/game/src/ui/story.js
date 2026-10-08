@@ -1,3 +1,5 @@
+import { RECIPES as COOK_RECIPES } from '../data/cooking.js';
+import { showObjectives } from '../systems/show-progress.js';
 // Story screens: the Story app on the Pawphone, chapter title cards, the
 // West is Best News reports (with the election vote bar), and the party
 // mini-games. Words are in data/story.js.
@@ -36,9 +38,18 @@ export function openStoryApp(panel, close) {
         ...(v.undecided.some(w => !state.swingKnown(open, w)) ? [{ text: 'Find out what the other undecided councillors want: ask them, or ask Paddy at home in the evening', done: false }] : []),
       ]));
     }
+    body.push(todoNote('Exhibition Dog Show',showObjectives()));
     // Side missions
     const bake = state.data.side.bake;
-    if (bake === 1) body.push(todoNote('Beat Meghan Hopper at the bake-off', [{ text: 'Betty says only a special recipe will beat her. Learn one, bake it, and enter it at Betty\'s on a Saturday (Moreland Rd).', done: false }]));
+    if(bake){const bq=state.data.side.bakeQuest;
+      body.push(todoNote('Betty’s bake-off: beat Meghan Hopper',[
+        {text:'Learn a special baking recipe from a friend or a cookbook',done:state.data.recipes.some(id=>COOK_RECIPES[id]?.baked)},
+        {text:'Bake your entry using pantry supplies and garden produce',done:bq.cooked.some(id=>COOK_RECIPES[id]?.baked)},
+        {text:'Practise mixing, oven timing and finishing with Betty',done:bq.practices>=2},
+        {text:'Enter a Saturday bake-off at Betty’s on Moreland Rd',done:bq.entries>0||bake===2},
+        {text:'Beat Meghan and collect Betty’s blue ribbon',done:bake===2},
+      ]));}
+
     if (partyReady()) body.push(h('div', { class: 'center' }, h('button', { class: 'wood-btn', onclick: () => { close(); bus.emit('story:party'); } }, 'Throw the party!')));
     const past = Object.keys(s.done).map(Number).filter(k => k < n || (k === n && n > 4));
     if (past.length) body.push(h('div', { class: 'note' }, h('h4', {}, 'Done'), ...past.map(k => h('p', { class: 'todo-item done' }, h('span', { class: 'todo-box' }, '✓'), GOALS[k]))));

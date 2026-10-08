@@ -1,3 +1,4 @@
+import { SHOW_ENEMIES } from './dog-show.js';
 // Things you battle. Wild ones jump out of tall grass; trainers are
 // townsfolk you challenge by talking to them.
 //
@@ -396,6 +397,7 @@ TRAINERS.ziggy = {
   lose: ['Ziggy yawns and wanders back down the lane. Not today.'],
 };
 
+Object.assign(ENEMIES, SHOW_ENEMIES);
 export const PRIZE_TRAINER = Object.fromEntries(Object.entries(TRAINERS).filter(([, t]) => t.prize).map(([id, t]) => [t.prize, id]));
 
 // Brunswick East

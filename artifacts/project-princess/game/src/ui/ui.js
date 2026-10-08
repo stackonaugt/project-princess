@@ -1,3 +1,6 @@
+import { openBaking } from './baking.js';
+import { openSkills } from './player-skills.js';
+import { SKILLS } from '../systems/player-skills.js';
 // The HTML layer on top of the game: HUD, dialogue, banners, toasts and the
 // pop-up screens (Petdex, Bag, Menu). Text is far crisper as HTML than as
 // canvas text on phones, which is why it lives here and not in Phaser.
@@ -38,22 +41,25 @@ export const ui = {
   modalOpen: false,
   dialog: null,
 
-  blocking() { return !!this.dialog || this.modalOpen || battleUI.active || this.battlePending; },
+  activity: null,
+  blocking() { return !!this.activity || !!this.dialog || this.modalOpen || battleUI.active || this.battlePending; },
   battlePending: false,   // set while the screen flashes before a battle
 
   init() {
     bus.on('input:action', () => {
+      if(this.activity)return this.activity.action();
       if (battleUI.active && !this.dialog) return battleUI.action();
       if (this.dialog) return this.advance();
       if (this.modalOpen) return this.modalAction?.();
       this.worldAction && this.worldAction();
     });
     bus.on('input:cancel', () => {
+      if(this.activity)return this.activity.cancel();
       if (battleUI.active && !this.dialog) return battleUI.cancel();
       if (this.dialog) return this.cancelDialog();
       if (this.modalOpen && this.modalOpen !== 'party') return this.closeModal();
     });
-    bus.on('input:dir', (dx, dy) => { if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); else if (this.modalOpen) this.modalDir?.(dx,dy); });
+    bus.on('input:dir', (dx, dy) => { if(this.activity)return; if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); else if (this.modalOpen) this.modalDir?.(dx,dy); });
     bus.on('input:dex', () => this.toggle('dex'));
     bus.on('input:bag', () => this.toggle('bag'));
     bus.on('input:menu', () => this.toggle('phone'));
@@ -65,6 +71,7 @@ export const ui = {
     bus.on('petdex:changed', () => this.updateDexCount());
     bus.on('bag:changed', () => this.updateBagCount());
     bus.on('money:changed', () => this.updateMoney());
+    bus.on('player:skill',(id,level)=>{if(level)this.toast(`${SKILLS[id].name} level ${level}`);});
     bus.on('guidance:changed', () => { this._guidanceKey = null; this.updateGuidance(); });
     bus.on('navigation:request', (point, target) => {
       this._fromPhone = false;
@@ -227,6 +234,7 @@ export const ui = {
 
   // Fishing. Resolves with the item caught, or null.
   fish(fish, zone) { return new Promise(resolve => { this._fishOpts = { fish, zone, done: resolve }; this.openModal('fishing'); }); },
+  baking(opts) { return new Promise(resolve=>{this._bakingOpts={...opts,done:resolve};this.openModal('baking');}); },
   training(opts) { return new Promise(resolve => { this._trainingOpts = { ...opts, done: resolve }; this.openModal('training'); }); },
 
   // Story screens (ui/story.js). Each resolves when it's closed.
@@ -251,7 +259,8 @@ export const ui = {
 
   // ---------- Modals ----------
   toggle(which) {
-    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing', 'card', 'news', 'paper', 'party', 'karaoke', 'bowls'].includes(this.modalOpen)) return;
+    if(this.activity)return;
+    if (this.dialog || battleUI.active || ['team', 'hero', 'shop', 'fishing', 'card', 'news', 'paper', 'party', 'karaoke', 'bowls', 'training', 'baking'].includes(this.modalOpen)) return;
     if (this.modalOpen === which) return this.closeModal();
     this._fromPhone = false;
     this.openModal(which);
@@ -264,6 +273,7 @@ export const ui = {
     panel.replaceChildren();
     panel.className = `panel panel-${which}` + (PHONE_APPS.includes(which) ? ` in-phone app-${which}` : '');
     const close = () => this.closeModal();
+    if(which==='skills')openSkills(panel,close);
     if (which === 'dex') openPetdex(panel, close);
     if (which === 'bag') openBag(panel, close);
     if (which === 'menu') openMenu(panel, close);
@@ -283,6 +293,7 @@ export const ui = {
     if (which === 'karaoke') { const f = openKaraoke(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'bowls') { const f = openBowls(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
+    if(which==='baking'){const b=openBaking(panel,close,this._bakingOpts);this.modalAction=b.action;this._trainingCleanup=b.cleanup;}
     if (which === 'training') { const t = openTraining(panel, close, this._trainingOpts); this.modalAction = t.action; this.modalDir = t.direction; this._trainingCleanup = t.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });

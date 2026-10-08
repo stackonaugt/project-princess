@@ -268,3 +268,50 @@ First battles with one active pet use gentler rosters for Bin Man, Rose, Adam an
 Map travel suppresses held movement until key-up/joystick release, plus a short arrival grace. NPCs remain interactive but no longer physically block the player. Small interiors retain normal camera scale. Cars arrive less often and each lane has a bounded queue; tram/train frequency remains unchanged. New move animations include bed, scoot, nap, circling/herding, zoomies and stare; existing bite/claw/fire/etc. effects remain.
 
 Ground rendering uses `src/art/paint/terrain-curves.js` for curved Allen St roads and footpaths and rounded water banks. Contours follow map editor ground tiles and retain custom textures, holes and bridge planks. Collision and exits remain grid-based. School panels use padded, scrollable content for small screens.
+
+## Player progression and Exhibition side quest (October 2026)
+
+The active game remains this directory. Do not edit obsolete root `src/`.
+New foundations: `systems/player-skills.js` (five per-character skills, levels
+1–10), `data/crafting.js` / `systems/crafting.js` (atomic recipe validation),
+`systems/player-combat.js` (separate optional player sparring) and
+`systems/course.js` (retryable cue/timing course). `scenes/ActivityScene.js`
+renders the live Phaser course/sparring; WorldScene pauses and resumes around
+it. `ui.activity` owns A/B input and blocks other modals; the scene removes its
+DOM overlay, resize observer and listeners on shutdown. Current sparring is
+practice only, ready to be reused for later quest opponents.
+
+Save additions: `playerSkills[hero][skill]`, `side.show` and `side.bakeQuest`.
+Sanitisation provides defaults for older saves. Show results save separately
+per division; `claimed` prevents duplicate division prizes. Friendly show
+battles use `exhibitionPet`, `exhibitionParty` and `exhibition` options, suppress
+farmable battle XP, and restore the original party/HP. Rival levels are capped
+by division and registered-pet level. Never mutate the original party just to
+choose a show fighter. Daily practice/sparring XP is separately limited.
+
+`data/dog-show.js` contains six fictional rival owners, six dog breeds and
+three divisions. `world/maps/exhibition.js` is the Royal Exhibition interior;
+its reciprocal exit is on the Carlton Gardens forecourt. Rival dialogue hooks
+run before normal friendship/trainer dialogue. To Do displays show preparation,
+division progress and the staged Betty bake-off. `systems/baking.js` and
+`ui/baking.js` implement preparation; cancelling resolves without taking items.
+Normal cooking, harvesting, foraging, fishing and school lessons award skills.
+
+`data/animation-layouts.js` is the shared zero-based frame map for world,
+training and course sprites. Legacy two-frame sheets alternate frames 0/1.
+Five-frame sheets default to idle 0 plus four walking frames. Explicit walk,
+wave, throw, reward, jump or sit arrays reserve action frames. Built-in people
+have separate arm poses; custom art needs supplied action frames. Actor.perform
+can request action poses and a visual jump without moving the collision body.
+
+For paths, `terrainContours(..., true)` joins diagonal ground tiles before
+smoothing. Water uses the default separate diagonal contours. Tile edge strokes
+are suppressed inside curved surfaces. Never mutate map ground or collisions
+when painting. Mobile battle boxes use 46vw and scaled fighters leave a clear
+horizontal space beside them.
+
+Tests: `node --test tools/*.test.mjs` from the parent artifact directory.
+`tools/progression.test.mjs` checks saves, thresholds, crafting atomicity,
+complete courses, player defensive actions, baking, frame separation, show
+eligibility and map access. The release browser check also launches the new
+scenes and exercises their cleanup on a 390×844 viewport.

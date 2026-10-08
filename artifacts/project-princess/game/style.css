@@ -584,3 +584,29 @@ body.touch .bt-btn { min-height: 52px; }
 @media (max-width:440px) { .training-content { padding:4px 16px 18px; } .training-board { height:180px; } .panel-training .m-head h2 { font-size:22px; } }
 
 .training-lead { position:absolute; bottom:48px; height:2px; background:#694a32; transform:rotate(4deg); transform-origin:left; }
+
+@media(max-width:600px) {
+ .bt-box { width:46vw; max-width:220px; padding:5px 7px; }
+ .bt-name { font-size:15px; white-space:normal; }
+ .bt-name .lv { font-size:11px; flex-shrink:0; }
+ .bt-sub { font-size:10px; margin:2px 0; }
+ .bt-nums { font-size:11px; }
+ .bt-team { margin-top:2px; }
+ .bt-team i { width:7px; height:7px; }
+ .bt-held { display:none; }
+}
+/* Activities keep readable instructions above the live Phaser course. */
+body.activity-playing #hud,body.activity-playing #hudGuidance{display:none}
+body.activity-playing #btnA,body.activity-playing #btnB{display:none}
+body.activity-course #joyZone{display:none}
+.activity-overlay{position:fixed;inset:calc(10px + var(--safe-t)) 12px auto;z-index:60;padding:12px 16px;background:#f4e4b8;color:#44351f;border:4px solid #805831;border-radius:12px;pointer-events:auto;max-height:44vh;overflow:auto}
+.activity-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.activity-status{font-size:14px;line-height:1.45;margin:8px 0}
+.activity-buttons{display:flex;flex-wrap:wrap;gap:6px}
+.activity-buttons button[aria-pressed=true]{outline:3px solid #648d4b}
+.activity-overlay .small{font-size:11px;line-height:1.5}
+@media(max-height:500px){.activity-overlay{max-height:38vh;padding:5px 10px}.activity-status{margin:3px 0}.activity-header{font-size:12px}}
+.baking-board{padding:20px;line-height:1.6}.baking-board .pix{float:right;margin:0 0 12px 12px}
+.bake-track{clear:both;height:36px;background:#ceb789;position:relative;border:3px solid #815a33;margin:20px 8px;border-radius:6px;overflow:hidden}
+.bake-band{position:absolute;height:100%;background:#7aa453}.bake-marker{position:absolute;height:100%;width:4px;background:#49372b;transform:translateX(-2px)}
+.course-timing{height:16px;margin:4px 8px}.course-timing[hidden]{display:none}

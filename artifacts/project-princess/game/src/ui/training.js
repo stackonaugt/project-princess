@@ -1,17 +1,20 @@
 import { h } from './dom.js';
-import { petWalkFrames, heroIcon } from './images.js';
+import { petActionFrames, heroFrames, heroIcon } from './images.js';
 import { ACTIVITIES, TrainingSession, lessonPlan } from '../systems/training.js';
 
 export function openTraining(panel, close, opts) {
-  const plan = lessonPlan(opts), frames = petWalkFrames(opts.id,64);
-  const heroName = opts.heroName || 'Helen';
+  const plan = lessonPlan(opts), frames = petActionFrames(opts.id,64,'walk');
+  const jumpFrames=petActionFrames(opts.id,64,'jump'),idleFrames=petActionFrames(opts.id,64,'idle');
+  const heroName = opts.heroName || 'Helen', personFrames=heroFrames(opts.hero||'helen'),armFrames=heroFrames(opts.hero||'helen',96,'wave');
+  let cueAt=-10000;
+  if(opts.activity)plan.choices=[opts.activity];
   let activity = plan.choices[0], session = null, raf = 0, last = 0, cleaned = false, lastFrame = -1;
   const title = key => /cat/i.test(opts.species || '') && key==='fetch' ? 'Feather chase' : /cat/i.test(opts.species || '') && key==='agility' ? 'Pounce trail' : ACTIVITIES[key].title;
   const instructions = h('p', { class: 'training-help' });
   const status = h('p', { class:'training-status',role:'status','aria-live':'polite' });
   const tally = h('p',{class:'training-tally'});
   const pet = h('img',{class:'pix training-pet',src:frames[0],alt:opts.name});
-  const hero = h('div',{class:'training-person'},h('img',{class:'pix',src:heroIcon(opts.hero || 'helen'),alt:''}),h('span',{},heroName));
+  const hero = h('div',{class:'training-person'},h('img',{class:'pix',src:heroIcon(opts.hero || 'helen'),alt:heroName}),h('span',{},heroName));
   const props = h('div',{class:'training-props'});
   const board = h('div',{class:'training-board','aria-label':`${heroName} and ${opts.name} practise together`},props,hero,pet);
   const meter = h('progress',{class:'training-meter',max:1,value:0,'aria-label':'Training progress'});
@@ -32,6 +35,7 @@ export function openTraining(panel, close, opts) {
       session.action(); last=0; raf=requestAnimationFrame(tick);
       if (activity==='scent') boxes.replaceChildren(...Array.from({length:session.boxCount},(_,i)=>h('button',{class:'wood-btn small',onclick:()=>{session.focus=i;act(i);}},`Box ${i+1}`)));
     } else session.action(box);
+    cueAt=performance.now();
     render();
   }
   function render() {
@@ -43,9 +47,13 @@ export function openTraining(panel, close, opts) {
     retry.hidden=session.complete || session.phase==='feedback';
     pet.style.left=`${session.petX}%`;
     pet.style.transform=`translateX(-50%) translateY(${session.petY}px) scaleX(${session.flip?-1:1}) ${activity==='settle'&&session.stage==='calm'?'scaleY(.8)':''}`;
-    const frame=session.moving&&frames.length>1?1+Math.floor(session.clock/135)%(frames.length-1):0;
-    if (frame!==lastFrame) { pet.src=frames[frame];lastFrame=frame; }
+    const sequencePet=session.petY<0&&jumpFrames.length?jumpFrames:session.moving?frames:idleFrames;
+    const petURL=sequencePet[Math.floor(session.clock/135)%sequencePet.length]||frames[0];
+    if(pet.src!==petURL)pet.src=petURL;
     pet.classList.toggle('training-bob',session.moving&&frames.length===1);
+    const person=hero.children[0];
+    const sequence=performance.now()-cueAt<600&&armFrames.length?armFrames:session.heroMoving?personFrames:[heroIcon(opts.hero||'helen')];
+    person.src=sequence[Math.floor(session.clock/140)%sequence.length]||heroIcon(opts.hero||'helen');
     hero.style.left=`${session.heroX}%`;
     hero.classList.toggle('training-person-walking',!!session.heroMoving);
     const decorations=[];

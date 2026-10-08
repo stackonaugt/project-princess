@@ -29,6 +29,7 @@ const RENAMED = { jules: 'pearman', busker: 'jordan', priya: 'abby', dimitri: 'j
 
 function fresh() {
   return {
+    playerSkills: {},
     v: VERSION, created: Date.now(),
     day: 1, minutes: 9 * 60,     // the very first day starts at 9am
     region: 'home', pos: null, dir: 'down',   // region = the zone you're in (see data/regions.js)
@@ -55,7 +56,7 @@ function fresh() {
     wallPaint: null,   // the colour of the walls at home (Lincraft paint, Summerhill)
     // Side missions and mini-games: pranks scoped out (Chapter 3), duck feeding,
     // bowls wins, the bake-off rivalry (0 untold, 1 Betty asked, 2 Meghan beaten).
-    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, school: { lessonDay: {}, stamps: {}, skills: {} } },
+    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, bakeQuest: {cooked:[],quality:{},practices:0,entries:0}, show: {entered:false,pet:null,practice:0,practiceDay:0,divisions:{},claimed:[]}, school: { lessonDay: {}, stamps: {}, skills: {} } },
     recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
@@ -108,8 +109,16 @@ function sanitise(raw) {
   if (typeof raw.wallPaint === 'string') d.wallPaint = raw.wallPaint;
   if (raw.side && typeof raw.side === 'object') {
     Object.assign(d.side, raw.side, { scouted: Array.isArray(raw.side.scouted) ? raw.side.scouted : [] });
+    const bq=raw.side.bakeQuest||{}, sh=raw.side.show||{};
+    const record = v => v && typeof v==='object' && !Array.isArray(v) ? v : {};
+    d.side.bakeQuest={cooked:Array.isArray(bq.cooked)?bq.cooked.filter(x=>typeof x==='string'):[],quality:record(bq.quality),practices:Math.max(0,+bq.practices||0),entries:Math.max(0,+bq.entries||0)};
+    d.side.show={entered:!!sh.entered,pet:typeof sh.pet==='string'?sh.pet:null,practice:Math.max(0,+sh.practice||0),practiceDay:Math.max(0,+sh.practiceDay||0),divisions:Object.fromEntries(['novice','open','champion'].filter(id=>record(sh.divisions)[id]).map(id=>{const p=record(record(sh.divisions)[id]);return[id,{battles:Array.isArray(p.battles)?[...new Set(p.battles.filter(x=>typeof x==='string'))].slice(0,2):[],course:Math.max(0,Math.min(100,+p.course||0)),obedience:Math.max(0,Math.min(3,+p.obedience||0))}];})),claimed:Array.isArray(sh.claimed)?sh.claimed.filter(x=>typeof x==='string'):[]};
     const school = raw.side.school || {};
     d.side.school = { lessonDay: school.lessonDay && typeof school.lessonDay === 'object' ? school.lessonDay : {}, stamps: school.stamps && typeof school.stamps === 'object' ? school.stamps : {}, skills: school.skills && typeof school.skills === 'object' ? school.skills : {} };
+  }
+  if(raw.playerSkills&&typeof raw.playerSkills==='object') for(const [hero,skills] of Object.entries(raw.playerSkills)){
+    if(!skills||typeof skills!=='object')continue;d.playerSkills[hero]={};
+    for(const key of ['cooking','crafting','handling','combat','gathering'])d.playerSkills[hero][key]=Math.max(0,Math.min(3600,Number(skills[key])||0));
   }
   if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };

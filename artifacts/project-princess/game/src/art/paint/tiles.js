@@ -37,9 +37,11 @@ export function paintGround(p, map, grass, custom = {}) {
   WALL_PAINT = map.wallPaint || null;
   const get = (x, y) => (x < 0 || y < 0 || x >= map.w || y >= map.h) ? null : map.ground[y][x];
   const court = map.id === 'allen';
+  const paths= !map.wallPaint && !map.ground.some(row=>row.includes('W'));
+  const pathLetters='=ugf';
   for (let ty = 0; ty < map.h; ty++) for (let tx = 0; tx < map.w; tx++) {
     const c = map.ground[ty][tx];
-    if (c === '~' || (court && '#f'.includes(c))) {
+    if (c === '~' || (court && '#f'.includes(c)) || (paths && pathLetters.includes(c))) {
       if (custom.grass) p.ctx.drawImage(custom.grass, tx * T, ty * T, T, T);
       else grassBase(p, tx, ty, tx * T, ty * T, grass);
       continue;
@@ -51,6 +53,7 @@ export function paintGround(p, map, grass, custom = {}) {
     if (under) p.ctx.drawImage(under, 0, 0, under.width, under.height, tx * T, ty * T, T, T);
     paintTile(p, c, tx, ty, tx * T, ty * T, get, grass, !!under);
   }
+  if(paths) roundedSurface(p,map,grass,custom,get,pathLetters,'paths','#a19473');
   roundedSurface(p, map, grass, custom, get, '~w', '~', '#2f6aa3');
   if (court) {
     roundedSurface(p, map, grass, custom, get, '#f', 'f', '#9c9686');
@@ -64,16 +67,18 @@ export function paintGround(p, map, grass, custom = {}) {
 }
 
 function roundedSurface(p,map,grass,custom,get,letters,material,edge) {
-  const loops=terrainContours(map,letters,T);
+  const loops=terrainContours(map,letters,T,material!=='~');
   if (!loops.length) return;
   p.ctx.save(); traceTerrain(p.ctx,loops); p.ctx.clip('evenodd');
   for (let y=0;y<map.h;y++) for (let x=0;x<map.w;x++) {
     let near=false;
     for (let dy=-1;dy<=1&&!near;dy++) for (let dx=-1;dx<=1;dx++) if (letters.includes(get(x+dx,y+dy)||'!')) { near=true; break; }
     if (!near) continue;
-    const img=custom[TILE_NAMES[material]];
+    let surface=material;
+    if(material==='paths'){surface=letters.includes(get(x,y)||'!')?get(x,y):null;for(let dy=-1;dy<=1&&!surface;dy++)for(let dx=-1;dx<=1&&!surface;dx++){const c=get(x+dx,y+dy);if(letters.includes(c||'!'))surface=c;}surface ||= '=';}
+    const img=custom[TILE_NAMES[surface]];
     if (img) p.ctx.drawImage(img,x*T,y*T,T,T);
-    else paintTile(p,material,x,y,x*T,y*T,get,grass,false,true);
+    else paintTile(p,surface,x,y,x*T,y*T,get,grass,false,true);
   }
   traceTerrain(p.ctx,loops); p.ctx.strokeStyle=edge; p.ctx.lineWidth=material==='~'?2:2.5; p.ctx.stroke();
   p.ctx.restore();
@@ -115,10 +120,10 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false, smooth = f
     case '=': {
       p.r('#d4ad78', sx, sy, T, T);
       const P = '=wf#+cxpbg';
-      if (!same(get, tx, ty - 1, P)) p.r('#c29a64', sx, sy, T, 1);
-      if (!same(get, tx, ty + 1, P)) p.r('#b98f5c', sx, sy + T - 1, T, 1);
-      if (!same(get, tx - 1, ty, P)) p.r('#c29a64', sx, sy, 1, T);
-      if (!same(get, tx + 1, ty, P)) p.r('#c29a64', sx + T - 1, sy, 1, T);
+      if (!smooth && !same(get, tx, ty - 1, P)) p.r('#c29a64', sx, sy, T, 1);
+      if (!smooth && !same(get, tx, ty + 1, P)) p.r('#b98f5c', sx, sy + T - 1, T, 1);
+      if (!smooth && !same(get, tx - 1, ty, P)) p.r('#c29a64', sx, sy, 1, T);
+      if (!smooth && !same(get, tx + 1, ty, P)) p.r('#c29a64', sx + T - 1, sy, 1, T);
       p.r('#bf955d', sx + Math.floor(r * 13), sy + Math.floor(r2 * 13), 2, 1);
       p.r('#e3c290', sx + Math.floor(r2 * 12), sy + Math.floor(r * 12), 2, 1);
       return;
@@ -211,8 +216,8 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false, smooth = f
     case 'u': {
       p.r('#d8b884', sx, sy, T, T);
       for (let i = 0; i < 8; i++) p.r(i % 3 ? '#c8a670' : '#e8cca0', sx + Math.floor(hash(tx * 11 + i, ty) * 15), sy + Math.floor(hash(tx, ty * 11 + i) * 15), 1, 1);
-      if (!same(get, tx, ty - 1, 'u=')) p.r('#c29a64', sx, sy, T, 1);
-      if (!same(get, tx, ty + 1, 'u=')) p.r('#b98f5c', sx, sy + T - 1, T, 1);
+      if (!smooth && !same(get, tx, ty - 1, 'u=')) p.r('#c29a64', sx, sy, T, 1);
+      if (!smooth && !same(get, tx, ty + 1, 'u=')) p.r('#b98f5c', sx, sy + T - 1, T, 1);
       return;
     }
     case 'A': {
@@ -338,7 +343,7 @@ function paintTile(p, c, tx, ty, sx, sy, get, g, overlayOnly = false, smooth = f
     case 'd': {
       p.r('#7a5232', sx, sy, T, T);
       for (let y = 2; y < T; y += 4) { p.r('#5e3e24', sx, sy + y, T, 1); p.r('#8e6442', sx, sy + y + 1, T, 1); }
-      if (!same(get, tx, ty - 1, 'd')) p.r('#6b4226', sx, sy, T, 1);
+      if (!smooth && !same(get, tx, ty - 1, 'd')) p.r('#6b4226', sx, sy, T, 1);
       return;
     }
     case 'g': {

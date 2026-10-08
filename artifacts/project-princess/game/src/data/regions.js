@@ -1,5 +1,6 @@
 // Suburbs and the zones (areas) inside them. Each zone is its own map; you
 // move between zones by walking through exits or catching the train.
+import { buildExhibition } from '../world/maps/exhibition.js';
 import { buildHome } from '../world/maps/home.js';
 import { authoredMap } from '../authoring/map-overrides.js';
 import { buildYard } from '../world/maps/yard.js';
@@ -147,6 +148,7 @@ export const ZONES = {
   // Carlton and the city (south of Brunswick)
   lygon: { name: 'Lygon St', suburb: 'carlton', build: buildLygon, grass: MELB_GRASS },
   gelateria: { name: 'Gelateria', suburb: 'carlton', build: buildGelateria, grass: LAWN, indoor: true },
+  exhibition: {name:'Royal Exhibition Dog Show',suburb:'carlton',build:buildExhibition,indoor:true,grass:MELB_GRASS},
   gardens: { name: 'Carlton Gardens', suburb: 'carlton', build: buildGardens, grass: MELB_GRASS },
   nicholson: { name: 'Nicholson St', suburb: 'carlton', build: buildNicholson, grass: MELB_GRASS },
   swanston: { name: 'Swanston St', suburb: 'city', build: buildSwanston, grass: MELB_GRASS },
