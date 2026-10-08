@@ -6,6 +6,7 @@ import { state } from '../systems/state.js';
 import { petTex } from '../systems/forms.js';
 import { inWindow, isNight } from '../systems/clock.js';
 import { sfx } from '../systems/sfx.js';
+import { petSize } from '../data/pet-sizes.js';
 
 export const toWorld = (tx, ty) => ({ x: (tx + 0.5) * T, y: (ty + 0.75) * T });
 
@@ -204,7 +205,7 @@ export class Pet extends Actor {
     const spot = mode === 'home' ? [data.homeSpot.x, data.homeSpot.y] : data.home;
     let home = toWorld(spot[0], spot[1]);
     if (mode === 'follow' && near) home = { x: near.x - 10 - index * 8, y: near.y + 4 + index * 4 };
-    super(scene, home.x, home.y, petTex(data.id));
+    super(scene, home.x, home.y, petTex(data.id), petSize(data.id));
     this.data_ = data; this.id = data.id;
     this.mode = mode; this.index = index;
     this.range = mode === 'home' ? 1.5 : data.range;

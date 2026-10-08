@@ -43,7 +43,7 @@ import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
 import { TRAINERS, PRIZE_TRAINER, fineFor } from '../data/enemies.js';
-import { rollEncounter, readyTeam, START_LEVEL, gainXp, petFighter } from '../systems/battle.js';
+import { rollEncounter, starterEncounter, readyTeam, START_LEVEL, gainXp, petFighter } from '../systems/battle.js';
 import { form, canEvolve, evolve } from '../systems/forms.js';
 import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
 import { CROPS } from '../data/crops.js';
@@ -107,6 +107,8 @@ export class WorldScene extends Phaser.Scene {
 
     const spawn = this.spawnPoint();
     this.player = new Player(this, spawn.x, spawn.y, spawn.dir);
+    if (this.entryName) controls.requireFreshMovement();
+    this.arrivedAt = this.time.now;
     this.navigation = new AutoWalk(new LocalRouter(this.map, T), this.player, text => ui.toast(text));
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.layer);
@@ -186,7 +188,7 @@ export class WorldScene extends Phaser.Scene {
       this.time.delayedCall(900, () => ui.toast('Off-lead dog park! Your team has a lovely run. +friendship'));
     }
     this.buildStoryBits();
-    this.intro(firstVisit).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime());
+    this.intro(firstVisit).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime());
   }
 
   // A nudge each morning about anything time sensitive today.
@@ -589,7 +591,8 @@ export class WorldScene extends Phaser.Scene {
     const cam = this.cameras.main;
     const w = this.scale.width, h = this.scale.height;
     let zoom = Math.max(1, Math.floor(Math.min(w, h) / (MIN_TILES_SHORT_SIDE * T)));
-    zoom = Math.max(zoom, Math.ceil(Math.max(w / (this.map.w * T), h / (this.map.h * T))));
+    // Small interiors keep the outdoor pixel scale instead of magnifying to fill the screen.
+    if (!this.region.indoor) zoom = Math.max(zoom, Math.ceil(Math.max(w / (this.map.w * T), h / (this.map.h * T))));
     cam.setZoom(zoom);
     // Keep the player in the middle of the area not covered by the HUD and touch controls.
     const hud = 56, pad = controls.touchMode ? Math.min(200, h * 0.3) : 0;
@@ -905,26 +908,30 @@ export class WorldScene extends Phaser.Scene {
   async petSchoolLesson(pet, opts) {
     const id = pet.id, day = state.data.day, school = state.data.side.school;
     if (school.lessonDay[id] === day) return ui.say([`${form(id).name} has already had a lesson today. The report card says to practise again tomorrow.`], opts);
-    const drills = [
-      { q: 'A magpie swoops while your student is off lead. What is the safest response?', a: 'Call them back, reward them for returning, then give the bird space.', wrong: ['Chase the magpie together.', 'Shout and keep running.'] },
-      { q: 'Another dog is eating nearby. How do you practise polite manners?', a: 'Ask for a calm sit at a comfortable distance, then reward it.', wrong: ['Take the other dog’s food away.', 'Make them greet nose to nose.'] },
-      { q: 'Your student follows a point toward a garden gate. What makes that good teamwork?', a: 'Mark the moment they check in with you and reward the choice.', wrong: ['Keep pointing until they work it out.', 'Pull them by the lead.'] },
-    ];
-    let score = 0;
-    for (const drill of drills) {
-      const options = [drill.a, ...drill.wrong].sort(() => Math.random() - 0.5);
-      const answer = await ui.say({ text: drill.q, choices: options.map(label => ({ label, value: label })) }, { ...opts, cancelValue: null });
-      if (answer === drill.a) { score++; await ui.say(['Good timing. Mark and reward the behaviour.'], opts); }
-      else await ui.say(['That one needs a little more practice. Give the pet space and reward the safe choice.'], opts);
-    }
+    const result = await ui.training({ id, name: form(id).name, behaviour: pet.data_.behaviour, day });
+    if (!result) return;
     school.lessonDay[id] = day;
-    const xp = score * 8;
-    if (xp) gainXp(petFighter(id), xp);
-    if (score === drills.length) school.stamps[id] = (school.stamps[id] || 0) + 1;
-    state.addPoints(id, score * 2);
+    const xp = 8 + result.score * 8;
+    gainXp(petFighter(id), xp);
+    if (result.score === 3) school.stamps[id] = (school.stamps[id] || 0) + 1;
+    school.skills ??= {};
+    school.skills[id] ??= {};
+    school.skills[id][result.drill] = (school.skills[id][result.drill] || 0) + result.score;
+    state.addPoints(id, 2 + result.score * 2);
     this.save();
-    await ui.say([`${form(id).name} got ${score} of 3 right and earned ${xp} training XP.`, ...(score === 3 ? ['A perfect lesson earns a gold star on the report card.'] : []), `Perfect lessons recorded: ${school.stamps[id] || 0}.`], opts);
+    await ui.say([`${form(id).name} practised ${result.drill.toLowerCase()}: ${result.score}/3 successful behaviours and ${xp} training XP.`, `Gold stars: ${school.stamps[id] || 0}. You can practise another activity tomorrow.`], opts);
     if (canEvolve(id)) await this.evolveInWorld(pet);
+  }
+
+  async parkTutorial() {
+    if (this.regionId !== 'lohse' || state.data.flags.parkTutorial || !readyTeam().length) return;
+    state.data.flags.parkTutorial = true;
+    const practice = await ui.say({ text: 'The long grass is where you find wild play-fights. Walking on the road skips them. Practise here to earn XP, and rest at home to refill your pets’ energy. Rose on Donald St and Adam on Holmes St offer gentler first matches when you bring one pet, so you can befriend a second.', choices: [{ label: 'Try a gentle practice fight', value: true }, { label: 'Explore first', value: false }] });
+    if (practice) {
+      const result = await this.startBattle({ wild: { id: 'bag', level: 2 } });
+      if (result.outcome === 'lose') await this.lostBattle();
+    }
+    this.save();
   }
 
   // A pet you have just found trots straight onto your team if there's room.
@@ -1400,9 +1407,16 @@ export class WorldScene extends Phaser.Scene {
     this.lastTile = key;
     this.stepsSinceBattle++;
     if (this.map.ground[ty]?.[tx] !== '"' || this.stepsSinceBattle < 6) return;
-    if (Math.random() > ENCOUNTER_RATE || !readyTeam().length) return;
-    const wild = rollEncounter(this.region.suburb, isNight(state.data.minutes), this.regionId);
+    if (!readyTeam().length) return;
+    if (!state.data.flags.grassHint) {
+      state.data.flags.grassHint = true;
+      ui.toast('Long grass has wild play-fights. Walk through it for training XP; roads skip encounters.');
+    }
+    const rate = readyTeam().length === 1 ? Math.max(.22, ENCOUNTER_RATE) : ENCOUNTER_RATE;
+    if (state.data.flags.firstWild && Math.random() > rate) return;
+    const wild = starterEncounter(rollEncounter(this.region.suburb, isNight(state.data.minutes), this.regionId), this.region.suburb);
     if (!wild) return;
+    state.data.flags.firstWild = true;
     this.startBattle({ wild }).then(r => { if (r.outcome === 'lose') this.lostBattle(); });
   }
 
@@ -1420,7 +1434,7 @@ export class WorldScene extends Phaser.Scene {
     return new Promise(resolve => {
       this.time.delayedCall(560, () => {
         ui.battlePending = false;
-        this.scene.launch('Battle', { ...opts, suburb: this.region.suburb, done: result => {
+        this.scene.launch('Battle', { ...opts, suburb: this.region.suburb, region: this.regionId, done: result => {
           this.scene.resume();
           this.inBattle = false; this.stepsSinceBattle = 0;
           this.syncFollowers();
@@ -1504,6 +1518,7 @@ export class WorldScene extends Phaser.Scene {
     state.data.minutes += minutes;
     state.data.region = region; state.data.pos = null;
     state.save();
+    controls.requireFreshMovement();
     controls.release();
     this.cameras.main.fadeOut(350, 20, 30, 18);
     this.cameras.main.once('camerafadeoutcomplete', () => this.scene.restart({ region, entry, frac }));
@@ -1568,6 +1583,7 @@ export class WorldScene extends Phaser.Scene {
   }
 
   checkExits() {
+    if (this.time.now - this.arrivedAt < 700) return;
     const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 1) / T);
     const ex = this.map.exits.find(e => tx >= e.x && tx < e.x + e.w && ty >= e.y && ty < e.y + e.h);
     if (!ex) { this.lockedExit = null; return; }
@@ -1700,7 +1716,8 @@ export class WorldScene extends Phaser.Scene {
   spawnNpc(n) {
     const npc = new Npc(this, n.id, NPCS[n.id], n);
     npc.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'npc', ref: npc }); });
-    npc.collider = this.physics.add.collider(this.player, npc);
+    // People stay interactive but cannot pin the player against a wall or each other.
+    npc.collider = null;
     return npc;
   }
   // Someone walks off (end of their path, or their routine says they're elsewhere).

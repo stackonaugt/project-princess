@@ -29,7 +29,10 @@ export class Traffic {
   update(dt, player, frozen, others = []) {
     for (const lane of this.lanes) {
       lane.wait -= dt;
-      if (lane.wait <= 0) { this.spawn(lane); lane.wait = lane.every[0] + Math.random() * (lane.every[1] - lane.every[0]); }
+      if (lane.wait <= 0) {
+        if (lane.list.length < (lane.tram || lane.train ? 2 : 1)) this.spawn(lane);
+        lane.wait = (lane.every[0] + Math.random() * (lane.every[1] - lane.every[0])) * (lane.tram || lane.train || lane.bike ? 1 : 1.8);
+      }
       const horiz = lane.axis === 'x';
       for (const s of lane.list) {
         const half = (horiz ? s.width : s.height) / 2;

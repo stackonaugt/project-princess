@@ -55,7 +55,7 @@ function fresh() {
     wallPaint: null,   // the colour of the walls at home (Lincraft paint, Summerhill)
     // Side missions and mini-games: pranks scoped out (Chapter 3), duck feeding,
     // bowls wins, the bake-off rivalry (0 untold, 1 Betty asked, 2 Meghan beaten).
-    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, school: { lessonDay: {}, stamps: {} } },
+    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, school: { lessonDay: {}, stamps: {}, skills: {} } },
     recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
@@ -109,7 +109,7 @@ function sanitise(raw) {
   if (raw.side && typeof raw.side === 'object') {
     Object.assign(d.side, raw.side, { scouted: Array.isArray(raw.side.scouted) ? raw.side.scouted : [] });
     const school = raw.side.school || {};
-    d.side.school = { lessonDay: school.lessonDay && typeof school.lessonDay === 'object' ? school.lessonDay : {}, stamps: school.stamps && typeof school.stamps === 'object' ? school.stamps : {} };
+    d.side.school = { lessonDay: school.lessonDay && typeof school.lessonDay === 'object' ? school.lessonDay : {}, stamps: school.stamps && typeof school.stamps === 'object' ? school.stamps : {}, skills: school.skills && typeof school.skills === 'object' ? school.skills : {} };
   }
   if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };

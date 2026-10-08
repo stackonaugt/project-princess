@@ -25,11 +25,11 @@ export let MOVES = {
   // Princess (fairy)
   growl:      { name: 'Growl', type: 'fairy', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} growls. It is tiny. It is terrifying.' },
   clawattack: { name: 'Claw Attack', type: 'fairy', power: 45, anim: 'claw', text: '{u} goes in claws first!' },
-  humpbed:    { name: 'Hump Bed', type: 'fairy', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} humps the nearest bed with great dignity. She feels refreshed.' },
+  humpbed:    { name: 'Hump Bed', type: 'fairy', power: 0, effect: { heal: 0.4 }, anim: 'bed', text: '{u} humps the nearest bed with great dignity. She feels refreshed.' },
   bite:       { name: 'Bite', type: 'street', power: 55, anim: 'bite', text: '{u} bites!' },
   // Poppy (rock)
   charge:     { name: 'Charge', type: 'rock', power: 60, anim: 'lunge', text: '{u} charges in head first. No plan. Pure commitment.' },
-  scoot:      { name: 'Scoot', type: 'rock', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} scoots across the carpet. Everyone is uncomfortable, but she feels better.' },
+  scoot:      { name: 'Scoot', type: 'rock', power: 0, effect: { heal: 0.4 }, anim: 'scoot', text: '{u} scoots across the carpet. Everyone is uncomfortable, but she feels better.' },
   dig:        { name: 'Dig', type: 'rock', power: 50, anim: 'dig', text: '{u} digs under and pops up beneath {t}!' },
   chew:       { name: 'Chew', type: 'leather', power: 35, effect: { destroyItem: true }, anim: 'bite', text: '{u} chews on {t}. And on anything {t} was holding.' },
   // Spooky (ghost)
@@ -61,7 +61,7 @@ export let MOVES = {
   // Sopressa (Salami evolved, street and old)
   agedclaws:  { name: 'Aged Claws', type: 'street', power: 75, anim: 'claw', text: '{u} swipes with claws that have seen things. Many things.' },
   grumble:    { name: 'Grumble', type: 'old', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'shout', text: '{u} grumbles about the price of sardines. {t} feels personally responsible.' },
-  cured:      { name: 'Cured', type: 'old', power: 0, effect: { heal: 0.45, selfDef: 1 }, anim: 'heal', text: '{u} hangs in a cool dark cupboard for a bit. Matured. Improved.' },
+  cured:      { name: 'Cured', type: 'old', power: 0, effect: { heal: 0.45, selfDef: 1 }, anim: 'nap', text: '{u} hangs in a cool dark cupboard for a bit. Matured. Improved.' },
   backinmyday:{ name: 'Back In My Day', type: 'old', power: 80, anim: 'beam', text: '"Back in my day, Sydney Rd had one cafe." {u} goes on. And on. {t} wilts.' },
   // Poltergeist Spooky (Spooky evolved, ghost and psychic)
   possess:    { name: 'Possess', type: 'ghost', power: 80, anim: 'fade', text: '{u} floats straight into {t}. For a moment {t} really fancies a carrot.' },
@@ -74,7 +74,7 @@ export let MOVES = {
   venividivici:{ name: 'Veni Vidi Vici', type: 'steel', power: 95, effect: { recoil: 0.1 }, anim: 'claw', text: '{u} came. {u} saw. {u} conquered {t}.', recoilText: '{u} pulled something in his little sandals.' },
   // Even Rustier (Rusty evolved, steel and speed)
   sliceanddice:{ name: 'Slice and Dice', type: 'steel', power: 85, anim: 'claw', text: '{u} goes through {t} like a mandoline through a zucchini.' },
-  turbozoom:  { name: 'Turbo Zoom', type: 'speed', power: 80, anim: 'lunge', text: '{u} hits 90km/h on the athletics track and forgets to stop.' },
+  turbozoom:  { name: 'Turbo Zoom', type: 'speed', power: 80, anim: 'zoom', text: '{u} hits 90km/h on the athletics track and forgets to stop.' },
   rustcloud:  { name: 'Rust Cloud', type: 'steel', power: 0, effect: { foeDef: 1, foeAtk: 1 }, anim: 'gust', text: '{u} shakes off a cloud of rust flakes. {t} gets them in its eyes.' },
   oilchange:  { name: 'Oil Change', type: 'steel', power: 0, effect: { heal: 0.4, selfAtk: 1 }, anim: 'heal', text: '{u} pulls into a pit stop. Fresh oil. Purring.' },
 
@@ -199,10 +199,10 @@ export let MOVES = {
 
 // The four moves each pet knows, by pet id.
 // Chloe's moves (Brunswick East).
-MOVES.herd = { name: 'Herd', type: 'park', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'lunge', text: '{u} circles {t} and moves it exactly where she wants it.' };
-MOVES.kelpiestare = { name: 'Kelpie Stare', type: 'psychic', power: 60, anim: 'beam', text: '{u} fixes {t} with the stare. Nothing moves for a moment.' };
+MOVES.herd = { name: 'Herd', type: 'park', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'circle', text: '{u} circles {t} and moves it exactly where she wants it.' };
+MOVES.kelpiestare = { name: 'Kelpie Stare', type: 'psychic', power: 60, anim: 'stare', text: '{u} fixes {t} with the stare. Nothing moves for a moment.' };
 MOVES.heelnip = { name: 'Heel Nip', type: 'street', power: 50, anim: 'bite', text: '{u} nips at {t}\'s heels. Keep moving.' };
-MOVES.pubnap = { name: 'Pub Nap', type: 'old', power: 0, effect: { heal: 0.4 }, anim: 'heal', text: '{u} climbs onto the bench seat and has a nap. Pub rules.' };
+MOVES.pubnap = { name: 'Pub Nap', type: 'old', power: 0, effect: { heal: 0.4 }, anim: 'nap', text: '{u} climbs onto the bench seat and has a nap. Pub rules.' };
 
 // Ziggy and Emilio, and the Premier's lot
 Object.assign(MOVES, {
@@ -221,7 +221,7 @@ Object.assign(MOVES, {
   announceable:     { name: 'Announceable', type: 'steel', power: 75, anim: 'beam', text: '{u} announces a brand new project in front of a hard hat and a hi-vis vest. It lands on {t}.' },
   costblowout:      { name: 'Cost Blowout', type: 'plastic', power: 90, effect: { recoil: 0.2 }, recoilText: 'The bill lands on {u} too. Somebody always pays.', anim: 'lunge', text: '{u} goes ten billion dollars over budget, straight into {t}.' },
   reboot:           { name: 'Reboot', type: 'steel', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} goes quiet, beeps twice and comes back on message.' },
-  zoomcat:      { name: 'Midnight Zoomies', type: 'speed', power: 60, anim: 'lunge', text: '{u} tears across the room at 3am speed and bowls straight into {t}.' },
+  zoomcat:      { name: 'Midnight Zoomies', type: 'speed', power: 60, anim: 'zoom', text: '{u} tears across the room at 3am speed and bowls straight into {t}.' },
   barkziggy:    { name: 'Borrowed Bark', type: 'leather', power: 55, anim: 'shout', text: '{u} lets out a bark. A real dog bark. He learned it from the dogs. {t} is very confused.' },
   helpfrommads: { name: 'Help from Mads', type: 'fairy', power: 0, effect: { heal: 0.5 }, anim: 'heal', text: 'A warm feeling settles over {u}, like a hand on his back. Help from Mads. He feels much better.' },
   quack:        { name: 'Almighty Quack', type: 'water', power: 55, anim: 'shout', text: '{u} lets out a quack so loud the whole lake goes quiet.' },

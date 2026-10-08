@@ -17,6 +17,15 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 | `tiles/` | `<tile name>.png`, e.g. `grass.png` | A ground tile | One tile (16x16 or 32x32 recommended) |
 | `enemies/` | `<enemy id>.png`, e.g. `bag.png`, `recycling.png` | Things you battle (animals facing right; bins and objects facing the front) | 16x16 (bins 16x20, people 16x32) |
 | `vehicles/` | `tram.png`, `train-h.png`, `car-h-red.png`, ... | Trams, trains, cars and bikes | Same size as the template |
+| `backgrounds/` | `<zone id>.png`, `<suburb id>.png`, or `default.png` | Battle scenery, without using the Studio | Full scene; 320x180 recommended |
+
+## Draw your own battle backgrounds
+
+Put a complete, opaque PNG in `assets/sprites/backgrounds/`. For example, `laverton.png` replaces Laverton battle scenery, `fleming.png` replaces battles in Fleming Park, and `default.png` is used everywhere without a more specific image. Names are the zone/suburb IDs in `src/world/maps/`. A zone image takes priority over a suburb image, which takes priority over `default.png`. Missing images keep the built-in scenery.
+
+Start at **320x180 pixels** for a pixel-art landscape. Draw the scenery only: the game supplies pets, people, effects and the controls. Leave clear ground around the lower-left quarter for your pet and the middle-right for the opponent. The image fills the area above the battle controls; screen proportions can stretch it, so avoid text and important details at the edges. Optional `laverton-night.png`, `fleming-night.png` or `default-night.png` files are selected at night; otherwise the normal image keeps its original colours.
+
+Commit/upload your PNGs with the game files and deploy normally. The existing manifest generator discovers them automatically; no Studio export or authoring JSON change is needed. With a plain web server, run `node tools/build-manifest.mjs` from the game folder before serving it.
 
 **The template file names are the ids.** Every pet, person, enemy, item, vehicle and object in the game has a template in `templates/` under the name it loads from, so the easiest way to find an id is to look there.
 
@@ -48,3 +57,8 @@ Assignments reference files without renaming or overwriting them. The same suppl
 The picker rejects missing, corrupt or incompatible files, symlinks, animation and unapplied image orientation. Sprite sheets must contain 1–64 complete frames in a single row: square frames for pets and twice-as-tall frames for characters. Portraits can use any aspect ratio. Files must be no larger than 20 MB or 4096 pixels on either side. Saving revalidates the actual files before changing the authoring document; player save slots are never edited.
 
 `manifest.json` in this folder lists the custom files. It is generated automatically by the GitHub Pages workflow and by `tools/serve.mjs`, so you never edit it. If you play the game from some other web server, run `node tools/build-manifest.mjs` first.
+
+
+## Adjusting pet sizes
+
+Edit `src/data/pet-sizes.js`. Each number is that pet’s display height in world pixels; a tile is 16 and Helen is 32. For example, Salami starts at 10 and Chloe at 20. Raising a number makes the pet larger in both the world and fights; lowering it makes them smaller. This does not change their stats or collision footprint. Art frames may still be 16x16, 32x32, 64x64 or another square resolution. Keep the feet and standing pose aligned across frames, and keep transparent padding consistent.
