@@ -23,6 +23,7 @@ import { openCalendar } from './calendar.js';
 import { openStoryApp, openCard, openNews, openPaper, openParty } from './story.js';
 import { openCheats } from './cheats.js';
 import { openFishing } from './fishing.js';
+import { openTraining } from './training.js';
 import { openFriends } from './friends.js';
 import { openMap } from './map.js';
 import { pinnedObjective, resolveDestination } from '../systems/guidance.js';
@@ -226,6 +227,7 @@ export const ui = {
 
   // Fishing. Resolves with the item caught, or null.
   fish(fish, zone) { return new Promise(resolve => { this._fishOpts = { fish, zone, done: resolve }; this.openModal('fishing'); }); },
+  training(opts) { return new Promise(resolve => { this._trainingOpts = { ...opts, done: resolve }; this.openModal('training'); }); },
 
   // Story screens (ui/story.js). Each resolves when it's closed.
   card(opts) { return new Promise(resolve => { this._storyOpts = opts; this._storyResolve = resolve; this.openModal('card'); }); },
@@ -279,6 +281,7 @@ export const ui = {
     if (which === 'karaoke') { const f = openKaraoke(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'bowls') { const f = openBowls(panel, close, this._storyOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
     if (which === 'fishing') { const f = openFishing(panel, close, this._fishOpts); this.modalAction = f.action; this._fishCleanup = f.cleanup; }
+    if (which === 'training') { const t = openTraining(panel, close, this._trainingOpts); this.modalAction = t.action; this._trainingCleanup = t.cleanup; }
     if (which === 'hero') openHero(panel, id => { const r = this._heroResolve; this._heroResolve = null; this.closeModal(); r && r(id); }, { canCancel: this._heroCancel });
     if (which === 'team') openTeam(panel, ids => { const r = this._teamResolve; this._teamResolve = null; this.closeModal(); r && r(ids); });
     $('modal').hidden = false;
@@ -293,6 +296,7 @@ export const ui = {
     this._fromPhone = false;
     phoneClosed();
     this.modalAction = null;
+    if (this._trainingCleanup) { const c = this._trainingCleanup; this._trainingCleanup = null; c(); }
     if (this._fishCleanup) { const c = this._fishCleanup; this._fishCleanup = null; c(); }
     $('modal').hidden = true;
     this.modalOpen = false;

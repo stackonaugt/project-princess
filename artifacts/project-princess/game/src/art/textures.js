@@ -26,7 +26,7 @@ import { AUTHORING } from '../authoring/overrides.js';
 import { assetLayout, entityArtBindings, runtimeArtBindingFailures } from './asset-rules.js';
 
 // Folder in assets/sprites -> texture key prefix
-const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe' };
+const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe', backgrounds: 'battlebg' };
 // Character sheets get split into square frames.
 const CHARACTER_PREFIXES = ['player', 'pet', 'npc', 'foe'];
 

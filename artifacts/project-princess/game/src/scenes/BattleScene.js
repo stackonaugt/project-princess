@@ -7,6 +7,7 @@
 // 'win' | 'lose' | 'run' | 'forfeit'; result.kod lists pets that ran home.
 
 import { TYPES } from '../data/types.js';
+import { petSize } from '../data/pet-sizes.js';
 import { MOVES } from '../data/moves.js';
 import { ENEMIES, TRAINERS } from '../data/enemies.js';
 import { ITEMS } from '../data/items.js';
@@ -49,7 +50,8 @@ export class BattleScene extends Phaser.Scene {
   create() {
     this.makeFx();
     this.bg = this.add.graphics().setDepth(0);
-    this.foes = this.trainer ? this.trainer.team.map(([id, lv]) => R.foeFighter(id, lv)) : [R.foeFighter(this.opts.wild.id, this.opts.wild.level)];
+    this.backgroundArt = this.add.image(0, 0, '__WHITE').setOrigin(0).setDepth(1).setVisible(false);
+    this.foes = this.trainer ? R.trainerTeam(this.opts.trainer).map(([id, lv]) => R.foeFighter(id, lv)) : [R.foeFighter(this.opts.wild.id, this.opts.wild.level)];
     this.team = R.readyTeam().map(R.petFighter);
     this.foe = this.foes[0];
     this.mine = this.team[0];
@@ -99,8 +101,8 @@ export class BattleScene extends Phaser.Scene {
   scaleFor(key, f) {
     const tex = this.textures.get(key), fr = tex.has(0) ? tex.get(0) : tex.get();
     const tall = f && !f.petId && ENEMIES[f.id]?.tall;
-    const target = (tall ? 26 : fr.height > 18 && !custom.has(key) ? fr.height : 16) * this.unit;
-    return custom.has(key) || tall ? target / fr.height : this.unit;
+    const target = (f?.petId ? petSize(f.petId) : tall ? 26 : fr.height > 18 && !custom.has(key) ? fr.height : 16) * this.unit;
+    return f?.petId || custom.has(key) || tall ? target / fr.height : this.unit;
   }
   place(spr, f, pos) {
     if (!f || !spr.visible) return;
@@ -120,6 +122,17 @@ export class BattleScene extends Phaser.Scene {
     const g = this.bg, S = SCENERY[this.opts.suburb] || SCENERY.laverton, u = this.unit, hz = this.horizon;
     const night = isNight(state.data.minutes);
     g.clear();
+    // A location-specific PNG wins over suburb art, then the shared default.
+    // Optional night variants retain the artist's colours without a tint.
+    const names = [this.opts.region, this.opts.suburb, 'default'].filter(Boolean);
+    const keys = names.flatMap(name => night ? [`battlebg-${name}-night`, `battlebg-${name}`] : [`battlebg-${name}`]);
+    const background = keys.find(key => custom.has(key) && this.textures.exists(key));
+    this.backgroundArt.setVisible(Boolean(background));
+    if (background) {
+      const field = Math.max(1, H - (B.panelHeight() || 170));
+      this.backgroundArt.setTexture(background).setPosition(0, 0).setDisplaySize(W, field);
+      return;
+    }
     if (night) g.fillGradientStyle(0x10183a, 0x10183a, 0x34406e, 0x34406e, 1);
     else g.fillGradientStyle(0x7ec4ec, 0x7ec4ec, 0xd8eef6, 0xd8eef6, 1);
     g.fillRect(0, 0, W, hz);
@@ -206,6 +219,44 @@ export class BattleScene extends Phaser.Scene {
     const ux = us.x, uy = us.y, tm = this.mid(ts), um = this.mid(us);
     this.animating = true;
     switch (anim) {
+      case 'circle':
+      case 'zoom': {
+        sfx.whoosh();
+        const centre = anim === 'circle' ? tm : um;
+        for (let i = 0; i < 6; i++) {
+          const a = i * Math.PI / 3;
+          this.burst(us.x, us.y - u, c, 3);
+          await this.tw(us, { x: centre.x + Math.cos(a) * 15 * u, y: centre.y + Math.sin(a) * 5 * u, duration: anim === 'zoom' ? 65 : 110 });
+        }
+        await this.tw(us, { x: ux, y: uy, duration: 180 });
+        break;
+      }
+      case 'scoot': {
+        await this.tw(us, { y: uy + 2 * u, duration: 100 });
+        for (let i = 0; i < 3; i++) { this.burst(us.x, us.y, 0xb18b61, 3); await this.tw(us, { x: us.x + dir * 5 * u, duration: 140 }); }
+        await this.tw(us, { x: ux, y: uy, duration: 160 });
+        break;
+      }
+      case 'bed': {
+        const bed = this.add.rectangle(ux + dir * 7 * u, uy - 2 * u, 18 * u, 5 * u, 0xd78ea0).setStrokeStyle(u, 0x684550).setDepth(9);
+        await this.tw(us, { x: ux + dir * 5 * u, y: uy - 3 * u, duration: 120, yoyo: true, repeat: 3 });
+        this.burst(ux, uy - 8 * u, 0xffb1c8, 6); bed.destroy();
+        break;
+      }
+      case 'nap': {
+        const z = this.add.text(ux, uy - 18 * u, 'z z z', { fontSize: `${3 * u}px`, color: '#ffffff' }).setDepth(30);
+        const scale = us.scaleY;
+        await this.tw(us, { scaleY: scale * .7, duration: 200 });
+        await this.tw(z, { y: z.y - 8 * u, alpha: 0, duration: 650 });
+        await this.tw(us, { scaleY: scale, duration: 160 }); z.destroy();
+        break;
+      }
+      case 'stare': {
+        const ray = this.add.graphics().setDepth(30);
+        ray.lineStyle(u / 2, c, .7).lineBetween(um.x, um.y - 3 * u, tm.x, tm.y);
+        ts.setTint(c); await this.wait(450); ts.clearTint(); ray.destroy();
+        break;
+      }
       case 'lunge': {
         sfx.whoosh();
         await this.tw(us, { x: ux + (ts.x - ux) * 0.45, y: uy + (ts.y - uy) * 0.45, duration: 170, ease: 'Quad.easeIn' });

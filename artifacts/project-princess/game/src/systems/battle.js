@@ -5,7 +5,7 @@
 // your pets, run home to Allen St until they've had a rest.
 
 import { PET_BY_ID } from '../data/pets.js';
-import { ENEMIES, ENCOUNTERS } from '../data/enemies.js';
+import { ENEMIES, ENCOUNTERS, TRAINERS } from '../data/enemies.js';
 import { MOVES, PET_MOVES } from '../data/moves.js';
 import { effectiveness, typeList } from '../data/types.js';
 import { form, petTex } from './forms.js';
@@ -88,6 +88,25 @@ export function foeFighter(id, level) {
 
 // Pets on your team who still have energy.
 export const readyTeam = () => state.data.party.filter(id => state.isFound(id) && state.pet(id).hp !== 0);
+
+// A first pet should be able to win a second before needing a full team.
+// Full rosters remain on rematches and when travelling with multiple pets.
+export function trainerTeam(id) {
+  const team = TRAINERS[id].team;
+  const party = readyTeam();
+  if (party.length !== 1 || state.data.beaten[id]) return team;
+  const lv = petLevel(party[0]);
+  if (id === 'rose' || id === 'adam') return [[team.at(-1)[0], Math.min(team.at(-1)[1], Math.max(4, lv))]];
+  if (id === 'binman') return team.slice(0, 2).map(([foe, level]) => [foe, Math.min(level, Math.max(3, lv - 1))]);
+  if (id === 'mrwilkinson') return [[team[0][0], Math.min(team[0][1], lv + 1)]];
+  return team;
+}
+
+export function starterEncounter(encounter, suburb) {
+  const team = readyTeam();
+  if (!encounter || team.length !== 1 || !['laverton', 'footscray', 'brunswick', 'brunswickeast'].includes(suburb)) return encounter;
+  return { ...encounter, level: Math.min(encounter.level, Math.max(2, petLevel(team[0]) - 1)) };
+}
 
 // A random wild encounter for this suburb, or null.
 export function rollEncounter(suburb, night, zone) {

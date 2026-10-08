@@ -10,6 +10,8 @@ import { bus } from '../bus.js';
 const keys = {};
 const joy = { x: 0, y: 0, mag: 0, id: null };
 let bHeld = false;
+const suppressedKeys = new Set();
+let suppressedPointer = null;
 
 const MOVE_KEYS = { arrowup: [0, -1], w: [0, -1], arrowdown: [0, 1], s: [0, 1], arrowleft: [-1, 0], a: [-1, 0], arrowright: [1, 0], d: [1, 0] };
 
@@ -18,16 +20,21 @@ export const controls = {
 
   vector() {
     let x = 0, y = 0;
-    for (const [k, [dx, dy]] of Object.entries(MOVE_KEYS)) if (keys[k]) { x += dx; y += dy; }
+    for (const [k, [dx, dy]] of Object.entries(MOVE_KEYS)) if (keys[k] && !suppressedKeys.has(k)) { x += dx; y += dy; }
     x = Math.max(-1, Math.min(1, x)); y = Math.max(-1, Math.min(1, y));
     let run = !!keys.shift || bHeld;
-    if (joy.mag > 0) { x = joy.x; y = joy.y; if (joy.mag > 0.92) run = true; }
+    if (joy.mag > 0 && joy.id !== suppressedPointer) { x = joy.x; y = joy.y; if (joy.mag > 0.92) run = true; }
     const m = Math.hypot(x, y);
     if (m > 1) { x /= m; y /= m; }
     return { x, y, run, analog: joy.mag > 0 ? Math.min(1, joy.mag / 0.6) : 1 };
   },
 
   release() { for (const k in keys) keys[k] = false; joy.x = joy.y = joy.mag = 0; bHeld = false; hideKnob(); },
+  // Held input must be lifted once after crossing a map boundary.
+  requireFreshMovement() {
+    for (const k of Object.keys(MOVE_KEYS)) if (keys[k]) suppressedKeys.add(k);
+    suppressedPointer = joy.id;
+  },
 
   init() {
     window.addEventListener('keydown', e => {
@@ -44,7 +51,7 @@ export const controls = {
       if (k === 'i' || k === 'b') bus.emit('input:bag');
       if (k === 'm') bus.emit('input:menu');
     });
-    window.addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; });
+    window.addEventListener('keyup', e => { const k = e.key.toLowerCase(); keys[k] = false; suppressedKeys.delete(k); });
     window.addEventListener('blur', () => this.release());
     document.addEventListener('visibilitychange', () => { if (document.hidden) this.release(); });
 
@@ -69,7 +76,7 @@ export const controls = {
       const r = zone.getBoundingClientRect();
       moveKnob(joy.cx - r.left, joy.cy - r.top, dx, dy);
     });
-    const end = e => { if (e.pointerId !== joy.id) return; joy.id = null; joy.x = joy.y = joy.mag = 0; hideKnob(); };
+    const end = e => { if (e.pointerId !== joy.id) return; suppressedPointer = null; joy.id = null; joy.x = joy.y = joy.mag = 0; hideKnob(); };
     zone.addEventListener('pointerup', end); zone.addEventListener('pointercancel', end);
 
     const press = (id, fn, up) => {
