@@ -50,11 +50,11 @@ test("skills level independently per character, have real thresholds and survive
 });
 test("crafting cannot consume ingredients on failure or duplicate unique equipment; unlocked recipes persist", () => {
   reset();
-  state.addItem("timber", 3);
+  state.addItem("timber", 4);
   const before = JSON.stringify(state.data.inventory);
   assert.equal(craft("coursekit").ok, false);
   assert.equal(JSON.stringify(state.data.inventory), before);
-  for (const [id, n] of Object.entries({ cord: 2, cloth: 1, bolts: 1 }))
+  for (const [id, n] of Object.entries({ cord: 2, cloth: 1, bolts: 2 }))
     state.addItem(id, n);
   assert.equal(craft("coursekit").ok, true);
   assert.equal(state.count("timber"), 0);
@@ -64,6 +64,9 @@ test("crafting cannot consume ingredients on failure or duplicate unique equipme
   assert.equal(skill("crafting").xp, 55);
   assert.equal(craft("weavekit").ok, false);
   awardSkill("crafting", 25);
+  for(const [k,n] of Object.entries({timber:6,cloth:4,cord:4,bolts:3})) state.addItem(k,n);
+  assert.equal(craft('courseextension').ok,true);
+  awardSkill('crafting',80);
   for (const [k, n] of Object.entries({ timber: 4, bolts: 2, cord: 1 }))
     state.addItem(k, n);
   assert.equal(craft("weavekit").ok, true);

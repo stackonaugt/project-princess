@@ -1,8 +1,9 @@
 export const CRAFT_ITEMS = {
+  courseextension: { name: 'Course extension', story: true, desc: 'Adds a tunnel, stay ring and recall marker to your yard course.' },
   timber: {
     name: "Salvaged timber",
     farm: true,
-    price: 3,
+    price: 5,
     desc: "Sand the splinters off first.",
   },
   cloth: {
@@ -24,9 +25,9 @@ export const CRAFT_ITEMS = {
     desc: "A jar Paddy has been keeping for years.",
   },
   coursekit: {
-    name: "Training course kit",
+    name: "Starter hurdles",
     story: true,
-    desc: "Portable hurdles and markers for the yard.",
+    desc: "Two beginner jumps for the yard. Upgrade at the shed to add stations.",
   },
   weavekit: {
     name: "Weave poles",
@@ -57,10 +58,14 @@ for (const [id, item] of Object.entries(CRAFT_ITEMS))
     cap: "#67452d",
   };
 export const CRAFT_RECIPES = {
+  courseextension: {
+    name: "Course extension: tunnel and cue rings", level: 2,
+    needs: { timber: 6, cloth: 4, cord: 4, bolts: 3 }, requires: 'coursekit', xp: 80, unique: true,
+  },
   coursekit: {
-    name: "Training course kit",
+    name: "Starter hurdles",
     level: 1,
-    needs: { timber: 3, cord: 2, cloth: 1, bolts: 1 },
+    needs: { timber: 4, cord: 2, cloth: 1, bolts: 2 },
     xp: 55,
     unique: true,
   },
@@ -72,7 +77,8 @@ export const CRAFT_RECIPES = {
   },
   weavekit: {
     name: "Weave poles",
-    level: 2,
+    level: 3,
+    requires: "courseextension",
     needs: { timber: 4, bolts: 2, cord: 1 },
     xp: 65,
     unique: true,

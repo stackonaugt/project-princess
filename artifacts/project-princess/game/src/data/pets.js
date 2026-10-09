@@ -163,7 +163,7 @@ export let PETS = [
     bio: 'Trish and Gordon’s brown-grey cavoodle. Soft curls, orange harness, spectacularly questionable perfume.',
     clue: 'Trish and Gordon can introduce you on Woods St during the day.',
     funFact: 'Gordon is the source of all the best human food.', favouriteSpot: 'Beside Gordon on the couch.',
-    lines: ['Marty sniffs your shoes, then leans against your leg.', 'His orange harness is clean. The rest of him is debatable.'],
+    lines: { 0: ['Marty sniffs your shoes, then leans against your leg.', 'His orange harness is clean. The rest of him is debatable.'] },
     night: ['Marty is ready for a couch nap.'], rain: ['Wet cavoodle. The smell has somehow become stronger.'], asleep: ['Marty snores into his curls.'],
   },
 ];

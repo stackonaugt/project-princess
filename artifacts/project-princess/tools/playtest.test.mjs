@@ -165,3 +165,39 @@ test('phone care restores real HP, consumes one food, clears tutorial and surviv
   state.pet('marty').hp = 0; assert.ok(givePhoneTreat('marty', 'chicken').ok);
   assert.ok(petFighter('marty').hp > 0);
 });
+
+const { addTutorial,completeTutorial,tutorialNotes,syncTodo,unreadTodo,readTodo } = await import('../game/src/systems/todo.js');
+const { SKILLS,awardSkill,skill } = await import('../game/src/systems/player-skills.js');
+const { exitRestriction } = await import('../game/src/systems/guidance.js');
+const { getMap,invalidateMap } = await import('../game/src/data/regions.js');
+const { COURSES,CourseSession } = await import('../game/src/systems/course.js');
+const { CRAFT_RECIPES } = await import('../game/src/data/crafting.js');
+const { SHOPS } = await import('../game/src/data/shops.js');
+
+test('tutorial notes and unread quest badges persist, acknowledge once and track real completion',()=>{
+  newPetSave();state.findPet('princess');syncTodo();
+  addTutorial('grass','Long grass','Walk through grass.');
+  assert.equal(unreadTodo(),1);addTutorial('grass','Long grass','Walk through grass.');
+  assert.equal(unreadTodo(),1);state.save();state.useSlot(3);assert.equal(unreadTodo(),1);
+  readTodo();assert.equal(unreadTodo(),0);assert.equal(tutorialNotes()[0].done,false);
+  state.data.side.bake=1;syncTodo();assert.equal(unreadTodo(),1);
+  completeTutorial('grass');assert.equal(tutorialNotes()[0].done,true);
+  readTodo();syncTodo();assert.equal(unreadTodo(),0);
+});
+test('Farming preserves existing Gathering XP and shortcut opens only after Marty',()=>{
+  newPetSave();awardSkill('gathering',80);assert.equal(SKILLS.gathering.name,'Farming');assert.equal(skill('gathering').level,2);
+  state.findPet('princess');assert.match(exitRestriction('allen',{to:'station'}),/Marty/);
+  assert.equal(exitRestriction('allen',{to:'woods'}),null);
+  state.findPet('marty');assert.equal(exitRestriction('allen',{to:'station'}),null);
+});
+test('shed crafting uses shop materials and yard upgrades add real stations on a clear lawn',()=>{
+  newPetSave();assert.deepEqual(COURSES.yardstarter.stations,['jump','jump']);
+  assert.ok(SHOPS.bunnings.tabs.includes('materials'));assert.ok(SHOPS.bunnings.materials.includes('bolts'));
+  assert.equal(CRAFT_RECIPES.courseextension.requires,'coursekit');assert.equal(CRAFT_RECIPES.weavekit.requires,'courseextension');
+  state.addItem('coursekit');invalidateMap('yard');const map=getMap('yard');
+  assert.ok(map.objects.find(o=>o.kind==='gardenshed'&&o.interact==='workbench'));
+  assert.ok(map.objects.find(o=>o.kind==='toolbox'));
+  for(let y=6;y<14;y++)for(let x=2;x<17;x++)assert.equal(map.solid[y*map.w+x],0,`${x},${y}`);
+  assert.equal(getMap('allen').npcs.some(n=>n.id==='trist_test'),false);
+  assert.ok(new CourseSession('novice').stations.length > new CourseSession('yardstarter').stations.length);
+});

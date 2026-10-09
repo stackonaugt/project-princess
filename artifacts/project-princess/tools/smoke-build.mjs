@@ -144,6 +144,22 @@ try {
   await page.locator('#title .slot-main').first().click();
   await page.waitForFunction(() => window.__pp?.game.scene.isActive('World'));
   assert.equal(await page.evaluate(() => window.__pp.state.data.money), 321, 'Saved progress must load');
+  // Recruit Princess through the actual world interaction, including Julie.
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>{
+    const {state,ui,game}=window.__pp;state.data.minutes=9*60;
+    ui.dialog=null;document.getElementById('dialog').hidden=true;
+    game.scene.getScene('World').scene.restart({region:'allen',entry:'house'});
+  });
+  await page.waitForFunction(()=>window.__pp.game.scene.getScene('World').regionId==='allen'&&window.__pp.game.scene.getScene('World').pets?.some(p=>p.id==='princess'));
+  const julie=await page.evaluate(async()=>{
+    const {ui,state,game}=window.__pp,world=game.scene.getScene('World'),say=ui.say,battle=world.startBattle;
+    let trainer=null;
+    try{ui.say=async()=>true;world.startBattle=async opts=>{trainer=opts.trainer;return {outcome:'win'};};await world.interactPet(world.pets.find(p=>p.id==='princess'));}
+    finally{ui.say=say;world.startBattle=battle;}
+    return {trainer,found:state.isFound('princess'),done:!!state.data.beaten.julie,team:state.data.party};
+  });
+  assert.equal(julie.trainer,'julie');assert.ok(julie.found&&julie.done&&julie.team.includes('princess'),'Princess recruitment must reach Julie instead of stopping on an undefined variable');
   // Exercise new activities in a disposable save on a phone-sized canvas.
   await page.setViewportSize({width:390,height:844});
   await page.evaluate(()=>{
@@ -204,6 +220,39 @@ try {
   assert.equal(await page.evaluate(()=>window.__pp.state.pet('marty').hp),null,'Bag treatment must fully restore Marty');
   assert.equal(await page.evaluate(()=>window.__pp.state.data.flags.martyCare),false,'Successful treatment must clear the tutorial');
   await page.evaluate(()=>window.__pp.ui.closeModal());
+  // Actual yard practice stays in WorldScene, with persistent obstacles.
+  await page.evaluate(()=>{
+    const {state,ui,game}=window.__pp;ui.closeModal();ui.closeModal();state.addItem('coursekit');
+    game.scene.getScene('World').scene.restart({region:'yard',entry:'backdoor'});
+  });
+  await page.waitForFunction(()=>window.__pp.game.scene.getScene('World').regionId==='yard'&&window.__pp.game.scene.getScene('World').yardCourse);
+  await page.evaluate(()=>{window.__pp.game.scene.getScene('World').coursePractice();});
+  await page.waitForFunction(()=>window.__pp.ui.dialog?.queue?.some(l=>l.text==='Who is practising?'));
+  await page.evaluate(()=>{window.__pp.ui.advance();window.__pp.ui.pick(0);});
+  await page.locator('.yard-course-bar').waitFor();
+  assert.ok(await page.evaluate(()=>window.__pp.game.scene.isActive('World')&&!window.__pp.game.scene.isActive('Activity')),'Yard course must run in the game world');
+  await page.waitForTimeout(250);
+  assert.equal(await page.evaluate(()=>window.__pp.game.scene.getScene('World').regionId),'yard');
+  await page.getByRole('button',{name:'Leave practice',exact:true}).click();
+  assert.equal(await page.evaluate(()=>!!window.__pp.ui.activity),false,'Leaving yard practice must clean up input');
+  await page.evaluate(()=>window.__pp.ui.openModal('phone'));
+  await page.locator('.app-badge').waitFor();
+  await page.getByRole('button',{name:/^To Do/}).click();
+  await page.getByText('Practise the yard course',{exact:true}).waitFor();
+  await page.evaluate(()=>{window.__pp.ui.closeModal();window.__pp.ui.closeModal();});
+  // All HUD and battle controls must fit narrow phone viewports.
+  for(const width of [320,390]){
+    await page.setViewportSize({width,height:740});
+    assert.ok(await page.evaluate(()=>Array.from(document.querySelectorAll('#hud button')).every(b=>{const r=b.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth;})),'HUD buttons overflowed');
+    await page.evaluate(()=>{window.__pp.game.scene.getScene('World').startBattle({wild:{id:'bag',level:2}});});
+    await page.waitForFunction(()=>window.__pp.game.scene.isActive('Battle'));
+    await page.waitForFunction(()=>!!document.querySelector('#btMenu button'));
+    await page.getByRole('button',{name:'Fight',exact:true}).click();
+    await page.waitForFunction(()=>document.querySelector('#btMenu')?.classList.contains('moves'));
+    assert.ok(await page.evaluate(()=>Array.from(document.querySelectorAll('#btMenu button')).every(b=>{const r=b.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth;})),'Move buttons overflowed');
+    await page.evaluate(()=>window.__pp.game.scene.getScene('Battle').finish('run'));
+    await page.waitForFunction(()=>window.__pp.game.scene.isActive('World'));
+  }
   // Catch errors from the first few title-screen frames as well as initial loading.
   await page.waitForTimeout(300);
 } catch (error) {

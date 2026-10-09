@@ -264,7 +264,7 @@ body.battling #hud, body.battling #touch, body.battling #toasts { display: none;
 .bt-team i.ok { background: #58c040; }
 .bt-team i.empty { background: transparent; opacity: .35; }
 .bt-panel {
-  position: absolute; left: 0; right: 0; bottom: 0; min-height: calc(var(--bt-panel) + var(--safe-b));
+  position: absolute; left: 0; right: 0; bottom: 0; min-height: calc(172px + var(--safe-b));
   background: var(--parch); border-top: 4px solid var(--wood); box-shadow: inset 0 3px 0 var(--parch-dark);
   padding: 10px calc(12px + var(--safe-r)) calc(10px + var(--safe-b)) calc(12px + var(--safe-l));
   display: flex; flex-direction: column; gap: 8px; cursor: pointer; touch-action: manipulation;
@@ -610,3 +610,29 @@ body.activity-course #joyZone{display:none}
 .bake-track{clear:both;height:36px;background:#ceb789;position:relative;border:3px solid #815a33;margin:20px 8px;border-radius:6px;overflow:hidden}
 .bake-band{position:absolute;height:100%;background:#7aa453}.bake-marker{position:absolute;height:100%;width:4px;background:#49372b;transform:translateX(-2px)}
 .course-timing{height:16px;margin:4px 8px}.course-timing[hidden]{display:none}
+
+/* Keep all controls inside narrow mobile viewports. */
+#hud { flex-wrap: wrap; }
+.hud-info { min-width: 0; max-width: 100%; flex: 1 1 160px; }
+.hud-btns { flex: 0 1 auto; min-width: 0; flex-wrap: wrap; }
+#hudRegion { overflow-wrap: anywhere; }
+.bt-menu { grid-template-columns: repeat(2,minmax(0,1fr)); min-width: 0; }
+.bt-btn { min-width: 0; max-width: 100%; flex-wrap: wrap; overflow-wrap: anywhere; }
+.bt-btn small { min-width: 0; flex: 1 1 70px; }
+.bt-panel { max-height: 60dvh; overflow-y: auto; }
+.panel,.m-scroll,.note,.gear-row,.shop-row,.friend-card { min-width: 0; max-width: 100%; }
+.panel { overflow-x: hidden; }
+.gear-row { flex-wrap: wrap; }
+.tabs { flex-shrink: 0; overflow-x: auto; max-width: 100%; }
+.bag-grid { grid-template-columns: repeat(auto-fill,minmax(52px,1fr)); }
+.note,.shop-row,.choice { overflow-wrap: anywhere; }
+.choice { min-width: 0; flex-wrap: wrap; }
+.bag-detail { flex-shrink: 0; max-height: 42dvh; overflow-y: auto; }
+.app { position: relative; min-width: 0; }
+.app-badge,.todo-badge { background: #d7373f; color: white; border-radius: 999px; font-size: 12px; font-weight: 700; min-width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; padding: 0 5px; }
+.app-badge { position: absolute; top: -4px; right: 2px; border: 2px solid #fff; height: 24px; }
+.todo-badge[hidden] { display:none; }
+.yard-course-bar { position: fixed; z-index: 30; left: 8px; right: 8px; bottom: calc(8px + var(--safe-b)); max-height: 28dvh; overflow-y: auto; padding: 8px; border: 2px solid var(--wood); border-radius: 8px; background: #f4dfaeef; }
+.yard-course-bar .activity-buttons { display:flex; flex-wrap:wrap; gap:4px; }
+body.yard-practice #touch,body.yard-practice #hudGuidance { display:none; }
+@media(max-width:520px){ .hud-info { font-size:12px; padding:4px 6px; } .hud-btns .wood-btn { font-size:12px; padding:5px; } .bt-btn {font-size:15px;padding:5px;gap:4px;} .bt-btn .tag {font-size:11px;} .phone-apps{grid-template-columns:repeat(3,minmax(0,1fr));} }

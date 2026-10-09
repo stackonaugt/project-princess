@@ -1,4 +1,5 @@
 // Phone care uses the same food preferences and recovery as battle treats.
+import { addTutorial,completeTutorial } from './todo.js';
 import { state } from './state.js';
 import { PET_BY_ID } from '../data/pets.js';
 import { isTreat } from '../data/items.js';
@@ -21,7 +22,7 @@ export function givePhoneTreat(id, item) {
   state.removeItem(item);
   rec.reactions[item] = reaction;
   rec.hp = hp === f.maxHp ? null : hp;
-  if (id === 'marty') state.data.flags.martyCare = false;
+  if (id === 'marty') { state.data.flags.martyCare = false; completeTutorial('marty-care'); }
   bus.emit('petdex:changed');
   state.save();
   return { ok: true, healed: hp - f.hp, hp, maxHp: f.maxHp, reaction, reason: `${f.name} ${reaction === 'love' ? 'loves' : reaction === 'like' ? 'likes' : reaction === 'dislike' ? 'reluctantly nibbles' : 'eats'} the treat. +${hp - f.hp} energy (${hp}/${f.maxHp}).` };
@@ -31,6 +32,7 @@ export function beginMartyCare() {
   state.pet('marty').hp = Math.max(1, Math.floor(f.maxHp * 0.55));
   state.addItem('chicken', 2);
   state.data.flags.martyCare = true;
+  addTutorial('marty-care', 'Restore energy with a treat', 'Open Pawphone → Bag, select a food treat and give it to Marty. Two chicken neckies are in your bag. This works for any befriended pet.');
   bus.emit('petdex:changed');
 }
 export function needsMartyCare() {

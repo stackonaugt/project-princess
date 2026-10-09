@@ -30,7 +30,8 @@ export function buildYard() {
   b.put('bin', 19, 18, { v: 'red' }); b.put('bin', 19, 17, { v: 'yellow' }); b.put('bin', 19, 16, { v: 'green' });
 
   // The shed in the far right corner
-  b.put('gardenshed', 25, 2);
+  b.put('gardenshed', 25, 2, {interact:'workbench'});
+  b.put('toolbox',24,5); b.put('sawhorse',25,6);
 
   // Garden
   b.put('hoist', 9, 9);
@@ -61,8 +62,8 @@ export function buildYard() {
   }
   if (state.hasUpgrade('pool')) b.put('paddlingpool', 2, 8);
   b.put('flowerbed', 8, 1, { v: 'natives' }); b.put('gnome', 4, 5, { v: 'red' });
-  b.put('counter', 3, 11, {v:'kettle',interact:'workbench'});
-  b.put('sign', 16, 11, {interact:'course'});
+  if (state.count('coursekit')) b.clear(2,6,15,8); // Paddy clears the practice lawn when the kit is built.
+  b.put('sign', 17, 14, {interact:'course'});
   b.put('sign', 18, 7, {interact:'sparring'});
   return b.finish();
 }

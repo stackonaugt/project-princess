@@ -38,10 +38,11 @@ export function paintGround(p, map, grass, custom = {}) {
   const get = (x, y) => (x < 0 || y < 0 || x >= map.w || y >= map.h) ? null : map.ground[y][x];
   const court = map.id === 'allen';
   const paths= !map.wallPaint && !map.ground.some(row=>row.includes('W'));
-  const pathLetters='=ugf';
+  const pathLetters='=ug';
+  const inCourt=(x,y)=>court && x>=11 && x<=29 && y>=4 && y<=18;
   for (let ty = 0; ty < map.h; ty++) for (let tx = 0; tx < map.w; tx++) {
     const c = map.ground[ty][tx];
-    if (c === '~' || (court && '#f'.includes(c)) || (paths && pathLetters.includes(c))) {
+    if (c === '~' || (inCourt(tx,ty) && '#f'.includes(c)) || (paths && pathLetters.includes(c))) {
       if (custom.grass) p.ctx.drawImage(custom.grass, tx * T, ty * T, T, T);
       else grassBase(p, tx, ty, tx * T, ty * T, grass);
       continue;
@@ -56,8 +57,10 @@ export function paintGround(p, map, grass, custom = {}) {
   if(paths) roundedSurface(p,map,grass,custom,get,pathLetters,'paths','#a19473');
   roundedSurface(p, map, grass, custom, get, '~w', '~', '#2f6aa3');
   if (court) {
+    p.ctx.save(); p.ctx.beginPath(); p.ctx.rect(11*T,4*T,19*T,15*T); p.ctx.clip();
     roundedSurface(p, map, grass, custom, get, '#f', 'f', '#9c9686');
     roundedSurface(p, map, grass, custom, get, '#', '#', '#e2dccf');
+    p.ctx.restore();
   }
   // Bridges keep their planks and interaction footprint over the curved water.
   for (let y=0;y<map.h;y++) for (let x=0;x<map.w;x++) if (get(x,y)==='w') {

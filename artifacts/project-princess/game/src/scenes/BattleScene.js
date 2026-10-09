@@ -75,7 +75,9 @@ export class BattleScene extends Phaser.Scene {
     B.open();
     this.layout();
     this.scale.on('resize', this.layout, this);
-    this.events.once('shutdown', () => this.scale.off('resize', this.layout, this));
+    this.panelObserver = new ResizeObserver(() => this.layout());
+    this.panelObserver.observe(document.querySelector('.bt-panel'));
+    this.events.once('shutdown', () => { this.scale.off('resize', this.layout, this); this.panelObserver.disconnect(); });
     this.cameras.main.fadeIn(250, 255, 255, 255);
     this.run().catch(err => { console.error(err); this.finish('run'); });
   }
@@ -89,6 +91,7 @@ export class BattleScene extends Phaser.Scene {
   layout() {
     const W = this.scale.width, H = this.scale.height;
     const panel = B.panelHeight() || 170, field = H - panel;
+    document.getElementById('battle').style.setProperty('--bt-panel', `${panel}px`);
     this.unit = Math.max(2, Math.min(8, Math.floor(Math.min(W / 62, field / 40))));
     this.horizon = Math.round(field * 0.4);
     this.foePos = { x: Math.round(W * 0.7), y: Math.round(Math.max(field * 0.52, this.horizon + 10 * this.unit)) };

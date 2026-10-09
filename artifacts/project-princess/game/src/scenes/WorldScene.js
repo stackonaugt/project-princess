@@ -1,3 +1,6 @@
+import { addTutorial,completeTutorial } from '../systems/todo.js';
+import { grassIcon } from '../ui/images.js';
+import { paintYardCourse,startYardCourse,yardTier } from '../systems/yard-course.js';
 import { beginMartyCare, martyApproach } from '../systems/pet-care.js';
 import { CRAFT_RECIPES } from '../data/crafting.js';
 import { craft,craftReason } from '../systems/crafting.js';
@@ -111,6 +114,7 @@ export class WorldScene extends Phaser.Scene {
     this.buildExitMarkers();
     this.buildForage();
     this.buildPlots();
+    this.yardCourse = this.regionId === 'yard' ? paintYardCourse(this) : null;
 
     const spawn = this.spawnPoint();
     this.player = new Player(this, spawn.x, spawn.y, spawn.dir);
@@ -195,7 +199,7 @@ export class WorldScene extends Phaser.Scene {
       this.time.delayedCall(900, () => ui.toast('Off-lead dog park! Your team has a lovely run. +friendship'));
     }
     this.buildStoryBits();
-    this.intro(firstVisit).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime());
+    this.intro(firstVisit).then(() => this.catchUpJulie()).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime());
   }
 
   // A nudge each morning about anything time sensitive today.
@@ -866,7 +870,7 @@ export class WorldScene extends Phaser.Scene {
         d.bio,
         `${d.name} was added to your Petdex.`,
       ];
-      if (state.inParty(id)) lines.push(`${d.name} has joined your team. Your first three recruits fill any empty team slots automatically.`);
+      if (state.inParty(d.id)) lines.push(`${d.name} has joined your team. Your first three recruits fill any empty team slots automatically.`);
     if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
       else lines.push('Come back every day for a chat. Pets love treats, too.');
       const joined = this.joinTeam(pet);
@@ -922,11 +926,13 @@ export class WorldScene extends Phaser.Scene {
 
   async petSchoolLesson(pet, opts) {
     const id = pet.id, day = state.data.day, school = state.data.side.school;
+    addTutorial('school', 'Pet school practice', 'Choose a lesson, guide your pet with movement and cues, and aim for clean runs. Successful daily lessons award pet XP and handling XP; extra same-day practice stays available.');
     const practice = school.lessonDay[id] === day;
     if (practice && !await ui.say({ text: `${form(id).name} has earned today’s lesson reward. Have another practice without extra XP?`, choices: [{label:'Practise again',value:true},{label:'Later',value:false}] }, opts)) return;
     const hero = state.data.hero || 'helen';
     const result = await ui.training({ id, name: form(id).name, behaviour: pet.data_.behaviour, species: pet.data_.species, day, hero, heroName: HEROES[hero]?.name || 'Helen', skills: school.skills?.[id] || {}, practice });
     if (!result) return;
+    if (result.score > 0) completeTutorial('school');
     if (practice) return ui.say([`${form(id).name} finished another ${result.title.toLowerCase()} practice. Come back tomorrow for a new daily reward and lesson choices.`],opts);
     school.lessonDay[id] = day;
     const xp = Math.round(trainingXp(result.score)*(state.count('trainingvest')?1.1:1));
@@ -945,9 +951,11 @@ export class WorldScene extends Phaser.Scene {
   async parkTutorial() {
     if (this.regionId !== 'lohse' || state.data.flags.parkTutorial || !readyTeam().length) return;
     state.data.flags.parkTutorial = true;
-    const practice = await ui.say({ text: 'The long grass is where you find wild play-fights. Walking on the road skips them. Practise here to earn XP, and rest at home to refill your pets’ energy. Trish and Gordon can introduce you to Marty on Woods St during the day. His first play-fight is gentle, and you can befriend him as a second pet.', choices: [{ label: 'Try a gentle practice fight', value: true }, { label: 'Explore first', value: false }] });
+    addTutorial('grass', 'Explore the long grass', 'Walk into the tall yellow-green grass shown in the reserve tutorial to find wild play-fights. Roads skip encounters. Rest at home to refill energy.');
+    const practice = await ui.say({ portrait: grassIcon(), text: 'Look for clumps of tall yellow-green grass, like this picture. Walking through them can start a wild play-fight. Roads skip these encounters. Practise to earn XP, and rest at home to refill energy.', choices: [{ label: 'Try a gentle practice fight', value: true }, { label: 'Explore first', value: false }] });
     if (practice) {
       const result = await this.startBattle({ wild: { id: 'bag', level: 2 } });
+      completeTutorial('grass');
       if (result.outcome === 'lose') await this.lostBattle();
     }
     this.save();
@@ -969,8 +977,14 @@ export class WorldScene extends Phaser.Scene {
 
   // Straight after you find Princess, Julie Jana pops round for a warm-up
   // play-fight that shows you the ropes. Then she's off door knocking for good.
+  async catchUpJulie() {
+    if (this.regionId === 'allen' && state.isFound('princess') && !state.data.beaten.julie && readyTeam().length) await this.julieTutorial();
+  }
+
   async julieTutorial() {
-    state.data.flags.tutorial = true;
+    if (this.julieBusy || state.data.beaten.julie) return;
+    this.julieBusy = true;
+    addTutorial('julie', 'First play-fight', 'Julie Jana explains moves, types and treats in your first friendly play-fight.');
     const P = PEOPLE.julie, t = TRAINERS.julie;
     const spot = { id: 'julie', x: Math.floor(this.player.x / T) + 2, y: Math.floor(this.player.y / T), face: 'left' };
     if (this.solidAt((spot.x + 0.5) * T, (spot.y + 0.75) * T)) spot.x -= 4;
@@ -983,6 +997,8 @@ export class WorldScene extends Phaser.Scene {
     await ui.say([...(P.byHero[state.data.hero] || P.lines)[0], ...t.tutorial], opts);
     const result = await this.startBattle({ trainer: 'julie' });
     state.data.beaten.julie = state.data.day;
+    state.data.flags.tutorial = true; this.julieBusy = false;
+    completeTutorial('julie');
     if (result.outcome === 'lose') state.healAll();
     await ui.say(result.outcome === 'win' ? t.win : t.lose, opts);
     this.removeNpc(npc);
@@ -1465,7 +1481,7 @@ export class WorldScene extends Phaser.Scene {
     if (state.data.flags.firstWild && Math.random() > rate) return;
     const wild = starterEncounter(rollEncounter(this.region.suburb, isNight(state.data.minutes), this.regionId), this.region.suburb);
     if (!wild) return;
-    state.data.flags.firstWild = true;
+    state.data.flags.firstWild = true; completeTutorial('grass');
     this.startBattle({ wild }).then(r => { if (r.outcome === 'lose') this.lostBattle(); });
   }
 
@@ -1478,14 +1494,14 @@ export class WorldScene extends Phaser.Scene {
     });
   }
   async workbench(){
-    if(!state.data.flags.craftStarter){state.data.flags.craftStarter=true;for(const[k,n]of Object.entries({timber:3,cord:3,cloth:3,bolts:1}))state.addItem(k,n);this.save();await ui.say(['Paddy has left a box of timber, fabric, cord and bolts beside the workbench. Enough for your first course kit and a rope ball.','You can buy more reclaimed supplies here. Making equipment builds your crafting skill.']);}
+    addTutorial('craft', 'Crafting at the shed', 'Buy timber, cloth, cord and bolts from Materials at Bunnings in Altona North. Use the tools by the shed to craft two starter hurdles, then add the course extension and weave poles.');
     for(;;){
       const choices=Object.entries(CRAFT_RECIPES).map(([id,r])=>({label:r.name,value:id,note:`${craftReason(id)||'Ready to make'} · `+Object.entries(r.needs).map(([k,n])=>`${ITEMS[k].name} ${state.count(k)}/${n}`).join(', ')}));
-      const id=await ui.say({text:`Yard workbench. Crafting level ${skill('crafting').level}.`,choices:[...choices,{label:'Buy reclaimed supplies ($24)',value:'supplies',note:'4 timber, 4 cloth, 3 cord and 2 bolts'},{label:'Put the tools away',value:null}]},{cancelValue:null});
+      const id=await ui.say({text:`Garden shed. Crafting level ${skill('crafting').level}.`,choices:[...choices,{label:'Put the tools away',value:null}]},{cancelValue:null});
       if(!id)return;
-      if(id==='supplies'){if(!state.spend(24)){await ui.say('You need $24 for the supplies.');continue;}for(const[k,n]of Object.entries({timber:4,cloth:4,cord:3,bolts:2}))state.addItem(k,n);this.save();continue;}
       const result=craft(id);if(!result.ok){await ui.say(result.reason);continue;}
-      this.player.perform?.('throw');await ui.say(`Made ${ITEMS[id].name.toLowerCase()}. +${result.xp} crafting XP.`);this.save();
+      if(['coursekit','courseextension','weavekit'].includes(id)) this.refreshYardCourse();
+      completeTutorial('craft');this.player.perform?.('throw');await ui.say(`Made ${ITEMS[id].name.toLowerCase()}. +${result.xp} crafting XP.`);this.save();
     }
   }
   async chooseCoursePet(dogsOnly=false){
@@ -1493,11 +1509,23 @@ export class WorldScene extends Phaser.Scene {
     if(!pets.length){await ui.say('Find a dog first. Then come back for practice.');return null;}
     return ui.say({text:'Who is practising?',choices:[...pets.map(p=>({label:form(p.id).name,value:p.id,icon:petIcon(p.id,32)})),{label:'Later',value:null}]},{cancelValue:null});
   }
+  refreshYardCourse(){
+    if(this.regionId!=='yard')return;
+    this.yardCourse?.destroy();
+    const removed=this.map.objects.filter(o=>o.x<17&&o.x+o.w>2&&o.y<14&&o.y+o.h>6);
+    for(const o of removed)o.sprite?.destroy();
+    this.map.objects=this.map.objects.filter(o=>!removed.includes(o));
+    this.interactables=this.interactables.filter(o=>!(o.x>=2*T&&o.x<17*T&&o.y>=6*T&&o.y<14*T));
+    for(let y=6;y<14;y++)for(let x=2;x<17;x++){this.map.solid[y*this.map.w+x]=0;this.layer.removeTileAt(x,y);}
+    this.yardCourse=paintYardCourse(this);
+  }
   async coursePractice(){
-    if(this.regionId==='yard'&&!state.count('coursekit'))return ui.say(['Craft a training course kit at the workbench on the left of the yard.','Jean lends equipment for practice at the Exhibition Building, too.']);
+    if(this.regionId==='yard'&&!state.count('coursekit'))return ui.say(['Buy materials at Bunnings, then craft two starter hurdles using the tools at the shed.','Jean lends equipment for practice at the Exhibition Building, too.']);
     const pet=await this.chooseCoursePet();if(!pet)return;
-    const tier=await ui.say({text:'Choose a practice layout. Stations wait for your cues; mistakes can be recovered.',choices:[{label:'Novice: five stations',value:'novice'},...(state.count('weavekit')||this.regionId==='exhibition'?[{label:'City circuit: weave poles',value:'open'},{label:'Championship: seven stations',value:'champion'}]:[]),{label:'Later',value:null}]},{cancelValue:null});if(!tier)return;
-    const result=await this.startActivity({mode:'course',pet,tier,variant:state.data.day});if(result.cancelled)return;
+    const tier=this.regionId==='yard'?yardTier():await ui.say({text:'Choose a practice layout.',choices:[{label:'Novice',value:'novice'},{label:'City circuit',value:'open'},{label:'Championship',value:'champion'},{label:'Later',value:null}]},{cancelValue:null});if(!tier)return;
+    addTutorial('course','Practise the yard course','Walk to each numbered station with your dog, then cue Jump, Through, Stay or Come. The jump marker cycles so you can try again. Upgrade at the shed to add more stations.');
+    const result=this.regionId==='yard'?await startYardCourse(this,pet,tier):await this.startActivity({mode:'course',pet,tier,variant:state.data.day});if(result.cancelled)return;
+    completeTutorial('course');
     const sh=state.data.side.show;if(result.passed)sh.practice++;
     let xp=0;if(result.complete&&sh.practiceDay!==state.data.day){sh.practiceDay=state.data.day;xp=result.passed?35:10;awardSkill('handling',xp);gainXp(petFighter(pet),xp);}
     this.save();await ui.say([`${form(pet).name}: ${result.score}/100. ${result.passed?'Qualifying practice recorded.':'Try again whenever you like.'}`,xp?`+${xp} pet XP and pet handling XP. Further practice today is for confidence, without extra XP.`:'Today’s practice XP has been earned. You can still improve your qualifying record.']);
@@ -1728,6 +1756,10 @@ export class WorldScene extends Phaser.Scene {
       if (this.lockedExit === ex) return;
       this.lockedExit = ex;
       return this.bounceBack(ex, ['I really should get Princess before I go...', 'She is usually doing laps of the court.']);
+    }
+    if (this.regionId === 'allen' && ex.to === 'station' && !state.isFound('marty')) {
+      if (this.lockedExit === ex) return; this.lockedExit = ex;
+      return this.bounceBack(ex, ['I should go down Woods St and say hi to Marty first. The station shortcut can wait.']);
     }
     // Gated ways (the Premier's police line into the city) until you beat whoever holds them.
     if (ex.to && ex.gate && !state.data.beaten[ex.gate]) {

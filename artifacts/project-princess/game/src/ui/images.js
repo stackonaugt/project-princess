@@ -6,6 +6,7 @@ import { petTex, isEvolved } from '../systems/forms.js';
 let scene = null;
 export const setImageScene = s => { scene = s; };
 
+export const grassIcon = () => scene ? frameDataURL(scene, `tuft-${scene.regionId}`, 0, 96) : '';
 export const petIcon = (id, size = 64) => scene ? frameDataURL(scene, petTex(id), 0, size) : '';
 export const petWalkFrames = (id,size=64) => scene ? Array.from({length:frameCount(scene,petTex(id))},(_,i)=>frameDataURL(scene,petTex(id),i,size)) : [''];
 export const itemIcon = (id, size = 32) => scene ? frameDataURL(scene, `item-${id}`, 0, size) : '';
