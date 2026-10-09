@@ -1,3 +1,4 @@
+import { syncTodo,readTodo,tutorialNotes } from '../systems/todo.js';
 import { RECIPES as COOK_RECIPES } from '../data/cooking.js';
 import { showObjectives } from '../systems/show-progress.js';
 // Story screens: the Story app on the Pawphone, chapter title cards, the
@@ -21,9 +22,11 @@ import { initialObjective, pinObjective, isPinned } from '../systems/guidance.js
 // The To Do app: the story's jobs, and today's requests from friends.
 let todoTab = 'todo';
 export function openStoryApp(panel, close) {
+  syncTodo(); readTodo();
   const s = state.data.story, n = chapterNow();
   const body = [];
   if (todoTab === 'todo') {
+    for (const t of tutorialNotes()) body.push(todoNote(t.title, [{ text:t.text, done:t.done }]));
     if (!n) body.push(todoNote('Find Princess', [initialObjective()]));
     else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
     else if (s.done[n]) body.push(h('div', { class: 'note' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));

@@ -22,7 +22,7 @@ import { SH_MOVES } from './summerhill.js';
 
 import { authoredValue } from '../authoring/overrides.js';
 export let MOVES = {
-  smellpoo: { name: 'Smell Poo', type: 'smelly', power: 35, anim: 'stink', text: '{u} proudly shares the smell of something he found on the walk. {t} regrets having a nose.' },
+  smellpoo: { name: 'Smelly poo', type: 'smelly', power: 35, anim: 'stink', text: '{u} proudly shares the smell of something he found on the walk. {t} regrets having a nose.' },
   gordonfood: { name: 'Human Food from Gordon', type: 'street', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: 'Gordon slips {u} a little snack. Energy restored. Trish saw that, Gordon.' },
   // Princess (fairy)
   growl:      { name: 'Growl', type: 'fairy', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} growls. It is tiny. It is terrifying.' },

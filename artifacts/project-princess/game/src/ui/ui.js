@@ -20,6 +20,7 @@ import { openMenu } from './menu.js';
 import { openShop } from './shop.js';
 import { openKaraoke } from './karaoke.js';
 import { openBowls } from './bowls.js';
+import { syncTodo,unreadTodo } from '../systems/todo.js';
 import { openPhone, PHONE_APPS, phoneClosed } from './phone.js';
 import { openCouncil } from './council.js';
 import { openCalendar } from './calendar.js';
@@ -71,6 +72,8 @@ export const ui = {
     bus.on('petdex:changed', () => this.updateDexCount());
     bus.on('bag:changed', () => this.updateBagCount());
     bus.on('money:changed', () => this.updateMoney());
+    bus.on('todo:new',n=>{ this.toast(`${n} new ${n===1?'quest':'quests'} in To Do`); this.updateTodoBadge(); });
+    bus.on('todo:read',()=>this.updateTodoBadge());
     bus.on('player:skill',(id,level)=>{if(level)this.toast(`${SKILLS[id].name} level ${level}`);});
     bus.on('guidance:changed', () => { this._guidanceKey = null; this.updateGuidance(); });
     bus.on('navigation:request', (point, target) => {
@@ -83,7 +86,13 @@ export const ui = {
   },
 
   // ---------- HUD ----------
+  updateTodoBadge() {
+    const button = $('btnMenu'); let badge = button.querySelector('.todo-badge');
+    if (!badge) { badge = h('span',{class:'todo-badge'}); button.append(badge); }
+    const n=unreadTodo();badge.hidden=!n;badge.textContent=n;badge.setAttribute('aria-label',`${n} unread quests`);
+  },
   updateHud(region) {
+    syncTodo(); this.updateTodoBadge();
     this.updateGuidance();
     const d = state.data;
     const z = ZONES[region], sub = SUBURBS[z.suburb].name;

@@ -36,7 +36,7 @@ export const FLAVOUR = {
   bin: [['A wheelie bin. Red for rubbish, yellow for recycling, green for garden. Everyone gets it wrong.'], ['It is not bin night. You check anyway. Everyone checks anyway.']],
   letterbox: [['The letterbox is full of pizza menus and one very sad electricity bill.']],
   bench: [['You sit down for a moment. Your feet thank you.'], ['A little plaque on the bench reads "For Jan, who loved this spot".']],
-  picnic: [['A picnic table. Someone has carved "K + M 4EVA" into it. Love is real.']],
+  picnic: [['A picnic table. Someone has carved "H&P 4eva" into it. Love is real.']],
   bbq: [['A free council barbecue. Still warm. The sausage-shaped burn marks tell a story.']],
   swings: [['You have a quick go on the swings. Nobody saw. Probably.']],
   slide: [['The slide is hot from the sun. You decide not to risk it.']],

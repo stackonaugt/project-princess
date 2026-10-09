@@ -293,7 +293,7 @@ export const ENCOUNTERS = {
 export const TRAINERS = {
   gordon: {
     name: 'Trish and Gordon', prize: 'marty', team: [['pet:marty', 8]], money: 0, fine: 0,
-    challenge: ['Trish calls from the garden. “Helen! Come and meet Marty.”', 'Gordon grins. “He’s already had a big walk. Fancy a gentle play-fight? He’ll take it easy the first time.”'],
+    challenge: ['Trish calls from the garden. “Helen! Come and say hi to Marty.”', 'Gordon grins. “He’s already had a big walk. Fancy a gentle play-fight? He’ll take it easy the first time.”'],
     ask: 'Have a play-fight with Marty?', yes: 'Let’s play', no: 'Another time',
     intro: 'Trish and Gordon introduce Marty!', sendOut: 'Marty trots over in his orange harness.',
     win: ['Trish: “Good playing, you two! That’s enough for now.”', 'Gordon: “Marty likes you. He can come along on your adventures.”'],

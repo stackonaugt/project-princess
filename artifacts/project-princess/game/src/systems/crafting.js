@@ -1,9 +1,11 @@
+import { invalidateMap } from "../data/regions.js";
 import { state } from "./state.js";
 import { CRAFT_RECIPES } from "../data/crafting.js";
 import { skill, awardSkill } from "./player-skills.js";
 export function craftReason(id) {
   const r = CRAFT_RECIPES[id];
   if (!r) return "Unknown recipe";
+  if (r.requires && !state.count(r.requires)) return `Make ${CRAFT_RECIPES[r.requires].name.toLowerCase()} first`;
   if (r.unique && state.count(id)) return "Already made";
   if (skill("crafting").level < r.level)
     return `Crafting level ${r.level} required`;
@@ -18,6 +20,7 @@ export function craft(id) {
   const r = CRAFT_RECIPES[id];
   for (const [k, n] of Object.entries(r.needs)) state.removeItem(k, n);
   state.addItem(id);
+  if (['coursekit','courseextension','weavekit'].includes(id)) invalidateMap('yard');
   awardSkill("crafting", r.xp);
   state.save();
   return { ok: true, xp: r.xp };

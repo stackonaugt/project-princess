@@ -1,6 +1,7 @@
 // Course rules are independent of Phaser. Dogs move to each station, then
 // wait for a cue: missed cues cost points but never lock out another attempt.
 export const COURSES = {
+  yardstarter: { name: 'Yard starter hurdles', pass: 60, stations: ['jump','jump'] },
   novice: {
     name: "Neighbourhood novice",
     pass: 65,

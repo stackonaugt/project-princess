@@ -20,7 +20,7 @@ test('rounding emits finite continuous paths rather than tile edge rectangles',(
   assert.ok(curves>8);assert.equal(closed,1);
 });
 test('every map paints without altering its ground, collision, bridges or exits',()=>{
-  const ctx={save(){},restore(){},clip(){},beginPath(){},moveTo(){},quadraticCurveTo(){},closePath(){},stroke(){},fillRect(){}};
+  const ctx={save(){},restore(){},clip(){},rect(){},beginPath(){},moveTo(){},quadraticCurveTo(){},closePath(){},stroke(){},fillRect(){}};
   for(const [id,zone] of Object.entries(ZONES)){
     const map=zone.build();const before=JSON.stringify(map);
     paintGround(painter(ctx),map,zone.grass);
