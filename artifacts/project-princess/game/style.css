@@ -5,6 +5,12 @@
 .todo-item > span:nth-child(2) { flex: 1; min-width: 0; }
 @media (max-height: 450px) { #hudGuidance { top: calc(48px + env(safe-area-inset-top)); left: 22%; right: 22%; padding: 4px 8px; } }
 /* Project Princess: interface styles. Wood and parchment, Stardew style. */
+/* Pixelify Sans draws 5 exactly like S. "Pixel Five" is a one-glyph font (a 5
+   with a flat top and square corner, built from the OFL Pixelify Sans metrics,
+   see assets/fonts/OFL.txt) listed first, so only the digit 5 comes from it. */
+@font-face { font-family: "Pixel Five"; font-weight: 400 500; font-display: swap; unicode-range: U+0035; src: url("assets/fonts/pixel-five-400.woff2") format("woff2"); }
+@font-face { font-family: "Pixel Five"; font-weight: 600; font-display: swap; unicode-range: U+0035; src: url("assets/fonts/pixel-five-600.woff2") format("woff2"); }
+@font-face { font-family: "Pixel Five"; font-weight: 700 900; font-display: swap; unicode-range: U+0035; src: url("assets/fonts/pixel-five-700.woff2") format("woff2"); }
 :root {
   --bg: #1f3a29;
   --wood: #7b4a24; --wood-dark: #4a2a12; --wood-light: #a96c37;
@@ -21,7 +27,8 @@
 html, body { height: 100%; margin: 0; }
 body {
   background: var(--bg); color: var(--ink); overflow: hidden; position: fixed; inset: 0;
-  font-family: "Pixelify Sans", ui-monospace, "Courier New", monospace;
+  font-family: "Pixel Five", "Pixelify Sans", ui-monospace, "Courier New", monospace;
+  font-variant-ligatures: no-common-ligatures;   /* Pixelify's "fi" ligature reads as "A" */
   touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;
   overscroll-behavior: none;
 }
@@ -147,6 +154,8 @@ body.touch.talking #joyZone { pointer-events: none; }
 .m-head h2 { margin: 0; font-size: 26px; flex: 1; }
 .m-scroll { overflow: auto; padding: 0 14px 14px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 .note { background: var(--parch-light); border: 3px solid var(--parch-dark); border-radius: 8px; padding: 10px 12px; margin: 10px 0 0; }
+.plant-chooser { display: grid; gap: 6px; margin: 0 0 10px; }
+.plant-chooser p { margin: 0 0 2px; }
 .note h4 { margin: 0 0 4px; font-size: 17px; }
 .note p { margin: 4px 0; font-size: 15px; line-height: 1.4; }
 .note.locked { opacity: .6; }
@@ -505,6 +514,18 @@ body.touch .bt-btn { min-height: 52px; }
 @keyframes fish-burst { from { transform: translate(0, 0); opacity: 1; } to { transform: translate(var(--x), var(--y)) rotate(200deg); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .fish-big, .fish-confetti { animation: none; } .fish-confetti { display: none; } }
 .fish-marker { position: absolute; top: 2px; width: 12px; height: 18px; border-radius: 50%; background: #f5d63a; border: 2px solid #1e1e24; left: 0; }
+.fish-marker.in { background: #fff6b0; box-shadow: 0 0 6px #fff6b0; }
+.fish-water { touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; cursor: pointer; }
+.fish-angler { display: block; margin: 0 auto; max-width: 100%; height: auto; image-rendering: pixelated; image-rendering: crisp-edges; border-radius: 6px; }
+.fish-water.pulling .fish-angler { animation: fish-tug .18s ease-out; }
+@keyframes fish-tug { 0% { transform: translateX(0); } 40% { transform: translateX(-3px); } 100% { transform: none; } }
+.fish-meters { display: grid; grid-template-columns: auto 1fr; gap: 6px 10px; align-items: center; font-size: 14px; font-weight: 600; text-shadow: 0 1px 0 rgba(0,0,0,.4); }
+.fish-meter { position: relative; height: 12px; border-radius: 6px; background: #24486a; border: 2px solid #f4efe0; overflow: hidden; }
+.fish-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; display: block; }
+.fish-meter.land .fish-fill { background: #6dbb58; }
+.fish-meter.tense .fish-fill { background: #f5d63a; }
+.fish-meter.tense .fish-fill.hot { background: #e2506a; }
+@media (prefers-reduced-motion: reduce) { .fish-water.pulling .fish-angler { animation: none; } }
 /* Story: chapter cards, West is Best News, the party games */
 .story-card { padding: 22px 18px 18px; display: grid; gap: 10px; text-align: center; }
 .story-card p { margin: 0; font-size: 17px; line-height: 1.4; }

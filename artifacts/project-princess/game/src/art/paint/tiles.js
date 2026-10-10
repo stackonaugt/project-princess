@@ -52,7 +52,9 @@ export function paintGround(p, map, grass, custom = {}) {
   }
   if (paths) contourSurface(p, map, grass, custom, paths, 'paths', '#a19473');
   if (outdoor) contourSurface(p, footpathMap, grass, custom, 'f', 'footpaths', '#9c9686');
-  contourSurface(p, map, grass, custom, '~w', '~', '#2f6aa3');
+  // A curved landmark path is not a built embankment: banks beside its stepped
+  // source tiles stay natural instead of squaring off (Edwardes Lake).
+  contourSurface(p, footpathMap, grass, custom, '~w', '~', '#2f6aa3');
   for (const feature of features) paintFeature(p, map, grass, custom, feature);
   // Decks are drawn last and keep the entire walkable cell, including supplied
   // artwork and its quarter-turn rotation.

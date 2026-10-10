@@ -52,16 +52,38 @@
   says when the Petdex learns one, and the Petdex has a Matchups tab.
 - Evolutions: Rusty is **Steely** (steel; Danger Paws, Sharpen), Girlie is
   **Muddy** (dirt/water; `girlie-evolved.png` is Girlie's sheet splattered
-  with mud), the new **Dirt** type. Emilio does not evolve. Marty, Chloe and
-  Ziggy have none yet (waiting on names from the owner).
+  with mud), the new **Dirt** type. Marty is **BIG MART** (same art, very
+  tall: `EVOLVED_SIZES` in pet-sizes.js), Chloe is **Chlo-nado** (same type,
+  a whirlwind round her legs), Ziggy is **Ziggy Iggy** (the owner's cousin
+  Iggy, a baby, rides on his back). Their `-evolved.png` sheets are reference
+  art made from the base sheets. Emilio does not evolve.
 - A line written as `Name: "..."` shows that person's name and portrait
   (`speakerOf` in `ui/ui.js`). The dog show judges on Sundays 9 to 5
   (`SHOW_DAY`); the practice ring is open every day. Plenty Road Convenience
   never closes (`ALWAYS`). Agility cues get a tick or a cross over the dog.
 - Mini-game difficulty: the hall oven drifts on two waves, finishing has a
-  `DECO_TIME` limit and a stage needs 70 to count clean. Fishing marker speed and darting depend
-  on the fish (`FIGHT`), the retry zone shrinks; the old bowlers' mark tightens
+  `DECO_TIME` limit and a stage needs 70 to count clean. The old bowlers' mark tightens
   with `side.bowlsWins`.
+- **Fishing** (`systems/fishing.js` rules, `ui/fishing.js` screen): the fish
+  bolts out of the green zone and you tap to pull it back; a landing bar only
+  fills while it sits in the zone and you keep pulling. Too many taps snap the
+  line, and a fish left at the end of the bar throws the hook. Per-fish pull
+  and darting come from `FIGHT`. Every cast uses one bait (no bait, no
+  fishing; Emilio's bread at the lake is the exception). The panel shows the
+  current hero pulling the rod.
+- **A battler in every suburb** (`src/data/battlers.js`, art in
+  `src/art/paint/battlers.js`): Kos the pollster (Coburg Lake), Lambros the
+  Deputy Mayor (Bell St, outside the town hall; Meghan Hopper now walks
+  Moreland Rd), the bored Summerhill security guard (one trolley, then he
+  gives up), Mark Teapot and the tiny Member for Point Cook (Flemington), Amy
+  with the couch, Austin (they/them) and Nala (Altona), Parking Officer Pam
+  (Civic Parade) and Doggies Dave (Footscray). A trainer's `ambush: n` walks
+  up and challenges you on your nth visit to the zone (`state.data.visits`,
+  `WorldScene.ambush`) until beaten once: the golfer next door (2nd visit to
+  Loddon Ave, standing on the street) and Tito Ramon, the karaoke dad (4th
+  visit to Lohse St Reserve). Looks gained `short`, `belly` and `tie`.
+- Dog show: a Speed type pet runs the agility course faster, and an evolved
+  pet gets a presentation bonus (`HandlingEvent` options).
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.
@@ -260,7 +282,7 @@ Four chapters, words in `src/data/story.js`, state in `state.data.story` (see `s
 
 - `src/data/cooking.js`: pantry items (`ingredient: true`, Coles' Pantry tab at Summerhill), dishes (`dish`, `homegrown`, `baked`), cook books (`book: true` with `cookbook: [recipes]`, sold at Brunswick Bound; having one in the bag teaches them) and `RECIPES` with `learn`: `'start'`, `{ book }`, `{ hearts: [who, n] }` (taught at that heart scene: Trish's lemon delicious at 10, Betty's sponge at 8) or `{ gift: who }` (Nonna Concetta's oil cake, the first time you give her something she loves). Learnt recipes are in `state.data.recipes`. Cook at the stove at home (`cook()`); the Chapter 2 fish pie is listed only while it is needed.
 - **The Great Coburg Bake Off**: Saturdays, talk to Betty on Moreland Rd and enter something baked. Recipe `score` plus luck against three rivals, one of them always Meghan Hopper (`BAKE_OFF.meghan`), the serial Labor candidate who nearly always wins. Betty tells you about it the first time you chat (`side.bake`) and it becomes a side mission on the To Do list: a secret recipe (one not from a book) gets `secretBonus` and is what it takes to beat her. Prizes (tuning sheet, now $80/$40/$15) and a blue ribbon, once a week (`flags.bakeoffWeek`). The Cheats app has Go to the bake-off.
-- **Meghan Hopper** (`src/data/north.js`) pushes a pram with her cat Whitlam in it up and down Bell St, Coburg (`pram: true` on the NPC draws it). She battles with him.
+- **Meghan Hopper** (`src/data/north.js`) pushes a pram with her cat Whitlam in it up and down Moreland Rd, Coburg (she moved from Bell St) (`pram: true` on the NPC draws it). She battles with him.
 - **House paint**: Lincraft's Paint tab sets `state.data.wallPaint`, which recolours the painted walls at home.
 
 ### Farming and house upgrades
