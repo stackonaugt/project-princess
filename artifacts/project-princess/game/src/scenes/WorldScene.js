@@ -35,7 +35,7 @@ const GATES = {
 // People you can't invite to the party (Chapter 4).
 const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
 
-// What you can catch where: [item, weight, junk?]. Bait halves the junk.
+// What you can catch where: [item, weight, junk?]. Every cast uses bait, which halves the junk.
 // Where there are ducks to feed (with stale bread), and how many old-bloke
 // wins at bowls earn the Newcomer's Cup.
 const DUCK_ZONES = ['lake', 'wetlands', 'coburglake', 'altona', 'gardens', 'flinders'];
@@ -54,12 +54,13 @@ import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
 import { TRAINERS, PRIZE_TRAINER, fineFor } from '../data/enemies.js';
 import { rollEncounter, scaleWild, starterEncounter, readyTeam, START_LEVEL, gainXp, petFighter } from '../systems/battle.js';
-import { form, formText, canEvolve, evolve } from '../systems/forms.js';
+import { form, formText, canEvolve, evolve, petTex, isEvolved } from '../systems/forms.js';
+import { playEvolution } from '../systems/evolution-fx.js';
 import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
 import { CROPS } from '../data/crops.js';
 import { typeName } from '../data/types.js';
 import { flavourFor } from '../data/flavour.js';
-import { FURNITURE } from '../data/furniture.js';
+import { FURNITURE, PLANT_SPOTS, plantAt, plantSpots } from '../data/furniture.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
@@ -106,6 +107,8 @@ export class WorldScene extends Phaser.Scene {
     state.data.region = this.regionId;
     const firstVisit = !state.data.visited.includes(this.regionId);
     state.visit(this.regionId);
+    // Walking back in (not a reload or waking up) counts as a visit: some trainers wait for your second or fourth.
+    this.visitNo = this.entryName && !this.newDay ? state.countVisit(this.regionId) : (state.data.visits?.[this.regionId] || 0);
     // A rest at home fixes everyone.
     const tired = region.home && Object.values(state.data.pets).some(r => r.hp !== null && r.hp !== undefined);
     if (region.home) state.healAll();
@@ -211,7 +214,7 @@ export class WorldScene extends Phaser.Scene {
       this.time.delayedCall(900, () => ui.toast('Off-lead dog park! Your team has a lovely run. +friendship'));
     }
     this.buildStoryBits();
-    this.intro(firstVisit).then(() => this.catchUpJulie()).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime());
+    this.intro(firstVisit).then(() => this.catchUpJulie()).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime()).then(() => this.ambush());
   }
 
   // A nudge each morning about anything time sensitive today.
@@ -750,6 +753,20 @@ export class WorldScene extends Phaser.Scene {
     const f = FURNITURE[t.id], furn = state.data.furniture;
     const who = f.shop === 'bunnings' ? 'Olly' : 'Franco';
     const text = `${f.name}. $${f.price}. ${f.desc}`;
+    // A pot plant replaces one spot at home (or a matching pair): ask which.
+    if (f.slot === 'plant') {
+      const spots = plantSpots(u => state.hasUpgrade(u)).filter(spot => plantAt(furn, spot) !== t.id);
+      if (!spots.length) return ui.say([text, 'Every plant spot at home already has one of these.']);
+      const spot = await ui.say({ text: `${text} Which plant at home should it replace?`, choices: [
+        ...spots.map(id => ({ label: `${PLANT_SPOTS[id].name} (${FURNITURE[plantAt(furn, id)].name})`, value: id })),
+        { label: 'Not now', value: false }] }, { cancelValue: false });
+      if (!spot) return;
+      if (!state.spend(f.price)) { sfx.bump(); return ui.say([`You need $${f.price}. You have $${state.data.money}.`]); }
+      state.placeFurniture(t.id, spot);
+      sfx.pickup();
+      ui.toast(`${f.name}: ${PLANT_SPOTS[spot].name}`);
+      return ui.say([`Olly nods. "Good choice. I'll drop it round on my way home and swap the old one out for you."`]);
+    }
     if (furn[f.slot] === t.id) return ui.say([text, 'You already have this one at home.']);
     const owned = furn.owned.includes(t.id);
     const go = await ui.say({ text, choices: [owned ? { label: 'Put it back in the house', value: true } : { label: `Buy it ($${f.price})`, value: true }, { label: 'Not now', value: false }] }, { cancelValue: false });
@@ -835,12 +852,14 @@ export class WorldScene extends Phaser.Scene {
     if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
     if (this.emilioWaiting()) return this.emilio();
     const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
-    const bait = state.count('bait') > 0;
-    if (bait) state.removeItem('bait');
-    let r = Math.random() * table.reduce((a, [, w, j]) => a + (bait && j ? w / 2 : w), 0), fish = table[0][0];
-    for (const [id, w, j] of table) { r -= bait && j ? w / 2 : w; if (r <= 0) { fish = id; break; } }
+    // Every cast costs one bait, caught or not. No bait, no fishing.
+    if (state.count('bait') < 1) return ui.say(['No bait left. Bazza at Anaconda in Preston sells it, a couple of dollars a tub.']);
+    state.removeItem('bait');
+    let r = Math.random() * table.reduce((a, [, w, j]) => a + (j ? w / 2 : w), 0), fish = table[0][0];
+    for (const [id, w, j] of table) { r -= j ? w / 2 : w; if (r <= 0) { fish = id; break; } }
     state.data.minutes += 10;
-    const got = await ui.fish(fish, FISH_ZONE[fish] + (bait ? 0.06 : 0));
+    this.save();
+    const got = await ui.fish(fish, FISH_ZONE[fish]);
     if (got) { awardSkill('gathering',15); state.addItem(got); state.data.stats.fish = (state.data.stats.fish || 0) + 1; ui.toast(`+1 ${ITEMS[got].name}`, itemIcon(got, 32)); }
     this.save();
   }
@@ -1058,15 +1077,30 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // A pet that's levelled up enough evolves once your friendship is strong enough.
+  // Pokémon style (systems/evolution-fx.js): glow, flicker, burst, fanfare.
+  // ui.activity holds every input while it plays; this.evolving stops a second start.
   async evolveInWorld(pet) {
-    const id = pet.id, before = form(id).name;
-    await ui.say([`What's this? ${before} is glowing!`]);
-    sfx.found();
-    const cam = this.cameras.main;
-    for (let i = 0; i < 6; i++) { pet.setTintFill(0xffffff); await new Promise(r => setTimeout(r, 140)); pet.clearTint(); await new Promise(r => setTimeout(r, 120)); }
-    cam.flash(500, 255, 255, 255);
-    evolve(id);
-    pet.refreshForm();
+    const id = pet.id;
+    if (this.evolving || !canEvolve(id)) return;
+    this.evolving = true;
+    const before = form(id).name;
+    try {
+      await ui.say([`What's this? ${before} is glowing!`]);
+      const hold = { evolution: true }, wasScripted = pet.scripted;
+      ui.activity = hold;
+      pet.scripted = true; pet.actionPose = null;
+      pet.body?.setVelocity?.(0, 0); pet.anims?.stop();
+      try {
+        await playEvolution(this, pet, { from: petTex(id), to: `pet-${id}-evolved`, depth: 9100, reveal: () => { evolve(id); pet.refreshForm(); } });
+      } finally {
+        if (ui.activity === hold) ui.activity = null;
+        pet.scripted = wasScripted;
+      }
+      if (!isEvolved(id)) { evolve(id); pet.refreshForm(); }
+      await this.finishEvolution(pet, id, before);
+    } finally { this.evolving = false; }
+  }
+  async finishEvolution(pet, id, before) {
     this.heartsFx(pet, 10);
     const d = form(id);
     ui.banner('Evolution!', `${before} became ${d.name}`);
@@ -1088,7 +1122,8 @@ export class WorldScene extends Phaser.Scene {
     const trainer = TRAINERS[npc.id];
     const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
     // Trainers you have never beaten go straight to their challenge.
-    if (trainer && !done && !state.data.beaten[npc.id]) return this.challenge(npc, trainer, opts);
+    // (Ambushers, like the karaoke dad, wait for their visit: until then they just chat.)
+    if (trainer && !done && !state.data.beaten[npc.id] && !(trainer.ambush && (this.visitNo || 0) < trainer.ambush)) return this.challenge(npc, trainer, opts);
     const f = state.friend(npc.id);
     if (!f.met) { f.met = true; bus.emit('friends:changed'); }
     // Chris hands out the community garden plots the first time you chat
@@ -1459,6 +1494,28 @@ export class WorldScene extends Phaser.Scene {
     const lines = [`You befriended ${d.name}, the ${typeName(d.type).toLowerCase()} type ${d.species.toLowerCase()}!`, `${d.name} was added to your Petdex, and will hang out at your place on Allen St.`];
     if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
     await ui.say(lines, { name: d.name, portrait: petPortrait(id) });
+  }
+
+  // Trainers with `ambush: n` (data/enemies.js) walk up and challenge you on your
+  // nth visit to their zone or any later one, until you have beaten them once.
+  async ambush() {
+    // Wait for any welcome or story lines to finish first.
+    for (let i = 0; i < 100 && ui.blocking(); i++) await new Promise(r => this.time.delayedCall(300, r));
+    if (this.leaving || this.party || ui.blocking()) return;
+    for (const npc of this.npcs) {
+      const t = TRAINERS[npc.id];
+      if (!t?.ambush || npc.gone || !npc.visible || state.data.beaten[npc.id] || this.visitNo < t.ambush) continue;
+      if (!readyTeam().length) return;
+      await new Promise(r => this.time.delayedCall(500, r));
+      if (this.leaving || ui.blocking()) return;
+      npc.pause(8);
+      ui.toast(`${npc.info.name} has spotted you!`);
+      const dx = this.player.x - npc.x, dy = this.player.y - npc.y, d = Math.hypot(dx, dy);
+      if (d > 28 && d < 16 * 14) await npc.scriptTo([[this.player.x - dx / d * 20, this.player.y - dy / d * 20]], 70);
+      npc.faceTowards(this.player.x, this.player.y);
+      await this.challenge(npc, t, { name: npc.info.name, portrait: npcIcon(npc.id) });
+      return;
+    }
   }
 
   // Once per visit, the neighbours call out as Helen passes their garden.

@@ -11,6 +11,8 @@ test('the shared animation list contains every current battle move animation', (
   assert.deepEqual(MOVE_ANIMATIONS, [
     'lunge', 'bite', 'claw', 'beam', 'shout', 'heal',
     'fade', 'hop', 'dig', 'gust', 'stink', 'flame', 'bed', 'burnbed',
+    'scoot', 'zoomies', 'herd', 'nap', 'stare', 'puppyeyes', 'snack',
+    'fetch', 'splash', 'shake', 'string', 'stretch', 'sharpen',
   ]);
 });
 

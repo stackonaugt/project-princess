@@ -82,6 +82,12 @@
   `WorldScene.ambush`) until beaten once: the golfer next door (2nd visit to
   Loddon Ave, standing on the street) and Tito Ramon, the karaoke dad (4th
   visit to Lohse St Reserve). Looks gained `short`, `belly` and `tie`.
+- **Move animations**: `SIGNATURE_ANIMATIONS` in `src/data/move-animations.js`
+  maps a pet's special move to its routine (Poppy's scoot, zoomies, herd,
+  fetch, nap...) and wins over the move's own `anim`; `ANIMATION_POSES` says
+  which sheet action each routine cycles. Evolutions play a glow, flicker,
+  burst and reveal with sound (`systems/evolution-fx.js`) in battle and in
+  the world. Battle background PNGs cover the field (cropped, not squashed).
 - Dog show: a Speed type pet runs the agility course faster, and an evolved
   pet gets a presentation bonus (`HandlingEvent` options).
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`

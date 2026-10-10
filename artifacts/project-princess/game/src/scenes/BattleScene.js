@@ -25,6 +25,8 @@ import { itemIcon, petIcon } from '../ui/images.js';
 import { custom, playerTexture } from '../art/textures.js';
 import { hash } from '../util.js';
 import { createBattleEffectTextures, playBattleAnimation } from '../systems/battle-animations.js';
+import { moveAnimations } from '../data/move-animations.js';
+import { playEvolution } from '../systems/evolution-fx.js';
 import * as R from '../systems/battle.js';
 
 const hex = c => parseInt(c.slice(1), 16);
@@ -162,7 +164,11 @@ export class BattleScene extends Phaser.Scene {
     this.backgroundArt.setVisible(Boolean(background));
     if (background) {
       const field = Math.max(1, H - (B.panelHeight() || 170));
-      this.backgroundArt.setTexture(background).setPosition(0, 0).setDisplaySize(W, field);
+      // Cover, not squash: keep the art's shape, centre it and take a slice
+      // that fills the field (a phone shows the middle of a wide picture).
+      const src = this.textures.get(background).getSourceImage();
+      const k = Math.max(W / src.width, field / src.height);
+      this.backgroundArt.setTexture(background).setOrigin(0.5, 1).setPosition(W / 2, field).setDisplaySize(src.width * k, src.height * k);
       return;
     }
     if (this.opts.exhibition) {
@@ -261,9 +267,9 @@ export class BattleScene extends Phaser.Scene {
     spr.x = x;
   }
 
-  // One animation per move kind. hit = the move does damage.
+  // One animation per move kind (or a list, played in turn). hit = the move does damage.
   async play(anim, user, target, type, hit) {
-    return playBattleAnimation(this, anim, user, target, type, hit, sfx);
+    for (const a of [].concat(anim)) await playBattleAnimation(this, a, user, target, type, hit, sfx);
   }
 
   // ------------------------------------------------------------ the battle
@@ -467,7 +473,7 @@ export class BattleScene extends Phaser.Scene {
         return this.say(`${target.name} isn't there! ${user.name} misses.`);
       }
       const r = R.damage(user, target, m);
-      await this.play(m.anim, user, target, m.type, true);
+      await this.play(moveAnimations(id, m), user, target, m.type, true);
       let dmg = r.dmg, refused = false;
       // In Julie's tutorial your pet always hangs on: you can't lose your first fight.
       if (dmg >= target.hp && (R.refusesToLose(target) || (this.trainer?.tutorial && target.side === 'mine'))) { dmg = target.hp - 1; refused = true; }
@@ -491,7 +497,7 @@ export class BattleScene extends Phaser.Scene {
         await this.say(`${user.name} chews up ${target.name}'s ${target.lostHeld}!`);
       }
     } else {
-      await this.play(m.anim, user, target, m.type, false);
+      await this.play(moveAnimations(id, m), user, target, m.type, false);
       await said;
     }
     await this.applyEffects(user, target, e);
@@ -580,29 +586,38 @@ export class BattleScene extends Phaser.Scene {
     }[reaction]);
   }
 
-  // Evolution, Pokémon style: flicker between the two forms, then a flash.
+  // Evolution, Pokémon style (systems/evolution-fx.js): glow, the two forms
+  // flicker faster and faster, a burst of light, then the new form and a fanfare.
   async evolveFighter(f) {
-    const id = f.petId, before = f.name, active = f === this.mine;
+    if (f.evolving || !canEvolve(f.petId, f.level)) return;
+    f.evolving = true;
+    const id = f.petId, before = f.name, active = f === this.mine && this.mineSpr.visible;
     await this.say(`What's this? ${before} is changing!`);
-    if (active) {
-      const spr = this.mineSpr, newTex = `pet-${id}-evolved`;
-      for (let i = 0; i < 8; i++) {
-        spr.setTexture(i % 2 ? f.tex : newTex, 0).setTintFill(0xffffff);
-        sfx.blip();
-        await this.wait(260 - i * 25);
+    const becomeNewForm = () => {
+      evolve(id);
+      const d = form(id);
+      Object.assign(f, { name: d.name, type: d.type, base: d.stats, moves: d.moves, tex: petTex(id), stages: { atk: 0, def: 0 } });
+      f.stats = R.fighterStats(f); f.maxHp = f.stats.hp; f.hp = f.maxHp;
+      if (active) {
+        this.setFighterSprite(this.mineSpr, f);
+        this.mineSpr.setOrigin(.5, this.footOrigin(f.tex)).setPosition(this.minePos.x, this.minePos.y - this.unit);
       }
-      this.cameras.main.flash(500, 255, 255, 255);
-    }
-    evolve(id);
-    const d = form(id);
-    Object.assign(f, { name: d.name, type: d.type, base: d.stats, moves: d.moves, tex: petTex(id), stages: { atk: 0, def: 0 } });
-    f.stats = R.fighterStats(f); f.maxHp = f.stats.hp; f.hp = f.maxHp;
+    };
     if (active) {
-      this.setFighterSprite(this.mineSpr, f); this.mineSpr.setPosition(this.minePos.x, this.minePos.y);
-      this.burst(this.mid(this.mineSpr).x, this.mid(this.mineSpr).y, hex(TYPES[typeList(f.type)[0]].colour), 24, { key: 'bt-star', spread: 70 });
+      this.animating = true;
+      try {
+        this.tweens.killTweensOf(this.mineSpr);
+        await playEvolution(this, this.mineSpr, { from: f.tex, to: `pet-${id}-evolved`, reveal: becomeNewForm });
+      } finally { this.animating = false; }
+      if (!isEvolved(id)) becomeNewForm();
+      this.layout();
       this.showMine();
+    } else {
+      becomeNewForm();
+      sfx.evolveFanfare();
     }
-    sfx.found();
+    f.evolving = false;
+    const d = form(id);
     await this.say(`${before} evolved into ${d.name}!`);
     await this.say(`${d.name} is now ${typeName(d.type)} type, fully rested, with brand new moves.`);
   }
