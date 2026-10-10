@@ -13,8 +13,9 @@
 //   o  timber floor T  bathroom tiles K  carpet        n  lino (laundry)
 //   Q  terrazzo (civic centre foyer)   U  patterned blue carpet (council chamber, brick walls)
 import { hash } from '../../util.js';
-import { shade } from './painter.js';
-import { terrainContours, traceTerrain } from './terrain-curves.js';
+import { painter, shade } from './painter.js';
+import { terrainContours, traceTerrain, pathContours, tracePaths } from './terrain-curves.js';
+import { activeTerrainFeatures, featureTrace, strokeFeature } from './terrain-features.js';
 
 export const TILE_NAMES = {
   '.': 'grass', ',': 'flowers', '"': 'tallgrass', '=': 'path', '#': 'road', '+': 'tram', 'x': 'crossing',
@@ -35,52 +36,157 @@ const T = 16;
 let WALL_PAINT = null;
 export function paintGround(p, map, grass, custom = {}) {
   WALL_PAINT = map.wallPaint || null;
-  const get = (x, y) => (x < 0 || y < 0 || x >= map.w || y >= map.h) ? null : map.ground[y][x];
-  const court = map.id === 'allen';
-  const paths= !map.wallPaint && !map.ground.some(row=>row.includes('W'));
-  const pathLetters='=ugf';
+  const outdoor = !map.wallPaint && !map.ground.some(row => row.includes('W'));
+  const paths = outdoor ? '=ug' : '';
+  const features = activeTerrainFeatures(map);
+  const rings = features.filter(feature => feature.onlyReplace);
+  const footpathMap = rings.length ? { ...map, ground: map.ground.map((row, y) =>
+    [...row].map((c, x) => c === 'f' && rings.some(({ bounds: [left, top, w, h] }) =>
+      x >= left && x < left + w && y >= top && y < top + h) ? '.' : c).join('')) } : map;
   for (let ty = 0; ty < map.h; ty++) for (let tx = 0; tx < map.w; tx++) {
     const c = map.ground[ty][tx];
-    if (c === '~' || (court && '#f'.includes(c)) || (paths && pathLetters.includes(c))) {
+    if (c === '~' || paths.includes(c) || (outdoor && c === 'f')) {
       if (custom.grass) p.ctx.drawImage(custom.grass, tx * T, ty * T, T, T);
       else grassBase(p, tx, ty, tx * T, ty * T, grass);
-      continue;
-    }
-    const img = custom[TILE_NAMES[c]];
-    if (img) { p.ctx.drawImage(img, 0, 0, img.width, img.height, tx * T, ty * T, T, T); continue; }
-    // A custom grass tile also goes under flowers and tall grass.
-    const under = (c === ',' || c === '"') && custom.grass;
-    if (under) p.ctx.drawImage(under, 0, 0, under.width, under.height, tx * T, ty * T, T, T);
-    paintTile(p, c, tx, ty, tx * T, ty * T, get, grass, !!under);
+    } else paintGroundTile(p, map, grass, tx, ty, custom, map.tileRotations?.[ty]?.[tx] || 0);
   }
-  if(paths) roundedSurface(p,map,grass,custom,get,pathLetters,'paths','#a19473');
-  roundedSurface(p, map, grass, custom, get, '~w', '~', '#2f6aa3');
-  if (court) {
-    roundedSurface(p, map, grass, custom, get, '#f', 'f', '#9c9686');
-    roundedSurface(p, map, grass, custom, get, '#', '#', '#e2dccf');
-  }
-  // Bridges keep their planks and interaction footprint over the curved water.
-  for (let y=0;y<map.h;y++) for (let x=0;x<map.w;x++) if (get(x,y)==='w') {
-    if (custom.bridge) p.ctx.drawImage(custom.bridge,x*T,y*T,T,T);
-    else paintTile(p,'w',x,y,x*T,y*T,get,grass,false,true);
-  }
+  if (paths) contourSurface(p, map, grass, custom, paths, 'paths', '#a19473');
+  if (outdoor) contourSurface(p, footpathMap, grass, custom, 'f', 'footpaths', '#9c9686');
+  contourSurface(p, map, grass, custom, '~w', '~', '#2f6aa3');
+  for (const feature of features) paintFeature(p, map, grass, custom, feature);
+  // Decks are drawn last and keep the entire walkable cell, including supplied
+  // artwork and its quarter-turn rotation.
+  for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++)
+    if (map.ground[y][x] === 'w') paintGroundTile(p, map, grass, x, y, custom,
+      map.tileRotations?.[y]?.[x] || 0, true);
 }
 
-function roundedSurface(p,map,grass,custom,get,letters,material,edge) {
-  const loops=terrainContours(map,letters,T,material!=='~');
+function contourSurface(p, map, grass, custom, letters, material, edge) {
+  const isPath = material === 'paths' || material === 'footpaths';
+  const loops = isPath ? pathContours(map, letters, T) : terrainContours(map, letters, T);
   if (!loops.length) return;
-  p.ctx.save(); traceTerrain(p.ctx,loops); p.ctx.clip('evenodd');
-  for (let y=0;y<map.h;y++) for (let x=0;x<map.w;x++) {
-    let near=false;
-    for (let dy=-1;dy<=1&&!near;dy++) for (let dx=-1;dx<=1;dx++) if (letters.includes(get(x+dx,y+dy)||'!')) { near=true; break; }
-    if (!near) continue;
-    let surface=material;
-    if(material==='paths'){surface=letters.includes(get(x,y)||'!')?get(x,y):null;for(let dy=-1;dy<=1&&!surface;dy++)for(let dx=-1;dx<=1&&!surface;dx++){const c=get(x+dx,y+dy);if(letters.includes(c||'!'))surface=c;}surface ||= '=';}
-    const img=custom[TILE_NAMES[surface]];
-    if (img) p.ctx.drawImage(img,x*T,y*T,T,T);
-    else paintTile(p,surface,x,y,x*T,y*T,get,grass,false,true);
+  const trace = () => isPath ? tracePaths(p.ctx, loops) : traceTerrain(p.ctx, loops);
+  p.ctx.save();
+  trace(); p.ctx.clip('evenodd');
+  for (let y = 0; y < map.h; y++) for (let x = 0; x < map.w; x++) {
+    let source = letters.includes(map.ground[y][x]) ? [x, y] : null;
+    for (let dy = -1; dy <= 1 && !source; dy++) for (let dx = -1; dx <= 1 && !source; dx++)
+      if (letters.includes(map.ground[y + dy]?.[x + dx] || '!')) source = [x + dx, y + dy];
+    if (!source) continue;
+    const surface = isPath ? map.ground[source[1]][source[0]] : material;
+    paintGroundTile(p, map, grass, x, y, custom,
+      map.tileRotations?.[source[1]]?.[source[0]] || 0,
+      material !== 'footpaths' || ![[-1, 0], [1, 0], [0, -1], [0, 1]]
+        .some(([dx, dy]) => ROADLIKE.includes(map.ground[y + dy]?.[x + dx] || '!')),
+      surface);
   }
-  traceTerrain(p.ctx,loops); p.ctx.strokeStyle=edge; p.ctx.lineWidth=material==='~'?2:2.5; p.ctx.stroke();
+  trace();
+  p.ctx.strokeStyle = edge; p.ctx.lineWidth = material === '~' ? 2 : 2.5; p.ctx.stroke();
+  p.ctx.restore();
+}
+
+function paintFeature(p, map, grass, custom, feature) {
+  const [left, top, width, height] = feature.bounds;
+  p.ctx.save();
+  p.ctx.beginPath(); p.ctx.rect(left * T, top * T, width * T, height * T); p.ctx.clip();
+  // Remove only the landmark's stepped ground; buildings and their source
+  // identities are untouched. Other surfaces (e.g. driveways) are overlaid below.
+  for (let y = top; y < top + height; y++) for (let x = left; x < left + width; x++) {
+    const c = map.ground[y][x];
+    if (feature.onlyReplace && !feature.replace.includes(c)) continue;
+    if (feature.replace.includes(c) && !(feature.preserveBase || '').includes(c)) {
+      if (feature.indoor && custom.wall)
+        paintGroundTile(p, map, grass, x, y, custom, map.tileRotations?.[y]?.[x] || 0, true, 'W');
+      else if (feature.indoor) p.r('#6a6460', x * T, y * T, T, T);
+      else paintGroundTile(p, map, grass, x, y, custom, 0, true, '.');
+    } else paintGroundTile(p, map, grass, x, y, custom, map.tileRotations?.[y]?.[x] || 0);
+  }
+  for (const layer of feature.layers) {
+    const trace = featureTrace(feature, layer);
+    p.ctx.save();
+    trace(p.ctx); p.ctx.clip();
+    for (let y = top; y < top + height; y++) for (let x = left; x < left + width; x++)
+      paintGroundTile(p, map, grass, x, y, custom, map.tileRotations?.[y]?.[x] || 0, true, layer.material);
+    strokeFeature(p.ctx, feature, trace);
+    p.ctx.strokeStyle = layer.edge; p.ctx.lineWidth = layer.lineWidth || 3; p.ctx.stroke();
+    p.ctx.restore();
+  }
+  // Keep authored/source driveways, doorways and other unrelated surfaces.
+  const approachRoad = feature.clipApproaches && feature.layers.find(layer => layer.material === '#');
+  const approachTraces = approachRoad ? approachRoad.shapes.map(shape => featureTrace(feature, { ...approachRoad, shapes: [shape] })) : [];
+  for (let y = top; y < top + height; y++) for (let x = left; x < left + width; x++) {
+    const c = map.ground[y][x];
+    if (!feature.onlyReplace && !feature.replace.includes(c) && !'.,\"L'.includes(c)) {
+      // A source driveway may meet the curved road, never paint across it.
+      // Clip each shape separately so overlapping ellipse/approach rectangles
+      // form a union rather than even-odd holes.
+      const road = c === 'h' ? approachRoad : null;
+      if (road) {
+        p.ctx.save();
+        const append = new Proxy(p.ctx, { get(ctx, key) {
+          if (key === 'beginPath') return () => {};
+          const value = ctx[key]; return typeof value === 'function' ? value.bind(ctx) : value;
+        } });
+        for (const trace of approachTraces) {
+          p.ctx.beginPath(); p.ctx.rect(left * T, top * T, width * T, height * T);
+          trace(append); p.ctx.clip('evenodd');
+        }
+      }
+      paintGroundTile(p, map, grass, x, y, custom, map.tileRotations?.[y]?.[x] || 0);
+      if (road) p.ctx.restore();
+    }
+  }
+  if (feature.clipApproaches) {
+    const road = feature.layers.find(layer => layer.material === '#');
+    if (road) {
+      const trace = featureTrace(feature, road); trace(p.ctx); strokeFeature(p.ctx, feature, trace);
+      p.ctx.strokeStyle = road.edge; p.ctx.lineWidth = road.lineWidth || 3; p.ctx.stroke();
+    }
+  }
+  p.ctx.restore();
+}
+
+// Paint one cell using the same neighbour rules as the full gameplay ground
+// pass. Studio uses this to update a small dirty patch while a brush is moving.
+export function paintGroundTile(p, map, grass, tx, ty, custom = {}, rotation = 0, smooth = false, surface = null) {
+  WALL_PAINT = map.wallPaint || null;
+  if (tx < 0 || ty < 0 || tx >= map.w || ty >= map.h) return;
+  const get = (x, y) => (x < 0 || y < 0 || x >= map.w || y >= map.h) ? null : map.ground[y][x];
+  const c = surface || map.ground[ty][tx], sx = tx * T, sy = ty * T;
+  const img = custom[TILE_NAMES[c]];
+  const turns = ((Math.trunc(rotation) % 4) + 4) % 4;
+  if (img) {
+    p.ctx.save();
+    if (turns) {
+      p.ctx.translate(sx + T / 2, sy + T / 2);
+      p.ctx.rotate(turns * Math.PI / 2);
+      p.ctx.drawImage(img, 0, 0, img.width, img.height, -T / 2, -T / 2, T, T);
+    } else p.ctx.drawImage(img, 0, 0, img.width, img.height, sx, sy, T, T);
+    p.ctx.restore();
+    return;
+  }
+  // A custom grass tile also goes under flowers and tall grass.
+  const under = (c === ',' || c === '"') && custom.grass;
+  if (under) p.ctx.drawImage(under, 0, 0, under.width, under.height, sx, sy, T, T);
+  paintTile(p, c, tx, ty, sx, sy, get, grass, !!under, smooth);
+  if (!turns) return;
+
+  // Keep the neighbour-aware perimeter in its original orientation; rotate
+  // only the tile's inner artwork so shorelines, kerbs and gutter details still
+  // meet their actual neighbours.
+  const doc = p.ctx.canvas?.ownerDocument || globalThis.document;
+  if (!doc?.createElement) return;
+  const stamp = doc.createElement('canvas');
+  stamp.width = stamp.height = T;
+  const stampPainter = painter(stamp.getContext('2d'));
+  paintTile(stampPainter, c, tx, ty, 0, 0, get, grass, !!under, smooth);
+  p.ctx.save();
+  p.ctx.beginPath();
+  p.ctx.rect(sx + 2, sy + 2, T - 4, T - 4);
+  p.ctx.clip();
+  p.ctx.translate(sx + T / 2, sy + T / 2);
+  p.ctx.rotate(turns * Math.PI / 2);
+  p.ctx.drawImage(stamp, -T / 2, -T / 2);
   p.ctx.restore();
 }
 

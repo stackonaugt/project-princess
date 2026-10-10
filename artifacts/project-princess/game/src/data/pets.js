@@ -32,10 +32,11 @@ export let PETS = [
     loves: ['ribbon', 'chicken', 'strawberry'], likes: ['cheese', 'croissant', 'chilli'], dislikes: ['lemon', 'tennis', 'zucchini'],
     stats: { hp: 66, attack: 84, defence: 52, speed: 80, special: 100 },
     evolution: {
-      name: 'Flamcess', species: 'Toy poodle (on fire)', type: 'fire', level: 14, hearts: 5, sprite: 'flamcess',
-      pal: { a: '#ffe0b0', b: '#f0b070', w: '#fff0a0', c: '#c8501a', p: '#e83a2a', y: '#ffd030', o: '#f08020', r: '#d8301a', n: '#5a2010', e: '#2a1a10' },
+      name: 'Queencess', species: 'Royal toy poodle', type: 'fairy', level: 14, hearts: 5, sprite: 'poodle',
+      pal: { a: '#fff7ed', b: '#e0d6cb', w: '#ffffff', c: '#866443', p: '#a079b8', n: '#5a3028', e: '#2a1a10' },
+      bio: 'Princess has become Queencess. A tiny crown, an enormous sense of authority, and the same beloved poodle beneath it.',
       stats: { hp: 82, attack: 98, defence: 62, speed: 92, special: 116 },
-      moves: ['blazeclaws', 'hotbite', 'scorchbed', 'pompom'],
+      moves: ['crownclaw', 'queensdecree', 'royalrest', 'royalwave'],
     },
   },
   {
@@ -62,10 +63,11 @@ export let PETS = [
     loves: ['carrot', 'lemon', 'basil'], likes: ['feather', 'croissant', 'strawberry', 'zucchini'], dislikes: ['snag', 'chicken', 'chilli'],
     stats: { hp: 50, attack: 55, defence: 60, speed: 95, special: 90 },
     evolution: {
-      name: 'Poltergeist Spooky', species: 'Bunny (haunted)', type: ['ghost', 'psychic'], level: 15, hearts: 5, sprite: 'poltergeist',
-      pal: { a: '#3e3450', b: '#2a2238', w: '#7a68a0', e: '#ff6ae0', p: '#c890e8', g: '#9fe8ff', x: '#e8f8ff' },
-      stats: { hp: 66, attack: 62, defence: 72, speed: 112, special: 112 },
-      moves: ['possess', 'rattlechains', 'flicker', 'hauntedcarrot'],
+      name: 'Ghost', species: 'Large white bunny', type: 'ghost', level: 15, hearts: 5, sprite: 'bunny',
+      pal: { a: '#ffffff', b: '#dce9ed', w: '#f4ffff', e: '#68c6dd', p: '#d7adc9', g: '#9fe8ff', x: '#e8f8ff' },
+      bio: 'Spooky becomes Ghost, a large white bunny with gentle blue eyes. She can step through shadows, vanish, and send spectral waves through the room.',
+      stats: { hp: 88, attack: 72, defence: 80, speed: 98, special: 112 },
+      moves: ['ghosthop', 'ghostbeam', 'flicker', 'hauntedcarrot'],
     },
   },
   {
@@ -163,7 +165,7 @@ export let PETS = [
     bio: 'Trish and Gordon’s brown-grey cavoodle. Soft curls, orange harness, spectacularly questionable perfume.',
     clue: 'Trish and Gordon can introduce you on Woods St during the day.',
     funFact: 'Gordon is the source of all the best human food.', favouriteSpot: 'Beside Gordon on the couch.',
-    lines: ['Marty sniffs your shoes, then leans against your leg.', 'His orange harness is clean. The rest of him is debatable.'],
+    lines: { 0: ['Marty sniffs your shoes, then leans against your leg.', 'His orange harness is clean. The rest of him is debatable.'] },
     night: ['Marty is ready for a couch nap.'], rain: ['Wet cavoodle. The smell has somehow become stronger.'], asleep: ['Marty snores into his curls.'],
   },
 ];
@@ -174,7 +176,7 @@ PETS = authoredValue('data/pets.js', 'PETS', PETS);
 for (const p of PETS) {
   const t = PET_TEXT[p.id] || {};
   for (const k of ['bio', 'clue', 'funFact', 'favouriteSpot', 'lines', 'night', 'rain', 'asleep']) if (t[k] !== undefined) p[k] = t[k];
-  if (p.evolution && t.evolvedBio) p.evolution.bio = t.evolvedBio;
+  if (p.evolution && t.evolvedBio && !p.evolution.bio) p.evolution.bio = t.evolvedBio;
 }
 
 export const PET_BY_ID = Object.fromEntries(PETS.map(p => [p.id, p]));

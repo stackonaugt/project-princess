@@ -1,6 +1,9 @@
 import { clone, element, escapeHtml, field, label, readView, rememberView } from './utils.js';
 import { dataset, overlayCustom, persistCollection, removalReferences, scheduleCharacters } from './custom-content.js';
 import { artworkPicker } from './art-picker.js';
+import { drawPersonPreview } from '../src/art/paint/people.js';
+import { MOVE_ANIMATIONS } from '../src/data/move-animations.js';
+import { mountMovePreview } from './move-preview.js';
 
 const titles = {
   PETS: 'Pets', MOVES: 'Battle moves', PET_MOVES: 'Pet move lists', ITEMS: 'Items',
@@ -43,6 +46,15 @@ export async function mountDataEditor(container, context, sectionId, active) {
   collectionControl.value = selected.value;
   const list = container.querySelector('#data-records');
   const inspector = container.querySelector('#record-fields');
+  let movePreview = null;
+  const editorObserver = new MutationObserver(() => {
+    if (!inspector.isConnected) {
+      movePreview?.destroy();
+      movePreview = null;
+      editorObserver.disconnect();
+    }
+  });
+  editorObserver.observe(container, { childList: true, subtree: true });
 
   const current = () => datasets[selected.file][selected.name];
   const entityId = () => selected.name === 'PETS' ? current()[selectedRecord]?.id : selectedRecord;
@@ -169,13 +181,38 @@ export async function mountDataEditor(container, context, sectionId, active) {
 
   function renderValue(value, path, title, depth = 0) {
     const target = selected;
-    const setValue = (path, value) => setAt(path, value, target);
+    const setValue = (path, value) => {
+      setAt(path, value, target);
+      if (target.name === 'NPCS' && path[0] === selectedRecord && path[1] === 'look') {
+        const canvas = inspector.querySelector('[data-testid="art-generated-sprite"]');
+        if (canvas) drawPersonPreview(canvas.getContext('2d'), getAt([selectedRecord, 'look'], target));
+      }
+    };
+    const updateMovePreview = () => {
+      if (selected.name !== 'MOVES') return;
+      const move = getAt(recordPath());
+      movePreview?.update(move?.anim, move?.type);
+    };
     const testId = `field-${selected.name}-${path.join('-') || 'root'}`;
     if (Array.isArray(value)) {
       const box = element('fieldset', { className: 'studio-nested' }, [element('legend', { text: label(title) })]);
       value.forEach((item, index) => {
+        const isMoveAssignment = typeof item === 'string' &&
+          ((selected.name === 'PET_MOVES' && path.length === 1) || (path[0] === '@moves' && path.length === 1));
+        let editor = renderValue(item, [...path, String(index)], `Entry ${index + 1}`, depth + 1);
+        if (isMoveAssignment) {
+          const moves = datasets['data/moves.js']?.MOVES || {};
+          const select = element('select', { 'data-testid': `${testId}-move-${index}` });
+          for (const [id, move] of Object.entries(moves)) {
+            select.append(element('option', { value: id, text: `${move.name || id} (${id})` }));
+          }
+          if (!Object.hasOwn(moves, item)) select.append(element('option', { value: item, text: `${item} (unknown move)` }));
+          select.value = item;
+          select.onchange = () => setValue([...path, String(index)], select.value);
+          editor = field(`Move slot ${index + 1}`, select);
+        }
         const row = element('div', { className: 'studio-array-row' }, [
-          renderValue(item, [...path, String(index)], `Entry ${index + 1}`, depth + 1),
+          editor,
         ]);
         if (!['home', 'sleeps'].includes(String(path.at(-1)))) {
           row.append(element('button', {
@@ -202,7 +239,8 @@ export async function mountDataEditor(container, context, sectionId, active) {
     }
     if (value && typeof value === 'object') {
       const box = element('details', { className: 'studio-nested', open: depth < 2 }, [
-        element('summary', { text: label(title) }),
+        element('summary', { text: selected.name === 'NPCS' && title === 'look' ?
+          'Generated sprite look (fallback)' : label(title) }),
       ]);
       for (const [key, item] of Object.entries(value)) box.append(renderValue(item, [...path, key], key, depth + 1));
       return box;
@@ -214,6 +252,26 @@ export async function mountDataEditor(container, context, sectionId, active) {
       for (const place of character?.places || []) select.append(element('option', { value: place, text: place }));
       select.value = value ?? '';
       select.onchange = () => setValue(path, select.value || null);
+      return field(title, select);
+    }
+    if (selected.name === 'MOVES' && title === 'type') {
+      const select = element('select', { 'data-testid': testId });
+      for (const type of context.catalog.moveTypes || []) {
+        select.append(element('option', { value: type.id, text: type.name }));
+      }
+      if (!context.catalog.moveTypes?.some(type => type.id === value)) {
+        select.append(element('option', { value, text: `${value} (current)` }));
+      }
+      select.value = value;
+      select.onchange = () => { setValue(path, select.value); updateMovePreview(); };
+      return field(title, select);
+    }
+    if (selected.name === 'MOVES' && title === 'anim') {
+      const select = element('select', { 'data-testid': testId });
+      for (const animation of MOVE_ANIMATIONS) select.append(element('option', { value: animation, text: animation }));
+      if (!MOVE_ANIMATIONS.includes(value)) select.append(element('option', { value, text: `${value} (current)` }));
+      select.value = value;
+      select.onchange = () => { setValue(path, select.value); updateMovePreview(); };
       return field(title, select);
     }
     if (path.at(-2) === 'days') {
@@ -236,17 +294,21 @@ export async function mountDataEditor(container, context, sectionId, active) {
     } else if (value === null) {
       return element('p', { className: 'studio-muted', text: `${label(title)}: none` });
     } else {
-      const multiline = value.length > 80 || value.includes('\n');
+      const multiline = (selected.name === 'MOVES' && ['text', 'recoilText'].includes(title)) ||
+        value.length > 80 || value.includes('\n');
       input = element(multiline ? 'textarea' : 'input', {
         value, ...(multiline ? { rows: 3 } : { type: 'text' }), 'data-testid': testId,
         readOnly: title === 'id',
       });
       input.onchange = () => { if (input.isConnected) setValue(path, input.value); };
     }
-    return field(title, input);
+    return field(selected.name === 'NPCS' && title === 'look' ?
+      'Generated sprite look (fallback)' : title, input);
   }
 
   function renderInspector() {
+    movePreview?.destroy();
+    movePreview = null;
     inspector.replaceChildren();
     const all = records();
     if (!all.length) {
@@ -261,10 +323,25 @@ export async function mountDataEditor(container, context, sectionId, active) {
     if (selected.name === 'PETS' || selected.name === 'NPCS') {
       inspector.append(element('p', { className: 'studio-muted', text: 'Custom dialogue, moves and supplied artwork are linked below. Built-in artwork stays in the sprite-file workflow; built-in text is edited in Stories & dialogue.' }));
     }
+    if (selected.name === 'NPCS' && value?.look) {
+      inspector.append(element('p', { className: 'studio-muted', text:
+        'Generated sprite look controls the built-in code-drawn fallback. For custom characters, an assigned walking PNG replaces it; remove that assignment to return to this look. Built-in PNGs are managed in the sprite-file workflow.' }));
+    }
+    if (selected.name === 'PET_MOVES') {
+      inspector.append(element('p', { className: 'studio-muted', text:
+        'Choose a game move for each slot. Battle moves are edited in the Battle moves collection; pet assignments are saved separately.' }));
+    }
+    if (selected.name === 'MOVES') {
+      inspector.append(element('p', { className: 'studio-muted', text:
+        'Edit type, power, effect, animation and battle text. heal, drain, recoil and foeHeal use fractions of HP. foeAtk/foeDef lower the target; selfAtk/selfDef raise the user. {u} and {t} stand for the user and target.' }));
+    }
     if (selected.name === 'ROUTINE_OVERRIDES') {
       inspector.append(element('p', { className: 'studio-muted', text: 'Rules take precedence only at matching days and times. Empty days means every day. Times are minutes after midnight (9am = 540, 5pm = 1020). Places match existing NPC placements.' }));
     }
     inspector.append(renderValue(value, path, 'Record'));
+    if (selected.name === 'MOVES' && value && typeof value === 'object') {
+      movePreview = mountMovePreview(inspector, value.anim, value.type);
+    }
     if (selected.name === 'ROUTINE_OVERRIDES') inspector.append(element('button', {
       className: 'studio-button subtle', text: 'Remove schedule override', 'data-testid': 'remove-schedule',
       onclick: () => {

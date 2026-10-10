@@ -6,6 +6,7 @@ import { SKILLS } from '../systems/player-skills.js';
 // canvas text on phones, which is why it lives here and not in Phaser.
 
 import { bus } from '../bus.js';
+import { routeControlInput } from './control-routing.js';
 import { h, $ } from './dom.js';
 import { sfx } from '../systems/sfx.js';
 import { state } from '../systems/state.js';
@@ -20,7 +21,9 @@ import { openMenu } from './menu.js';
 import { openShop } from './shop.js';
 import { openKaraoke } from './karaoke.js';
 import { openBowls } from './bowls.js';
+import { syncTodo,unreadTodo } from '../systems/todo.js';
 import { openPhone, PHONE_APPS, phoneClosed } from './phone.js';
+import { openScorecards } from './scorecards.js';
 import { openCouncil } from './council.js';
 import { openCalendar } from './calendar.js';
 import { openStoryApp, openCard, openNews, openPaper, openParty } from './story.js';
@@ -46,20 +49,27 @@ export const ui = {
   battlePending: false,   // set while the screen flashes before a battle
 
   init() {
-    bus.on('input:action', () => {
-      if(this.activity)return this.activity.action();
-      if (battleUI.active && !this.dialog) return battleUI.action();
-      if (this.dialog) return this.advance();
-      if (this.modalOpen) return this.modalAction?.();
-      this.worldAction && this.worldAction();
-    });
-    bus.on('input:cancel', () => {
-      if(this.activity)return this.activity.cancel();
-      if (battleUI.active && !this.dialog) return battleUI.cancel();
-      if (this.dialog) return this.cancelDialog();
-      if (this.modalOpen && this.modalOpen !== 'party') return this.closeModal();
-    });
-    bus.on('input:dir', (dx, dy) => { if(this.activity)return; if (this.dialog?.choices && dy) this.moveChoice(dy); else if (battleUI.active) battleUI.dir(dx, dy); else if (this.modalOpen) this.modalDir?.(dx,dy); });
+    const routeInput = (kind, dx, dy) => routeControlInput(kind, {
+      dialog: this.dialog ? {
+        choices: !!this.dialog.choices,
+        action: () => this.advance(), cancel: () => this.cancelDialog(),
+        direction: (_x, y) => this.moveChoice(y),
+      } : null,
+      activity: this.activity,
+      battle: battleUI.active ? {
+        action: () => battleUI.action(), cancel: () => battleUI.cancel(),
+        direction: (x, y) => battleUI.dir(x, y),
+      } : null,
+      modal: this.modalOpen ? {
+        action: () => this.modalAction?.(),
+        cancel: () => this.modalOpen !== 'party' && this.closeModal(),
+        direction: (x, y) => this.modalDir?.(x, y),
+      } : null,
+      world: { action: () => this.worldAction?.() },
+    }, dx, dy);
+    bus.on('input:action', () => routeInput('action'));
+    bus.on('input:cancel', () => routeInput('cancel'));
+    bus.on('input:dir', (dx, dy) => routeInput('direction', dx, dy));
     bus.on('input:dex', () => this.toggle('dex'));
     bus.on('input:bag', () => this.toggle('bag'));
     bus.on('input:menu', () => this.toggle('phone'));
@@ -71,6 +81,8 @@ export const ui = {
     bus.on('petdex:changed', () => this.updateDexCount());
     bus.on('bag:changed', () => this.updateBagCount());
     bus.on('money:changed', () => this.updateMoney());
+    bus.on('todo:new',n=>{ this.toast(`${n} new ${n===1?'quest':'quests'} in To Do`); this.updateTodoBadge(); });
+    bus.on('todo:read',()=>this.updateTodoBadge());
     bus.on('player:skill',(id,level)=>{if(level)this.toast(`${SKILLS[id].name} level ${level}`);});
     bus.on('guidance:changed', () => { this._guidanceKey = null; this.updateGuidance(); });
     bus.on('navigation:request', (point, target) => {
@@ -83,7 +95,13 @@ export const ui = {
   },
 
   // ---------- HUD ----------
+  updateTodoBadge() {
+    const button = $('btnMenu'); let badge = button.querySelector('.todo-badge');
+    if (!badge) { badge = h('span',{class:'todo-badge'}); button.append(badge); }
+    const n=unreadTodo();badge.hidden=!n;badge.textContent=n;badge.setAttribute('aria-label',`${n} unread quests`);
+  },
   updateHud(region) {
+    syncTodo(); this.updateTodoBadge();
     this.updateGuidance();
     const d = state.data;
     const z = ZONES[region], sub = SUBURBS[z.suburb].name;
@@ -284,6 +302,7 @@ export const ui = {
     if (which === 'garden') openGarden(panel, close);
     if (which === 'council') openCouncil(panel, close);
     if (which === 'calendar') openCalendar(panel, close);
+    if (which === 'scorecards') openScorecards(panel, close);
     if (which === 'cheats') openCheats(panel, close);
     if (which === 'story') openStoryApp(panel, close);
     if (which === 'card') this.modalAction = openCard(panel, close, this._storyOpts).action;

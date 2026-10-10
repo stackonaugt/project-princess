@@ -1,6 +1,6 @@
 # Your sprite art goes here
 
-Drop PNG files into these folders and they replace the built-in pixel art. No code changes needed: the file name decides what it replaces. Push to GitHub and the live game picks them up after the next deploy (about a minute). When playing locally with `node tools/serve.mjs`, just refresh.
+Drop PNG files into these folders and they replace the built-in pixel art. No code changes needed: the file name decides what it replaces. Push to GitHub and the live game picks them up after a successful deploy. Run `pnpm --filter @workspace/project-princess run dev` from the repository root for the current workspace game, then refresh after edits.
 
 **Start from a template.** The `templates/` folder has every built-in sprite exported as a PNG at its real size. Copy one into the matching folder (e.g. `templates/pets/princess.png` to `pets/princess.png`), then edit it in Aseprite, Piskel, Photoshop, Procreate or anything else. The game ignores the `templates/` folder itself.
 
@@ -29,7 +29,7 @@ Commit/upload your PNGs with the game files and deploy normally. The existing ma
 
 **The template file names are the ids.** Every pet, person, enemy, item, vehicle and object in the game has a template in `templates/` under the name it loads from, so the easiest way to find an id is to look there.
 
-- Pets: `princess`, `salami`, `spooky`, `poppy`, `rusty`, `stanley`, `girlie`, `chloe`, `ziggy`, `emilio` (see `src/data/pets.js`). Evolved forms are `pets/<id>-evolved.png` and `portraits/<id>-evolved.png`: Flamcess, Sopressa, Poltergeist Spooky, Floppy, Even Rustier and Centurionely.
+- Pets: `princess`, `salami`, `spooky`, `poppy`, `rusty`, `stanley`, `girlie`, `chloe`, `ziggy`, `emilio` (see `src/data/pets.js`). Evolved forms are `pets/<id>-evolved.png` and `portraits/<id>-evolved.png`: Flamcess, Sopressa, Ghost (evolved Spooky), Floppy, Even Rustier and Centurionely.
 - Player: `helen`, `hadrian` and `aleksy`, each with `-down`, `-up` and `-left`.
 - People: over a hundred, in `templates/npcs/` (ids from `src/data/npcs.js` and the suburb files `src/data/north.js`, `east.js` and `summerhill.js`).
 - Enemies: in `templates/enemies/` (ids from `src/data/enemies.js` and the suburb files).
@@ -90,3 +90,49 @@ other frame dimensions. A four-frame sheet with no idle can explicitly use
 Built-in people have arm poses. Your existing PNGs remain the artwork used;
 new arm/jump drawings are only used when you supply and map those frames.
 A pet with no drawn jump frames still visibly hops over course hurdles.
+
+### Evolved Spooky example
+
+The display name is **Ghost**; filenames and texture keys still use `spooky`.
+
+`templates/pets/spooky-evolved.png` is an eleven-frame version of the supplied
+two-frame bunny sheet. Its identical runtime copy is `pets/spooky-evolved.png`;
+the supplied `pets/spooky-evolution.png` remains unchanged.
+
+| Frames | Action |
+| --- | --- |
+| 0 | Original idle |
+| 1–4 | Original stride plus three new walking poses |
+| 5–7 | Jump poses, played in order along the jump arc |
+| 8–10 | Raise, hold and lower the front paw |
+
+Replace the template and runtime copy with your edited sheet using this same
+layout, or update `ANIMATION_LAYOUTS['pet-spooky-evolved']` for a new layout.
+The game uses the `-evolved` filename for evolved pets. Loved treats trigger
+a jump; liked treats trigger a paw raise when that pet has mapped paw frames.
+
+### Other pet action sheets
+
+All other base pets (including Marty and Girlie) and evolved forms now have
+eleven-frame runtime sheets in `pets/` and editable counterparts in
+`templates/pets/`, with the same idle/walk/jump/paw numbering shown above.
+Each sheet retains its original leading frames and palette. Existing templates
+keep their own original artwork; they are not replaced with the supplied art.
+Princess's supplied sheets retain all three original frames.
+
+The supplied `princess-evolution.png` and `poppy-evolution.png` files remain
+unchanged. Their extended runtime copies use `princess-evolved.png` and
+`poppy-evolved.png`, matching the game's actual evolved texture keys.
+Emilio raises a webbed foot rather than a mammal's paw.
+
+Edit the complete PNG frames directly in your image editor. Action frames
+5–10 must stay out of walking frames 1–4. Short 1–3-frame replacement sheets
+still use their original walking fallback and omit undrawn actions; incomplete
+action exports do not add their action frames to walking.
+
+`node tools/extend-pet-poses.mjs` (from the wrapper app directory, one level
+above this game) reproduces the initial offline pixel-art extensions. It keeps
+the original leading frames but **replaces action drawings**, so do not run it
+over hand-edited poses. Evolved Spooky's existing sheets are not modified.
+`pnpm run test:animal-animations` checks layouts, distinct poses, and the
+preserved original pixels.

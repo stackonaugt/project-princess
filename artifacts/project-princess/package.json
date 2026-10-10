@@ -10,12 +10,20 @@
     "test:navigation": "node --test tools/navigation.test.mjs",
     "test:studio-art": "node --test tools/studio-art.test.mjs",
     "test:studio-archive": "node --test tools/studio-archive.test.mjs",
+    "test:studio-map": "node --test tools/studio-map.test.mjs tools/studio-curves.test.mjs",
+    "check:studio-props": "node tools/check-studio-props.mjs",
+    "check:studio-terrain": "node tools/check-studio-terrain.mjs",
+    "check:supplied-terrain": "node tools/check-supplied-terrain.mjs",
+    "test:studio-moves": "node --test tools/studio-move-animations.test.mjs",
     "test:site-config": "node --test tools/site-config.test.mjs",
+    "test:baking-oven": "node tools/baking-oven.browser.test.mjs",
     "smoke:build": "node tools/smoke-build.mjs",
     "verify:build": "pnpm run build && pnpm run check:build && pnpm run smoke:build",
     "serve": "vite preview --config vite.config.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:progression": "node --test tools/progression.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs tools/playtest.test.mjs"
+    "test:progression": "node --test tools/progression.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs tools/playtest.test.mjs",
+    "test:scorecards": "node --test tools/scorecards.test.mjs",
+    "test:animal-animations": "node --test tools/animal-animations.test.mjs"
   },
   "devDependencies": {
     "sharp": "^0.34.5",

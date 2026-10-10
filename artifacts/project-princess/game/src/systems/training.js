@@ -47,7 +47,7 @@ export class TrainingSession {
     this.hurdles = this.level > 0 ? [35+this.seed*5,65+this.seed*5] : [45+this.seed*20];
     this.hurdleIndex = 0; this.hurdle = this.hurdles[0];
     this.throwTolerance = 19-this.level*2;
-    this.jump = 0; this.jumpQueued = 0; this.boxCount = this.level >= 2 ? 4 : 3;
+    this.jump = 0; this.jumpQueued = 0; this.jumpAcross = null; this.boxCount = this.level >= 2 ? 4 : 3;
     this.box = Math.floor(this.seed * this.boxCount); this.openBoxes = []; this.aim = 15;
     this.status = `Run ${this.round} of 3. ${ACTIVITIES[this.activity].help}`;
   }
@@ -108,8 +108,19 @@ export class TrainingSession {
       this.petY = this.jump > 0 ? -Math.sin(this.jump/650*Math.PI)*38 : 0;
       if (this.stage === 'play') {
         if (this.petX < this.hurdle-10) { this.petX += speed*seconds; this.moving = true; }
-        else if (this.jump > 120 || this.jumpQueued > 0) {
-          this.petX = this.hurdle+8; this.status = 'Over the hurdle!';
+        else if (this.jump > 0 || this.jumpQueued > 0 || this.jumpAcross) {
+          if (!this.jumpAcross) {
+            this.jumpAcross = { from: this.petX, to: this.hurdle + 8, time: 0 };
+            this.jump = 650; this.jumpQueued = 0;
+          }
+          this.jumpAcross.time += dt;
+          const p = Math.min(1, this.jumpAcross.time / 650);
+          this.petX = this.jumpAcross.from + (this.jumpAcross.to - this.jumpAcross.from) * p;
+          this.petY = -Math.sin(p * Math.PI) * 38;
+          this.moving = true;
+          this.status = 'Over the hurdle!';
+          if (p < 1) return;
+          this.jumpAcross = null; this.jump = 0; this.petY = 0;
           this.hurdleIndex++;
           if (this.hurdleIndex < this.hurdles.length) { this.hurdle=this.hurdles[this.hurdleIndex];this.jumpQueued=0; }
           else this.stage='cleared';

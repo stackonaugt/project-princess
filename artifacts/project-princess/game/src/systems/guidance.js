@@ -1,4 +1,7 @@
 import { state } from './state.js';
+import { trainingStarted } from './progression-gates.js';
+import { weekday } from '../data/routines.js';
+import { BAKE_OFF } from '../data/cooking.js';
 import { objectives } from './story.js';
 import { ZONES, getMap } from '../data/regions.js';
 import { NPCS } from '../data/npcs.js';
@@ -29,8 +32,12 @@ export function pinnedObjective() {
 }
 export function exitRestriction(from, exit, scene) {
   if (!exit.to) return 'This exit is closed.';
+  if (exit.to === 'bakeoff' && (!state.data.side.bake || weekday(state.data.day) !== BAKE_OFF.day))
+    return 'Talk to Betty, then return on Saturday for the bake-off.';
+  if (exit.to === 'exhibition' && !trainingStarted(state.data)) return 'Start a pet-school lesson before visiting the Exhibition Dog Show.';
   if (scene?.party) return 'You cannot leave your own party.';
   if (from === 'allen' && !['home', 'yard'].includes(exit.to) && !state.isFound('princess')) return 'Find Princess before leaving Allen St.';
+  if (from === 'allen' && exit.to === 'station' && !state.isFound('marty')) return 'Visit Woods St and befriend Marty before using the station shortcut.';
   if (exit.gate && !state.data.beaten[exit.gate]) return 'This walking route is progression locked.';
   if (scene?.shutShop(exit.to)) return 'The destination shop is closed right now.';
   return null;

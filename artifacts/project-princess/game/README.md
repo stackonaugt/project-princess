@@ -11,6 +11,9 @@ A cosy pet-collecting adventure across Melbourne's north and west. You live with
 
 Your progress saves automatically on each device, in one of three save slots on the title screen. To move a save to another device: Pawphone > Settings > Copy save code, then Load save code on the other one.
 
+Reloading the same browser tab resumes its active save. Use the game's return-to-title
+action when you want to choose another slot.
+
 ## Where you can go
 
 The world is one long walk, with trains and trams to skip ahead to places you have already been.
@@ -35,6 +38,11 @@ Ten pets to find: Princess, Salami, Spooky, Poppy, Rusty, Stanley, Girlie, Chloe
 - Each time you leave home, pick up to three pets for your team. They follow you around. The rest relax at home.
 - Chat with each pet once a day and give it one treat a day. Find out what it loves.
 - Level a pet up and become close friends, and it evolves. Every pet in the original six has an evolution.
+
+Spooky becomes **Ghost** after evolution. Pet interaction and sleeping dialogue
+use the pet's current form name. Base and evolved pet sheets now include separate
+walking, jumping and paw-raise poses; loved treats trigger a jump and liked
+treats can trigger a paw raise. See the sprite guide below to edit these poses.
 
 ## Battles
 
@@ -77,19 +85,28 @@ Drop PNGs into `assets/sprites/` and they replace the built-in pixel art: `asset
 
 ## Run it on your computer
 
-You need [Node.js](https://nodejs.org) (any recent version). Nothing to install.
+Use **Node.js 22.12 or newer** and **pnpm 10.26.1**. Run these commands from
+the repository root, not this nested game folder:
 
 ```sh
-node tools/serve.mjs
+pnpm install --frozen-lockfile
+pnpm --filter @workspace/project-princess run dev
 ```
 
-Then open http://localhost:8080. Add `?cheat=1` to the address once to get a Cheats app on the Pawphone (money, items, warp, time, chapters, the bake-off...). `?cheat=0` turns it off.
+Then open http://127.0.0.1:5173/ (or the managed preview in Replit). The local
+Developer Studio is at `/studio/`. Add `?cheat=1` to the address once to get a
+Cheats app on the Pawphone (money, items, warp, time, chapters, the bake-off...).
+`?cheat=0` turns it off. See the [repository setup guide](../../../README.md)
+for builds, hosting and verification.
 
 ## Share it with friends (GitHub Pages)
 
 1. On GitHub, go to the repo's **Settings > Pages**.
 2. Under **Build and deployment > Source**, choose **GitHub Actions**.
-3. Push to `main` (or run the "Deploy to GitHub Pages" workflow from the Actions tab). After a minute or so the link appears on the Pages settings screen.
+3. Push to `main` (or run **Publish Project Princess** from the Actions tab).
+   The workflow tests and builds the workspace game, then uploads only
+   `artifacts/project-princess/dist/public/`. The link appears after a successful
+   deployment; check Actions for failures or approval requests.
 
 Note: GitHub Pages only works on **public** repos with a free account. A private repo needs GitHub Pro (and even then, the published site is public).
 
@@ -98,86 +115,3 @@ Note: GitHub Pages only works on **public** repos with a free account. A private
 Most edits happen in `src/data/` (pets, people, words, shops, the story) and `src/world/maps/` (one file per zone). [CLAUDE.md](CLAUDE.md) explains how everything fits together, every mechanic, and what is planned next. `node tools/balance.mjs` simulates battles after any change to stats or levels.
 
 Built with [Phaser 3](https://phaser.io). The pets belong to their humans.
-
-
-### Pet school lessons and curved terrain (October 2026)
-
-Pet school offers three choices from six activities: recall, settle and stay,
-obstacle course, fetch, find the toy and loose lead walking. Choices rotate by
-pet and day. Pets have different pacing and preferences; saved skill progress
-adds longer stays, a second hurdle, tighter throw targets and a fourth scent box.
-Existing Recall, Settle and Obstacle course skill records still count.
-
-Pets walk using their loaded sprite frames during lessons. A replacement PNG
-with only one frame can bob, but needs walk frames to show moving legs. The
-person accompanying the pet uses the selected character’s name, such as Helen.
-The obstacle course waits for a jump at the hurdle; an early jump does not end
-the run. Restart this run is always available during play. Empty scent boxes
-stay open and early settle rewards can be tried again. Each activity has three
-runs. One lesson per pet per day earns XP and friendship; extra practice remains
-available without additional rewards. Cancelling a lesson gives no reward.
-
-Allen St’s road and footpath edges and water banks use continuous rounded
-contours traced from the existing map tiles, preserving bridges and custom tile
-textures. This also applies to map editor ground changes. Terrain collision,
-objects, exits and editor tile coordinates still use the existing grid.
-
-Verification: `node --test tools/playtest.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs`
-from `artifacts/project-princess/`. Mobile layout and lesson feel should also be
-checked in the live game.
-
-## Skills, yard activities and the Exhibition show
-
-Open **Pawphone → Skills** to see the selected character’s progress. Helen,
-Hadrian and Aleksy each keep cooking, crafting, pet handling, combat and
-gathering XP separately. Skills start at level 1 and cap at 10. Cooking adds
-bake-off points, gathering adds harvest yield every three levels, pet handling
-adds 5% successful lesson XP per level, and combat adds sparring damage and
-stamina. These are additive save fields; existing saves and pet levels remain.
-
-In the **Allen St yard**, use the workbench on the left for crafting. Paddy
-supplies the first materials free. More reclaimed supplies cost $24. Make a
-course kit, rope balls, weave poles (crafting level 2) and a training vest
-(level 3, +10% school XP). Use the course sign near the centre for dog practice
-and the sign by the driveway for **player sparring**. Player combat has its own
-HP, stamina, close-range attack, dodge, timed block and telegraphed dummy swings.
-A attacks, B dodges, arrows/WASD or joystick move. The on-screen Block button
-raises a guard. Practice carries no injuries or money penalty. One successful
-sparring reward per character per game day prevents repeatedly farming XP.
-This is an optional combat foundation for later quests, not new story combat.
-
-Walk into the **Royal Exhibition Building in Carlton Gardens**, directly north
-of the fountain, for the show interior. Jean lends course equipment, so you can
-practise without owning a yard kit. The programme has novice, city and
-championship divisions. Each requires two rival play-fights, a qualifying
-agility course and at least two clean obedience runs. Six fictional owners
-compete with a corgi, schnauzer, whippet, golden retriever, border collie and
-Bernese mountain dog. Talk to them for different training tips.
-
-Register one dog after two qualifying practices and six clean school runs
-across at least two activities. Each event saves independently. Jump in the
-green timing band, alternate left/right through weave poles, and hold a stay
-for two seconds before releasing with Come. Wrong cues can be retried. Each
-course has a three-minute rest limit. Rival levels use gentle division caps
-and the registered dog’s level, and friendly matches restore the party and HP.
-Division prizes pay once; battle retries do not pay XP. Completing all three
-earns an Exhibition champion rosette. Check **To Do** for preparation and show
-progress. Yard/exhibition course XP pays once per game day; further runs can
-still qualify and improve confidence.
-
-**Betty’s bake-off** now has a staged To Do quest. Talk to Betty on Moreland Rd
-to practise a baked recipe, using its normal ingredients. Mixing, oven timing
-and finishing each have a visible timing zone. Preparation can be cancelled
-without consuming ingredients or an entry. Saturday entries also use these
-three stages: performance and cooking level replace the old random score
-bonus. Special recipes, homegrown produce and friendship still matter.
-
-Park dirt/gravel paths and footpaths use joined rounded contours. Diagonal
-walkways stay continuous; separate water bodies keep their separate contours.
-Mobile battle stat boxes are narrower, and fighter sizes are capped to leave
-space beside the panels.
-
-Verification from `artifacts/project-princess/`:
-`node --test tools/*.test.mjs`. The publish workflow runs the progression tests
-and a production browser check of the Exhibition, Skills, live course, player
-sparring and baking cancellation on a phone-sized canvas.

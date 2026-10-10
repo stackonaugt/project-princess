@@ -1,6 +1,7 @@
 import { h } from './dom.js';
 import { petActionFrames, heroFrames, heroIcon } from './images.js';
 import { ACTIVITIES, TrainingSession, lessonPlan } from '../systems/training.js';
+import { actionFrameAt } from '../data/animation-layouts.js';
 
 export function openTraining(panel, close, opts) {
   const plan = lessonPlan(opts), frames = petActionFrames(opts.id,64,'walk');
@@ -47,8 +48,10 @@ export function openTraining(panel, close, opts) {
     retry.hidden=session.complete || session.phase==='feedback';
     pet.style.left=`${session.petX}%`;
     pet.style.transform=`translateX(-50%) translateY(${session.petY}px) scaleX(${session.flip?-1:1}) ${activity==='settle'&&session.stage==='calm'?'scaleY(.8)':''}`;
-    const sequencePet=session.petY<0&&jumpFrames.length?jumpFrames:session.moving?frames:idleFrames;
-    const petURL=sequencePet[Math.floor(session.clock/135)%sequencePet.length]||frames[0];
+    const jumping=(session.jump>0||session.petY<0)&&jumpFrames.length>0;
+    const sequencePet=jumping?jumpFrames:session.moving?frames:idleFrames;
+    const jumpProgress=session.jumpAcross?session.jumpAcross.time/650:1-session.jump/650;
+    const petURL=(jumping?actionFrameAt(sequencePet,jumpProgress):sequencePet[Math.floor(session.clock/135)%sequencePet.length])||frames[0];
     if(pet.src!==petURL)pet.src=petURL;
     pet.classList.toggle('training-bob',session.moving&&frames.length===1);
     const person=hero.children[0];

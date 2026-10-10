@@ -2,6 +2,7 @@
 // reedy tussocks, weeping gums and the outdoor gym; Edwardes St runs down
 // the west side behind a pipe railing. Ducks have opinions.
 import { MapBuilder } from '../MapBuilder.js';
+import { withTerrainFeatures } from '../../art/paint/terrain-features.js';
 
 export function buildLake() {
   const b = new MapBuilder({ id: 'lake', w: 44, h: 30, seed: 171 });
@@ -53,5 +54,26 @@ export function buildLake() {
   b.border(['gum', 'gum', 'oak']);
   // Lived-in touches (walk-through props)
   b.scatter([0, 0, b.w, b.h], 0.008, [['flowerbed', 2, ['natives', 'mixed']], ['ball', 1, ['soccer', 'beach']], ['bike', 1, ['blue', 'red', 'kids']]], { clearance: 0 });
-  return b.finish();
+  const map = b.finish(), ground = map.ground.map(row => [...row]);
+  // The thin sampled ellipse had eighteen disconnected path fragments.
+  // Join diagonal contacts without changing water, roads or source props.
+  for (let y = 3; y < 26; y++) for (let x = 9; x < 42; x++) {
+    if (ground[y][x] !== 'f') continue;
+    for (const dx of [-1, 1]) {
+      if (ground[y + 1]?.[x + dx] !== 'f' || ground[y][x + dx] === 'f' || ground[y + 1][x] === 'f') continue;
+      if ('.,\"'.includes(ground[y][x + dx])) ground[y][x + dx] = 'f';
+      else if ('.,\"'.includes(ground[y + 1][x])) ground[y + 1][x] = 'f';
+    }
+  }
+  map.ground = ground.map(row => row.join(''));
+  return withTerrainFeatures(map, [{
+    id: 'oval-loop', name: 'Edwardes Lake oval path',
+    bounds: [5, 3, 39, 27], replace: 'f', onlyReplace: true,
+    layers: [{ material: 'f', edge: '#9c9686', blend: .25, shapes: [
+      { kind: 'ring', cx: 25.5, cy: 14.5, rx: 15.5, ry: 10.5, innerRx: 14.3, innerRy: 9.4 },
+      { kind: 'rect', x: 5, y: 14, w: 6, h: 2 },
+      { kind: 'rect', x: 20, y: 24, w: 3, h: 6 },
+      { kind: 'rect', x: 39, y: 12, w: 5, h: 3 },
+    ] }],
+  }]);
 }

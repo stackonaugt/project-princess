@@ -1,5 +1,5 @@
 import { MapBuilder } from "../MapBuilder.js";
-import { COMPETITORS } from "../../data/dog-show.js";
+import { COMPETITORS, SHOW_JUDGES } from "../../data/dog-show.js";
 export function buildExhibition() {
   const b = new MapBuilder({
     id: "exhibition",
@@ -16,7 +16,11 @@ export function buildExhibition() {
   b.set(19, 29, "D");
   b.set(20, 29, "D");
   b.put("counter", 18, 4, { v: "kettle", interact: "showdesk" });
+  b.put('counter', 30, 4, { interact: 'showgroom', v: 'plain' });
+  b.sign(30, 5, ['Grooming and breed presentation ring. Every dog can enter; brush gently and handle calmly.']);
   b.npc("showjean", 21, 5, { face: "down", leave: true });
+  SHOW_JUDGES.forEach((judge, i) => b.npc(judge.id, 11 + i * 8, 5, { face: 'down', still: true }));
+  for (let i = 0; i < 6; i++) b.npc(`showguest${i}`, i < 3 ? 5 : 35, 10 + i % 3 * 5, { face: i < 3 ? 'right' : 'left', still: true });
   b.sign(17, 5, [
     "Exhibition Dog Show.",
     "Register with Jean. Each division has two friendly battles, agility and obedience. Progress saves after every event.",

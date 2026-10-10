@@ -27,6 +27,8 @@ export function buildMoreland() {
   b.put('tree', 23, 8, { v: 'gum' });
   b.put('factory', 32, 9, { v: 'brick' });
   b.sign(31, 12, ['A catering kitchen.', 'Trays of food go out the roller door all day. Betty says hers is better. She is right.']);
+  b.exit(35, 12, 1, 1, 'bakeoff', 'door', 'Saturday bake-off');
+  b.entry('bakeoff', 36, 12, 'down');
   b.put('cafe', 40, 9, { v: 'green' });
   b.put('table', 41, 12); b.put('table', 43, 12);
   b.fill(23, 0, 21, 8, 'c'); b.fill(23, 0, 21, 2, 'b');

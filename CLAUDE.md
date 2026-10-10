@@ -1,3 +1,17 @@
+# Current release source
+
+The GitHub Pages release and Developer Studio are built from **artifacts/project-princess/**.
+Read [the current Claude handoff](artifacts/project-princess/game/CLAUDE.md) and
+[the repository guide](README.md) before editing. The older root-level game,
+archives and unique artwork/audio are intentionally retained. Do not mirror-delete
+them or overwrite recent uploads during a workspace sync. The current pet action
+sheets and Ghost naming are documented in the workspace game guide; further
+Ghost size tuning belongs to the owner.
+
+The earlier full project guidance follows, preserved for reference.
+
+---
+
 # Project Princess
 
 A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You live at Helen and Paddy's new house on Allen St, Laverton, and wander the northern and western suburbs (Laverton, Brunswick, Brunswick East, Coburg, Preston, Reservoir, Carlton and the Melbourne CBD, joined by walkable in-between zones) finding, befriending and cataloguing the real pets of the owner's friends. Found pets move into your house; each time you leave you pick a team of up to three who follow you around. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.

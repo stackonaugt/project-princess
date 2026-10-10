@@ -20,6 +20,10 @@ The user says the game will mostly be played on phones. Judge art, camera framin
 - Use a controlled set of shades for each material rather than unrelated palettes for every generated object.
 - Preserve recognisable character and pet silhouettes. Check Helen's and Princess's existing replacement sheets before deciding whether either needs redrawing.
 - Preserve sprite dimensions, anchors, frame order, collisions and entrances unless an intentional gameplay change requires otherwise.
+- For extended pet sheets, retain the original leading frames and palette. Keep
+  walking frames separate from jump/paw actions; see `game/assets/sprites/README.md`.
+  Do not rerun pose generation over the owner's edited drawings. Pet display
+  sizing is tuned separately in `game/src/data/pet-sizes.js`.
 - Keep touch controls and text readable without obscuring useful objects or exits. Check portrait and landscape rather than assuming one orientation.
 
 ## First art pass

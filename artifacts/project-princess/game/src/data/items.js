@@ -165,4 +165,8 @@ export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift 
 Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston
 import { CRAFT_ITEMS } from './crafting.js';
 Object.assign(ITEMS,CRAFT_ITEMS);
+Object.assign(ITEMS, {
+  groomrosette: { ...ITEMS.showrosette, name: 'Grooming Rosette', desc: 'Awarded for gentle care and a well-presented coat.' },
+  breedrosette: { ...ITEMS.showrosette, name: 'Breed Presentation Rosette', desc: 'Awarded for breed character, condition and calm movement.' },
+});
 ITEMS = authoredValue('data/items.js', 'ITEMS', ITEMS);

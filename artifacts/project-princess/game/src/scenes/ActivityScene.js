@@ -7,7 +7,7 @@ import { ui } from "../ui/ui.js";
 import { h } from "../ui/dom.js";
 import { petTex } from "../systems/forms.js";
 import { playerTexture, custom, frameCount } from "../art/textures.js";
-import { animationFrames, frameAt } from "../data/animation-layouts.js";
+import { animationFrames, frameAt, actionFrameAt } from "../data/animation-layouts.js";
 
 export class ActivityScene extends Phaser.Scene {
   constructor() {
@@ -215,10 +215,14 @@ export class ActivityScene extends Phaser.Scene {
     if (this.session[this.course ? "cue" : "action"](kind, controls.vector()))
       this.cueUntil = this.session[this.course ? "time" : "clock"] + 0.65;
   }
-  pose(sprite, action, clock, moving = false) {
+  pose(sprite, action, clock, moving = false, actionProgress = null) {
     const key = sprite.texture.key,
       n = frameCount(this, key);
     let frames = animationFrames(key, n, action, !custom.has(key));
+    if (action === "jump" && frames.length && actionProgress !== null) {
+      sprite.setFrame(actionFrameAt(frames, actionProgress));
+      return;
+    }
     if (!frames.length)
       frames = animationFrames(
         key,
@@ -248,6 +252,7 @@ export class ActivityScene extends Phaser.Scene {
         s.jump ? "jump" : s.moving ? "walk" : "idle",
         clock,
         s.moving,
+        s.actionTime / 0.8,
       );
       this.pose(
         this.hero,

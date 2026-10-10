@@ -4,6 +4,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reserveRemovedIds, validateEntities } from './studio-entities.mjs';
 import { suppliedArtCatalog, validateEntityArt } from './studio-art.mjs';
+import { assertSupportedMoveAnimations } from '../game/studio/move-animation-rules.js';
+import { validateTerrainFeatureEdits } from '../game/src/art/paint/terrain-features.js';
+import {
+  sourceObjectIdentity, sourceObjectMatches,
+} from '../game/src/authoring/map-overrides.js';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const gameRoot = path.join(projectRoot, 'game');
@@ -97,31 +102,63 @@ async function readRequestBody(request) {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 
-function validateMapEdits(mapId, edits, map, objects, regions, tileNames) {
+export function validateMapEdits(mapId, edits, map, objects, regions, tileNames) {
   const regionIds = Object.keys(regions.ZONES);
   const inBounds = (x, y) => Number.isInteger(x) && Number.isInteger(y) &&
     x >= 0 && y >= 0 && x < map.w && y < map.h;
   if (!edits || typeof edits !== 'object' || Array.isArray(edits)) throw new Error(`Invalid edits for ${mapId}.`);
+  validateTerrainFeatureEdits(map, edits.terrainFeatures);
   for (const tile of edits.tiles || []) {
-    if (!inBounds(tile.x, tile.y) || !Object.hasOwn(tileNames, tile.tile)) {
+    if (!inBounds(tile.x, tile.y) || !Object.hasOwn(tileNames, tile.tile) ||
+        (tile.rotation !== undefined && (!Number.isInteger(tile.rotation) || tile.rotation < 0 || tile.rotation > 3))) {
       throw new Error(`A painted tile falls outside ${mapId}.`);
     }
   }
   const objectEdits = edits.objects || {};
-  for (const index of objectEdits.remove || []) {
-    if (!Number.isInteger(index) || index < 0 || index >= map.objects.length) throw new Error(`Invalid object index on ${mapId}.`);
+  const sourceObjectFor = (reference, label) => {
+    const hasSource = reference && typeof reference === 'object' && !Array.isArray(reference) &&
+      Object.hasOwn(reference, 'source');
+    const source = hasSource ? reference.source : null;
+    if (hasSource) {
+      if (!source || typeof source !== 'object' || Array.isArray(source) ||
+          !Object.hasOwn(objects, source.kind) || !inBounds(source.x, source.y) ||
+          !Number.isInteger(source.w) || source.w < 1 || !Number.isInteger(source.h) || source.h < 1 ||
+          source.x + source.w > map.w || source.y + source.h > map.h) {
+        throw new Error(`Invalid source prop identity for ${label} on ${mapId}; clear or rebind this edit in that area's prop inspector.`);
+      }
+      const matches = sourceObjectMatches(map.objects, source);
+      if (matches.length > 1) {
+        throw new Error(`The source prop identity for ${label} is ambiguous on ${mapId}; clear or rebind this edit in that area's prop inspector.`);
+      }
+      return matches.length ? map.objects[matches[0]] : source;
+    }
+    const index = typeof reference === 'number' ? reference : reference?.index;
+    if (!Number.isInteger(index) || index < 0 || index >= map.objects.length) {
+      throw new Error(`Invalid object index on ${mapId}.`);
+    }
+    return map.objects[index];
+  };
+  for (const reference of objectEdits.remove || []) {
+    sourceObjectFor(reference, 'a removal');
   }
   for (const move of objectEdits.move || []) {
-    if (!Number.isInteger(move.index) || move.index < 0 || move.index >= map.objects.length ||
+    const sourceObject = sourceObjectFor(move, 'a move');
+    const hasSource = Object.hasOwn(move, 'source');
+    if (!Number.isInteger(move.index) || move.index < 0 || (!hasSource && move.index >= map.objects.length) ||
         !inBounds(move.x, move.y) ||
-        move.x + map.objects[move.index].w > map.w ||
-        move.y + map.objects[move.index].h > map.h) throw new Error(`An object move falls outside ${mapId}.`);
+        move.x + sourceObject.w > map.w ||
+        move.y + sourceObject.h > map.h ||
+        (move.rotation !== undefined && (!Number.isInteger(move.rotation) || move.rotation < 0 || move.rotation > 3)) ||
+        (move.v !== undefined && typeof move.v !== 'string')) throw new Error(`An object move falls outside ${mapId}.`);
   }
   for (const object of objectEdits.add || []) {
     if (!Object.hasOwn(objects, object.kind) || !inBounds(object.x, object.y) ||
         object.x + objects[object.kind].foot[0] > map.w ||
         object.y + objects[object.kind].foot[1] > map.h ||
-        (object.v !== undefined && typeof object.v !== 'string')) throw new Error(`Invalid object placement on ${mapId}.`);
+        (object.v !== undefined && typeof object.v !== 'string') ||
+        (object.rotation !== undefined && (!Number.isInteger(object.rotation) || object.rotation < 0 || object.rotation > 3))) {
+      throw new Error(`Invalid object placement on ${mapId}.`);
+    }
   }
   const exitEdits = edits.exits || {};
   for (const index of exitEdits.remove || []) {
@@ -152,6 +189,19 @@ function validateMapEdits(mapId, edits, map, objects, regions, tileNames) {
       throw new Error(`The arrival entry "${exit.entry}" does not exist in ${exit.to}.`);
     }
   }
+}
+
+export function bindLegacyObjectReferences(edits, map) {
+  const objectEdits = edits.objects;
+  if (!objectEdits) return;
+  objectEdits.move = (objectEdits.move || []).map(move => {
+    if (Object.hasOwn(move, 'source') || !map.objects[move.index]) return move;
+    return { ...move, source: sourceObjectIdentity(map.objects[move.index]) };
+  });
+  objectEdits.remove = (objectEdits.remove || []).map(reference => {
+    if (typeof reference !== 'number' || !map.objects[reference]) return reference;
+    return { index: reference, source: sourceObjectIdentity(map.objects[reference]) };
+  });
 }
 
 export function editorValue(name, value) {
@@ -211,7 +261,19 @@ function createEditorApiPlugin() {
     name: 'project-princess-dev-studio-api',
     configureServer(server) {
       let saving = false;
-      const loadRegions = () => server.ssrLoadModule('/src/data/regions.js');
+      const loadRegions = async () => {
+        let lastError;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          try {
+            const regions = await server.ssrLoadModule('/src/data/regions.js');
+            if (Array.isArray(regions.ROUTE) && regions.ZONES) return regions;
+          } catch (error) {
+            lastError = error;
+          }
+          if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 20 * (attempt + 1)));
+        }
+        throw new Error('The game region data is still rebuilding. Reload Studio and try again.', { cause: lastError });
+      };
       const loadObjects = async () => (await server.ssrLoadModule('/src/art/paint/objects.js')).OBJECTS;
 
       server.middlewares.use(async (request, response, next) => {
@@ -229,6 +291,7 @@ function createEditorApiPlugin() {
           if (request.method === 'GET' && url.pathname === '/__studio_api/catalog') {
             const regions = await loadRegions();
             const objects = await loadObjects();
+            const { TYPES } = await server.ssrLoadModule('/src/data/types.js');
             const { TILE_NAMES } = await server.ssrLoadModule('/src/art/paint/tiles.js');
             const serializableSections = {};
             for (const [id, section] of Object.entries(STUDIO_SECTIONS)) {
@@ -244,22 +307,30 @@ function createEditorApiPlugin() {
             const saved = await readOverrides();
             const activeSprites = await readdir(path.join(gameRoot, 'assets/sprites/objects'));
             const templateSprites = await readdir(path.join(gameRoot, 'assets/sprites/templates/objects'));
+            const activeTileSprites = await readdir(path.join(gameRoot, 'assets/sprites/tiles'));
+            const templateTileSprites = await readdir(path.join(gameRoot, 'assets/sprites/templates/tiles'));
             return sendJson(response, 200, {
               sections: serializableSections,
               regions: regions.ROUTE.filter(id => regions.ZONES[id]).map(id => ({
                 id, name: regions.ZONES[id].name, indoor: !!regions.ZONES[id].indoor,
+                grass: regions.ZONES[id].grass,
               })),
               objectKinds: Object.entries(objects).map(([id, object]) => ({
                 id, foot: object.foot || [1, 1], solid: object.solid !== false,
                 flat: !!object.flat, roof: !!object.roof,
                 variants: Array.isArray(object.variants) ? object.variants : [],
+                styles: Array.isArray(object.styles) ? object.styles : [],
               })),
-              spriteFiles: { active: activeSprites, templates: templateSprites },
+              spriteFiles: {
+                active: activeSprites, templates: templateSprites,
+                tileActive: activeTileSprites, tileTemplates: templateTileSprites,
+              },
               suppliedArt: await suppliedArtCatalog(spritesRoot),
               scheduleCharacters: Object.entries(schedulePlaces).map(([id, places]) => ({
                 id, name: npcModule.NPCS[id]?.name || id, places: [...places],
               })),
               tiles: Object.entries(TILE_NAMES).map(([id, name]) => ({ id, name })),
+              moveTypes: Object.entries(TYPES).map(([id, type]) => ({ id, name: type.name })),
               saved,
               builtIn: {
                 pets: (await server.ssrLoadModule('/src/authoring/overrides.js')).BASE_VALUES['data/pets.js|PETS']?.map(pet => pet.id) ||
@@ -280,9 +351,11 @@ function createEditorApiPlugin() {
             const descriptor = regions.ZONES[regionId];
             if (!descriptor) return sendJson(response, 404, { error: 'Unknown region.' });
             const built = descriptor.build();
-            const { id, w, h, ground, objects, exits, entries, npcs, spawns, plots } = built;
+            const { id, w, h, ground, objects, exits, entries, npcs, spawns, plots,
+              wallPaint, tileRotations, terrainFeatures, objectLayout } = built;
             return sendJson(response, 200, {
-              map: { id, w, h, ground, objects, exits, entries, npcs, spawns, plots },
+              map: { id, w, h, ground, objects, exits, entries, npcs, spawns, plots,
+                wallPaint, tileRotations, terrainFeatures, objectLayout },
               edits: (await readOverrides()).maps[regionId] || null,
             });
           }
@@ -315,10 +388,6 @@ function createEditorApiPlugin() {
             if (request.headers['if-match'] !== revisionOf(previous)) {
               return sendJson(response, 409, { error: 'Another save changed the project. Export your draft, then reload the studio before saving.' });
             }
-            const regions = await loadRegions();
-            const objects = await loadObjects();
-            const { TILE_NAMES } = await server.ssrLoadModule('/src/art/paint/tiles.js');
-            const regionIds = regions.ROUTE.filter(id => regions.ZONES[id]);
             const maps = submitted?.maps || {};
             const data = submitted?.data || {};
             const custom = submitted.custom;
@@ -327,10 +396,17 @@ function createEditorApiPlugin() {
                 !maps || typeof maps !== 'object' || !data || typeof data !== 'object') {
               return sendJson(response, 400, { error: 'The authoring document has an invalid format.' });
             }
+            assertSupportedMoveAnimations(submitted);
+            const regions = await loadRegions();
+            const objects = await loadObjects();
+            const { TILE_NAMES } = await server.ssrLoadModule('/src/art/paint/tiles.js');
+            const regionIds = regions.ROUTE.filter(id => regions.ZONES[id]);
             for (const [mapId, edits] of Object.entries(maps)) {
               const descriptor = regions.ZONES[mapId];
               if (!descriptor) throw new Error(`Unknown map "${mapId}".`);
-              validateMapEdits(mapId, edits, descriptor.build(), objects, regions, TILE_NAMES);
+              const sourceMap = descriptor.build();
+              bindLegacyObjectReferences(edits, sourceMap);
+              validateMapEdits(mapId, edits, sourceMap, objects, regions, TILE_NAMES);
             }
             // Load all allowlisted modules to obtain original, pre-override schemas.
             for (const section of Object.values(STUDIO_SECTIONS)) {

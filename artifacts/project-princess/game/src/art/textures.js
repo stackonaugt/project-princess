@@ -25,10 +25,10 @@ import { SHOW_DOG_ART } from './paint/show-dogs.js';
 import { FOE_ART } from './paint/enemies.js';
 import { EAST_ITEM_ART, EAST_FOE_ART } from './paint/brunseast.js';
 import { AUTHORING } from '../authoring/overrides.js';
-import { assetLayout, entityArtBindings, runtimeArtBindingFailures } from './asset-rules.js';
+import { assetLayout, entityArtBindings, NPC_WALK_FRAME_RATE, runtimeArtBindingFailures } from './asset-rules.js';
 
 // Folder in assets/sprites -> texture key prefix
-const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe', backgrounds: 'battlebg' };
+const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe' };
 // Character sheets get split into square frames.
 const CHARACTER_PREFIXES = ['player', 'pet', 'npc', 'foe'];
 
@@ -138,7 +138,14 @@ export function buildTextures(scene, customEntities = AUTHORING.custom) {
     const e = pet.evolution;
     if (e) {
       const ef = PET_FRAMES[e.sprite] || frames, epal = { ...BASE_PALETTE, ...pet.pal, ...e.pal };
-      stripTexture(scene, `pet-${pet.id}-evolved`, 16, 16, ef.length, (p, i) => p.sprite(ef[i], epal, 0, 0), true);
+      stripTexture(scene, `pet-${pet.id}-evolved`, 16, 16, ef.length, (p, i) => {
+        p.sprite(ef[i], epal, 0, 0);
+        if (pet.id === 'princess' && e.name === 'Queencess') {
+          p.r('#a66c25', 9, 3, 6, 1); p.r('#edc35b', 9, 1, 1, 3);
+          p.r('#edc35b', 11, 0, 2, 4); p.r('#edc35b', 14, 1, 1, 3);
+          p.r('#a079b8', 11, 2, 2, 1);
+        }
+      }, true);
     }
   }
   // People
@@ -256,13 +263,13 @@ function createAnims(scene) {
   for (const id of Object.keys(NPCS)) {
     if (custom.has(`npc-${id}`)) {
       const tex = `npc-${id}`, n = frameCount(scene, tex);
-      if (n > 1) make(`${tex}-walk`, tex, walkFrames(tex,n), 6);
+      if (n > 1) make(`${tex}-walk`, tex, walkFrames(tex,n), NPC_WALK_FRAME_RATE);
       continue;
     }
     for (const dir of ['down', 'up', 'left']) make(`npc-${id}-${dir}-walk`, `npc-${id}-${dir}`, [1, 0, 2, 0], 7);
   }
   for (const c of CROWD) for (const dir of ['down', 'up', 'left']) make(`npc-${c.id}-${dir}-walk`, `npc-${c.id}-${dir}`, [1, 0, 2, 0], 7);
-  for (const tex of scene.textures.getTextureKeys()) for (const action of ['wave','throw','reward','jump','sit']) {
+  for (const tex of scene.textures.getTextureKeys()) for (const action of ['wave','throw','reward','jump','sit','paw']) {
     const frames=animationFrames(tex,frameCount(scene,tex),action,!custom.has(tex));
     if(frames.length && !scene.anims.exists(`${tex}-${action}`)) scene.anims.create({key:`${tex}-${action}`,frames:frames.map(frame=>({key:tex,frame})),frameRate:8,repeat:0});
   }

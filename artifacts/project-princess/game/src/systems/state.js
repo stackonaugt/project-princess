@@ -19,6 +19,7 @@ import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
 import { CHAPTERS } from '../data/story.js';
 import { FURNITURE, DEFAULT_FURNITURE } from '../data/furniture.js';
+import { normaliseScorecards } from './scorecards.js';
 
 const VERSION = 10;
 export const MAX_TEAM = 3;
@@ -30,6 +31,7 @@ const RENAMED = { jules: 'pearman', busker: 'jordan', priya: 'abby', dimitri: 'j
 function fresh() {
   return {
     playerSkills: {},
+    scorecards: [],
     v: VERSION, created: Date.now(),
     day: 1, minutes: 9 * 60,     // the very first day starts at 9am
     region: 'home', pos: null, dir: 'down',   // region = the zone you're in (see data/regions.js)
@@ -103,6 +105,7 @@ function sanitise(raw) {
   if (raw.soil && typeof raw.soil === 'object') for (const [k, s] of Object.entries(raw.soil)) if (s && typeof s.family === 'string' && typeof s.crop === 'string' && CROPS[s.crop]) d.soil[k] = { family: s.family, crop: s.crop };
   if (raw.upgrades && typeof raw.upgrades === 'object') for (const k of Object.keys(raw.upgrades)) if (UPGRADES[k]) d.upgrades[k] = true;
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
+  d.scorecards = normaliseScorecards(raw.scorecards);
   if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, known: Array.isArray(raw.council.known) ? raw.council.known : [], metDay: raw.council.metDay };
@@ -339,6 +342,16 @@ export const state = {
   // passed (and you have found one more pet than the motions before it).
   motionUnlocked(id) { const i = MOTION_ORDER.indexOf(id); return this.motionPassed(id) || (i < this.foundCount() && MOTION_ORDER.slice(0, i).every(m => this.motionPassed(m))); },
   motionPassed(id) { return this.data.council.passed.includes(id); },
+  motionKnown(id) {
+    return !!(this.data.flags.knownMotions?.includes(id) || this.motionPassed(id) ||
+      this.data.council.known.some(key => key.startsWith(`${id}:`)) ||
+      Object.values(this.data.council.given[id] || {}).some(n => n > 0));
+  },
+  learnMotion(id) {
+    const known = this.data.flags.knownMotions ||= [];
+    if (known.includes(id)) return false;
+    known.push(id); return true;
+  },
   motionGiven(id) { return this.data.council.given[id] || (this.data.council.given[id] = {}); },
   motionReady(id) { return motionReady(id, this.data.council.given[id]); },
   // Chip in towards a motion: all of one item you have (up to what's needed), or the money.
@@ -363,7 +376,7 @@ export const state = {
   },
   // What an undecided councillor wants, once you have found out (To Do list).
   swingKnown(motion, who) { return this.data.council.known.includes(`${motion}:${who}`); },
-  learnSwing(motion, who) { const k = `${motion}:${who}`; if (this.data.council.known.includes(k)) return false; this.data.council.known.push(k); return true; },
+  learnSwing(motion, who) { this.learnMotion(motion); const k = `${motion}:${who}`; if (this.data.council.known.includes(k)) return false; this.data.council.known.push(k); return true; },
   winOver(motion, who) { const a = this.data.council.won[motion] || (this.data.council.won[motion] = []); if (!a.includes(who)) a.push(who); },
   // How each councillor votes on a motion right now.
   councilVote(motion) {

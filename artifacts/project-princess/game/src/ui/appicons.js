@@ -1,6 +1,8 @@
 // Pixel art app icons for the Pawphone, 16x16 like the rest of the game,
 // drawn from little character grids (one letter per pixel, '.' is clear).
 const ICONS = {
+  skills: { pal: { k:'#4a2a12', a:'#f0bd83', b:'#d18a52' }, rows: [
+    '................','.........kkkk...','........kaaaak..','........kaaaak..','.........kaak...','.........kaak...','...kkkk..kaak...','..kaaaakkkaak...','.kaaaaaaaaaak...','.kaaaaabaaaak...','.kaaaabbaaaak...','..kaabbbbaaak...','...kaaaaaaak....','....kkkkkkk.....','................','................'] },
   todo: { pal: { k: '#1e1a18', w: '#ffffff', g: '#d8d8e0', t: '#3aa85a' }, rows: [
     '................', '..kkkkkkkkkk....', '..kwwwwwwwwk..tt', '..kwwwwwwwwk.tt.', '..kwwwwwwwtktt..', '..kwwwwwwttkt...', '..ktwwwwttwk....', '..kttwwttwwk....',
     '..kwttttwwwk....', '..kwwttwwwwk....', '..kwwwwwwwwk....', '..kgggggggggk...', '..kkkkkkkkkkk...', '................', '................', '................'] },

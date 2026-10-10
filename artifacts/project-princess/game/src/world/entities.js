@@ -1,13 +1,13 @@
-import { animationFrames,frameAt } from '../data/animation-layouts.js';
+import { animationFrames,actionFrameAt } from '../data/animation-layouts.js';
 // Characters that walk around: the player, pets and townsfolk.
 import { TILE as T, WALK_SPEED, RUN_SPEED, PET_SPEED } from '../config.js';
 import { custom, fitScale, frameCount, playerTexture, objectTexture } from '../art/textures.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from '../systems/state.js';
-import { petTex } from '../systems/forms.js';
+import { petTex, isEvolved } from '../systems/forms.js';
+import { petSize } from '../data/pet-sizes.js';
 import { inWindow, isNight } from '../systems/clock.js';
 import { sfx } from '../systems/sfx.js';
-import { petSize } from '../data/pet-sizes.js';
 
 export const toWorld = (tx, ty) => ({ x: (tx + 0.5) * T, y: (ty + 0.75) * T });
 
@@ -61,9 +61,19 @@ export class Actor extends Phaser.Physics.Arcade.Sprite {
   syncExtras() {
     if(this.actionPose){const a=this.actionPose,t=this.scene.time.now-a.start;
       if(t<a.ms){const frames=animationFrames(this.texture.key,frameCount(this.scene,this.texture.key),a.action,!custom.has(this.texture.key));
-        if(frames.length){this.anims.stop();this.setFrame(frameAt(frames,t,7));}
+        if(frames.length){this.anims.stop();this.setFrame(actionFrameAt(frames,t/a.ms));}
         if(a.action==='jump')this.setOrigin(.5,1+Math.sin(t/a.ms*Math.PI)*7/this.displayHeight);
-      }else{this.actionPose=null;this.setOrigin(.5,1);this.bob=0;}
+        if(!frames.length && ['wave','throw','reward'].includes(a.action)) {
+          this.actionArm ||= this.scene.add.graphics();
+          const direction = this.flipX ? -1 : 1, lift = Math.sin(t/a.ms*Math.PI);
+          this.actionArm.clear().lineStyle(2,0xe3ba92).beginPath()
+            .moveTo(this.x + direction*3,this.y - this.displayHeight*.48)
+            .lineTo(this.x + direction*(5+lift*4),this.y - this.displayHeight*.48-lift*7).strokePath()
+            .setDepth(this.y+.1).setVisible(this.visible);
+        }
+      }else{this.actionPose=null;this.actionArm?.clear();this.setOrigin(.5,1);this.bob=0;
+        if(this.scene.textures.get(this.texture.key).has(0))this.setFrame(0);
+      }
     }
     const top = this.y - this.displayHeight;
     this.setDepth(this.y);
@@ -104,7 +114,7 @@ export class Actor extends Phaser.Physics.Arcade.Sprite {
     this.body.enable = true;
     this.body.reset(this.standAt.x, this.standAt.y);
   }
-  destroy(fromScene) { if (this.seat?.taken === this) this.seat.taken = null; this.shadow?.destroy(); this.tuft?.destroy(); this.bubble?.destroy(); super.destroy(fromScene); }
+  destroy(fromScene) { if (this.seat?.taken === this) this.seat.taken = null; this.actionArm?.destroy(); this.shadow?.destroy(); this.tuft?.destroy(); this.bubble?.destroy(); super.destroy(fromScene); }
 }
 
 // ---------------------------------------------------------------- Player
@@ -215,7 +225,7 @@ export class Pet extends Actor {
     const spot = mode === 'home' ? [data.homeSpot.x, data.homeSpot.y] : data.home;
     let home = toWorld(spot[0], spot[1]);
     if (mode === 'follow' && near) home = { x: near.x - 10 - index * 8, y: near.y + 4 + index * 4 };
-    super(scene, home.x, home.y, petTex(data.id), petSize(data.id));
+    super(scene, home.x, home.y, petTex(data.id), petSize(data.id, isEvolved(data.id)));
     this.data_ = data; this.id = data.id;
     this.mode = mode; this.index = index;
     this.range = mode === 'home' ? 1.5 : data.range;
@@ -229,7 +239,7 @@ export class Pet extends Actor {
   get asleep() { return this.mode !== 'follow' && inWindow(state.data.minutes, this.data_.sleeps); }
 
   pause(sec) { this.state_ = 'idle'; this.timer = sec; this.target = null; this.setVelocity(0, 0); }
-  refreshForm() { this.anims.stop(); this.setTexture(petTex(this.id), 0); this.applyScale(); }
+  refreshForm() { this.anims.stop(); this.setTexture(petTex(this.id), 0); this.slot = petSize(this.id, isEvolved(this.id)); this.applyScale(); }
   facePoint(x) { this.setFlipX(x < this.x); }
 
   randomPointNearHome(range) {

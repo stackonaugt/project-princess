@@ -49,7 +49,7 @@ export function buildLohse() {
   // Big gums, and backyard fences along the east side
   [[11, 5], [14, 3], [31, 13], [37, 6], [28, 18], [12, 9], [36, 19], [16, 20]].forEach(([x, y]) => b.put('tall', x, y, { v: 'biggum' }));
   b.put('tall', 6, 8, { v: 'cypress' });
-  b.fenceV(38, 1, 22, 'colorbond');
+  // The tree boundary already defines the reserve edge; no thin edge-on metal fence.
 
   // Street bits
   b.put('powerpole', 3, 6); b.put('powerpole', 30, 23);

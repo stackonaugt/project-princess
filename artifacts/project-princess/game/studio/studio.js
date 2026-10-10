@@ -1,6 +1,7 @@
 import { clone, escapeHtml, gameURL, readView, rememberView, request } from './utils.js';
 import { mountMapEditor } from './map-editor.js';
 import { mountDataEditor } from './data-editor.js';
+import { unsupportedMoveAnimations } from './move-animation-rules.js';
 
 const root = document.getElementById('studio-root');
 const tabs = [
@@ -58,6 +59,14 @@ async function showView() {
 }
 
 async function saveProject(documentToSave = model.doc) {
+  const unsupported = unsupportedMoveAnimations(documentToSave);
+  if (unsupported.length) {
+    const details = unsupported.slice(0, 5).map(({ path, value }) =>
+      `${path || 'move'}: “${value == null ? '(empty)' : String(value)}”`);
+    const remaining = unsupported.length > details.length ? `; and ${unsupported.length - details.length} more` : '';
+    message(`Fix unsupported move animations before saving: ${details.join('; ')}${remaining}.`, true);
+    return false;
+  }
   model.saving = true;
   updateSaveState();
   try {

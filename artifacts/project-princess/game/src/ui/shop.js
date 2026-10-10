@@ -17,7 +17,7 @@ import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 
-const TAB_NAMES = { spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party', pantry: 'Pantry', paint: 'Paint' };
+const TAB_NAMES = { materials: 'Materials', spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party', pantry: 'Pantry', paint: 'Paint' };
 const tabFor = {};
 
 // What a shop pays for one of an item: crops at their price, treats at half.
@@ -42,6 +42,7 @@ export function openShop(panel, close, shopId = 'petshop') {
   const rowsFor = tab => {
     const itemRow = id => { const it = ITEMS[id]; return { name: it.name, desc: it.desc, price: it.price, icon: itemIcon(id, 32), have: state.count(id), act: buy(it.name, it.price, () => state.addItem(id)) }; };
     if (tab === 'treats') return (shop.treats || Object.keys(ITEMS).filter(id => !ITEMS[id].local)).filter(id => ITEMS[id].price && !ITEMS[id].crop && isTreat(id)).map(itemRow);
+    if (tab === 'materials') return (shop.materials || []).map(itemRow);
     if (tab === 'gifts') return (shop.gifts || []).map(itemRow);
     if (tab === 'pantry') return (shop.pantry || []).map(itemRow);
     if (tab === 'pranks') return (shop.pranks || Object.values(PRANKS).map(pr => pr.item)).map(itemRow);

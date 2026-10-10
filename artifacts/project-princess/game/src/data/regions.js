@@ -57,6 +57,7 @@ import { buildCoburgLake } from '../world/maps/coburglake.js';
 import { buildPrestonHigh } from '../world/maps/prestonhigh.js';
 import { buildPrestonMkt } from '../world/maps/prestonmkt.js';
 import { buildMoreland } from '../world/maps/moreland.js';
+import { buildBakeOff } from '../world/maps/bakeoff.js';
 import { buildMurray } from '../world/maps/murray.js';
 import { buildSummerhill } from '../world/maps/summerhill.js';
 import { buildSummerhillMall } from '../world/maps/summerhillmall.js';
@@ -132,6 +133,7 @@ export const ZONES = {
   coburgmall: { name: 'Coburg Station', suburb: 'coburg', build: buildCoburgMall, grass: CITY_GRASS, },
   coburglake: { name: 'Coburg Lake', suburb: 'coburg', build: buildCoburgLake, grass: RES_GRASS, },
   moreland: { name: 'Moreland Rd', suburb: 'coburg', build: buildMoreland, grass: CITY_GRASS, },
+  bakeoff: { name: 'Moreland Bake-Off', tagline: 'A busy little community hall, crowded cake benches and very competitive neighbours.', suburb: 'coburg', build: buildBakeOff, grass: CITY_GRASS, indoor: true },
   murray: { name: 'Murray Rd', suburb: 'preston', build: buildMurray, grass: CITY_GRASS, },
   prestonmkt: { name: 'Preston Market', suburb: 'preston', build: buildPrestonMkt, grass: CITY_GRASS, },
   prestonhigh: { name: 'Preston Station', suburb: 'preston', build: buildPrestonHigh, grass: CITY_GRASS, },

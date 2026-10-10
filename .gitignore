@@ -50,3 +50,11 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+
+# Generated reports, browser results and private incoming uploads.
+# Existing tracked artwork and archives are intentionally retained.
+/generated-artifacts/
+/.agents/outputs/
+/attached_assets/
+/playwright-report/
+/test-results/

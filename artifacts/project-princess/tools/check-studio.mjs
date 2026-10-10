@@ -7,8 +7,22 @@ import { chromium } from 'playwright';
 
 const root = 'http://127.0.0.1:80';
 async function api(route, options = {}) {
-  const response = await fetch(`${root}/__studio_api/${route}`, options);
-  return { status: response.status, data: await response.json() };
+  const { retryTransient, ...requestOptions } = options;
+  const attempts = !requestOptions.method || requestOptions.method === 'GET' || retryTransient ? 5 : 1;
+  let lastError;
+  for (let attempt = 0; attempt < attempts; attempt++) {
+    try {
+      const response = await fetch(`${root}/__studio_api/${route}`, requestOptions);
+      const body = await response.text();
+      return { status: response.status, data: JSON.parse(body) };
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts - 1) await new Promise(resolve => setTimeout(resolve, 150 * (attempt + 1)));
+    }
+  }
+  throw new Error(`Studio API read failed for ${route}: ${lastError?.message || 'invalid JSON response'}`, {
+    cause: lastError,
+  });
 }
 const original = (await api('catalog')).data;
 const overridesPath = new URL('../game/src/authoring/overrides.json', import.meta.url);
@@ -25,16 +39,37 @@ const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 page.on('dialog', dialog => dialog.accept());
 
-async function save(document, revision) {
+async function save(document, revision, retryTransient = false) {
   return api('save', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', 'If-Match': revision },
     body: JSON.stringify(document),
+    retryTransient,
   });
+}
+async function reloadStudio() {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt === 0) await page.reload({ waitUntil: 'domcontentloaded' });
+    else {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await page.goto(`${root}/studio/`, { waitUntil: 'domcontentloaded' });
+    }
+    try {
+      await page.getByTestId('nav-world').waitFor({ timeout: 10_000 });
+      return;
+    } catch (error) {
+      if (attempt === 2) throw error;
+    }
+  }
 }
 async function change(selector, value) {
   await page.locator(selector).fill(String(value));
   await page.locator(selector).dispatchEvent('change');
+}
+function waitForSaveResponse() {
+  return page.waitForResponse(response =>
+    response.url().endsWith('/__studio_api/save') && response.request().method() === 'PUT')
+    .then(async response => ({ status: response.status(), data: await response.json() }));
 }
 async function clickTile(x, y) {
   await page.locator('#map-canvas').click({ position: { x: x * 16 + 8, y: y * 16 + 8 } });
@@ -44,18 +79,80 @@ try {
   await page.goto(`${root}/studio/`);
   await page.locator('#map-canvas').waitFor();
   const baselineMap = (await api('map?id=allen')).data.map;
+  const groundPalette = original.regions.find(region => region.id === 'allen').grass;
+  const parity = await page.evaluate(async ({ map, edits, grass }) => {
+    const entry = document.querySelector('script[type="module"]').src;
+    const [{ paintGround }, { painter }, { mapWithEdits }] = await Promise.all([
+      import(new URL('../src/art/paint/tiles.js', entry)),
+      import(new URL('../src/art/paint/painter.js', entry)),
+      import(new URL('../src/authoring/map-overrides.js', entry)),
+    ]);
+    const expected = document.createElement('canvas');
+    const effectiveMap = mapWithEdits(map, edits);
+    expected.width = effectiveMap.w * 16; expected.height = effectiveMap.h * 16;
+    paintGround(painter(expected.getContext('2d')), effectiveMap, grass, {});
+    const actual = document.querySelector('#map-ground');
+    const a = actual.getContext('2d').getImageData(0, 0, actual.width, actual.height).data;
+    const b = expected.getContext('2d').getImageData(0, 0, expected.width, expected.height).data;
+    let different = 0;
+    for (let index = 0; index < a.length; index++) if (a[index] !== b[index]) different++;
+    return { different, pixels: a.length };
+  }, { map: baselineMap, edits: original.saved.maps.allen, grass: groundPalette });
+  assert.equal(parity.different, 0, `Studio ground preview differs from gameplay painter (${parity.different}/${parity.pixels} channel values).`);
+
+  // Exercise a real touch drag on a phone-sized viewport. The gesture stays
+  // in the draft and this page is closed without saving.
+  const touchPage = await browser.newPage({
+    viewport: { width: 390, height: 844 }, deviceScaleFactor: 1, isMobile: true, hasTouch: true,
+  });
+  touchPage.on('pageerror', error => errors.push(error.message));
+  await touchPage.goto(`${root}/studio/`);
+  await touchPage.locator('#map-canvas').waitFor();
+  await touchPage.locator('#map-tool').selectOption('paint');
+  await touchPage.locator('#tile-brush').selectOption('Q');
+  await touchPage.locator('#tile-rotation').selectOption('1');
+  const touchCanvas = touchPage.locator('#map-canvas');
+  await touchCanvas.scrollIntoViewIfNeeded();
+  const bounds = await touchCanvas.boundingBox();
+  const cdp = await touchPage.context().newCDPSession(touchPage);
+  const start = { x: bounds.x + 2 * 16 + 8, y: bounds.y + 2 * 16 + 8, id: 1 };
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [start] });
+  for (const tileX of [3, 4]) await cdp.send('Input.dispatchTouchEvent', {
+    type: 'touchMove', touchPoints: [{ x: bounds.x + tileX * 16 + 8, y: start.y, id: 1 }],
+  });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await touchPage.waitForFunction(() => /[2-9]\d* painted tiles/.test(document.querySelector('#map-counts').textContent));
+  assert.equal(await touchPage.locator('#tile-preview').evaluate(node => node.width), 48);
+  await cdp.detach();
+  await touchPage.close();
+
   await page.locator('#map-tool').selectOption('paint');
   await page.locator('#tile-brush').selectOption('~');
   await clickTile(2, 2);
+  await page.locator('#tile-brush').selectOption('=');
+  await page.locator('#tile-rotation').selectOption('1');
+  await clickTile(2, 2);
+  assert.ok(await page.locator('#tile-preview').evaluate(node =>
+    [...node.getContext('2d').getImageData(0, 0, node.width, node.height).data].some((pixel, index) => index % 4 === 3 && pixel > 0)));
   await page.locator('#map-tool').selectOption('place');
   const prop = original.objectKinds.find(kind => kind.foot[0] === 1 && kind.foot[1] === 1);
   await page.locator('#object-kind').selectOption(prop.id);
+  assert.ok(await page.locator('#object-variant option').count() >= 1, 'Prop variants should be available after choosing a prop.');
+  const variantKind = original.objectKinds.find(kind => kind.variants.length || kind.styles.length);
+  assert.ok(variantKind, 'The project has a prop kind with artwork variants.');
+  await page.locator('#object-kind').selectOption(variantKind.id);
+  assert.ok(await page.locator('#object-variant option').count() >= 2, 'Variant picker should list named prop artwork variants.');
+  await page.locator('#object-kind').selectOption(prop.id);
+  await page.locator('#place-rotation').selectOption('3');
+  assert.ok(await page.locator('#object-preview').evaluate(node =>
+    [...node.getContext('2d').getImageData(0, 0, node.width, node.height).data].some((pixel, index) => index % 4 === 3 && pixel > 0)));
   await clickTile(3, 3);
   await page.locator('#object-picker').selectOption('base:0');
   await page.locator('#remove-object').click();
   await page.locator('#object-picker').selectOption('base:1');
   await change('#object-x', 0);
   await change('#object-y', 0);
+  await page.locator('#selected-object-rotation').selectOption('1');
   await page.locator('#move-object').click();
   await page.locator('#exit-picker').selectOption('base:0');
   await page.waitForFunction(() => document.querySelector('#exit-entry').options.length > 0);
@@ -77,10 +174,22 @@ try {
   await change('[data-testid="new-entity-name"]', 'Studio duplicated pet');
   await page.getByTestId('duplicate-entity').click();
   await page.getByTestId('remove-entity').waitFor();
+  await page.locator('#data-collection').selectOption('data/moves.js|MOVES');
+  await page.getByTestId('record-MOVES-growl').click();
+  await page.getByTestId('field-MOVES-growl-type').selectOption('fire');
+  await change('[data-testid="field-MOVES-growl-power"]', 12);
+  await page.getByTestId('field-MOVES-growl-anim').selectOption('flame');
+  await change('[data-testid="field-MOVES-growl-text"]', 'Studio move text for {u} and {t}.');
+  await page.locator('#data-collection').selectOption('data/moves.js|PET_MOVES');
+  await page.getByTestId('record-PET_MOVES-princess').click();
+  await page.getByTestId('field-PET_MOVES-princess-move-0').selectOption('splash');
 
   await page.getByTestId('nav-world').click();
   await page.locator('#data-collection').selectOption('data/npcs.js|NPCS');
   await page.getByTestId('record-NPCS-trish').click();
+  const characterEditorText = await page.locator('#studio-content').innerText();
+  assert.match(characterEditorText, /Generated sprite look \(fallback\)/);
+  assert.match(characterEditorText, /assigned walking PNG replaces it/);
   await change('[data-testid="new-entity-id"]', 'studio_npc');
   await change('[data-testid="new-entity-name"]', 'Studio custom character');
   await page.getByTestId('create-entity').click();
@@ -121,19 +230,27 @@ try {
   await page.getByTestId('remove-entity').click();
   assert.match(await page.locator('#studio-message').textContent(), /Remove references first.*placement/);
 
-  const savedResponse = page.waitForResponse(response => response.url().endsWith('/__studio_api/save') && response.request().method() === 'PUT');
+  const savedResponse = waitForSaveResponse();
   await page.getByTestId('save-project').click();
-  const response = await savedResponse;
-  const saved = await response.json();
-  assert.equal(response.status(), 200, JSON.stringify(saved));
-  assert.equal(saved.saved.maps.allen.tiles.find(tile => tile.x === 2 && tile.y === 2).tile, '~');
+  const { status: saveStatus, data: saved } = await savedResponse;
+  assert.equal(saveStatus, 200, JSON.stringify(saved));
+  const rotatedTile = saved.saved.maps.allen.tiles.find(tile => tile.x === 2 && tile.y === 2);
+  assert.equal(rotatedTile.tile, '=');
+  assert.equal(rotatedTile.rotation, 1);
+  assert.equal(saved.saved.maps.allen.objects.move.find(object => object.index === 1).rotation, 1);
+  assert.equal(saved.saved.maps.allen.objects.add[0].rotation, 3);
   assert.equal(saved.saved.data.story['data/story.js'].GOALS[1], 'Studio test goal');
+  assert.equal(saved.saved.data.gameplay['data/moves.js'].MOVES.growl.type, 'fire');
+  assert.equal(saved.saved.data.gameplay['data/moves.js'].MOVES.growl.power, 12);
+  assert.equal(saved.saved.data.gameplay['data/moves.js'].MOVES.growl.anim, 'flame');
+  assert.equal(saved.saved.data.gameplay['data/moves.js'].MOVES.growl.text, 'Studio move text for {u} and {t}.');
+  assert.equal(saved.saved.data.gameplay['data/moves.js'].PET_MOVES.princess[0], 'splash');
   assert.equal(saved.saved.custom.pets.studio_pet.record.id, 'studio_pet');
   assert.equal(saved.saved.custom.pets.studio_pet_copy.record.id, 'studio_pet_copy');
   assert.deepEqual(saved.saved.custom.pets.studio_pet.moves, saved.saved.custom.pets.studio_pet_copy.moves);
   assert.equal(saved.saved.custom.npcs.studio_npc.text.lines[0][0], 'Hello from the studio.');
   assert.equal(saved.saved.custom.npcs.studio_npc_copy, undefined);
-  await page.reload();
+  await reloadStudio();
   await page.getByTestId('nav-world').click();
   await page.locator('#data-collection').selectOption('data/npcs.js|NPCS');
   await page.getByTestId('record-NPCS-studio_npc').click();
@@ -154,6 +271,8 @@ try {
     const map = regions.getMap('allen');
     return {
       tile: map.ground[2][2], object: map.objects[0],
+      tileRotation: map.tileRotations?.[2]?.[2], objectRotation: map.objects[0].rotation,
+      addedObjectRotation: map.objects.at(-1)?.rotation,
       exit: map.exits[0].label, goal: story.GOALS[1], pet: pets.PETS[0].name,
       shop: shops.SHOPS.petshop.name,
       schedule: routines.ROUTINES[characterId]({ day: 1, minutes: 600 }),
@@ -164,9 +283,15 @@ try {
       customNpc: npcs.NPCS.studio_npc.name,
       placement: map.npcs.find(npc => npc.id === 'studio_npc'),
       customSchedule: routines.ROUTINES.studio_npc({ day: 1, minutes: 600 }),
+      moveType: moves.MOVES.growl.type, movePower: moves.MOVES.growl.power,
+      moveAnim: moves.MOVES.growl.anim, moveText: moves.MOVES.growl.text,
+      petMove: moves.PET_MOVES.princess[0],
     };
   }, { characterId: character.id });
-  assert.equal(runtime.tile, '~');
+  assert.equal(runtime.tile, '=');
+  assert.equal(runtime.tileRotation, 1);
+  assert.equal(runtime.objectRotation, 1);
+  assert.equal(runtime.addedObjectRotation, 3);
   assert.equal(runtime.object.kind, baselineMap.objects[1].kind);
   assert.equal(runtime.object.x, 0);
   assert.equal(runtime.object.y, 0);
@@ -182,6 +307,11 @@ try {
   assert.equal(runtime.customNpc, 'Studio custom character');
   assert.equal(runtime.placement.x, open.x);
   assert.equal(runtime.customSchedule, 'home');
+  assert.equal(runtime.moveType, 'fire');
+  assert.equal(runtime.movePower, 12);
+  assert.equal(runtime.moveAnim, 'flame');
+  assert.equal(runtime.moveText, 'Studio move text for {u} and {t}.');
+  assert.equal(runtime.petMove, 'splash');
   await game.close();
 
   // Exercise the creator-facing archive/restore controls, persisted through
@@ -196,14 +326,16 @@ try {
   // Pet records use list indices; find by the retained display name.
   await page.locator('#data-records button').filter({ hasText: 'Studio custom pet' }).first().click();
   await page.getByTestId('archive-entity').click();
-  const archiveResponse = page.waitForResponse(response => response.url().endsWith('/__studio_api/save') && response.request().method() === 'PUT');
+  const archiveResponse = waitForSaveResponse();
   await page.getByTestId('save-project').click();
-  const archiveResult = await archiveResponse;
-  assert.equal(archiveResult.status(), 200);
-  const archiveSaved = await archiveResult.json();
+  const { status: archiveStatus, data: archiveSaved } = await archiveResponse;
+  assert.equal(archiveStatus, 200);
   assert.equal(archiveSaved.saved.custom.pets.studio_pet.archived, true);
   assert.equal(archiveSaved.saved.custom.npcs.studio_npc.archived, true);
-  await page.reload();
+  await reloadStudio();
+  await page.getByTestId('nav-gameplay').click();
+  await page.locator('#data-collection').selectOption('data/pets.js|PETS');
+  await page.locator('#data-records button').filter({ hasText: 'Studio custom pet' }).first().click();
   await page.getByTestId('archive-entity').waitFor();
   assert.match(await page.getByTestId('archive-entity').textContent(), /Restore/);
   const archivedGame = await browser.newPage();
@@ -231,11 +363,10 @@ try {
   await page.locator('#data-collection').selectOption('data/npcs.js|NPCS');
   await page.getByTestId('record-NPCS-studio_npc').click();
   await page.getByTestId('archive-entity').click();
-  const restoreResponse = page.waitForResponse(response => response.url().endsWith('/__studio_api/save') && response.request().method() === 'PUT');
+  const restoreResponse = waitForSaveResponse();
   await page.getByTestId('save-project').click();
-  const restoreResult = await restoreResponse;
-  assert.equal(restoreResult.status(), 200);
-  const restoredArchive = await restoreResult.json();
+  const { status: restoreStatus, data: restoredArchive } = await restoreResponse;
+  assert.equal(restoreStatus, 200);
   assert.equal(restoredArchive.saved.custom.pets.studio_pet.archived, false);
   assert.equal(restoredArchive.saved.custom.npcs.studio_npc.archived, false);
   assert.deepEqual(restoredArchive.saved.maps, saved.saved.maps);
@@ -247,7 +378,7 @@ try {
   const reject = async (mutate, message) => {
     const draft = structuredClone(saved.saved);
     mutate(draft);
-    const result = await save(draft, saved.revision);
+    const result = await save(draft, saved.revision, true);
     assert.equal(result.status, 400, `${message}: ${JSON.stringify(result.data)}`);
   };
   await reject(draft => { draft.maps.allen.npcs = []; }, 'Missing NPC placement');
@@ -271,12 +402,12 @@ try {
   assert.equal(afterRemoval['data/npcs.js'].NPCS.studio_npc, undefined);
   const afterPetRemoval = (await api('data?section=gameplay')).data.data;
   assert.ok(!afterPetRemoval['data/pets.js'].PETS.some(pet => pet.id === 'studio_pet_copy'));
-  const replaced = await save(saved.saved, removed.data.revision);
+  const replaced = await save(saved.saved, removed.data.revision, true);
   assert.equal(replaced.status, 400, 'Permanently removed IDs cannot be reassigned, even by importing an old snapshot.');
   assert.match(replaced.data.error, /permanently reserved/);
   saved.saved = removed.data.saved;
   saved.revision = removed.data.revision;
-  await page.reload();
+  await reloadStudio();
   await page.getByTestId('nav-story').click();
   await page.locator('#data-collection').selectOption('data/story.js|GOALS');
   await page.getByTestId('record-GOALS-1').click();
@@ -301,26 +432,113 @@ try {
   await page.locator('#data-collection').selectOption('data/story.js|GOALS');
   await page.getByTestId('field-GOALS-1').waitFor();
   assert.equal(await page.getByTestId('field-GOALS-1').inputValue(), 'Studio test goal');
+
+  const legacyMap = (await api('map?id=woods')).data.map;
+  assert.equal(original.saved.maps.woods, undefined, 'The legacy fixture map must start without saved overrides.');
+  const sourceIdentity = object => {
+    const identity = structuredClone(object);
+    if (identity.kind === 'fence') delete identity.v;
+    return identity;
+  };
+  const identityKey = object => JSON.stringify(Object.fromEntries(Object.entries(object)
+    .filter(([key]) => object.kind !== 'fence' || key !== 'v')
+    .sort(([left], [right]) => left.localeCompare(right))));
+  const uniquePropIndexes = legacyMap.objects.flatMap((object, index) =>
+    legacyMap.objects.filter(candidate => identityKey(candidate) === identityKey(object)).length === 1
+      ? [index] : []);
+  assert.ok(uniquePropIndexes.length >= 2, 'Woods needs two uniquely identifiable props for the legacy import fixture.');
+  const moveIndex = uniquePropIndexes[0];
+  const removeIndex = uniquePropIndexes.find(index => index !== moveIndex);
+  const movedProp = legacyMap.objects[moveIndex];
+  let destination;
+  for (let y = 0; y + movedProp.h <= legacyMap.h && !destination; y++) {
+    for (let x = 0; x + movedProp.w <= legacyMap.w; x++) {
+      if (x === movedProp.x && y === movedProp.y) continue;
+      const overlapsUneditedProp = legacyMap.objects.some((object, index) =>
+        index !== moveIndex && index !== removeIndex &&
+        x < object.x + object.w && x + movedProp.w > object.x &&
+        y < object.y + object.h && y + movedProp.h > object.y);
+      if (!overlapsUneditedProp) { destination = { x, y }; break; }
+    }
+  }
+  assert.ok(destination, 'Woods needs an open in-bounds location for the legacy prop move.');
+  const legacyDocument = {
+    version: 1,
+    maps: {
+      woods: {
+    objects: {
+      move: [{ index: moveIndex, ...destination }],
+      add: [],
+      remove: [removeIndex],
+    },
+      },
+    },
+    data: {},
+  };
+  assert.equal(Object.hasOwn(legacyDocument.maps.woods.objects.move[0], 'source'), false);
+  assert.equal(typeof legacyDocument.maps.woods.objects.remove[0], 'number');
   const importedResponse = page.waitForResponse(response => response.url().endsWith('/__studio_api/save') && response.request().method() === 'PUT');
-  const importedData = page.waitForResponse(response => response.url().includes('/__studio_api/data?section=story'));
   await page.locator('#import-file').setInputFiles({
     name: 'studio-backup.json', mimeType: 'application/json',
-    buffer: Buffer.from(JSON.stringify(original.saved)),
+    buffer: Buffer.from(JSON.stringify(legacyDocument)),
   });
   assert.equal((await importedResponse).status(), 200);
   const importedSaved = (await api('catalog')).data.saved;
-  assert.deepEqual({ ...importedSaved, retiredIds: undefined }, { ...original.saved, retiredIds: undefined });
+  const withoutSourceSnapshots = document => {
+    const result = structuredClone(document);
+    for (const edits of Object.values(result.maps || {})) {
+      const objects = edits.objects;
+      if (!objects) continue;
+      for (const move of objects.move || []) delete move.source;
+      objects.remove = (objects.remove || []).map(reference =>
+        typeof reference === 'number' ? reference : reference.index);
+    }
+    return result;
+  };
+  assert.deepEqual(
+    { ...withoutSourceSnapshots(importedSaved), retiredIds: undefined },
+    { ...withoutSourceSnapshots(legacyDocument), retiredIds: undefined },
+  );
+  const savedLegacyObjects = importedSaved.maps.woods.objects;
+  assert.deepEqual(savedLegacyObjects.move[0].source, sourceIdentity(legacyMap.objects[moveIndex]));
+  assert.deepEqual(savedLegacyObjects.remove[0], {
+    index: removeIndex,
+    source: sourceIdentity(legacyMap.objects[removeIndex]),
+  });
   assert.ok(importedSaved.retiredIds.pets.includes('studio_pet'));
   assert.ok(importedSaved.retiredIds.npcs.includes('studio_npc'));
-  // Wait for the import UI to finish before starting the next action.
-  await importedData;
-  await page.locator('#data-collection').waitFor();
+  // Importing an old index-only document must bind to source props, and the
+  // resulting move/removal must remain effective after a full Studio reload.
+  await reloadStudio();
+  await page.getByTestId('nav-maps').click();
+  await page.locator('#map-region').selectOption('woods');
+  await page.waitForFunction(() => document.querySelector('#map-region').value === 'woods' &&
+    document.querySelector('#map-counts').textContent.includes('props'));
+  assert.match(await page.locator('#map-counts').textContent(), new RegExp(`${legacyMap.objects.length - 1} props`));
+  const propPicker = page.locator('#object-picker');
+  assert.equal(await propPicker.locator(`option[value="base:${removeIndex}"]`).count(), 0,
+    'The legacy removal must still hide the same source prop after reloading Studio.');
+  await propPicker.selectOption(`base:${moveIndex}`);
+  assert.equal(await page.locator('#object-x').inputValue(), String(destination.x),
+    'The legacy move must still apply to the same source prop after reloading Studio.');
+  assert.equal(await page.locator('#object-y').inputValue(), String(destination.y),
+    'The legacy move must retain its destination after reloading Studio.');
+
+  // Restore the original fixture, then verify the normal defaults flow.
+  const restoreImportResponse = page.waitForResponse(response => response.url().endsWith('/__studio_api/save') && response.request().method() === 'PUT');
+  await page.locator('#import-file').setInputFiles({
+    name: 'studio-original-backup.json', mimeType: 'application/json',
+    buffer: Buffer.from(JSON.stringify(original.saved)),
+  });
+  assert.equal((await restoreImportResponse).status(), 200);
+  await reloadStudio();
+  await page.getByTestId('restore-defaults').waitFor();
   const resetResponse = page.waitForResponse(response => response.url().endsWith('/__studio_api/save') && response.request().method() === 'PUT');
   await page.getByTestId('restore-defaults').click();
   assert.equal((await resetResponse).status(), 200);
   assert.deepEqual((await api('catalog')).data.saved, { version: 1, maps: {}, data: {}, retiredIds: importedSaved.retiredIds });
   assert.deepEqual(errors, []);
-  console.log('Studio verified: archive/restore UI and runtime encounter policy, retired ID reservations, custom pet/NPC creation and duplication, linked content, placements, removal, reload, invalid saves, stale revisions, export, import, discard and defaults.');
+  console.log('Studio verified: responsive touch painting, ground-painter parity, map/art rotations and collision stability, move editing and assignments, character fallback labels, save/reload, archive/restore, linked content, import/export and defaults.');
 } finally {
   // The API intentionally retains permanent ID reservations across imports.
   // Only this development check restores its exact pre-test file atomically,

@@ -5,6 +5,25 @@ can be built and hosted independently of Replit. This repository is a pnpm
 workspace: keep the root configuration, lockfile, `artifacts/`, `lib/` and
 `scripts/` together, and run the commands below from the repository root.
 
+## Repository layout
+
+The release workflow builds **`artifacts/project-princess/`**. Its game source is
+in `game/`; its build configuration and verification tools are in the wrapper.
+GitHub also retains the earlier root-level game (`src/`, `assets/`, `index.html`)
+and `archive/`. These are preserved, not automatically mirrored or deleted.
+Make current release edits in the workspace game; compare both copies before
+moving unique artwork, audio or content between them.
+
+See the [game guide](artifacts/project-princess/game/README.md),
+[sprite guide](artifacts/project-princess/game/assets/sprites/README.md), and
+[current Claude guidance](artifacts/project-princess/game/CLAUDE.md).
+
+The current pet update adds eleven-frame idle/walk/jump/paw sheets for the base
+pets and evolved forms. Spooky's evolved form is **Ghost**, including interaction
+and sleeping dialogue. Display sizes remain editable in
+`artifacts/project-princess/game/src/data/pet-sizes.js`; artwork and size tuning
+are independent of pet statistics.
+
 ## Run the game and Studio on your computer
 
 Install **Node.js 22.12 or newer** (Node 22 LTS recommended) and **pnpm 10.26.1**.
@@ -12,8 +31,8 @@ On an existing Node installation you can install pnpm with:
 
 ```sh
 npm install --global pnpm@10.26.1
-git clone https://github.com/YOUR-ACCOUNT/YOUR-REPOSITORY.git
-cd YOUR-REPOSITORY
+git clone https://github.com/stackonaugt/project-princess.git
+cd project-princess
 pnpm install --frozen-lockfile
 pnpm --filter @workspace/project-princess run dev
 ```
@@ -147,6 +166,8 @@ so keep a backup first.
 pnpm --filter @workspace/project-princess run test:site-config
 pnpm --filter @workspace/project-princess run test:navigation
 pnpm --filter @workspace/project-princess run test:studio-art
+pnpm --filter @workspace/project-princess run test:animal-animations
+node --test artifacts/project-princess/tools/pet-form-text.test.mjs
 pnpm --filter @workspace/project-princess run check:build
 ```
 
@@ -161,13 +182,3 @@ On Linux, Playwright may also need its documented system dependencies. The smoke
 check serves the built files without Vite or a fallback server, tests the path
 embedded in the release, and verifies the title, a map, save/reload and sprites.
 It uses Replit's Chromium automatically when that executable is available.
-
-### Marty and phone pet care
-
-Marty is Trish and Gordon’s brown-grey cavoodle on Woods St, with built-in curly ears and an orange harness. The existing `smelly` type ID now displays as **Stinky**, preserving save and matchup compatibility. His moves are Smell Poo, Bite, Growl and Human Food from Gordon (30% recovery). When passing their Woods St garden with an energised team while Gordon is present, the neighbours offer an introduction once per visit. Declining remains safe; talking to either owner can offer it again. First fight: level 3. Rematches: level 8 through Gordon’s Play-fight menu. Defeats and declined invitations do not consume the gentle first match.
-
-Winning befriends Marty, awards two chicken neckies and starts a phone-care tutorial. Pawphone → Bag → select a food treat → select a pet restores energy with the same preference multipliers as battle treats. Full-energy pets cannot consume food accidentally. Toys and feathers do not heal from the phone. A pending Marty-care button on the Pawphone links to Bag and disappears after treating him or resting at home. Treats can also restore a tired pet at zero energy; a pet sent home still needs to be selected into the team again.
-
-All newly befriended pets fill empty team slots automatically, up to three, including trainer prizes. Additional recruits go to the Petdex/home without replacing the chosen team. `WorldScene.syncFollowers` spawns newly recruited companions even when their previous world actor is elsewhere. Existing saved team choices are preserved.
-
-Checks: `tools/playtest.test.mjs` covers recruitment limits and save reload, Marty’s type/moves/frames, gentle match damage, owner presence, repeat approach protection, phone healing and item consumption. The production browser smoke follows Woods encounter recruitment and phone care on a mobile viewport.

@@ -84,24 +84,20 @@ function battle(team, foes) {
 function trial(label, makeTeam, makeFoes) {
   let wins = 0, turns = 0, left = 0;
   for (let i = 0; i < RUNS; i++) {
-    const team = makeTeam();
-    state.data.party = team.map(f => f.petId);
-    const r = battle(team, makeFoes());
+    const r = battle(makeTeam(), makeFoes());
     wins += r.win; turns += r.turns; left += r.left;
   }
   const pct = (wins / RUNS * 100).toFixed(0).padStart(3);
   console.log(`${pct}% win  ${(turns / RUNS).toFixed(1).padStart(5)} turns  ${(left / RUNS * 100).toFixed(0).padStart(3)}% HP left   ${label}`);
 }
 
-const trainer = id => () => R.trainerTeam(id).map(([e, lv]) => R.foeFighter(e, lv));
+const trainer = id => () => TRAINERS[id].team.map(([e, lv]) => R.foeFighter(e, lv));
 const wildAvg = (suburb, bump = 0) => () => {
   const t = ENCOUNTERS[suburb], e = t[Math.floor(Math.random() * t.length)];
   return [R.foeFighter(e.id, e.lv[0] + Math.floor(Math.random() * (e.lv[1] - e.lv[0] + 1)) + bump)];
 };
 
 console.log(`\n${RUNS} runs per line. Win rate, average turns, average team HP left after.\n`);
-console.log('--- Actual starter route (one pet, zero hearts, first challenge)');
-for (const id of ['binman', 'rose', 'adam', 'mrwilkinson']) trial(`Princess L5, zero hearts vs ${id}`, () => [mine('princess', 5, { hearts: 0 })], trainer(id));
 console.log('--- Laverton (Princess only)');
 trial('Princess L5 vs Laverton wild', () => [mine('princess', 5)], wildAvg('laverton'));
 trial('Princess L6 vs Bin Man', () => [mine('princess', 6)], trainer('binman'));
@@ -121,7 +117,7 @@ const team10 = () => [mine('princess', 10), mine('salami', 10), mine('spooky', 1
 trial('Team L10 vs Merv (Pentridge)', team10, trainer('merv'));
 trial('Team L10 vs Tash (bike path)', team10, trainer('tash'));
 trial('Team L10 vs Kostas (Coburg Lake)', team10, trainer('kostas'));
-// Bev is a campaign NPC, not a trainer.
+trial('Team L11 vs Bev (Preston Market)', () => [mine('princess', 11), mine('salami', 11), mine('spooky', 11)], trainer('bev'));
 trial('Team L12 vs Myki Inspector', () => [mine('princess', 12), mine('salami', 12), mine('spooky', 12)], trainer('inspector'));
 trial('Team L12 vs Alison', () => [mine('princess', 12), mine('salami', 12), mine('spooky', 12)], trainer('alison'));
 console.log('--- Reservoir');

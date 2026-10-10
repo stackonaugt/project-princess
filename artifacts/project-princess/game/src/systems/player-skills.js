@@ -9,8 +9,8 @@ export const SKILLS = {
   },
   crafting: {
     name: "Crafting",
-    source: "Make toys, equipment and supplies at the yard workbench.",
-    perk: "Level 2 unlocks weave poles; level 3 unlocks the training vest.",
+    source: "Make toys, equipment and supplies at the garden shed.",
+    perk: "Level 2 unlocks the course extension; level 3 unlocks weave poles and the training vest.",
   },
   handling: {
     name: "Pet handling",
@@ -23,7 +23,7 @@ export const SKILLS = {
     perk: "Each level adds attack strength and stamina to player sparring.",
   },
   gathering: {
-    name: "Gathering",
+    name: "Farming",
     source: "Harvest crops, forage and catch fish.",
     perk: "Every three levels gives one extra crop on harvest.",
   },

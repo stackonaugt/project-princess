@@ -30,7 +30,7 @@ export function buildYard() {
   b.put('bin', 19, 18, { v: 'red' }); b.put('bin', 19, 17, { v: 'yellow' }); b.put('bin', 19, 16, { v: 'green' });
 
   // The shed in the far right corner
-  b.put('gardenshed', 25, 2);
+  b.put('gardenshed', 25, 2, {interact:'workbench'});
 
   // Garden
   b.put('hoist', 9, 9);
@@ -61,8 +61,14 @@ export function buildYard() {
   }
   if (state.hasUpgrade('pool')) b.put('paddlingpool', 2, 8);
   b.put('flowerbed', 8, 1, { v: 'natives' }); b.put('gnome', 4, 5, { v: 'red' });
-  b.put('counter', 3, 11, {v:'kettle',interact:'workbench'});
-  b.put('sign', 16, 11, {interact:'course'});
+  // Append new furniture after the original objects so existing Studio
+  // index-based placements still refer to the same props.
+  b.put('toolbox',24,5); b.put('sawhorse',25,6);
+  b.put('sign', 17, 14, {interact:'course'});
   b.put('sign', 18, 7, {interact:'sparring'});
-  return b.finish();
+  const map = b.finish();
+  // Clear after authoring moves have been applied. A creator's trampoline or
+  // trike moved off the course lawn must not disappear with the old layout.
+  if (state.count('coursekit')) map.clearArea = { x: 2, y: 6, w: 15, h: 8 };
+  return map;
 }

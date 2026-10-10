@@ -9,6 +9,29 @@
 }
 .studio-art-preview:empty { display: none; }
 .studio-art-preview canvas, .studio-art-sheet { image-rendering: pixelated; }
+.studio-art-comparison-card {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 84px;
+  margin: 0;
+  padding: 8px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 4px;
+  background: rgb(20 22 28 / 45%);
+}
+.studio-art-comparison-card canvas { width: 64px; height: 128px; }
+.studio-art-comparison-card figcaption, .studio-art-sheet-label {
+  margin: 0;
+  color: #f0eee6;
+  font-size: 12px;
+  text-align: center;
+}
+.studio-art-cycle-controls { display: flex; gap: 6px; }
+.studio-art-cycle-controls .studio-button { padding: 5px 8px; font-size: 12px; }
+.studio-art-sheet-wrap { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .studio-art-sheet { max-width: 100%; max-height: 128px; object-fit: contain; }
 .studio-art-portrait { max-width: 192px; max-height: 192px; object-fit: contain; }
 :root { --studio-border: #d6d4c6; }
@@ -35,14 +58,32 @@
 .studio-map-toolbar { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
 .studio-map-layout { display: grid; grid-template-columns: minmax(0, 1fr) 285px; gap: 22px; align-items: start; }
 .studio-map-scroll { overflow: auto; max-height: 74vh; border: 1px solid var(--studio-border); padding: 12px; background: #e4e8d8; border-radius: 6px; }
-#map-canvas { display: block; image-rendering: pixelated; max-width: none; touch-action: none; border: 1px solid #697462; }
+.studio-map-stage { position: relative; width: max-content; }
+#map-ground, #map-props, #map-canvas { position: absolute; inset: 0; display: block; image-rendering: pixelated; max-width: none; }
+#map-ground { z-index: 0; }
+#map-props { z-index: 1; pointer-events: none; }
+#map-canvas { z-index: 2; touch-action: none; outline: 1px solid #697462; outline-offset: -1px; }
+.studio-asset-preview { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.studio-asset-preview > canvas { flex: 0 0 56px; width: 56px; height: 56px; object-fit: contain; image-rendering: pixelated; border: 1px solid var(--studio-border); background: repeating-conic-gradient(#e7e6dc 0% 25%, #f7f5ec 0% 50%) 0 / 8px 8px; }
+.studio-asset-preview .studio-field { flex: 1; min-width: 0; margin: 0; }
 .studio-map-options { font-size: 12px; color: #65735e; }
 .studio-map-options input { accent-color: var(--pine); }
 .studio-map-options select { padding: 4px; border: 1px solid var(--studio-border); background: #fffdf7; }
 .studio-inspector { background: #fffdf7; border: 1px solid var(--studio-border); border-radius: 6px; padding: 20px; min-width: 0; max-height: 74vh; overflow: auto; }
 .studio-inspector h3 { margin: 0 0 12px; font-size: 17px; }
 .studio-inspector hr { border: 0; border-top: 1px solid var(--studio-border); margin: 22px 0; }
+.studio-move-preview { margin-top: 20px; padding: 14px; border: 1px solid #d9decf; border-radius: 6px; background: #f7f7ed; }
+.studio-move-preview-heading h4 { margin: 0 0 4px; color: var(--ink); font-size: 14px; }
+.studio-move-preview-heading p, .studio-move-preview-status { margin: 0; color: #75796e; font-size: 12px; line-height: 1.5; }
+.studio-move-preview-stage { width: 100%; height: 220px; margin-top: 12px; overflow: hidden; border-radius: 4px; background: #cbe3dc; }
+.studio-move-preview-stage canvas { display: block; width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+.studio-move-preview-controls { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.studio-move-preview-status.is-error { color: #a53229; }
 .studio-coordinate-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 13px; }
+.studio-stale-prop-edit { margin: 12px 0; padding: 12px; border: 1px solid #d6b98a; border-radius: 5px; background: #faf3e5; }
+.studio-stale-prop-edit > strong { display: block; color: var(--ink); font-size: 13px; overflow-wrap: anywhere; }
+.studio-stale-prop-edit .studio-field { margin: 12px 0 0; }
+.studio-stale-prop-edit .studio-actions { margin: 10px 0 0; }
 .studio-data-layout { display: grid; grid-template-columns: 215px minmax(0, 1fr); gap: 20px; }
 .studio-record-list { border: 1px solid var(--studio-border); border-radius: 6px; background: #eeeee4; padding: 12px; max-height: 74vh; overflow: auto; }
 .studio-record-list > input { margin-bottom: 10px; }

@@ -14,7 +14,7 @@ import { ITEMS } from '../data/items.js';
 import { PET_BY_ID } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { effectiveness, typeList, typeName } from '../data/types.js';
-import { form, canEvolve, evolve, petTex } from '../systems/forms.js';
+import { form, canEvolve, evolve, petTex, isEvolved } from '../systems/forms.js';
 import { friendInfo, ASSIST_HEARTS } from '../data/friends.js';
 import { ZONES, npcZone } from '../data/regions.js';
 import { state } from '../systems/state.js';
@@ -24,6 +24,7 @@ import { battleUI as B } from '../ui/battle.js';
 import { itemIcon, petIcon } from '../ui/images.js';
 import { custom, playerTexture } from '../art/textures.js';
 import { hash } from '../util.js';
+import { createBattleEffectTextures, playBattleAnimation } from '../systems/battle-animations.js';
 import * as R from '../systems/battle.js';
 
 const hex = c => parseInt(c.slice(1), 16);
@@ -75,7 +76,9 @@ export class BattleScene extends Phaser.Scene {
     B.open();
     this.layout();
     this.scale.on('resize', this.layout, this);
-    this.events.once('shutdown', () => this.scale.off('resize', this.layout, this));
+    this.panelObserver = new ResizeObserver(() => this.layout());
+    this.panelObserver.observe(document.querySelector('.bt-panel'));
+    this.events.once('shutdown', () => { this.scale.off('resize', this.layout, this); this.panelObserver.disconnect(); });
     this.cameras.main.fadeIn(250, 255, 255, 255);
     this.run().catch(err => { console.error(err); this.finish('run'); });
   }
@@ -87,8 +90,12 @@ export class BattleScene extends Phaser.Scene {
 
   // ------------------------------------------------------------ layout & drawing
   layout() {
+    // Message-panel resizing must not move the ground beneath an active tween.
+    // Reconcile both fighters and their pads together when the move finishes.
+    if (this.animating) return;
     const W = this.scale.width, H = this.scale.height;
     const panel = B.panelHeight() || 170, field = H - panel;
+    document.getElementById('battle').style.setProperty('--bt-panel', `${panel}px`);
     this.unit = Math.max(2, Math.min(8, Math.floor(Math.min(W / 62, field / 40))));
     this.horizon = Math.round(field * 0.4);
     this.foePos = { x: Math.round(W * 0.7), y: Math.round(Math.max(field * 0.52, this.horizon + 10 * this.unit)) };
@@ -107,14 +114,31 @@ export class BattleScene extends Phaser.Scene {
   scaleFor(key, f) {
     const tex = this.textures.get(key), fr = tex.has(0) ? tex.get(0) : tex.get();
     const tall = f && !f.petId && ENEMIES[f.id]?.tall;
-    const target = (f?.petId ? petSize(f.petId) : tall ? 26 : fr.height > 18 && !custom.has(key) ? fr.height : 16) * this.unit;
+    const target = (f?.petId ? petSize(f.petId, isEvolved(f.petId)) : tall ? 26 : fr.height > 18 && !custom.has(key) ? fr.height : 16) * this.unit;
     const requested=f?.petId || custom.has(key) || tall ? target / fr.height : this.unit;
     const field=this.scale.height-(B.panelHeight()||170);
     return Math.min(requested,this.scale.width*.38/fr.width,Math.max(48,field*.40)/fr.height);
   }
   place(spr, f, pos) {
     if (!f || !spr.visible) return;
-    spr.setScale(this.scaleFor(spr.texture.key, f)).setPosition(pos.x, pos.y);
+    spr.setOrigin(.5, this.footOrigin(spr.texture.key)).setScale(this.scaleFor(spr.texture.key, f)).setPosition(pos.x, pos.y - this.unit);
+  }
+  footOrigin(key) {
+    this.footOrigins ||= new Map();
+    if (this.footOrigins.has(key)) return this.footOrigins.get(key);
+    const texture = this.textures.get(key), frame = texture.has(0) ? texture.get(0) : texture.get();
+    let origin = 1;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = frame.cutWidth; canvas.height = frame.cutHeight;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      context.drawImage(texture.getSourceImage(), frame.cutX, frame.cutY, frame.cutWidth, frame.cutHeight, 0, 0, canvas.width, canvas.height);
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      outer: for (let y = canvas.height - 1; y >= 0; y--) for (let x = 0; x < canvas.width; x++) {
+        if (pixels[(y * canvas.width + x) * 4 + 3] > 32) { origin = (y + 1) / canvas.height; break outer; }
+      }
+    } catch (error) { console.warn(`Could not inspect grounding for ${key}`, error); }
+    this.footOrigins.set(key, origin); return origin;
   }
   setFighterSprite(spr, f) {
     const tex = this.textures.get(f.tex), frame = tex.has(0) ? 0 : undefined;
@@ -132,13 +156,38 @@ export class BattleScene extends Phaser.Scene {
     g.clear();
     // A location-specific PNG wins over suburb art, then the shared default.
     // Optional night variants retain the artist's colours without a tint.
-    const names = [this.opts.region, this.opts.suburb, 'default'].filter(Boolean);
+    const names = (this.opts.exhibition ? ['exhibition'] : [this.opts.region, this.opts.suburb, 'default']).filter(Boolean);
     const keys = names.flatMap(name => night ? [`battlebg-${name}-night`, `battlebg-${name}`] : [`battlebg-${name}`]);
     const background = keys.find(key => custom.has(key) && this.textures.exists(key));
     this.backgroundArt.setVisible(Boolean(background));
     if (background) {
       const field = Math.max(1, H - (B.panelHeight() || 170));
       this.backgroundArt.setTexture(background).setPosition(0, 0).setDisplaySize(W, field);
+      return;
+    }
+    if (this.opts.exhibition) {
+      const field = H - (B.panelHeight() || 170);
+      g.fillStyle(0xe2d7bc).fillRect(0, 0, W, field);
+      g.fillStyle(0x6d7772).fillRect(0, 0, W, hz * .18);
+      for (let x = 8 * u; x < W; x += 23 * u) {
+        g.fillStyle(0xf1e5c5).fillRect(x, hz * .18, 4 * u, hz * .82);
+        g.fillStyle(0x9b8360).fillRect(x - u, hz - 3 * u, 6 * u, 3 * u);
+      }
+      g.fillStyle(0x947d62).fillRect(0, hz - 4 * u, W, 4 * u);
+      for (let i = 0; i < 10; i++) {
+        const x = W * (i + .5) / 10;
+        g.fillStyle([0xc28d68, 0xedc5a0, 0x9b7056][i % 3]).fillCircle(x, hz - 7 * u, 2 * u);
+        g.fillStyle([0x607a8b, 0xa47788, 0x72936b][i % 3]).fillRect(x - 2 * u, hz - 5 * u, 4 * u, 3 * u);
+        g.fillStyle([0xc15d4f, 0xe6c263, 0x609b95][i % 3]).fillTriangle(x - 2 * u, hz * .22, x + 2 * u, hz * .22, x, hz * .22 + 4 * u);
+      }
+      g.fillStyle(0xc9b28d).fillRect(0, hz, W, field - hz);
+      g.lineStyle(1, 0x9e886a, .55);
+      for (let y = hz; y < field; y += 7 * u) g.lineBetween(0, y, W, y);
+      g.fillStyle(0x658f77).fillRect(W * .06, hz + 3 * u, W * .88, Math.max(1, field - hz - 4 * u));
+      g.lineStyle(2, 0xe4d3a0).strokeRect(W * .06, hz + 3 * u, W * .88, Math.max(1, field - hz - 4 * u));
+      for (const p of [this.minePos, this.foePos]) {
+        g.fillStyle(0x53765f).fillEllipse(p.x, p.y - u, 30 * u, 6 * u);
+      }
       return;
     }
     if (night) g.fillGradientStyle(0x10183a, 0x10183a, 0x34406e, 0x34406e, 1);
@@ -188,15 +237,7 @@ export class BattleScene extends Phaser.Scene {
   }
 
   makeFx() {
-    if (this.textures.exists('bt-dot')) return;
-    const g = this.make.graphics({ add: false });
-    g.fillStyle(0xffffff); g.fillCircle(4, 4, 4); g.generateTexture('bt-dot', 8, 8); g.clear();
-    g.fillStyle(0xffffff); g.fillRect(0, 0, 3, 20); g.generateTexture('bt-slash', 3, 20); g.clear();
-    g.lineStyle(3, 0xffffff); g.strokeCircle(16, 16, 13); g.generateTexture('bt-ring', 32, 32); g.clear();
-    g.fillStyle(0xffffff); g.fillRect(3, 0, 2, 8); g.fillRect(0, 3, 8, 2); g.generateTexture('bt-star', 8, 8); g.clear();
-    g.fillStyle(0xffffff); g.fillCircle(6, 10, 6); g.fillCircle(13, 7, 7); g.fillCircle(19, 11, 5); g.generateTexture('bt-cloud', 26, 18); g.clear();
-    g.fillStyle(0xffffff); g.fillTriangle(0, 0, 12, 0, 6, 12); g.generateTexture('bt-fang', 12, 12);
-    g.destroy();
+    createBattleEffectTextures(this);
   }
 
   // ------------------------------------------------------------ animation helpers
@@ -222,163 +263,7 @@ export class BattleScene extends Phaser.Scene {
 
   // One animation per move kind. hit = the move does damage.
   async play(anim, user, target, type, hit) {
-    const us = this.sprOf(user), ts = this.sprOf(target), u = this.unit;
-    const c = hex(TYPES[type].colour), dir = user.side === 'mine' ? 1 : -1;
-    const ux = us.x, uy = us.y, tm = this.mid(ts), um = this.mid(us);
-    this.animating = true;
-    switch (anim) {
-      case 'circle':
-      case 'zoom': {
-        sfx.whoosh();
-        const centre = anim === 'circle' ? tm : um;
-        for (let i = 0; i < 6; i++) {
-          const a = i * Math.PI / 3;
-          this.burst(us.x, us.y - u, c, 3);
-          await this.tw(us, { x: centre.x + Math.cos(a) * 15 * u, y: centre.y + Math.sin(a) * 5 * u, duration: anim === 'zoom' ? 65 : 110 });
-        }
-        await this.tw(us, { x: ux, y: uy, duration: 180 });
-        break;
-      }
-      case 'scoot': {
-        await this.tw(us, { y: uy + 2 * u, duration: 100 });
-        for (let i = 0; i < 3; i++) { this.burst(us.x, us.y, 0xb18b61, 3); await this.tw(us, { x: us.x + dir * 5 * u, duration: 140 }); }
-        await this.tw(us, { x: ux, y: uy, duration: 160 });
-        break;
-      }
-      case 'bed': {
-        const bed = this.add.rectangle(ux + dir * 7 * u, uy - 2 * u, 18 * u, 5 * u, 0xd78ea0).setStrokeStyle(u, 0x684550).setDepth(9);
-        await this.tw(us, { x: ux + dir * 5 * u, y: uy - 3 * u, duration: 120, yoyo: true, repeat: 3 });
-        this.burst(ux, uy - 8 * u, 0xffb1c8, 6); bed.destroy();
-        break;
-      }
-      case 'nap': {
-        const z = this.add.text(ux, uy - 18 * u, 'z z z', { fontSize: `${3 * u}px`, color: '#ffffff' }).setDepth(30);
-        const scale = us.scaleY;
-        await this.tw(us, { scaleY: scale * .7, duration: 200 });
-        await this.tw(z, { y: z.y - 8 * u, alpha: 0, duration: 650 });
-        await this.tw(us, { scaleY: scale, duration: 160 }); z.destroy();
-        break;
-      }
-      case 'stare': {
-        const ray = this.add.graphics().setDepth(30);
-        ray.lineStyle(u / 2, c, .7).lineBetween(um.x, um.y - 3 * u, tm.x, tm.y);
-        ts.setTint(c); await this.wait(450); ts.clearTint(); ray.destroy();
-        break;
-      }
-      case 'lunge': {
-        sfx.whoosh();
-        await this.tw(us, { x: ux + (ts.x - ux) * 0.45, y: uy + (ts.y - uy) * 0.45, duration: 170, ease: 'Quad.easeIn' });
-        this.burst(tm.x, tm.y, c, 8);
-        await this.tw(us, { x: ux, y: uy, duration: 220, ease: 'Quad.easeOut' });
-        break;
-      }
-      case 'hop': {
-        sfx.whoosh();
-        await this.tw(us, { x: ux + (ts.x - ux) * 0.5, y: uy + (ts.y - uy) * 0.5 - 18 * u, duration: 220, ease: 'Quad.easeOut' });
-        await this.tw(us, { x: ts.x - dir * 6 * u, y: ts.y, duration: 160, ease: 'Quad.easeIn' });
-        this.burst(tm.x, ts.y - 2 * u, c, 10);
-        await this.tw(us, { x: ux, y: uy, duration: 320, ease: 'Sine.easeInOut' });
-        break;
-      }
-      case 'bite': {
-        await this.tw(us, { x: ux + dir * 6 * u, duration: 120, yoyo: true });
-        const top = this.add.image(tm.x, tm.y - 8 * u, 'bt-fang').setDepth(30).setScale(u / 2.5);
-        const bot = this.add.image(tm.x, tm.y + 8 * u, 'bt-fang').setDepth(30).setScale(u / 2.5).setFlipY(true);
-        sfx.hit();
-        await Promise.all([this.tw(top, { y: tm.y - u, duration: 140, ease: 'Quad.easeIn' }), this.tw(bot, { y: tm.y + u, duration: 140, ease: 'Quad.easeIn' })]);
-        this.burst(tm.x, tm.y, c, 6);
-        await this.tw([top, bot], { alpha: 0, duration: 160 });
-        top.destroy(); bot.destroy();
-        break;
-      }
-      case 'claw': {
-        for (let i = 0; i < 3; i++) {
-          const s = this.add.image(tm.x + (i - 1) * 4 * u, tm.y, 'bt-slash').setDepth(30).setAngle(-30 * dir).setTint(i === 1 ? c : 0xffffff).setScale(u / 3, 0);
-          sfx.whoosh();
-          this.tweens.add({ targets: s, scaleY: u / 1.6, duration: 90, onComplete: () => this.tweens.add({ targets: s, alpha: 0, duration: 220, onComplete: () => s.destroy() }) });
-          await this.wait(90);
-        }
-        await this.wait(120);
-        break;
-      }
-      case 'beam': {
-        for (let i = 0; i < 6; i++) {
-          const r = this.add.image(um.x, um.y, 'bt-ring').setDepth(30).setTint(c).setScale(u / 6);
-          this.tweens.add({ targets: r, x: tm.x, y: tm.y, scale: u / 2.5, alpha: 0.2, duration: 420, ease: 'Sine.easeIn', onComplete: () => r.destroy() });
-          sfx.blip();
-          await this.wait(70);
-        }
-        await this.wait(380);
-        ts.setTint(c); await this.wait(140); ts.clearTint();
-        break;
-      }
-      case 'shout': {
-        sfx.yap();
-        this.tweens.add({ targets: us, scaleY: us.scaleY * 1.15, scaleX: us.scaleX * 0.92, duration: 110, yoyo: true, repeat: 1 });
-        for (let i = 0; i < 3; i++) {
-          const r = this.add.image(um.x + dir * 6 * u, um.y - 2 * u, 'bt-ring').setDepth(30).setTint(c).setScale(u / 8);
-          this.tweens.add({ targets: r, scale: u / 1.6, alpha: 0, x: r.x + dir * 14 * u, duration: 520, onComplete: () => r.destroy() });
-          await this.wait(120);
-        }
-        await this.wait(260);
-        break;
-      }
-      case 'heal': {
-        sfx.healUp();
-        for (let i = 0; i < 12; i++) {
-          const p = this.add.image(um.x + (Math.random() - 0.5) * 16 * u, us.y - Math.random() * 6 * u, i % 3 ? 'bt-star' : 'bt-dot').setDepth(30).setTint(i % 2 ? 0x8af08a : 0xffffff).setScale(u / 3);
-          this.tweens.add({ targets: p, y: p.y - (10 + Math.random() * 10) * u, alpha: 0, duration: 700, delay: i * 40, onComplete: () => p.destroy() });
-        }
-        us.setTint(0xb8ffb8); await this.wait(420); us.clearTint(); await this.wait(200);
-        break;
-      }
-      case 'fade': {
-        sfx.whoosh();
-        await this.tw(us, { alpha: 0.25, duration: 380 });
-        break;
-      }
-      case 'dig': {
-        this.burst(ux, uy - u, 0x8a6a4a, 10, { rise: 10 });
-        await this.tw(us, { y: uy + 8 * u, alpha: 0, duration: 260, ease: 'Quad.easeIn' });
-        await this.wait(200);
-        this.burst(ts.x, ts.y - u, 0x8a6a4a, 14, { rise: 20, spread: 40 });
-        this.cameras.main.shake(160, 0.008);
-        await this.tw(ts, { y: ts.y - 5 * u, duration: 120, yoyo: true, ease: 'Quad.easeOut' });
-        us.setY(uy - 6 * u);
-        await this.tw(us, { y: uy, alpha: 1, duration: 260, ease: 'Bounce.easeOut' });
-        break;
-      }
-      case 'gust': {
-        sfx.whoosh();
-        for (let i = 0; i < 7; i++) {
-          const s = this.add.image(um.x, tm.y + (Math.random() - 0.5) * 12 * u, 'bt-slash').setDepth(30).setAngle(90).setTint(i % 2 ? c : 0xffffff).setAlpha(0.85).setScale(u / 4, u / 2);
-          this.tweens.add({ targets: s, x: tm.x + dir * 20 * u, alpha: 0, duration: 380, delay: i * 50, onComplete: () => s.destroy() });
-        }
-        await this.wait(300);
-        await this.tw(ts, { angle: 8 * dir, duration: 80, yoyo: true, repeat: 1 });
-        break;
-      }
-      case 'stink': {
-        for (let i = 0; i < 7; i++) {
-          const p = this.add.image(tm.x + (Math.random() - 0.5) * 16 * u, tm.y + (Math.random() - 0.3) * 10 * u, 'bt-cloud').setDepth(30).setTint(i % 2 ? 0x9ac040 : c).setAlpha(0).setScale(u / 6);
-          this.tweens.add({ targets: p, alpha: 0.85, scale: u / 3, y: p.y - 6 * u, duration: 380, delay: i * 70, yoyo: true, hold: 200, onComplete: () => p.destroy() });
-        }
-        sfx.weakHit();
-        await this.wait(900);
-        break;
-      }
-      case 'flame': {
-        for (let i = 0; i < 16; i++) {
-          const p = this.add.image(tm.x + (Math.random() - 0.5) * 14 * u, ts.y - Math.random() * 4 * u, 'bt-dot').setDepth(30).setTint([0xf0a030, 0xe85030, 0xf8e070][i % 3]).setScale(u / 3);
-          this.tweens.add({ targets: p, y: p.y - (10 + Math.random() * 14) * u, scale: 0.2, alpha: 0, duration: 600, delay: i * 30, onComplete: () => p.destroy() });
-        }
-        sfx.whoosh();
-        await this.wait(700);
-        break;
-      }
-      default: await this.wait(200);
-    }
-    this.animating = false;
+    return playBattleAnimation(this, anim, user, target, type, hit, sfx);
   }
 
   // ------------------------------------------------------------ the battle

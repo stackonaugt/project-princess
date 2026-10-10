@@ -1,0 +1,16 @@
+.hall-event-bar { position:fixed; z-index:30; bottom:calc(8px + var(--safe-b)); left:8px; right:8px; padding:8px 10px; max-height:36dvh; overflow:auto; border:2px solid var(--wood); border-radius:9px; background:#f4dfaeef; color:#382c21; touch-action:pan-y; }
+.hall-event-bar b,.hall-event-bar small {display:block}
+.hall-event-bar b {font-size:13px;margin-right:70px}
+.hall-event-bar small {display:none}
+.hall-event-bar p {margin:4px 0;font-size:13px;line-height:1.25}
+.hall-leave {position:absolute;right:8px;top:5px;min-height:30px}
+.hall-cues {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:6px 0 0}
+.hall-cues button {min-height:44px;min-width:55px}
+.hall-cues button[hidden] {display:none}
+body.hall-event #joyZone {bottom:190px;height:min(32vh,240px)}
+body.hall-event .ab {bottom:calc(195px + var(--safe-b))}
+body.hall-event #hudGuidance {display:none}
+.groom-panel {position:fixed;z-index:35;inset:15% 12px auto;max-width:460px;margin:auto;padding:18px;border:3px solid var(--wood);border-radius:12px;background:var(--parch);color:#382c21;text-align:center}
+.groom-zones {display:flex;gap:8px;justify-content:center;margin:20px 0}
+.groom-zones button {min-width:80px;min-height:70px;touch-action:none}
+@media (min-width:700px) { .hall-event-bar {left:22%;right:22%} .hall-cues {grid-template-columns:repeat(7,minmax(0,1fr))} }

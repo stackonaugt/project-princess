@@ -3,8 +3,35 @@ import { test } from 'node:test';
 import { mkdtemp, mkdir, copyFile, writeFile, rm, symlink, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { assetLayout, suppliedAssetPath, entityArtBindings, runtimeArtBindingFailures } from '../game/src/art/asset-rules.js';
+import { assetFrameRect, assetLayout, NPC_WALK_FRAME_RATE, suppliedAssetPath, entityArtBindings, runtimeArtBindingFailures } from '../game/src/art/asset-rules.js';
+import { drawPersonPreview, FRAME_H, FRAME_W } from '../game/src/art/paint/people.js';
 import { suppliedArtCatalog, validateBuildArt, validateEntityArt } from './studio-art.mjs';
+
+test('generated character preview paints a frame without mutating its look', () => {
+  const pixels = new Uint8ClampedArray(FRAME_W * FRAME_H * 4);
+  let fillStyle = '#000000';
+  const context = {
+    fillRect(x, y, width, height) {
+      for (let py = Math.round(y); py < Math.round(y + height); py++) {
+        for (let px = Math.round(x); px < Math.round(x + width); px++) {
+          if (px < 0 || py < 0 || px >= FRAME_W || py >= FRAME_H) continue;
+          pixels[(py * FRAME_W + px) * 4 + 3] = fillStyle === 'rgba(0,0,0,0)' ? 0 : 255;
+        }
+      }
+    },
+    clearRect() { pixels.fill(0); },
+    getImageData() { return { data: pixels.slice() }; },
+    putImageData(image) { pixels.set(image.data); },
+  };
+  const look = { skin: '#f2c79a', hair: '#6b3f1f', shirt: '#3fa38f', pants: '#33446e' };
+  Object.defineProperty(context, 'fillStyle', { get: () => fillStyle, set: value => { fillStyle = value; } });
+  const originalLook = structuredClone(look);
+
+  drawPersonPreview(context, look);
+
+  assert.ok(pixels.some((value, index) => index % 4 === 3 && value > 0));
+  assert.deepEqual(look, originalLook);
+});
 
 test('sheet geometry follows runtime framing, and rejects partial/oversized frames', () => {
   assert.equal(assetLayout('pets', 64, 32).frames, 2);
@@ -18,6 +45,15 @@ test('sheet geometry follows runtime framing, and rejects partial/oversized fram
   for (const file of ['../pets/a.png', 'pets/../../a.png', 'pets/a.jpg', 'pets/a.png?x=1', '/pets/a.png']) {
     assert.equal(suppliedAssetPath(file, 'pets'), false);
   }
+});
+
+test('NPC walking-cycle frames crop in horizontal order and reject invalid indexes', () => {
+  const layout = assetLayout('npcs', 48, 32);
+  assert.equal(NPC_WALK_FRAME_RATE, 6, 'the picker preview uses the runtime NPC walk rate');
+  assert.deepEqual(assetFrameRect(layout, 0), { x: 0, y: 0, width: 16, height: 32 });
+  assert.deepEqual(assetFrameRect(layout, 2), { x: 32, y: 0, width: 16, height: 32 });
+  assert.throws(() => assetFrameRect(layout, -1), /frame index or layout is invalid/i);
+  assert.throws(() => assetFrameRect(layout, 3), /frame index or layout is invalid/i);
 });
 
 test('aliases target only custom entities, including separate NPC portraits and evolved art', () => {
@@ -79,11 +115,11 @@ test('actual supplied files decode; missing, corrupt, wrong-kind and symlink fil
   const source = new URL('../game/assets/sprites/', import.meta.url);
   try {
     for (const folder of ['pets', 'npcs', 'portraits']) await mkdir(path.join(root, folder));
-    await copyFile(new URL('pets/princess.png', source), path.join(root, 'pets/friend.png'));
+    await copyFile(new URL('templates/pets/princess.png', source), path.join(root, 'pets/friend.png'));
     await copyFile(new URL('templates/npcs/trish.png', source), path.join(root, 'npcs/friend.png'));
     await copyFile(new URL('portraits/princess.jpg', source), path.join(root, 'portraits/friend.jpg'));
     await writeFile(path.join(root, 'pets/broken.png'), 'not an image');
-    const bytes = await readFile(new URL('pets/princess.png', source));
+    const bytes = await readFile(new URL('templates/pets/princess.png', source));
     await writeFile(path.join(root, 'pets/truncated.png'), bytes.subarray(0, 50));
     await symlink(path.join(root, 'pets/friend.png'), path.join(root, 'pets/link.png'));
     const catalog = await suppliedArtCatalog(root);
@@ -112,8 +148,8 @@ test('production validation checks assigned art only and reports entity, slot an
       await mkdir(path.join(spritesRoot, folder), { recursive: true });
     }
     await mkdir(authoringDirectory, { recursive: true });
-    await copyFile(new URL('pets/princess.png', source), path.join(spritesRoot, 'pets/friend.png'));
-    await copyFile(new URL('pets/princess.png', source), path.join(spritesRoot, 'pets/evolved.png'));
+    await copyFile(new URL('templates/pets/princess.png', source), path.join(spritesRoot, 'pets/friend.png'));
+    await copyFile(new URL('templates/pets/princess.png', source), path.join(spritesRoot, 'pets/evolved.png'));
     await copyFile(new URL('templates/npcs/trish.png', source), path.join(spritesRoot, 'npcs/person.png'));
     await copyFile(new URL('portraits/princess.jpg', source), path.join(spritesRoot, 'portraits/friend.jpg'));
     await copyFile(new URL('portraits/poppy.jpg', source), path.join(spritesRoot, 'portraits/evolved.jpg'));

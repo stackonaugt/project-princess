@@ -73,5 +73,15 @@ export function buildGardens() {
   b.entry('north', 22, 1, 'down').entry('south', 40, 44, 'up').entry('west', 1, 28, 'right').entry('east', 62, 28, 'left');
   b.border(['oak', 'gum']);
   b.scatter([0, 30, b.w, 16], 0.02, [['bush', 3, ['green', 'rose', 'hydrangea']], ['agapanthus', 2, ['purple', 'white']], ['rock', 1]], { clearance: 1 });
-  return b.finish();
+  const map = b.finish();
+  // The two-cell path advancing up to two columns per row touched only at
+  // corners. Add the missing overlap after dressing so source furniture and
+  // creator prop identities are not changed by this terrain-only repair.
+  const ground = map.ground.map(row => [...row]);
+  for (let i = 0; i < 13; i++) {
+    const x = Math.floor(2 + i * 1.6), y = 27 - i;
+    for (let dx = 0; dx < 3; dx++) if ('.,\"u'.includes(ground[y][x + dx]))
+      ground[y][x + dx] = 'u';
+  }
+  return { ...map, ground: ground.map(row => row.join('')) };
 }

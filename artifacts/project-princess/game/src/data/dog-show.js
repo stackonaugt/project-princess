@@ -130,6 +130,20 @@ export const SHOW_NPCS = Object.fromEntries(
     },
   ]),
 );
+export const SHOW_JUDGES = [
+  { id: 'showalma', name: 'Alma', praise: 'Precise, clear cues. Beautiful work.', good: 'A good run with a few details to refine.', advice: 'Get your dog into position before asking for the movement.' },
+  { id: 'showian', name: 'Ian', praise: 'You stayed together as a team.', good: 'Your handling is becoming confident.', advice: 'Slow down on the turns. Keep your dog close rather than pulling ahead.' },
+  { id: 'shownoor', name: 'Noor', praise: 'Calm and composed, even with an audience.', good: 'You recovered well and finished positively.', advice: 'Take a breath, hold the stay, and give one clear release.' },
+];
+for (const [i, judge] of SHOW_JUDGES.entries()) SHOW_NPCS[judge.id] = {
+  name: judge.name, role: 'Exhibition judge', lines: [[judge.advice]],
+  look: { hair: ['#b7aba0', '#3e3430', '#29252c'][i], shirt: '#435c70', pants: '#343b45', skin: looks[i][2], hairStyle: 'short' },
+};
+for (let i = 0; i < 6; i++) SHOW_NPCS[`showguest${i}`] = {
+  name: ['Pat', 'Alex', 'Ren', 'Kim', 'Lou', 'Ari'][i], role: 'Show spectator',
+  lines: [[['That tunnel run was lovely. I was cheering from the first jump.', 'I came for the dogs. I am staying for the very serious judges.', 'The little dogs have such enormous confidence.'][i % 3]]],
+  look: { hair: looks[i][0], shirt: looks[i][1], skin: looks[i][2], pants: '#343b45', hairStyle: i % 2 ? 'short' : 'long' },
+};
 SHOW_NPCS.showjean = {
   name: "Jean",
   role: "Show steward",

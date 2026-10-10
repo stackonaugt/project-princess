@@ -8,14 +8,22 @@ import { WorldScene } from './scenes/WorldScene.js';
 import { ActivityScene } from './scenes/ActivityScene.js';
 import { BattleScene } from './scenes/BattleScene.js';
 import { runtimeArtStatus } from './art/textures.js';
+import { rememberResume, clearResume } from './systems/browser-resume.js';
 
 state.migrateToSlots();
 controls.init();
+// Do not allow double-tapping game buttons to magnify the browser viewport.
+// Text panels still scroll; the phone map handles its own pinch gestures.
+document.addEventListener('dblclick', event => {
+  if (event.target.closest('button, #joyZone, #game, #dialog')) event.preventDefault();
+}, { passive: false });
+document.addEventListener('gesturestart', event => event.preventDefault(), { passive: false });
 ui.init();
 
 // Delete this slot and go back to the title screen.
 bus.on('game:reset', () => {
   window.__ppResetting = true;
+  clearResume();
   state.reset();
   location.reload();
 });
@@ -23,6 +31,7 @@ bus.on('game:reset', () => {
 bus.on('game:title', () => {
   bus.emit('game:save');
   window.__ppResetting = true;
+  clearResume();
   location.reload();
 });
 
@@ -39,8 +48,17 @@ const game = new Phaser.Game({
   scene: [BootScene, WorldScene, BattleScene, ActivityScene],
 });
 
-window.addEventListener('pagehide', () => bus.emit('game:save'));
-document.addEventListener('visibilitychange', () => { if (document.hidden) bus.emit('game:save'); });
+const saveForReturn = () => {
+  if (window.__ppResetting) return;
+  bus.emit('game:save');
+  rememberResume(state.slot);
+};
+window.addEventListener('pagehide', saveForReturn);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) saveForReturn();
+  else { controls.release(); game.scale.refresh(); }
+});
+window.addEventListener('pageshow', () => { controls.release(); game.scale.refresh(); });
 
 // Handy in the browser console: __pp.state.data
 window.__pp = { game, state, bus, ui, artworkStatus: () => runtimeArtStatus(game.scene.getScene('Boot')) };

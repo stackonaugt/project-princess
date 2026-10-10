@@ -36,7 +36,12 @@ export const CIVIC = {
         p.r(y < 16 ? '#5a6068' : y < 40 ? '#4a5058' : '#40464e', cx - half, y, half * 2, 1);
       }
       for (let i = -5; i <= 5; i++) for (let y = 14; y < H - 4; y += 2) { const t = (H - y) / (H - 8), half = Math.sqrt(Math.max(0, 1 - t * t)) * 98; p.r('#353a40', Math.round(cx + i / 5.6 * half), y, 1, 1); }
-      p.r('#6a7078', cx - 30, 11, 60, 2); p.r('#5e646c', cx - 50, 16, 100, 1);   // a soft highlight on top
+      // Highlights fit the shell at each row, rather than protruding as bars.
+      for (const [y, height, colour] of [[11, 2, '#6a7078'], [16, 1, '#5e646c']]) {
+        const t = (H - y) / (H - 8);
+        const half = Math.max(0, Math.floor(Math.sqrt(1 - t * t) * 98) - 2);
+        p.r(colour, cx - half, y, half * 2, height);
+      }
       // the arched front wall, set into the shell, with a pale rim
       for (let y = 56; y < H; y++) {
         const t = (H - y) / (H - 56), half = Math.round(Math.sqrt(Math.max(0, 1 - t * t)) * 80);

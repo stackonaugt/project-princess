@@ -5,6 +5,8 @@ export const ART_REQUIREMENTS = {
   portraits: 'PNG, JPEG or WebP, any aspect ratio up to 4096×4096; square recommended.',
 };
 
+export const NPC_WALK_FRAME_RATE = 6;
+
 export function assetLayout(folder, width, height) {
   if (![width, height].every(n => Number.isInteger(n) && n > 0 && n <= 4096)) {
     throw new Error('Image dimensions must be between 1 and 4096 pixels.');
@@ -15,6 +17,19 @@ export function assetLayout(folder, width, height) {
     throw new Error(`${ART_REQUIREMENTS[folder]} Sheet width must be an exact multiple of frame width, with 1–64 frames.`);
   }
   return { width, height, frameWidth, frameHeight: height, frames: width / frameWidth };
+}
+
+export function assetFrameRect(layout, frameIndex) {
+  if (!layout || !Number.isInteger(frameIndex) || frameIndex < 0 || frameIndex >= layout.frames ||
+    ![layout.frameWidth, layout.frameHeight].every(n => Number.isInteger(n) && n > 0)) {
+    throw new Error('Sprite frame index or layout is invalid.');
+  }
+  return {
+    x: frameIndex * layout.frameWidth,
+    y: 0,
+    width: layout.frameWidth,
+    height: layout.frameHeight,
+  };
 }
 
 export function suppliedAssetPath(value, folder) {

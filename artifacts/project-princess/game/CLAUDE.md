@@ -1,5 +1,31 @@
 # Project Princess
 
+## Current workspace handoff
+
+- The GitHub Pages workflow builds `artifacts/project-princess/`, not the older
+  root-level game. Run pnpm commands from the repository root. Keep both copies,
+  archives and unique assets intact; repository cleanup is conservative.
+- Base and evolved pets have eleven-frame action sheets: idle 0, walk 1–4,
+  jump 5–7, paw 8–10. Layouts are in `src/data/animation-layouts.js`; editable
+  templates and runtime PNGs are documented in `assets/sprites/README.md`.
+  Preserve original leading frames and do not regenerate over hand-edited poses.
+- Evolved Spooky is **Ghost**. `src/systems/forms.js` resolves authored pet
+  dialogue to the current form name, including home sleeping text; unevolved
+  Spooky keeps its original name.
+- The owner's size tuning lives in `src/data/pet-sizes.js`: base Princess and
+  Spooky are 16 world pixels; evolved Spooky/Ghost is 20. Leave further Ghost
+  sizing to the owner.
+- Same-tab reload resumes the active save; the explicit `game:title` action
+  clears resume state and returns to slot selection. Release smoke checks cover
+  both paths rather than expecting every reload to show the title.
+- Exhibition and yard practice use player-steered `WorldScene` ring events.
+  Browser checks drive real cue handlers, step animation frames in a disposable
+  save, and retain judging, cancellation, reload and daily-reward checks.
+  Idle practice does not auto-complete or consume daily XP.
+- Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
+  and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
+  Release checks: `pnpm --filter @workspace/project-princess run verify:build`.
+
 A cosy, Stardew Valley meets Pokémon style pet-collecting game set in Melbourne. You live at Helen and Paddy's new house on Allen St, Laverton, and wander the northern and western suburbs (Laverton, Brunswick, Brunswick East, Coburg, Preston, Reservoir, Carlton and the Melbourne CBD, joined by walkable in-between zones) finding, befriending and cataloguing the real pets of the owner's friends. Found pets move into your house; each time you leave you pick a team of up to three who follow you around. It runs in any browser, works on phones, and is shared with friends as a GitHub Pages link.
 
 Laverton is modelled on real places from the owner's screenshots: the Allen St house (floor plan and backyard from the real estate listing, walls between kitchen, meals and lounge removed), the Allen St cul-de-sac, Woods St (the old house at 72, where Helen's parents Trish and Gordon now live, with a car park and a grey house across the road), Lohse St Reserve and Laverton Station. Paddy (Helen's husband, the twins' dad) is Mayor of Hobsons Bay: the council lives in Altona at 115 Civic Parade (`civic`, with the `civiccentre` foyer and the `chamber` interiors). Brunswick has five zones from the owner's screenshots: Brunswick Station (heritage building, Upfield path, Dawson St level crossing), Sydney Rd (A1 Bakery, Spooky's spot), `albion` (Sydney Rd at Albion St: the white art deco Edinburgh Castle Hotel with its green band and HOTEL down the corner, the black brick bottle shop next door with its own interior zone `bottleshop`, the green heritage tram shelter, yellow crossings, the For Lease deco shops across Albion St), Donald St (south off Sydney Rd: Rose's blue-grey flats, Salami's spot) and Hope St (Mem and Corni's apartments). Brunswick is deliberately concrete and industrial: bluestone laneways, roller doors, sawtooth factories, graffiti, barely any grass. Its jokes are the shopfronts (INK & IRONY tattoos, OAT CUISINE, BRAKE FAST in an old mechanic's), drawn as `bshop`/`factory`/`garagecafe` variants in `brunswick.js`. Sydney Rd also has Brunswick Bound (interior `bookshop`, run by Wren). Reservoir has Reservoir Station (the skyrail; trains run on top with lane `sky: true`), Loddon Ave (Seb and Sinead's block of five brick units off Plenty Rd, Poppy's spot), Summerhill Shopping Centre across Plenty Rd (`summerhill`: zigzag roofed wings and the red supermarket sign from the owner's photo, a big car park with Trev the trolley collector; inside, `summerhillmall`: Coles, a chemist, newsagency, hot bread, a $2 shop, Curl Up & Dye and a food court; the Coles and Australia Post signs are real, the rest are invented names and people) and Glasgow Ave (Tim and Nick's at 57C, Stanley's spot). Edwardes Lake Park is four zones joined in a loop so it is easy to wander and get lost: `track` (athletics oval, Little Athletics clubhouse), `lake` (the lake, tussocks, Edwardes St railing, outdoor gym), `lakepark` (A2 964 steam engine, pink slide playground, Griffiths St) and `wetlands` (Edgars Creek, scout hall, community garden). Every zone has tall grass patches ready for wild encounters. Glasgow Ave also has the Botha Ave roundabout with its yarn-bombed gum. Recreate real places recognisably but compressed. Avoid real business names on shopfronts, except the ones the owner specifically asked for: A1 Bakery, the Edinburgh Castle Hotel, Bunnings Warehouse (Altona North), Brunswick Bound, Franco Cozzo (Footscray), and on Plenty Rd, Preston: the Stolberg Hotel, Plenty Road Convenience (the vape shop), Plenty & More, Anaconda, The Secondhand Man, Printers and Preston Wheels & Tyres, at Summerhill: Coles, Australia Post and Lincraft (a craft stall in the mall run by Lyn: prank supplies and house paint), and on Lygon St, Brunswick East: Bed Bath N' Table, Mr Wilkinson, Lygon's, This Is Not A Toy Store and Benjy's. Bunnings, Franco Cozzo, Anaconda and the convenience store have interiors (`bunnings`, `cozzo`, `anaconda`, `vapeshop`). The bottle shop sells real Australian beer and wine brands (VB, Coopers, Penfolds...) because the owner asked for them.
@@ -40,7 +66,7 @@ Handy in the browser console: `__pp.state.data` (the save), `__pp.game.scene.get
 
 ### Testing
 
-Node regression checks live in `../tools/`. Run `node --test tools/playtest.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs` from `artifacts/project-princess/`. Also verify layout and feel in a browser with Playwright when Chromium is available. Useful patterns:
+There is no test suite yet. Verify changes by driving the game in headless Chromium with Playwright (Chromium lives at `/opt/pw-browsers/chromium` in cloud sessions). Useful patterns:
 
 - Wait for `window.__pp.game.scene.getScene('World').player` before interacting.
 - Teleport: `scene.player.body.reset(x, y)`. Restart in a region: `scene.scene.restart({ region: 'brunswick', entry: 'station' })`.
@@ -127,7 +153,7 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **The Pawphone** (HUD Phone button, M key) is the menu, drawn as a pink flip phone (`ui/phone.js`, `APPS`): To Do (story objectives, council and side missions, today's requests; `ui/story.js`), Petdex, Bag, Friends, Map, Garden, Calendar, Settings, and Cheats when turned on. Apps opened from the phone return to it when closed (`ui._fromPhone`). The Map app draws `ROUTE` from regions.js.
 - **UI is HTML, not canvas**, for crisp text on phones. Scenes talk to it through `ui` (`ui.say(lines, { name, portrait })` returns a promise resolving to the picked choice) and the `bus`.
 - **Save slots and the title screen.** Three slots (`${SAVE_KEY}-slot1..3` in localStorage). `BootScene` shows the title screen (`ui/title.js`) and calls `state.useSlot(n)` before starting World; `?slot=N` in the URL skips it (the Playwright helper uses `?slot=1`). An old single save (or the prototype's) moves into slot 1 once (`state.migrateToSlots`). `state.save()` does nothing until a slot is chosen. Settings has Back to title screen (`game:title`) and Delete this slot (`game:reset`).
-- **Saving.** `state.data` is the whole save. It is sanitised on load, so adding a field means adding a default in `fresh()` and copying it in `sanitise()`. Bump `VERSION` and add a migration if the shape changes incompatibly. `side.school` tracks daily lessons and report-card stars; `soil` tracks finished crop families. The prototype's old save (`whisker-hollow-v2`) is migrated automatically.
+- **Saving.** `state.data` is the whole save. It is sanitised on load, so adding a field means adding a default in `fresh()` and copying it in `sanitise()`. Bump `VERSION` and add a migration if the shape changes incompatibly. The prototype's old save (`whisker-hollow-v2`) is migrated automatically.
 - **Time.** The day runs 6am to 2am (`DAY_START`/`DAY_END`), 10 game minutes per 7 real seconds, paused while any dialogue or menu is open. Settings > Day length slows the clock (`settings.dayLength`, 1 to 3 times longer); the Cheats app can pause it (`settings.paused`). At 2am the day ends and you wake up in bed at home. You can also use your bed at home (`sleep` interactable on `bed`/`single`, and `cot` for the twins): sleep until morning, or a 2-hour nap that heals your pets. Rain is decided per day from the day number (`state.rainWindow`), so it is stable across reloads.
 - **Dialogue** lives in `src/data/dialogue.js`, one entry per person, pet, foe and place. Edit words there, not in npcs.js/pets.js/friends.js/enemies.js. `byHero` gives per-hero lines (helen, hadrian, aleksy).
 - **Routines** (`data/routines.js`): an NPC spot in a map can be `{ at: 'place' }`; the NPC only appears while `isAt(id, place)` is true, and World re-checks every 10 game minutes (`syncRoutines`). Everyone without a routine keeps hours (`onDuty` in routines.js): shopkeepers while their shop is open (`SHOP_HOURS`), night owls from the afternoon, everyone else out from 6:30 to 8am until 8 to 10:30pm (fixed per person); `ALWAYS` keeps story-critical people put. A shop with an interior is open while its shopkeeper is in: when they have gone home its door is locked with an "opens at" line (`shutShop` in WorldScene; the civic centre is exempt). Paddy walks out the front door before 8am on weekdays (`leaving`), works at council reception, chairs Tuesday meetings and is home in the evening and on weekends.
@@ -139,12 +165,12 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Exit markers:** every exit off a map edge gets a green way sign with its label (`buildExitMarkers`, texture from `exitSignTexture`); locked exits get witches hats (`fx-cone`). The camera can scroll a little past map edges so the HUD never hides the player.
 - **Calendar** (Pawphone app, `ui/calendar.js`): the week ahead (council meetings, bin night, rain, Paddy's weekends) and today's jobs; a reminder toast each morning (`reminders()`).
 - **Requests** (in the To Do app): three a day from people you have met. Give them the item as a gift for a money and friendship bonus. A "!" floats over anyone with an open request.
-- **Karaoke** (`ui/karaoke.js`): the dela Cruz family (Ramon, Liza, Migs and Bea) sing at Lohse St Reserve from 10am to 6pm. Pick a song, hit the beats; good singing makes friends and Tita Liza sends you home with pancit once a day. The songs are also used by the party's dance floor and karaoke round. Final scoring uses every beat in the song, so stopping early counts the remaining beats as misses.
+- **Karaoke** (`ui/karaoke.js`): the dela Cruz family (Ramon, Liza, Migs and Bea) sing at Lohse St Reserve from 10am to 6pm. Pick a song, hit the beats; good singing makes friends and Tita Liza sends you home with pancit once a day. The songs are also used by the party's dance floor and karaoke round.
 - **Lawn bowls** (`ui/bowls.js`): talk to Crazy Jeff or the old blokes at the Brunswick Bowls Club and choose Have a bowl. Aim, strength, three bowls, closest to the jack. The old blokes have already bowled: get inside their distance to win the end. Five wins (`BOWLS_TROPHY`, `side.bowlsWins`) and the club gives you the Newcomer's Cup, which stands in the lounge at home (`trophy` object, `side.trophy`). Crazy Jeff and the bowlers only hint at it.
 - **Feeding the ducks** (`ui/bowls.js` with `{ mode: 'ducks' }`): face water in a `DUCK_ZONES` zone with stale bread and press A (with a rod you choose ducks or fishing). Same game reskinned, no bias. Each feed gives a duck feather; ten good feeds (within 40 cm, `side.duckWins`) win a duckling who follows you everywhere (`Duckling` in entities.js, `side.duckling`). Nobody says so outright: Chris and Kostas hint. At Edwardes Lake the bread brings out Emilio first, until he is found.
 - **Bins**: checking a wheelie bin sometimes turns up a few coins or an item (a lemon, stale bread...), once per bin per day (`checkBin`, `flags.bins`).
 - **Shopfronts**: an object with `shop` and `keeper` (Coles in the mall) can be shopped at by walking up to it while the keeper is there. Shopkeepers only offer Shop in their own zone, never when they are out and about.
-- **Fishing**: buy a rod (and bait) at Anaconda, face water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A. Catches by zone in `FISH_TABLES` (WorldScene), with a catch celebration and size in cm (`ui/fishing.js`). The reel meter is time-based rather than frame-rate-based, and a missed catch offers one retry. Fish are treats; Spiro's fish van on Kororoit Creek Rd (`fishvan` shop, `fish` tab) pays 50% more than James.
+- **Fishing**: buy a rod (and bait) at Anaconda, face water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A. Catches by zone in `FISH_TABLES` (WorldScene), with a catch celebration and size in cm (`ui/fishing.js`). Fish are treats; Spiro's fish van on Kororoit Creek Rd (`fishvan` shop, `fish` tab) pays 50% more than James.
 - **Cheats**: add `?cheat=1` to the URL once (stored in localStorage) for a Cheats app on the Pawphone (money, items, warp, time and day, pausing the clock, pets, hearts, upgrades, motions). `?cheat=0` turns it off.
 - **Pets** have one chat per day (+friendship) and one treat per day (love/like/neutral/dislike). 25 points per heart, 10 hearts. Lines unlock by heart level. Behaviours live in `Pet.think()`: `patrol` (Princess), `stalk` (Salami), `phase` (Spooky teleports, solid at night), `zoomies` (Poppy charges and bonks), `aloof` (Stanley walks away until 3 hearts, approaches at 6). Rusty (Nathan's whippet, Speed type) uses `zoomies` too. Girlie (Dell's black lab, Water/Park, Carlton Gardens) wanders; win her by beating Dell. Chloe (Adam and Chelsea's kelpie, Holmes St) is won by beating Adam. Ziggy (a tiny black and white cat who was Mads's, Nicholson St, Carlton) has no trainer: he challenges you himself (`challenge`). Emilio (a big old duck in a top hat) is the secret pet: toss stale bread into Edwardes Lake. Pets can sleep on a schedule.
 
@@ -185,9 +211,9 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 
 Four chapters, words in `src/data/story.js`, state in `state.data.story` (see `systems/story.js`), scenes in WorldScene (`advanceStory`, `startChapter`, `checkStory`, `cook`, `lunch`, `prank`, `invite`, `partyTime`). A chapter that finishes hands over to the next the following morning. The Story app on the Pawphone lists the current objectives; the Cheats app can start any chapter.
 
-1. **Helen's Pet Training School.** One Nation has cancelled early childhood education; Helen opens a pet school. Find all six pets, train three to level 10, evolve one. Found pets get three daily choices from six practical activities: recall, settling, obstacles, fetch, scent search and loose lead walking. One daily lesson earns rewards; extra practice stays available. Participation and successful behaviours grant XP and friendship; perfect sessions earn report-card stars, with progress saved by pet and activity (`side.school`).
-2. **Get Bent!** Paddy's morning scene (Rayna is away, Bentleigh moves a spill). The player can build the kitchen, cook the very dodgy fish pie and swap it for Cr Bentleigh's lunch on the foyer booth (weekdays 11am to 3pm; a pet on your team causes the distraction), or build support for a clean campaign by reaching 4 hearts with Kirsty and 2 with Dahlia, then asking Paddy to make the case. Either route keeps Paddy in office; missing the second-Tuesday vote deposes him. The chapter route is saved in `story.ch2`.
-3. **Boys Go Wild!** Trish and Gordon have gastro and leave Woods St; Helen is away and both twins are out together. Talk to Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim or Nicholas and choose Look for a prank: the boys visit, then whisper a plan (`PRANKS` in story.js: `scout`, `plan`, `item`, `where`). The prank goes on the To Do list (`side.scouted`); buy the item (googly eyes and the rubber mouse at Lincraft, the bookmark at Brunswick Bound, whoopee cushions at Bunnings or the $2 shop...: each shop's `pranks` tab), then go back and pull it. Three pranks finishes it. A small persistent pixel prop appears above the target whenever they are on screen.
+1. **Helen's Pet Training School.** One Nation has cancelled early childhood education; Helen opens a pet school. Find all six pets, train three to level 10, evolve one.
+2. **Get Bent!** Paddy's morning scene (Rayna is away, Bentleigh moves a spill). Build the kitchen, cook the very dodgy fish pie at the stove (any fish and a lemon), and swap it for Cr Bentleigh's lunch on the foyer booth (weekdays 11am to 3pm; a pet on your team causes the distraction). She goes home sick for a week and Paddy survives. Miss the spill vote (the second Tuesday) and Paddy is deposed: the swing votes need double hearts (`state.swingHearts`) until he wins the election. The sabotage is all data in story.js (`LUNCH`, `RECIPES`) so it can be swapped for something gentler.
+3. **Boys Go Wild!** Trish and Gordon have gastro and leave Woods St; Helen is away and both twins are out together. Talk to Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim or Nicholas and choose Look for a prank: the boys visit, then whisper a plan (`PRANKS` in story.js: `scout`, `plan`, `item`, `where`). The prank goes on the To Do list (`side.scouted`); buy the item (googly eyes and the rubber mouse at Lincraft, the bookmark at Brunswick Bound, whoopee cushions at Bunnings or the $2 shop...: each shop's `pranks` tab), then go back and pull it. Three pranks finishes it.
 4. **Election Season.** West is Best News, then finish the kitchen, twins' room and study, buy 6 drinks and 4 decorations (Bunnings Party tab), invite 6 friends (talk menu; 3+ hearts means they come), then Throw the party from the Story app. At the party you mingle: walk up to guests to hear their stories (`partyChat`), and every two stories a game starts, in order: behind the bar (five orders), the dance floor (pick one of the karaoke songs and dance to it), karaoke, then guest trivia (`ui.party(guests, { only, score })`, `ui.karaoke`). Paddy is there too. The yard exits are locked until it ends. At the end Paddy gives a speech, Helen passes out, everyone goes home and you wake up in bed the next morning. Games score 0 to 11 or so; `electionVotes()` turns guests, score and being the sitting mayor into a vote share, shown on a filling bar. Then the "That's it for now" pop-up and chapter 5 (free play).
 
 ### Cooking and baking
@@ -201,7 +227,7 @@ Four chapters, words in `src/data/story.js`, state in `state.data.story` (see `s
 
 - **Plots** are placed in maps with `b.plot(id, x, y, label)` (walkable soil). The community garden (`cg1..8` in wetlands) opens when you first chat to Chris Bates (`flags.garden`, plus starter seeds). The backyard beds (`yd1..6`) exist once you buy the veggie patch upgrade (yard.js checks `state.hasUpgrade`).
 - **Garden tools** (Olly's Tools tab, `tool: true` in upgrades.js): the long hose waters every bed in the garden you are in when you water one; the sprinkler waters the backyard beds every morning (`state.newDay`). Fertiliser (an item, `farm: true`) adds a day of growth once per day per bed when you water it.
-- `state.data.farm[plotId] = { crop, growth, watered, boost, rotation }`; `state.data.soil[plotId]` remembers the last finished crop family and crop. Planting waters it. Water once a day; at the start of each day (`state.newDay()`, called by sleeping and the 2am day end) a plot grows one day if it was watered or it rained. Switching crop families after a one-time harvest adds one crop at harvest. Basil and tomato planted in adjacent beds also add one crop. Crops with `regrow` keep producing after picking; their bed history updates only after a one-time crop finishes.
+- `state.data.farm[plotId] = { crop, growth, watered, boost }`. Planting waters it. Water once a day; at the start of each day (`state.newDay()`, called by sleeping and the 2am day end) a plot grows one day if it was watered or it rained. Crops with `regrow` keep producing after picking.
 - **Pet helpers** (when on your team): Poppy digs up one extra at harvest, Stanley sometimes spots a bonus one, Spooky watered at night gives a double day of growth, Princess gets 20% more when selling.
 - Crop sprites are drawn per stage in `art/paint/crops.js` (`cropTexture`); crops are also bag items (`crop: true` in items.js) that pets and townsfolk can love.
 - **House upgrades** (Olly's House tab at Bunnings, `data/upgrades.js`): veggie patch, pet door (a pet at home brings a present most mornings), finished twins' room (home.js swaps the renovation junk for a rug and books), paddling pool (pets at home +5 friendship once a day when you visit the yard). Buying one calls `invalidateMap('home'|'yard')`; maps carry a `rev` so the ground texture rebuilds.
@@ -230,7 +256,7 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - Ideas still open: a Rat King of Sydney Rd boss in the laneways, a Boom Gate boss at a level crossing, the Myki Inspector as a wandering mini-boss, a Hoon in a Commodore on Aviation Rd at night, magpies only swooping in spring, battle music.
 
 ### Done: evolutions and the story
-- Every pet evolves: Flamcess (fire), Floppy (plastic/rock), Sopressa (street/old), Poltergeist Spooky (ghost/psychic), Centurionely (Stanley as a Roman centurion, steel), Even Rustier (Rusty in sheet metal, steel/speed).
+- Every original pet evolves: Flamcess (fire), Floppy (plastic/rock), Sopressa (street/old), Ghost (ghost/psychic, evolved Spooky), Centurionely (Stanley as a Roman centurion, steel), Even Rustier (Rusty in sheet metal, steel/speed).
 - The four story chapters (see **The story** above).
 
 ### More economy
@@ -253,65 +279,3 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - More pets and regions (the locked exits), quests from townsfolk, a photo mode, music, achievements (all pets found, 10 hearts with everyone).
 - Tiled map support: the builder could also accept Tiled JSON exports if hand-editing maps becomes easier than code.
 - A service worker for offline play (be careful with cache invalidation on updates).
-
-
-## October playtest update
-
-Pet school uses `src/ui/training.js` and the pure simulation in `src/systems/training.js`. Six practical activities rotate three choices by pet and day, with pet-specific pacing and progress-based stages. Loaded walk frames animate the pet’s legs; single-frame art falls back to a bob. The selected person is named, usually Helen. Obstacles wait for a jump, allow repeat jumps and offer run restarts. Early settle rewards and wrong scent boxes are recoverable. Keyboard A/action, scent selection with left/right and touch buttons work together. Same-day practice gives no additional reward. Completing a lesson earns 8 participation XP plus 8 per successful attempt, friendship and a gold star for 3/3. Cancelling does not consume the daily lesson or award XP. Existing report-card data remains compatible; `side.school.skills` stores successes by pet/activity and survives reloads.
-
-Pet display heights are edited in `src/data/pet-sizes.js`, independent of source PNG resolution, in world pixels (one tile = 16; Helen = 32). Both world pets and battle pets, including opponents, use these proportions. Physics footprints remain small so big artwork does not obstruct paths.
-
-Battle backgrounds use drop-in PNGs in `assets/sprites/backgrounds/`, not the Studio. Zone ID wins over suburb ID, then `default.png`; optional `-night` versions are checked at each level. The manifest generator includes backgrounds and enemy replacements. The artist guide is `assets/sprites/README.md`.
-
-First battles with one active pet use gentler rosters for Bin Man, Rose, Adam and Mr Wilkinson (`trainerTeam` in battle.js). Rematches and teams with multiple active pets retain original rosters. Early wild levels are capped just below the solo pet's level in Laverton, Footscray, Brunswick and Brunswick East. The first grass encounter is guaranteed once the six-step grace is over; solo encounter chance is 22%. Lohse Reserve has a once-only grass/rest/team tutorial and optional practice fight. The balance simulator now includes actual level-five, zero-heart starter scenarios and uses the real first-battle roster rules.
-
-Map travel suppresses held movement until key-up/joystick release, plus a short arrival grace. NPCs remain interactive but no longer physically block the player. Small interiors retain normal camera scale. Cars arrive less often and each lane has a bounded queue; tram/train frequency remains unchanged. New move animations include bed, scoot, nap, circling/herding, zoomies and stare; existing bite/claw/fire/etc. effects remain.
-
-Ground rendering uses `src/art/paint/terrain-curves.js` for curved Allen St roads and footpaths and rounded water banks. Contours follow map editor ground tiles and retain custom textures, holes and bridge planks. Collision and exits remain grid-based. School panels use padded, scrollable content for small screens.
-
-## Player progression and Exhibition side quest (October 2026)
-
-The active game remains this directory. Do not edit obsolete root `src/`.
-New foundations: `systems/player-skills.js` (five per-character skills, levels
-1–10), `data/crafting.js` / `systems/crafting.js` (atomic recipe validation),
-`systems/player-combat.js` (separate optional player sparring) and
-`systems/course.js` (retryable cue/timing course). `scenes/ActivityScene.js`
-renders the live Phaser course/sparring; WorldScene pauses and resumes around
-it. `ui.activity` owns A/B input and blocks other modals; the scene removes its
-DOM overlay, resize observer and listeners on shutdown. Current sparring is
-practice only, ready to be reused for later quest opponents.
-
-Save additions: `playerSkills[hero][skill]`, `side.show` and `side.bakeQuest`.
-Sanitisation provides defaults for older saves. Show results save separately
-per division; `claimed` prevents duplicate division prizes. Friendly show
-battles use `exhibitionPet`, `exhibitionParty` and `exhibition` options, suppress
-farmable battle XP, and restore the original party/HP. Rival levels are capped
-by division and registered-pet level. Never mutate the original party just to
-choose a show fighter. Daily practice/sparring XP is separately limited.
-
-`data/dog-show.js` contains six fictional rival owners, six dog breeds and
-three divisions. `world/maps/exhibition.js` is the Royal Exhibition interior;
-its reciprocal exit is on the Carlton Gardens forecourt. Rival dialogue hooks
-run before normal friendship/trainer dialogue. To Do displays show preparation,
-division progress and the staged Betty bake-off. `systems/baking.js` and
-`ui/baking.js` implement preparation; cancelling resolves without taking items.
-Normal cooking, harvesting, foraging, fishing and school lessons award skills.
-
-`data/animation-layouts.js` is the shared zero-based frame map for world,
-training and course sprites. Legacy two-frame sheets alternate frames 0/1.
-Five-frame sheets default to idle 0 plus four walking frames. Explicit walk,
-wave, throw, reward, jump or sit arrays reserve action frames. Built-in people
-have separate arm poses; custom art needs supplied action frames. Actor.perform
-can request action poses and a visual jump without moving the collision body.
-
-For paths, `terrainContours(..., true)` joins diagonal ground tiles before
-smoothing. Water uses the default separate diagonal contours. Tile edge strokes
-are suppressed inside curved surfaces. Never mutate map ground or collisions
-when painting. Mobile battle boxes use 46vw and scaled fighters leave a clear
-horizontal space beside them.
-
-Tests: `node --test tools/*.test.mjs` from the parent artifact directory.
-`tools/progression.test.mjs` checks saves, thresholds, crafting atomicity,
-complete courses, player defensive actions, baking, frame separation, show
-eligibility and map access. The release browser check also launches the new
-scenes and exercises their cleanup on a 390×844 viewport.

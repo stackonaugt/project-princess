@@ -1,5 +1,7 @@
 import { state } from "./state.js";
-import { DIVISIONS } from "../data/dog-show.js";
+import { DIVISIONS, COMPETITORS } from "../data/dog-show.js";
+import { trainingStarted } from "./progression-gates.js";
+export const showUnlocked = () => trainingStarted(state.data);
 export function divisionProgress(id) {
   const sh = state.data.side.show;
   sh.divisions[id] ??= { battles: [], course: 0, obedience: 0 };
@@ -19,8 +21,9 @@ export function showReady(pet) {
   );
 }
 export function showObjectives() {
+  if (!showUnlocked()) return [];
   const sh = state.data.side.show;
-  return [
+  const objectives = [
     {
       text: "Find a course: build the yard kit or visit the Exhibition practice ring",
       done:
@@ -46,13 +49,23 @@ export function showObjectives() {
       text: "Register your dog with Jean inside the Royal Exhibition Building",
       done: sh.entered,
     },
-    ...DIVISIONS.map((d) => ({
-      text: `${d.name}: two battles, agility and obedience`,
-      done: divisionDone(d.id),
-    })),
+    ...DIVISIONS.flatMap(d => {
+      const p = sh.divisions[d.id] || { battles: [], course: 0, obedience: 0 };
+      return [
+        ...d.rivals.map(id => ({
+          text: `${d.name}: friendly play-fight with ${COMPETITORS.find(c => c.id === id).name}`,
+          done: sh.claimed.includes(d.id) || p.battles.includes(id),
+        })),
+        { text: `${d.name}: demonstrate agility in the hall`, done: sh.claimed.includes(d.id) || p.course > 0 },
+        { text: `${d.name}: demonstrate ${d.obedience}`, done: sh.claimed.includes(d.id) || p.obedience >= 2 },
+        { text: `${d.name}: collect your award from Jean`, done: sh.claimed.includes(d.id) },
+      ];
+    }),
     {
       text: "Collect the champion rosette from Jean",
       done: sh.claimed.includes("champion"),
     },
   ];
+  return [objectives.find(objective => !objective.done) ||
+    { text: 'Exhibition champion! Your award is recorded.', done: true }];
 }

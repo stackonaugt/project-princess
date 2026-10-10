@@ -34,7 +34,7 @@
 // drawPerson(p, look, dir, step) paints one frame: dir is 'down' | 'up' | 'left'
 // (right is the left frame mirrored), step is 0 standing, 1 and 2 mid-stride.
 
-import { shade } from './painter.js';
+import { outline, painter, shade } from './painter.js';
 
 export const FRAME_W = 16, FRAME_H = 32;
 
@@ -49,6 +49,14 @@ export function drawPerson(p, look, dir, step, action = null) {
   if (dir === 'left') side(p, L, step, bob); else front(p, L, dir === 'up', step, bob);
   if (dir !== 'up') extras(p, L, dir, bob);
   headwear(p, L, dir, bob);
+}
+
+// Paint the same outlined frame used by the generated in-game sprite, for
+// previews that do not need to create or modify a game texture.
+export function drawPersonPreview(ctx, look, dir = 'down', step = 0) {
+  ctx.clearRect(0, 0, FRAME_W, FRAME_H);
+  drawPerson(painter(ctx), look, dir, step);
+  outline(ctx, 0, 0, FRAME_W, FRAME_H);
 }
 
 // Hats and hoods go on last, over the hair.

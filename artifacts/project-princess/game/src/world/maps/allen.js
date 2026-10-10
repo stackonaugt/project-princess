@@ -2,6 +2,7 @@
 // Princess's turf. Brick veneers, a keep-left island, utes in driveways.
 import { MapBuilder } from '../MapBuilder.js';
 import { state } from '../../systems/state.js';
+import { withTerrainFeatures } from '../../art/paint/terrain-features.js';
 
 export function buildAllen() {
   const b = new MapBuilder({ id: 'allen', w: 40, h: 30, seed: 61 });
@@ -72,5 +73,20 @@ export function buildAllen() {
   for (let y = 1; y < 29; y++) for (let x = 1; x < 39; x++) if (b.get(x, y) === '.' && b.rand() < 0.05 && !b.occ[y][x]) b.set(x, y, ',');
   // Tall grass for wild encounters
   b.wildGrass(33, 3); b.wildGrass(3, 11); b.wildGrass(35, 25); b.wildGrass(12, 27);
-  return b.finish();
+  return withTerrainFeatures(b.finish(), [{
+    id: 'turning-circle', name: 'Allen St turning circle',
+    bounds: [10, 4, 20, 18], replace: '#f', clipApproaches: true,
+    layers: [
+      { material: 'f', edge: '#9c9686', blend: .6, shapes: [
+        { kind: 'ellipse', cx: 20, cy: 12, rx: 8.2, ry: 6.8 },
+        { kind: 'rect', x: 17, y: 15, w: 6, h: 15 },
+        { kind: 'rect', x: 0, y: 10, w: 15, h: 4 },
+      ] },
+      { material: '#', edge: '#e2dccf', lineWidth: 4, blend: .6, shapes: [
+        { kind: 'ellipse', cx: 20, cy: 12, rx: 6.2, ry: 5 },
+        { kind: 'rect', x: 18, y: 15, w: 4, h: 15 },
+        { kind: 'rect', x: 0, y: 11, w: 15, h: 2 },
+      ] },
+    ],
+  }]);
 }

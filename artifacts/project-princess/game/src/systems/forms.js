@@ -14,6 +14,16 @@ export function form(id) {
   return isEvolved(id) ? { ...base, ...d.evolution, baseName: d.name } : base;
 }
 
+// Authored pet dialogue can use the base-form name while the pet keeps its
+// identity after evolving. Display the name of its current form instead.
+export function formText(id, text) {
+  if (typeof text !== 'string') return text;
+  const current = form(id);
+  return current.baseName === current.name
+    ? text
+    : text.replaceAll(current.baseName, current.name);
+}
+
 export const petTex = id => (isEvolved(id) ? `pet-${id}-evolved` : `pet-${id}`);
 
 // Ready to evolve: has an evolution, not yet evolved, level and hearts met.

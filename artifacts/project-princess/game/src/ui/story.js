@@ -1,5 +1,6 @@
+import { syncTodo,readTodo,tutorialNotes } from '../systems/todo.js';
 import { RECIPES as COOK_RECIPES } from '../data/cooking.js';
-import { showObjectives } from '../systems/show-progress.js';
+import { showObjectives, showUnlocked } from '../systems/show-progress.js';
 // Story screens: the Story app on the Pawphone, chapter title cards, the
 // West is Best News reports (with the election vote bar), and the party
 // mini-games. Words are in data/story.js.
@@ -21,34 +22,40 @@ import { initialObjective, pinObjective, isPinned } from '../systems/guidance.js
 // The To Do app: the story's jobs, and today's requests from friends.
 let todoTab = 'todo';
 export function openStoryApp(panel, close) {
+  syncTodo(); readTodo();
   const s = state.data.story, n = chapterNow();
   const body = [];
   if (todoTab === 'todo') {
+    for (const t of tutorialNotes()) body.push(todoNote(t.title, [{ text:t.text, done:t.done }]));
     if (!n) body.push(todoNote('Find Princess', [initialObjective()]));
     else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
     else if (s.done[n]) body.push(h('div', { class: 'note' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
-    else body.push(todoNote(GOALS[n], objectives(n)));
+    else {
+      const steps = objectives(n);
+      body.push(todoNote(GOALS[n], [steps.find(step => !step.done) || steps[steps.length - 1]].filter(Boolean)));
+    }
     // Council: the motion on the board, and what you know the undecided want.
     const open = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id));
-    if (open) {
+    if (open && state.motionKnown(open)) {
       const m = MOTIONS[open], v = state.councilVote(open);
       body.push(todoNote(`Council: ${m.title}`, [
         { text: 'Chip in what it needs on the noticeboard in the civic centre foyer', done: state.motionReady(open) },
         ...v.undecided.filter(w => state.swingKnown(open, w)).map(w => ({ text: `${NPCS[w].name}: ${m.votes.swing[w].todo}`, done: false })),
-        ...(v.undecided.some(w => !state.swingKnown(open, w)) ? [{ text: 'Find out what the other undecided councillors want: ask them, or ask Paddy at home in the evening', done: false }] : []),
+        ...(v.undecided.some(w => !state.swingKnown(open, w)) ? [{ text: 'Find out what the other undecided councillors want: ask them, or ask Paddy whenever you see him', done: false }] : []),
       ]));
     }
-    body.push(todoNote('Exhibition Dog Show',showObjectives()));
+    if (showUnlocked()) body.push(todoNote('Exhibition Dog Show',showObjectives()));
     // Side missions
     const bake = state.data.side.bake;
     if(bake){const bq=state.data.side.bakeQuest;
-      body.push(todoNote('Betty’s bake-off: beat Meghan Hopper',[
+      const bakeSteps = [
         {text:'Learn a special baking recipe from a friend or a cookbook',done:state.data.recipes.some(id=>COOK_RECIPES[id]?.baked)},
         {text:'Bake your entry using pantry supplies and garden produce',done:bq.cooked.some(id=>COOK_RECIPES[id]?.baked)},
         {text:'Practise mixing, oven timing and finishing with Betty',done:bq.practices>=2},
         {text:'Enter a Saturday bake-off at Betty’s on Moreland Rd',done:bq.entries>0||bake===2},
         {text:'Beat Meghan and collect Betty’s blue ribbon',done:bake===2},
-      ]));}
+      ];
+      body.push(todoNote('Betty’s bake-off: beat Meghan Hopper', [bakeSteps.find(step => !step.done) || bakeSteps[bakeSteps.length - 1]]));}
 
     if (partyReady()) body.push(h('div', { class: 'center' }, h('button', { class: 'wood-btn', onclick: () => { close(); bus.emit('story:party'); } }, 'Throw the party!')));
     const past = Object.keys(s.done).map(Number).filter(k => k < n || (k === n && n > 4));

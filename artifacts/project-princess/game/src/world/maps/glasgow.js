@@ -2,6 +2,7 @@
 // behind an orange brick fence with a pear tree out the front. Next door's
 // grand brick house, cream fences and a transmission tower on the skyline.
 import { MapBuilder } from '../MapBuilder.js';
+import { withTerrainFeatures } from '../../art/paint/terrain-features.js';
 
 export function buildGlasgow() {
   const b = new MapBuilder({ id: 'glasgow', w: 48, h: 26, seed: 151 });
@@ -61,5 +62,21 @@ export function buildGlasgow() {
   b.border(['gum', 'oak', 'fruit']);
   // Tall grass for wild encounters
   b.wildGrass(3, 2); b.wildGrass(33, 2); b.wildGrass(13, 22); b.wildGrass(23, 22);
-  return b.finish();
+  return withTerrainFeatures(b.finish(), [{
+    id: 'roundabout', name: 'Glasgow Ave roundabout',
+    bounds: [37, 8, 11, 12], replace: '#fkm', preserveBase: 'f',
+    layers: [
+      { material: '#', edge: '#bcb6a8', blend: .35, shapes: [
+        { kind: 'ellipse', cx: 43, cy: 14, rx: 4.6, ry: 4.6 },
+        { kind: 'rect', x: 42, y: 0, w: 2, h: 26 },
+        { kind: 'rect', x: 0, y: 13, w: 48, h: 2 },
+      ] },
+      { material: 'k', edge: '#e2dccf', shapes: [
+        { kind: 'ellipse', cx: 43, cy: 14, rx: 2.9, ry: 2.9 },
+      ] },
+      { material: 'm', edge: '#6b4226', shapes: [
+        { kind: 'ellipse', cx: 43, cy: 14, rx: 1.8, ry: 1.8 },
+      ] },
+    ],
+  }]);
 }
