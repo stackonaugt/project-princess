@@ -12,6 +12,9 @@ import { sfx } from '../systems/sfx.js';
 import { state } from '../systems/state.js';
 import { timeLabel } from '../systems/clock.js';
 import { PETS } from '../data/pets.js';
+import { NPCS } from '../data/npcs.js';
+import { HEROES } from '../data/heroes.js';
+import { npcIcon, heroIcon } from './images.js';
 import { ZONES, SUBURBS } from '../data/regions.js';
 import { openTeam } from './team.js';
 import { openHero } from './hero.js';
@@ -37,6 +40,31 @@ import { openGarden } from './garden.js';
 import { battleUI } from './battle.js';
 
 const TYPE_SPEED = 38; // characters per second
+
+// A line written as 'Jean: "..."' is spoken by Jean, whoever you were talking
+// to, so it shows Jean's name and portrait (not the person who opened the chat).
+let speakers = null;
+function speakerIndex() {
+  if (speakers) return speakers;
+  const all = new Map(), add = (key, v) => { key = key.toLowerCase(); all.set(key, all.has(key) && all.get(key)?.id !== v.id ? null : v); };
+  for (const [id, n] of Object.entries(NPCS)) {
+    if (!n?.name) continue;
+    const v = { id, kind: 'npc' }, words = n.name.replace(/^Cr\s+/, '').split(/\s+/);
+    add(n.name, v); add(words[0], v); if (words.length > 1) add(words.at(-1), v);
+    if (/^Cr\s/.test(n.name)) add(`Cr ${words.at(-1)}`, v);
+  }
+  for (const [id, hero] of Object.entries(HEROES)) add(hero.name || id, { id, kind: 'hero' });
+  return (speakers = all);
+}
+function speakerOf(l, opts) {
+  if (typeof l === 'object' && l.portrait !== undefined) return {};
+  const m = /^([A-Z][\w’'.& -]{0,30}?): ["“]/.exec(typeof l === 'object' ? String(l.text ?? '') : String(l));
+  if (!m || m[1] === opts.name) return {};
+  const who = speakerIndex().get(m[1].toLowerCase());
+  if (!who) return {};
+  if (who.kind === 'npc' && opts.portrait === npcIcon(who.id)) return {};
+  return who.kind === 'hero' ? { name: HEROES[who.id].name || m[1], portrait: heroIcon(who.id) } : { name: NPCS[who.id].name, portrait: npcIcon(who.id) };
+}
 
 export const ui = {
   scene: null,         // set by the world scene, used to turn textures into images
@@ -83,6 +111,7 @@ export const ui = {
     bus.on('money:changed', () => this.updateMoney());
     bus.on('todo:new',n=>{ this.toast(`${n} new ${n===1?'quest':'quests'} in To Do`); this.updateTodoBadge(); });
     bus.on('todo:read',()=>this.updateTodoBadge());
+    bus.on('matchup:learnt',t=>this.toast(`Petdex updated: ${t}.`));
     bus.on('player:skill',(id,level)=>{if(level)this.toast(`${SKILLS[id].name} level ${level}`);});
     bus.on('guidance:changed', () => { this._guidanceKey = null; this.updateGuidance(); });
     bus.on('navigation:request', (point, target) => {
@@ -160,8 +189,11 @@ export const ui = {
   // Resolves with the chosen value (or undefined).
   say(lines, opts = {}) {
     if (!Array.isArray(lines)) lines = [lines];
+    // Authored lines are sometimes nested ([[line]]); a line with no text
+    // must never freeze the dialogue box.
+    lines = lines.flat(Infinity).filter(l => l != null);
     return new Promise(resolve => {
-      const queue = lines.map(l => (typeof l === 'string' ? { text: l } : l)).map(l => ({ name: opts.name, portrait: opts.portrait, ...l }));
+      const queue = lines.map(l => (typeof l === 'object' ? l : { text: String(l) })).map(l => ({ name: opts.name, portrait: opts.portrait, ...speakerOf(l, opts), ...l, text: String(l.text ?? '') }));
       const start = () => {
         this.dialog = { queue, i: -1, resolve, result: undefined, cancelValue: opts.cancelValue };
         $('dialog').hidden = false;

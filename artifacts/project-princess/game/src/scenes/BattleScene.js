@@ -373,8 +373,8 @@ export class BattleScene extends Phaser.Scene {
       if (pick === 'fight') {
         B.prompt('Pick a move.');
         const move = await B.menu([...this.mine.moves.map(id => {
-          const m = MOVES[id], eff = effectiveness(m.type, this.foe.type);
-          const note = m.power ? `Power ${m.power}${eff > 1 ? ' · Strong!' : eff < 1 ? ' · Weak' : ''}` : this.effectNote(m.effect);
+          const m = MOVES[id], eff = R.knownEffect(m.type, this.foe.type);
+          const note = m.power ? `Power ${m.power}${eff > 1 ? ' · Strong!' : eff !== null && eff < 1 ? ' · Weak' : ''}` : this.effectNote(m.effect);
           return { label: m.name, value: id, type: m.type, note };
         }), { label: '◀ Back', value: null, back: true }], { layout: 'moves' });
         if (move) return { kind: 'move', move };

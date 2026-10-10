@@ -33,14 +33,15 @@ function header(panel, close, title, back) {
 
 function renderList(panel, close) {
   const visible = state.visiblePets();
-  if (tab !== 'all' && !visible.some(p => p.region === tab)) tab = 'all';
+  if (tab !== 'all' && tab !== 'matchups' && !visible.some(p => p.region === tab)) tab = 'all';
   const found = state.foundCount(), total = visible.length;
   const totalHearts = PETS.reduce((s, p) => s + (state.isFound(p.id) ? state.hearts(p.id) : 0), 0);
   const tabs = h('div', { class: 'tabs', role: 'tablist' },
     ...['all', ...REGION_ORDER.filter(r => visible.some(p => p.region === r))].map(id => h('button', {
       class: 'tab' + (tab === id ? ' on' : ''), role: 'tab', 'aria-selected': tab === id,
       onclick: () => { tab = id; sfx.select(); renderList(panel, close); },
-    }, id === 'all' ? 'All' : REGIONS[id].name)));
+    }, id === 'all' ? 'All' : REGIONS[id].name)),
+    h('button', { class: 'tab' + (tab === 'matchups' ? ' on' : ''), role: 'tab', 'aria-selected': tab === 'matchups', onclick: () => { tab = 'matchups'; sfx.select(); renderList(panel, close); } }, 'Matchups'));
   const pets = visible.filter(p => tab === 'all' || p.region === tab);
   const grid = h('div', { class: 'dex-grid' }, ...pets.map((p, idx) => {
     const known = state.isFound(p.id);
@@ -59,7 +60,23 @@ function renderList(panel, close) {
     h('div', { class: 'dex-sum' },
       h('div', { class: 'bar' }, h('span', { style: { width: pct + '%' } })),
       h('p', {}, found === total ? `All ${total} pets found. Absolute legend.` : `${found} of ${total} pets found · ${totalHearts} hearts earned`)),
-    tabs, h('div', { class: 'm-scroll' }, grid));
+    tabs, h('div', { class: 'm-scroll' }, tab === 'matchups' ? matchupsNote() : grid));
+}
+
+// Every strong and weak matchup you have tried in battle, by attacking type.
+function matchupsNote() {
+  const seen = state.data.matchups.map(k => k.split('>')).filter(([a, d]) => TYPES[a] && TYPES[d]);
+  const badge = t => h('span', { class: 'type', style: { background: TYPES[t].colour } }, TYPES[t].name);
+  const rows = Object.keys(TYPES).map(a => {
+    const strong = seen.filter(([x, d]) => x === a && effectiveness(a, d) > 1).map(([, d]) => d);
+    const weak = seen.filter(([x, d]) => x === a && effectiveness(a, d) < 1).map(([, d]) => d);
+    if (!strong.length && !weak.length) return null;
+    return h('div', { class: 'note' }, h('h4', {}, badge(a), ' moves'),
+      strong.length ? h('p', { class: 'small' }, 'Strong against: ', ...strong.map(badge)) : null,
+      weak.length ? h('p', { class: 'small' }, 'Weak against: ', ...weak.map(badge)) : null);
+  }).filter(Boolean);
+  return h('div', {}, h('p', { class: 'small center' }, 'Matchups you have found in battle. Try a move on a new type to learn more.'),
+    ...(rows.length ? rows : [h('p', { class: 'center' }, 'Nothing yet. A move that is super effective (or barely tickles) gets written down here.')]));
 }
 
 function renderDetail(panel, close, p) {

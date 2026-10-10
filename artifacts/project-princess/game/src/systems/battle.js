@@ -7,13 +7,15 @@
 import { PET_BY_ID } from '../data/pets.js';
 import { ENEMIES, ENCOUNTERS, TRAINERS } from '../data/enemies.js';
 import { MOVES, PET_MOVES } from '../data/moves.js';
-import { effectiveness, typeList } from '../data/types.js';
+import { effectiveness, typeList, TYPES } from '../data/types.js';
+import { bus } from '../bus.js';
 import { form, petTex } from './forms.js';
 import { GEAR } from '../data/gear.js';
 import { SPELLS } from '../data/east.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from './state.js';
 import { BALANCE } from '../config.js';
+import { TUNING } from '../data/tuning.js';
 
 // The level each pet is at when you first befriend them.
 export const START_LEVEL = { marty: 5, princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14 };
@@ -25,7 +27,7 @@ export const petLevel = id => state.pet(id).level || START_LEVEL[id] || 5;
 export const xpToNext = lv => Math.round(BALANCE.xpBase + lv * lv * BALANCE.xpCurve);
 export function xpReward(foe, trainer) { return Math.round((8 + foe.level * 5) * (trainer ? 1.5 : 1) * BALANCE.xp); }
 // Prize money: a little from wild things, more from trainers.
-export const wildMoney = foe => Math.round((2 + Math.floor(foe.level * 0.8 + Math.random() * 4)) * BALANCE.money);
+export const wildMoney = foe => Math.round((TUNING.money.wildBase + Math.floor(foe.level * TUNING.money.wildPerLevel + Math.random() * 4)) * BALANCE.money * TUNING.money.allMoney);
 
 export function statsAt(base, lv) {
   const s = k => Math.floor(2 * base[k] * lv / 100) + 5;
@@ -166,7 +168,7 @@ export function damage(user, target, move) {
   const A = (special ? user.stats.special : user.stats.attack) * stageMult(user.stages.atk);
   const D = (special ? (target.stats.special + target.stats.defence) / 2 : target.stats.defence) * stageMult(target.stages.def);
   const eff = effectiveness(move.type, target.type);
-  if (eff !== 1) learnMatchups(move.type, target.type);
+  learnMatchups(move.type, target.type);
   const stab = typeList(user.type).includes(move.type) ? 1.5 : 1;
   const critChance = 1 / 16 + (user.side === 'mine' ? user.hearts * 0.012 + (gearBonus(user).crit || 0) : 0);
   const crit = Math.random() < critChance;
@@ -175,13 +177,24 @@ export function damage(user, target, move) {
   return { dmg, eff, crit };
 }
 
-// Type matchups you've seen in battle show up in the Petdex (state.data.matchups).
+// Type matchups you've tried in battle (state.data.matchups, 'fire>water', neutral
+// ones too). The move menu only says Strong or Weak once you have tried that move's
+// type on every one of the foe's types; the Petdex lists the strong and weak ones.
 function learnMatchups(atk, defType) {
   const seen = state.data.matchups;
   for (const t of typeList(defType)) {
     const key = `${atk}>${t}`;
-    if (effectiveness(atk, t) !== 1 && !seen.includes(key)) seen.push(key);
+    if (seen.includes(key)) continue;
+    seen.push(key);
+    const e = effectiveness(atk, t);
+    if (e !== 1) bus.emit('matchup:learnt', `${TYPES[atk].name} is ${e > 1 ? 'strong' : 'weak'} against ${TYPES[t].name}`);
   }
+}
+
+// What the move menu may show: the effectiveness once it has been tried, else null.
+export function knownEffect(atk, defType) {
+  const seen = state.data.matchups;
+  return typeList(defType).every(t => seen.includes(`${atk}>${t}`)) ? effectiveness(atk, defType) : null;
 }
 
 // Close friends sometimes refuse to give up (hang on with 1 HP).

@@ -53,5 +53,7 @@ export const sfx = {
   faint: () => tone(500, 0.4, { type: 'triangle', vol: 0.06, slide: -380 }),
   levelUp: () => [523, 659, 784, 659, 784, 1046].forEach((f, i) => tone(f, 0.09, { type: 'square', vol: 0.03, delay: i * 0.08 })),
   win: () => [784, 784, 784, 1046].forEach((f, i) => tone(f, i === 3 ? 0.3 : 0.08, { type: 'square', vol: 0.035, delay: i * 0.1 })),
+  // A little brass fanfare for a finished bake (layered saw and square, like a trumpet).
+  trumpet: () => [[523, 0], [523, .12], [523, .24], [659, .36], [784, .56], [659, .78], [784, .9]].forEach(([f, d], i) => { tone(f, i === 6 ? .5 : .1, { type: 'sawtooth', vol: .035, delay: d }); tone(f * 2, i === 6 ? .5 : .1, { type: 'square', vol: .012, delay: d }); }),
   sad: () => { tone(392, 0.12, { type: 'triangle' }); tone(330, 0.18, { type: 'triangle', delay: 0.12 }); },
 };

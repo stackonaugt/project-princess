@@ -23,6 +23,7 @@ export const ANIMATION_LAYOUTS = {
   'pet-stanley': petActions(),
   'pet-stanley-evolved': petActions(),
   'pet-girlie': petActions(),
+  'pet-girlie-evolved': petActions(),
   'pet-chloe': petActions(),
   'pet-ziggy': petActions(),
   'pet-emilio': petActions(),

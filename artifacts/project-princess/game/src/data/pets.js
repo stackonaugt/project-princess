@@ -20,6 +20,7 @@
 
 import { PET_TEXT } from './dialogue.js';
 import { authoredValue } from '../authoring/overrides.js';
+import { TUNING } from './tuning.js';
 
 export let PETS = [
   {
@@ -94,10 +95,10 @@ export let PETS = [
     loves: ['chicken', 'redfin', 'cheese'], likes: ['snag', 'sardine', 'tennis', 'carrot'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 66, attack: 78, defence: 50, speed: 115, special: 48 },
     evolution: {
-      name: 'Even Rustier', species: 'Whippet (sheet metal)', type: ['steel', 'speed'], level: 16, hearts: 5, sprite: 'evenrustier',
+      name: 'Steely', species: 'Whippet (forged steel)', type: 'steel', level: 16, hearts: 5, sprite: 'evenrustier',
       pal: { a: '#9aa2ac', b: '#6a727c', k: '#b8642a', w: '#e8eef4', r: '#4a4e56', o: '#c87a3a', e: '#e83a2a', n: '#1a1010' },
       stats: { hp: 86, attack: 108, defence: 82, speed: 130, special: 56 },
-      moves: ['sliceanddice', 'turbozoom', 'rustcloud', 'oilchange'],
+      moves: ['dangerpaws', 'sharpen', 'turbozoom', 'oilchange'],
     },
   },
   {
@@ -123,6 +124,13 @@ export let PETS = [
     behaviour: 'wander', sleeps: [14 * 60, 16 * 60],
     loves: ['chicken', 'jamdonut', 'hotchips', 'tennis'], likes: ['snag', 'cheese', 'sardine', 'croissant', 'carrot', 'pumpkin', 'potato', 'gelato', 'prosciutto', 'redfin'], dislikes: ['lemon'],
     stats: { hp: 82, attack: 76, defence: 66, speed: 62, special: 55 },
+    evolution: {
+      // Art: assets/sprites/pets/girlie-evolved.png (Girlie's sheet, splattered with mud).
+      name: 'Muddy', species: 'Black labrador (mostly mud)', type: ['dirt', 'water'], level: 16, hearts: 5, sprite: 'lab',
+      pal: { a: '#4a3624', b: '#2e2216', l: '#6e5232' },
+      stats: { hp: 106, attack: 96, defence: 88, speed: 64, special: 70 },
+      moves: ['muddypaws', 'puddlejump', 'shakeoff', 'dirtnap'],
+    },
   },
   {
     id: 'chloe', name: 'Chloe', species: 'Kelpie', type: ['park', 'speed'], sprite: 'kelpie',
@@ -172,6 +180,14 @@ export let PETS = [
 
 
 // What pets say, and their Petdex text, live in dialogue.js.
+// Stats and evolution thresholds from the tuning sheet (data/tuning.js).
+for (const p of PETS) {
+  const t = TUNING.pets[p.id];
+  if (!t) continue;
+  if (t.stats) p.stats = { ...p.stats, ...t.stats };
+  if (t.evolution && p.evolution) for (const k of ['level', 'hearts']) if (Number.isFinite(t.evolution[k])) p.evolution[k] = t.evolution[k];
+  if (t.evolution?.stats && p.evolution) p.evolution.stats = { ...p.evolution.stats, ...t.evolution.stats };
+}
 PETS = authoredValue('data/pets.js', 'PETS', PETS);
 for (const p of PETS) {
   const t = PET_TEXT[p.id] || {};

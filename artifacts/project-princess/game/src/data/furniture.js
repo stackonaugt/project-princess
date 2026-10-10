@@ -7,6 +7,7 @@
 // plant, owned: [ids] }. Each slot holds the id of the piece in the house;
 // home.js draws them. `obj` and `v` are the object kind and variant it is drawn
 // as (the couch faces away in the lounge, so home.js swaps front for back).
+import { TUNING, tune } from './tuning.js';
 export const SLOTS = { couch: 'Couch', bed: 'Bed', rug: 'Rug', lamp: 'Lamp', bookcase: 'Bookcase', sidetable: 'Side table', armchair: 'Armchair', plant: 'Pot plants' };
 
 export const FURNITURE = {
@@ -59,6 +60,7 @@ export const FURNITURE = {
   ivy:      { slot: 'plant', obj: 'plant', v: 'ivy', price: 20, name: 'Devil\'s ivy', desc: 'Trails everywhere and will not die. Not even if you try.', shop: 'bunnings' },
   cactus:   { slot: 'plant', obj: 'plant', v: 'cactus', price: 12, name: 'Cactus', desc: 'Prickly, low effort, keeps the cats off the windowsill.', shop: 'bunnings' },
 };
+tune(FURNITURE, TUNING.furniture);   // prices from the tuning sheet (data/tuning.js)
 export const FURNITURE_ORDER = Object.keys(FURNITURE);
 // What starts in the house.
 export const DEFAULT_FURNITURE = { couch: 'old', bed: 'sage', rug: 'red', lamp: 'brasslamp', bookcase: 'oak', sidetable: 'oaktable', armchair: 'mustard', plant: 'mixed' };

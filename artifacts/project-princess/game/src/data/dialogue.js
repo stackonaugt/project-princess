@@ -1419,6 +1419,7 @@ export let PET_TEXT = {
     night: ['Girlie is curled up in a black heap. You can only find her by the snoring.'],
     rain: ['Girlie is delighted by the rain. She has found a puddle. She is in the puddle.'],
     asleep: ['Girlie is asleep, paws paddling. She is swimming in her dreams.'],
+    evolvedBio: 'Girlie found the biggest puddle in Carlton Gardens and never really came out. Muddy is half lab, half wetland, and wants a cuddle.',
   },
   rusty: {
     bio: 'A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.',
@@ -1434,7 +1435,7 @@ export let PET_TEXT = {
     night: ['Rusty is tucked under a blanket. Only his nose is showing.'],
     rain: ['Rusty refuses to go out in the rain. He is staring at you like it is your fault.'],
     asleep: ['Rusty is asleep, legs twitching. He is winning a race in his dreams.'],
-    evolvedBio: 'Rusty, rebuilt in sheet metal. Even Rustier is faster than a Vline train and squeaks a bit going round corners.',
+    evolvedBio: 'Rusty, forged in steel. Steely is faster than a Vline train, sharpens his claws on the fence and squeaks a bit going round corners.',
   },
 };
 

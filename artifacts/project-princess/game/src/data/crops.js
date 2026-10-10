@@ -7,6 +7,7 @@
 //   regrow   if set, the plant keeps producing: after picking it needs this many more days
 //   colour   the produce colour (crop sprites and seed packets)
 // The harvested crop is an item with the same id (see items.js).
+import { TUNING, tune } from './tuning.js';
 export const CROPS = {
   basil:      { name: 'Basil', days: 2, seed: 3, sell: 6, yield: 2, regrow: 2, family: 'herb', companions: ['tomato'], colour: '#4fa04a', blurb: 'Grows fast. The hipster pays extra for "microgreens".' },
   carrot:     { name: 'Carrot', days: 3, seed: 4, sell: 8, yield: 2, family: 'root', colour: '#e8822a', blurb: 'Spooky\'s absolute favourite.' },
@@ -17,4 +18,5 @@ export const CROPS = {
   chilli:     { name: 'Chilli', days: 5, seed: 6, sell: 14, yield: 3, regrow: 3, family: 'fruiting', colour: '#e8502a', blurb: 'Fire-type pets love these in a battle.' },
   pumpkin:    { name: 'Pumpkin', days: 6, seed: 8, sell: 24, yield: 1, family: 'vine', colour: '#e89030', blurb: 'Huge. A whole battle\'s worth of energy.' },
 };
+tune(CROPS, TUNING.seeds, 'seed'); tune(CROPS, TUNING.crops, 'sell');   // from the tuning sheet (data/tuning.js)
 export const CROP_ORDER = Object.keys(CROPS);

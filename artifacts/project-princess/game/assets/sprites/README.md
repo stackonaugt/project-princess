@@ -29,7 +29,7 @@ Commit/upload your PNGs with the game files and deploy normally. The existing ma
 
 **The template file names are the ids.** Every pet, person, enemy, item, vehicle and object in the game has a template in `templates/` under the name it loads from, so the easiest way to find an id is to look there.
 
-- Pets: `princess`, `salami`, `spooky`, `poppy`, `rusty`, `stanley`, `girlie`, `chloe`, `ziggy`, `emilio` (see `src/data/pets.js`). Evolved forms are `pets/<id>-evolved.png` and `portraits/<id>-evolved.png`: Flamcess, Sopressa, Ghost (evolved Spooky), Floppy, Even Rustier and Centurionely.
+- Pets: `princess`, `salami`, `spooky`, `poppy`, `rusty`, `stanley`, `girlie`, `chloe`, `ziggy`, `emilio`, `marty` (see `src/data/pets.js`). Evolved forms are `pets/<id>-evolved.png` and `portraits/<id>-evolved.png`: Flamcess, Sopressa, Ghost (evolved Spooky), Floppy, Steely (evolved Rusty), Centurionely and Muddy (evolved Girlie: a placeholder made from her sheet with mud splatters, redraw it any time).
 - Player: `helen`, `hadrian` and `aleksy`, each with `-down`, `-up` and `-left`.
 - People: over a hundred, in `templates/npcs/` (ids from `src/data/npcs.js` and the suburb files `src/data/north.js`, `east.js` and `summerhill.js`).
 - Enemies: in `templates/enemies/` (ids from `src/data/enemies.js` and the suburb files).

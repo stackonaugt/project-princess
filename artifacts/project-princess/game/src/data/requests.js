@@ -9,8 +9,9 @@ import { ITEMS } from './items.js';
 import { friendInfo } from './friends.js';
 import { rng } from '../util.js';
 
+import { TUNING } from './tuning.js';
 export const REQUESTS_PER_DAY = 2;
-export const REQUEST_BONUS = { money: [12, 30], points: 20 };
+export const REQUEST_BONUS = { money: [TUNING.money.requestMin, TUNING.money.requestMax], points: 20 };   // money from data/tuning.js
 const ASKS = [
   '{who} would really love {item}.',
   '{who} is after {item}. Today, if possible.',

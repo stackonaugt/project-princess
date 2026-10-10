@@ -48,7 +48,8 @@ function fresh() {
     farm: {},          // plot id -> { crop, growth, watered (day), boost } (see data/crops.js)
     soil: {},          // plot id -> { family, crop } from its last finished crop
     upgrades: {},      // upgrade id -> true (see data/upgrades.js)
-    matchups: [],      // type matchups seen in battle, 'fire>water' (the Petdex shows them)
+    matchups: [],      // type matchups tried in battle, 'fire>water' (the Petdex shows the strong and weak ones)
+    bakeStars: {},     // star ratings of the baked things in the bag, oldest first: { sponge: [3, 1.5] }
     flags: {},         // one-off story flags, e.g. garden (Chris gave you plots)
     spell: null,       // today's protection spell from the milk bar: { id, day }
     inventory: {},     // item id -> count
@@ -107,6 +108,7 @@ function sanitise(raw) {
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   d.scorecards = normaliseScorecards(raw.scorecards);
   if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
+  if (raw.bakeStars && typeof raw.bakeStars === 'object') for (const [k, v] of Object.entries(raw.bakeStars)) if (Array.isArray(v)) d.bakeStars[k] = v.filter(n => typeof n === 'number' && n >= 0 && n <= 3);
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, known: Array.isArray(raw.council.known) ? raw.council.known : [], metDay: raw.council.metDay };
   if (typeof raw.wallPaint === 'string') d.wallPaint = raw.wallPaint;
@@ -239,8 +241,13 @@ export const state = {
   removeItem(item, n = 1) {
     const left = this.count(item) - n;
     if (left > 0) this.data.inventory[item] = left; else delete this.data.inventory[item];
+    const stars = this.data.bakeStars[item];
+    if (stars) { while (stars.length > Math.max(0, left)) stars.shift(); if (!stars.length) delete this.data.bakeStars[item]; }
     bus.emit('bag:changed');
   },
+  // A bake goes in the bag with its star rating; the oldest one is given away first.
+  addBake(item, stars) { this.addItem(item); (this.data.bakeStars[item] ||= []).push(stars); },
+  nextBakeStars(item) { const s = this.data.bakeStars[item] || []; return s.length >= this.count(item) && s.length ? s[0] : null; },
   bagItems() { return Object.keys(ITEMS).filter(k => this.count(k) > 0); },
   // What a pet will eat (no drinks, presents or fertiliser).
   treatItems() { return this.bagItems().filter(isTreat); },

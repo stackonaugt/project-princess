@@ -4,7 +4,7 @@ import { paintYardCourse,startYardCourse,yardTier } from '../systems/yard-course
 import { beginMartyCare, martyApproach } from '../systems/pet-care.js';
 import { CRAFT_RECIPES } from '../data/crafting.js';
 import { craft,craftReason } from '../systems/crafting.js';
-import { COMPETITORS,SHOW_DOGS,DIVISIONS } from '../data/dog-show.js';
+import { COMPETITORS,SHOW_DOGS,DIVISIONS,SHOW_DAY,showOpen } from '../data/dog-show.js';
 import { showReady,divisionDone,divisionProgress } from '../systems/show-progress.js';
 import { awardSkill, skill, trainingXp } from '../systems/player-skills.js';
 // The main game scene: one region at a time. Restarted (with new data)
@@ -21,7 +21,8 @@ import { isAt, onDuty, inMeeting, isMeetingDay, weekday } from '../data/routines
 import { todayJobs } from '../ui/calendar.js';
 import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
 const COUNCILLORS = COUNCIL_ALL;
-import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF } from '../data/cooking.js';
+import { TUNING } from '../data/tuning.js';
+import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF, BAKES } from '../data/cooking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
 import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, PADDY_SPEECH, PADDY_PARTY, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
@@ -1336,12 +1337,19 @@ export class WorldScene extends Phaser.Scene {
       return ui.say([`${npc.info.name} squints at the ${name}. "Hang on. That's mine. I gave you that."`, `"Keep it. Re-gifting to the person who gifted it is a bold move, though."`], opts);
     }
     // Some things (Betty's cooking) everyone loves, unless they've said otherwise.
-    const reaction = fi.loves.includes(item) || (ITEMS[item].loved && !fi.dislikes.includes(item)) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
+    const taste = fi.loves.includes(item) || (ITEMS[item].loved && !fi.dislikes.includes(item)) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
+    // How well it was made counts too: a 3 star bake wins anyone over, and only
+    // Paddy will say a 1 star one is good.
+    const stars = state.nextBakeStars(item);
+    const reaction = stars === null ? taste : stars >= 3 ? 'love' : stars <= 1 ? (npc.id === 'paddy' ? 'love' : 'dislike') : taste;
     state.removeItem(item);
-    f.giftedDay = state.data.day; f.reactions[item] = reaction;
+    f.giftedDay = state.data.day; f.reactions[item] = taste;
     const r = state.addFriendPoints(npc.id, FRIEND_POINTS[reaction]);
     const n = npc.info.name;
-    const text = {
+    const text = stars !== null && stars <= 1 ? (npc.id === 'paddy'
+      ? `Paddy takes a huge bite of the ${name}. "Mmm! Honestly, love, it's really good." He is a terrible liar, and a lovely husband.`
+      : `${n} takes a bite of the ${name} and chews for a long time. "...Did you make this yourself? I can tell."`)
+      : stars >= 3 ? `${n} takes one bite of the ${name} and closes their eyes. "That is perfect. Perfect! Who taught you that?"` : {
       love: `${n} LOVES the ${name}! "How did you know?"`,
       like: `${n} is pleased with the ${name}. "Ta, that's lovely."`,
       neutral: `${n} takes the ${name} politely. "Oh. Thanks."`,
@@ -1403,7 +1411,7 @@ export class WorldScene extends Phaser.Scene {
       state.data.beaten[npc.id] = state.data.day;
       await ui.say(t.win, opts);
       if (firstToday && (t.money ?? (t.prize ? 0 : 20))) {
-        const cash = t.money ?? (t.prize ? 0 : 20);
+        const cash = Math.round((t.money ?? (t.prize ? 0 : 20)) * TUNING.money.allMoney);
         state.addMoney(cash);
         sfx.pickup();
         await ui.say(`${t.name} hands over $${cash}. Fair's fair.`, opts);
@@ -1543,7 +1551,7 @@ export class WorldScene extends Phaser.Scene {
   async showCompetitor(npc,opts){
     if(npc.id==='showjean')return this.dogShow(opts);
     const c=COMPETITORS.find(c=>c.id===npc.id);
-    if(!c)return ui.say(npc.info.lines,opts);
+    if(!c){const ls=npc.info.lines||[];return ui.say(ls[state.data.day%Math.max(1,ls.length)]||[],opts);}
     await ui.say([`${c.intro}`,`${c.dog.charAt(0).toUpperCase()+c.dog.slice(1)} is a ${SHOW_DOGS[c.dog].breed.toLowerCase()}.`,c.tip],opts);
     if(await ui.say({text:'Check your division events with Jean?',choices:[{label:'Open show programme',value:true},{label:'Keep exploring',value:false}]},{...opts,cancelValue:false}))await this.dogShow();
   }
@@ -1556,6 +1564,9 @@ export class WorldScene extends Phaser.Scene {
       if(!await ui.say({text:`Register ${form(pet).name}? This dog stays your partner throughout all three divisions. Entry is free.`,choices:[{label:'Register',value:true},{label:'Later',value:false}]},{...opts,cancelValue:false}))return;
       sh.entered=true;sh.pet=pet;this.save();
     }
+    // The divisions are a Sunday event. Practise in the ring the rest of the week.
+    if(!showOpen(state.data.day,state.data.minutes,weekday)&&DIVISIONS.some(d=>!sh.claimed.includes(d.id)))
+      return ui.say([`Jean: "Judging is on ${SHOW_DAY.day}s, 9am to 5pm. Come back then with ${form(sh.pet).name}."`,'"The practice ring and the grooming table are open every day. Use them."'],opts);
     for(;;){
       const d=DIVISIONS.find(d=>!sh.claimed.includes(d.id));if(!d)return ui.say(['Jean: "Exhibition champion! Your rosette is in your bag. The practice ring stays open, and the other owners are always happy to share tips."'],opts);
       const p=divisionProgress(d.id);
@@ -1817,6 +1828,13 @@ export class WorldScene extends Phaser.Scene {
     this.navigation.cancel();
     sfx.bump();
     const back = { x: ex.x === 0 ? 1 : ex.x === this.map.w - 1 ? -1 : 0, y: ex.y === 0 ? 1 : ex.y === this.map.h - 1 ? -1 : 0 };
+    // A door in the middle of a map (the dog show, the bake-off hall) has no
+    // edge to push back from: step back out the way you came, clear of the
+    // doorway, so taps and buttons do not keep re-reading the notice.
+    if (!back.x && !back.y) {
+      const d = { up: [0, 1], down: [0, -1], left: [1, 0], right: [-1, 0] }[this.player.dir] || [0, 1];
+      back.x = d[0] * 1.6; back.y = d[1] * 1.6;
+    }
     this.player.setPosition(this.player.x + back.x * 10, this.player.y + back.y * 10);
     this.player.target = null;
     ui.say(lines);
@@ -2120,12 +2138,14 @@ export class WorldScene extends Phaser.Scene {
     const r = COOK_RECIPES[pick_];
     if (!has(r.needs)) return ui.say([`You need ${needsText(r.needs)}.`, 'Veggies come from your garden. Flour, sugar, butter, milk, eggs and choc chips are on the Pantry shelf at Coles.']);
     let preparation=null;
-    if(practice){preparation=await ui.baking({name:ITEMS[pick_].name});if(!preparation)return;}
+    // Bakes and lemonade are made by hand (ui/baking.js); soups just happen.
+    if(BAKES[pick_]){preparation=await ui.baking({name:ITEMS[pick_].name,recipe:pick_});if(!preparation)return;}
     for (const [k, c] of Object.entries(r.needs)) for (let i = 0; i < c; i++) state.removeItem(k);
-    state.addItem(pick_); awardSkill('cooking', 25);
+    if(preparation) state.addBake(pick_, preparation.stars); else state.addItem(pick_);
+    awardSkill('cooking', 25);
     const bq = state.data.side.bakeQuest; if (!bq.cooked.includes(pick_)) bq.cooked.push(pick_);
-    if(preparation){bq.practices++;bq.quality[pick_]=Math.max(Number(bq.quality[pick_])||0,preparation.score);awardSkill('cooking',preparation.score*5);}
-    sfx.found(); ui.toast(`+1 ${ITEMS[pick_].name}`, itemIcon(pick_, 32));
+    if(preparation){if(practice)bq.practices++;bq.quality[pick_]=Math.max(Number(bq.quality[pick_])||0,preparation.score);awardSkill('cooking',preparation.score*5);}
+    if (!preparation) sfx.found(); ui.toast(`+1 ${ITEMS[pick_].name}`, itemIcon(pick_, 32));
     await ui.say([r.text]);
     this.save();
   }

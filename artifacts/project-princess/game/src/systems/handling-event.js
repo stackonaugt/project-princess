@@ -34,7 +34,9 @@ export class HandlingEvent {
     if (this.phase === 'hold') return 'recall';
     return this.station?.kind === 'recall' ? 'stay' : this.station?.kind;
   }
-  fault(text) { this.faults++; this.message = text; }
+  // feedback: the last cue's verdict, shown as a tick or a cross over the dog.
+  fault(text) { this.faults++; this.message = text; this.feedback = { ok: false, n: (this.feedback?.n || 0) + 1 }; }
+  good() { this.feedback = { ok: true, n: (this.feedback?.n || 0) + 1 }; }
   advance() {
     this.index++; this.phase = 'approach'; this.nearTime = 0; this.jump = 0;
     if (this.index >= this.stations.length) { this.complete = true; this.message = 'Run complete. Walk to the judges for your result.'; }
@@ -49,14 +51,17 @@ export class HandlingEvent {
       if (id !== 'recall' || this.hold < required || distance(handler, s) < 28)
         return this.fault('Too early. Step away, let your dog wait, then call them back.');
       this.phase = 'action'; this.actionTime = 0; this.actionStart = { ...this.dog }; this.actionEnd = { x: handler.x - 7, y: handler.y };
-      this.message = 'Your dog comes back to you.'; return;
+      this.good(); this.message = 'Your dog comes back to you.'; return;
     }
     if (this.phase === 'weave') {
       const expected = this.weaveIndex % 2 ? 'right' : 'left';
-      if (id !== expected || distance(this.dog, this.target) > 15)
-        return this.fault(`Guide your dog around the ${expected} side of the next pole before cueing.`);
+      if (id !== expected)
+        return this.fault(`Wrong side. Pole ${this.weaveIndex + 1} goes on the ${expected}.`);
+      if (distance(this.dog, this.target) > 20)
+        return this.fault(`Too far from pole ${this.weaveIndex + 1}. Walk to the marked pole, then cue ${expected === 'left' ? 'Left' : 'Right'}.`);
+      this.good();
       if (++this.weaveIndex >= 5) this.advance();
-      else this.message = `Walk around pole ${this.weaveIndex + 1}, on the ${this.weaveIndex % 2 ? 'right' : 'left'}.`;
+      else this.message = `Pole ${this.weaveIndex} done. Pole ${this.weaveIndex + 1}: walk to it and cue ${this.weaveIndex % 2 ? 'Right' : 'Left'}.`;
       return;
     }
     if (distance(this.dog, s) > 17 || distance(handler, this.dog) > 30)
@@ -64,15 +69,16 @@ export class HandlingEvent {
     if (id !== (s.kind === 'recall' ? 'stay' : s.kind))
       return this.fault('That is not the requested cue. Look at the station and try again.');
     if (s.kind === 'jump' && !this.ready) this.fault('The jump was rushed or late. Wait for your dog to gather their stride.');
-    if (s.kind === 'weave') { this.phase = 'weave'; this.weaveIndex = 0; this.message = 'Guide alternate sides of all five poles. No automatic weaving.'; return; }
+    if (s.kind === 'weave') { this.good(); this.phase = 'weave'; this.weaveIndex = 0; this.message = 'Weave: walk to the marked pole and cue Left, then Right, then Left, Right, Left.'; return; }
     if (s.kind === 'stay' || s.kind === 'recall') {
-      this.phase = 'hold'; this.hold = 0; this.dog = { x: s.x, y: s.y };
+      this.good(); this.phase = 'hold'; this.hold = 0; this.dog = { x: s.x, y: s.y };
       this.message = 'Your dog waits on the mat. Walk a few steps away before calling Come.'; return;
     }
     const previous = this.index ? this.stations[this.index - 1] : this.start;
     const length = distance(previous, s) || 1;
     this.actionEnd = ['jump', 'tunnel'].includes(s.kind) ?
       { x: s.x + (s.x - previous.x) / length * 23, y: s.y + (s.y - previous.y) / length * 23 } : { ...this.dog };
+    if (!(s.kind === 'jump' && !this.ready)) this.good();
     this.phase = 'action'; this.actionTime = 0; this.actionStart = { ...this.dog }; this.message = `${s.kind === 'down' ? 'Down' : s.kind} demonstrated. Keep handling calmly.`;
   }
   tick(dt, handler) {

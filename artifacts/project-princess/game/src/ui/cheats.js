@@ -11,6 +11,7 @@ import { NPCS } from '../data/npcs.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 import { WEEKDAYS, weekday, MEETING } from '../data/routines.js';
+import { SHOW_DAY } from '../data/dog-show.js';
 import { POINTS_PER_HEART } from '../config.js';
 import { sfx } from '../systems/sfx.js';
 
@@ -31,7 +32,8 @@ export function openCheats(panel, close) {
   const done = t => { sfx.pickup(); state.save(); msg.textContent = t; };
   const btn = (label, fn) => h('button', { class: 'wood-btn small', onclick: fn }, label);
   const select = (id, opts, val) => h('select', { id, class: 'cheat-select' }, ...opts.map(([v, t]) => h('option', { value: v, selected: String(v) === String(val) }, t)));
-  const zoneSel = select('cheatZone', ROUTE.map(z => [z, `${ZONES[z].name}`]), d.region);
+  // Every zone, including event halls that are not on the walking route (the dog show, the bake-off).
+  const zoneSel = select('cheatZone', [...ROUTE, ...Object.keys(ZONES).filter(z => !ROUTE.includes(z))].map(z => [z, `${ZONES[z].name}`]), d.region);
   const hourSel = select('cheatHour', Array.from({ length: 20 }, (_, i) => [6 + i, `${(6 + i) % 12 || 12}${6 + i < 12 || 6 + i >= 24 ? 'am' : 'pm'}`]), Math.floor(d.minutes / 60));
   const heartSel = select('cheatHearts', Array.from({ length: 11 }, (_, i) => [i, `${i} hearts`]), 4);
   const go = (region, extra = {}) => { close(); setTimeout(() => world().scene.restart({ region, ...extra }), 50); };
@@ -48,7 +50,8 @@ export function openCheats(panel, close) {
           btn('Next day', () => { const news = state.newDay(); state.save(); close(); setTimeout(() => world().scene.restart({ region: 'home', entry: world().bedEntry(), newDay: true, news }), 50); }),
           btn('Jump to Tuesday 6:30pm', () => { while (weekday(d.day) !== 'Tuesday') d.day++; d.minutes = MEETING[0]; done('Tuesday, 6:30pm. Council is meeting in the chamber.'); }),
           btn('Go to the council meeting', () => { while (weekday(d.day) !== 'Tuesday') d.day++; d.minutes = MEETING[0] + 1; go('chamber', { entry: 'door' }); }),
-          btn('Go to the bake-off', () => { while (weekday(d.day) !== 'Saturday') d.day++; d.minutes = Math.max(d.minutes, 10 * 60); delete d.flags.bakeoffWeek; go('moreland', { entry: 'north' }); }))),
+          btn('Go to the bake-off', () => { while (weekday(d.day) !== 'Saturday') d.day++; d.minutes = Math.max(d.minutes, 10 * 60); delete d.flags.bakeoffWeek; go('moreland', { entry: 'north' }); }),
+          btn('Go to the dog show', () => { while (weekday(d.day) !== SHOW_DAY.day) d.day++; d.minutes = SHOW_DAY.from + 60; d.flags.trainingStarted = true; go('exhibition', { entry: 'door' }); }))),
       h('div', { class: 'note' }, h('h4', {}, 'Stuff'),
         h('div', { class: 'row' },
           btn('+$500', () => { state.addMoney(500); done('+$500'); }),

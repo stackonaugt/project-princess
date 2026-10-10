@@ -25,11 +25,11 @@ export function openStoryApp(panel, close) {
   syncTodo(); readTodo();
   const s = state.data.story, n = chapterNow();
   const body = [];
-  if (todoTab === 'todo') {
+  if (todoTab === 'todo' || todoTab === 'done') {
     for (const t of tutorialNotes()) body.push(todoNote(t.title, [{ text:t.text, done:t.done }]));
     if (!n) body.push(todoNote('Find Princess', [initialObjective()]));
     else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
-    else if (s.done[n]) body.push(h('div', { class: 'note' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
+    else if (s.done[n]) body.push(h('div', { class: 'note', 'data-done': '1' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
     else {
       const steps = objectives(n);
       body.push(todoNote(GOALS[n], [steps.find(step => !step.done) || steps[steps.length - 1]].filter(Boolean)));
@@ -52,14 +52,20 @@ export function openStoryApp(panel, close) {
         {text:'Learn a special baking recipe from a friend or a cookbook',done:state.data.recipes.some(id=>COOK_RECIPES[id]?.baked)},
         {text:'Bake your entry using pantry supplies and garden produce',done:bq.cooked.some(id=>COOK_RECIPES[id]?.baked)},
         {text:'Practise mixing, oven timing and finishing with Betty',done:bq.practices>=2},
-        {text:'Enter a Saturday bake-off at Betty’s on Moreland Rd',done:bq.entries>0||bake===2},
+        {text:'Enter the Great Coburg Bake Off on a Saturday (Betty, Moreland Rd)',done:bq.entries>0||bake===2},
         {text:'Beat Meghan and collect Betty’s blue ribbon',done:bake===2},
       ];
-      body.push(todoNote('Betty’s bake-off: beat Meghan Hopper', [bakeSteps.find(step => !step.done) || bakeSteps[bakeSteps.length - 1]]));}
+      body.push(todoNote('The Great Coburg Bake Off: beat Meghan Hopper', [bakeSteps.find(step => !step.done) || bakeSteps[bakeSteps.length - 1]]));}
 
     if (partyReady()) body.push(h('div', { class: 'center' }, h('button', { class: 'wood-btn', onclick: () => { close(); bus.emit('story:party'); } }, 'Throw the party!')));
     const past = Object.keys(s.done).map(Number).filter(k => k < n || (k === n && n > 4));
-    if (past.length) body.push(h('div', { class: 'note' }, h('h4', {}, 'Done'), ...past.map(k => h('p', { class: 'todo-item done' }, h('span', { class: 'todo-box' }, '✓'), GOALS[k]))));
+    if (past.length) body.push(h('div', { class: 'note', 'data-done': '1' }, h('h4', {}, 'Story chapters'), ...past.map(k => h('p', { class: 'todo-item done' }, h('span', { class: 'todo-box' }, '✓'), GOALS[k]))));
+    // Finished jobs live on their own tab, so the list only shows what is left.
+    const finished = body.filter(el => el.dataset?.done === '1');
+    const left = body.filter(el => el.dataset?.done !== '1');
+    body.length = 0;
+    if (todoTab === 'done') body.push(...(finished.length ? finished : [h('p', { class: 'center' }, 'Nothing finished yet. It will all end up here.')]));
+    else body.push(...left);
   } else {
     const reqs = state.todaysRequests();
     body.push(h('p', { class: 'small' }, 'Friends ask for things each morning. Give them what they want as their gift for the day.'));
@@ -75,7 +81,7 @@ export function openStoryApp(panel, close) {
   const tab = (id, label) => h('button', { class: 'tab' + (todoTab === id ? ' on' : ''), onclick: () => { todoTab = id; sfx.select(); openStoryApp(panel, close); } }, label);
   panel.replaceChildren(
     h('div', { class: 'm-head' }, h('h2', {}, 'To Do'), h('button', { class: 'wood-btn small', onclick: close }, 'Close')),
-    h('div', { class: 'tabs' }, tab('todo', 'My To Do List'), tab('requests', 'Requests')),
+    h('div', { class: 'tabs' }, tab('todo', 'My To Do List'), tab('requests', 'Requests'), tab('done', 'Completed')),
     h('div', { class: 'm-scroll' }, ...body));
   panel.querySelectorAll('[data-pin]').forEach(button => button.addEventListener('click', () => {
     pinObjective(button.dataset.kind, button.dataset.pin);
@@ -88,7 +94,7 @@ function pinButton(o, kind = 'story') {
   const selected = isPinned(kind, o.id);
   return h('button', { class: 'wood-btn small pin-objective', 'data-pin': o.id, 'data-kind': kind, disabled: o.done && !selected, 'aria-pressed': selected }, selected ? 'Unpin' : 'Pin');
 }
-const todoNote = (title, list) => h('div', { class: 'note' }, h('h4', {}, title),
+const todoNote = (title, list) => h('div', { class: 'note', 'data-done': list.length && list.every(o => o.done) ? '1' : '0' }, h('h4', {}, title),
   ...list.map(o => h('div', { class: 'todo-item' + (o.done ? ' done' : '') }, h('span', { class: 'todo-box' }, o.done ? '✓' : ''), h('span', {}, o.text), pinButton(o))));
 
 // A big title card: { kicker, title, lines, button }.

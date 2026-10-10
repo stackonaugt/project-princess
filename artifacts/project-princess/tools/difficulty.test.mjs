@@ -49,10 +49,10 @@ test('trainers ease off first time, grow on rematches and story fights stay put'
 test('competition decorating has a time limit; practice does not', () => {
   const s = new BakingSession({ competition: true });
   s.finishStage(); s.finishStage();
-  s.place(8, 'cream');
+  s.chooseTopping('cream'); s.pipe(.5, .5);
   for (let t = 0; t < DECO_TIME + 1 && s.stage === 2; t += .1) s.tick(.1);
   assert.equal(s.complete, true);
-  assert.ok(s.results[2].quality < 60, 'one topping is not a finished cake');
+  assert.ok(s.results[2].quality < 60, 'one blob of cream is not a finished cake');
   const p = new BakingSession();
   p.finishStage(); p.finishStage();
   for (let t = 0; t < DECO_TIME + 5; t += .1) p.tick(.1);

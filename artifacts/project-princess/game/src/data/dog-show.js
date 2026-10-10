@@ -130,6 +130,10 @@ export const SHOW_NPCS = Object.fromEntries(
     },
   ]),
 );
+// Show day: the divisions are judged on Sundays only, like the bake-off on
+// Saturdays. Practice, grooming and registration are open any day.
+export const SHOW_DAY = { day: 'Sunday', from: 9 * 60, to: 17 * 60 };
+export const showOpen = (day, minutes, weekdayOf) => weekdayOf(day) === SHOW_DAY.day && minutes >= SHOW_DAY.from && minutes < SHOW_DAY.to;
 export const SHOW_JUDGES = [
   { id: 'showalma', name: 'Alma', praise: 'Precise, clear cues. Beautiful work.', good: 'A good run with a few details to refine.', advice: 'Get your dog into position before asking for the movement.' },
   { id: 'showian', name: 'Ian', praise: 'You stayed together as a team.', good: 'Your handling is becoming confident.', advice: 'Slow down on the turns. Keep your dog close rather than pulling ahead.' },

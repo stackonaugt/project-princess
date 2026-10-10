@@ -9,6 +9,13 @@ import { MOVES } from '../game/src/data/moves.js';
 import { petSize } from '../game/src/data/pet-sizes.js';
 import { getMap } from '../game/src/data/regions.js';
 
+// Pick the best topping and trace the piping pattern exactly.
+function finishWell(s) {
+  s.chooseTopping(s.toppingChoices()[0].id);
+  for (const st of s.pattern()) { for (let i = 1; i < st.length; i++) for (let k = 0; k <= 5; k++) s.pipe(st[i - 1][0] + (st[i][0] - st[i - 1][0]) * k / 5, st[i - 1][1] + (st[i][1] - st[i - 1][1]) * k / 5); s.lift(); }
+}
+
+
 test('availability does not expose undiscovered motion objectives', () => {
   const data = { flags: {}, council: { known: [], passed: [], given: {} }, side: { school: {} } };
   assert.equal(trainingStarted(data), false);
@@ -71,9 +78,9 @@ test('workstation sessions remain serialisable and produce bounded quality', () 
   session.finishStage();
   const restored = Object.assign(new BakingSession(), JSON.parse(JSON.stringify(session)));
   restored.setHeat(.58);
-  for (let i = 0; i < 300; i++) restored.tick(.1);
+  while (restored.stage === 1 && restored.st.brown < .62) restored.tick(.1);
   restored.finishStage();
-  for (const [slot, type] of [[8, 'cream'], [0, 'berry'], [2, 'leaf'], [4, 'berry'], [6, 'leaf']]) restored.place(slot, type);
+  finishWell(restored);
   restored.finishStage();
   assert.equal(restored.result().complete, true);
   assert.equal(restored.result().results.length, 3);

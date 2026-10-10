@@ -133,7 +133,7 @@ export const ZONES = {
   coburgmall: { name: 'Coburg Station', suburb: 'coburg', build: buildCoburgMall, grass: CITY_GRASS, },
   coburglake: { name: 'Coburg Lake', suburb: 'coburg', build: buildCoburgLake, grass: RES_GRASS, },
   moreland: { name: 'Moreland Rd', suburb: 'coburg', build: buildMoreland, grass: CITY_GRASS, },
-  bakeoff: { name: 'Moreland Bake-Off', tagline: 'A busy little community hall, crowded cake benches and very competitive neighbours.', suburb: 'coburg', build: buildBakeOff, grass: CITY_GRASS, indoor: true },
+  bakeoff: { name: 'The Great Coburg Bake Off', tagline: 'A busy little community hall, crowded cake benches and very competitive neighbours.', suburb: 'coburg', build: buildBakeOff, grass: CITY_GRASS, indoor: true },
   murray: { name: 'Murray Rd', suburb: 'preston', build: buildMurray, grass: CITY_GRASS, },
   prestonmkt: { name: 'Preston Market', suburb: 'preston', build: buildPrestonMkt, grass: CITY_GRASS, },
   prestonhigh: { name: 'Preston Station', suburb: 'preston', build: buildPrestonHigh, grass: CITY_GRASS, },
