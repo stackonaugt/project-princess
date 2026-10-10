@@ -36,7 +36,10 @@ test('one starter can access second-pet challenges; rematches keep full teams', 
   state.data.beaten.rose = 1;
   assert.deepEqual(trainerTeam('rose'), TRAINERS.rose.team);
   state.data.party.push('salami'); Object.assign(state.pet('salami'), { found: true, hp: null, level: 7 });
-  assert.deepEqual(trainerTeam('adam'), TRAINERS.adam.team);
+  // A full team meets the full roster; level scaling may ease a young team's first fight.
+  const adam = trainerTeam('adam');
+  assert.deepEqual(adam.map(([foe]) => foe), TRAINERS.adam.team.map(([foe]) => foe));
+  adam.forEach(([, lv], i) => assert.ok(lv <= TRAINERS.adam.team[i][1] && lv >= TRAINERS.adam.team[i][1] - 2));
 });
 
 test('solo early encounters are capped; later locations and full teams retain levels', () => {

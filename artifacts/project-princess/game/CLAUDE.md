@@ -22,6 +22,18 @@
   Browser checks drive real cue handlers, step animation frames in a disposable
   save, and retain judging, cancellation, reload and daily-reward checks.
   Idle practice does not auto-complete or consume daily XP.
+- `tools/build-manifest.mjs` lists `enemies/` and `backgrounds/` too (they were
+  missing, so supplied foe art and battle backgrounds never loaded). A single
+  tall foe PNG (16x32 people, 16x20 bins) is one frame, not split square.
+- Level scaling (`SCALING`, `scaleWild`, `scaleTrainer` in `systems/battle.js`):
+  wild foes follow `teamPower()` from two levels below a young team to three
+  above a seasoned one; first trainer fights only ease down, rematches only
+  grow, `once` fights stay as written. `node game/tools/balance.mjs` prints it.
+- Mini-game difficulty: bake-off pours are hold-to-pour (tip out, no scooping
+  back), the hall oven drifts on two waves, decorating has a `DECO_TIME` limit
+  and a stage needs 70 to count clean. Fishing marker speed and darting depend
+  on the fish (`FIGHT`), the retry zone shrinks; the old bowlers' mark tightens
+  with `side.bowlsWins`.
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.

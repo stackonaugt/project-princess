@@ -58,7 +58,7 @@ test('competition mixing requires the two methods, not just a glossy batter', ()
 test('a carefully steered competition oven can still produce a winning bake', () => {
   const s=new BakingSession({competition:true});mix(s);s.finishStage();
   for(let i=0;i<1000&&s.st.brown<.62;i++){
-    s.setHeat(.6-Math.sin((s.clock+.05)*.7)*.2);
+    s.setHeat(.6-s.ovenDrift(s.clock+.05));
     s.tick(.05);
   }
   assert.ok(s.st.rise>.95);

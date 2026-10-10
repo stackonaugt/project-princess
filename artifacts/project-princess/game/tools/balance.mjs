@@ -82,6 +82,7 @@ function battle(team, foes) {
 }
 
 function trial(label, makeTeam, makeFoes) {
+  if (!makeFoes) return console.log(`  (skipped: trainer no longer in the game)   ${label}`);
   let wins = 0, turns = 0, left = 0;
   for (let i = 0; i < RUNS; i++) {
     const r = battle(makeTeam(), makeFoes());
@@ -91,7 +92,7 @@ function trial(label, makeTeam, makeFoes) {
   console.log(`${pct}% win  ${(turns / RUNS).toFixed(1).padStart(5)} turns  ${(left / RUNS * 100).toFixed(0).padStart(3)}% HP left   ${label}`);
 }
 
-const trainer = id => () => TRAINERS[id].team.map(([e, lv]) => R.foeFighter(e, lv));
+const trainer = id => TRAINERS[id] && (() => TRAINERS[id].team.map(([e, lv]) => R.foeFighter(e, lv)));
 const wildAvg = (suburb, bump = 0) => () => {
   const t = ENCOUNTERS[suburb], e = t[Math.floor(Math.random() * t.length)];
   return [R.foeFighter(e.id, e.lv[0] + Math.floor(Math.random() * (e.lv[1] - e.lv[0] + 1)) + bump)];
@@ -133,6 +134,21 @@ trial('Princess L14 (not evolved) vs Reservoir wild +3', () => [mine('princess',
 trial('Floppy L16 vs Tim (Stanley)', () => [mine('poppy', 16, { evolved: true, hearts: 5 })], trainer('tim'));
 trial('Princess L6 + collar vs Bin Man', () => [mine('princess', 6, { gear: 'collar' })], trainer('binman'));
 trial('Princess L6 + snack pouch vs Bin Man', () => [mine('princess', 6, { gear: 'pouch' })], trainer('binman'));
+
+// Level scaling (R.scaleWild): wild things follow the team's strength, so
+// win rates should ease slightly from easy early on to a fair fight late.
+console.log('--- Level scaling (wild things follow the team)');
+const scaledWild = (suburb, power) => () => {
+  const t = ENCOUNTERS[suburb], e = t[Math.floor(Math.random() * t.length)];
+  const w = R.scaleWild({ id: e.id, level: e.lv[0] + Math.floor(Math.random() * (e.lv[1] - e.lv[0] + 1)) }, power);
+  return [R.foeFighter(w.id, w.level)];
+};
+trial('Princess L5 vs scaled Laverton wild', () => [mine('princess', 5)], scaledWild('laverton', 5));
+trial('Princess L7 vs scaled Brunswick wild', () => [mine('princess', 7)], scaledWild('brunswick', 7));
+for (const lv of [10, 15, 20, 25, 30]) {
+  trial(`Team L${lv} vs scaled Reservoir wild`, () => [mine('princess', lv), mine('salami', lv), mine('spooky', lv)], scaledWild('reservoir', lv));
+  trial(`Princess L${lv} alone vs scaled Laverton wild`, () => [mine('princess', lv)], scaledWild('laverton', lv));
+}
 
 // XP pace: wild battles needed per level, using the average reward.
 console.log('\n--- XP pace (wild battles needed to level up, at a typical foe level)');

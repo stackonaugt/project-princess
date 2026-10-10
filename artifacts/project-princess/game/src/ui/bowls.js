@@ -12,9 +12,12 @@ const W = 220, H = 360, CM = 8;            // canvas size; centimetres per pixel
 const START = { x: W / 2, y: H - 24 }, DECEL = 60, VMAX = 195, BIAS = 34, R = 5;
 const GREEN = { x0: 14, y0: 14, x1: W - 14, y1: H - 6 };
 
-export function openBowls(panel, close, { done, mode = 'bowls' }) {
+export function openBowls(panel, close, { done, mode = 'bowls', wins = 0 }) {
   const ducks = mode === 'ducks', bias = ducks ? 0 : BIAS;
-  const rival = ducks ? null : Math.round(18 + Math.random() * 55);
+  // The old blokes lift their game every time you beat them: the more ends
+  // you have won, the closer their best bowl sits to the jack.
+  const lift = Math.min(4, Math.max(0, wins));
+  const rival = ducks ? null : Math.round(Math.max(8, 18 - lift * 2) + Math.random() * (55 - lift * 9));
   const jack = { x: W / 2 + (Math.random() - 0.5) * 90, y: 60 + Math.random() * 70 };
   const bowls = [];                         // { x, y, cm } where each one stopped
   let phase = 'aim', t0 = performance.now(), aim = 0, power = 0, roll = null, raf = 0, result = null;

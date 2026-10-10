@@ -80,3 +80,5 @@
 .bk-list li { display: flex; justify-content: space-between; gap: 8px; background: var(--bk-cream); border: 3px solid var(--parch-dark); border-radius: 8px; padding: 6px 10px; }
 
 @media (prefers-reduced-motion: reduce) { .bk-bowl.stir { animation: none; } .bk-fill, .bk-batter, .bk-oven-glow { transition: none; } }
+.bk-step.bk-pour { width: 64px; font-size: 15px; touch-action: none; user-select: none; }
+.bk-timer.urgent { color: #b43c3c; font-weight: bold; }

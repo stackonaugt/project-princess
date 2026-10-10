@@ -21,7 +21,7 @@
     "verify:build": "pnpm run build && pnpm run check:build && pnpm run smoke:build",
     "serve": "vite preview --config vite.config.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test:progression": "node --test tools/progression.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs tools/playtest.test.mjs",
+    "test:progression": "node --test tools/progression.test.mjs tools/training.test.mjs tools/terrain-curves.test.mjs tools/playtest.test.mjs tools/difficulty.test.mjs",
     "test:scorecards": "node --test tools/scorecards.test.mjs",
     "test:animal-animations": "node --test tools/animal-animations.test.mjs"
   },
