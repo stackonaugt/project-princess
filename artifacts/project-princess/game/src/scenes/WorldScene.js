@@ -52,7 +52,7 @@ import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
 import { TRAINERS, PRIZE_TRAINER, fineFor } from '../data/enemies.js';
-import { rollEncounter, starterEncounter, readyTeam, START_LEVEL, gainXp, petFighter } from '../systems/battle.js';
+import { rollEncounter, scaleWild, starterEncounter, readyTeam, START_LEVEL, gainXp, petFighter } from '../systems/battle.js';
 import { form, formText, canEvolve, evolve } from '../systems/forms.js';
 import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
 import { CROPS } from '../data/crops.js';
@@ -1161,7 +1161,7 @@ export class WorldScene extends Phaser.Scene {
   // makes friends with the old blokes; really close (once a day) gets you ten
   // bucks from the honesty tin.
   async bowls(npc, opts) {
-    const r = await ui.bowls();
+    const r = await ui.bowls({ wins: state.data.side.bowlsWins || 0 });
     if (!r || r.best === null) return;
     const pts = r.best <= 15 ? 15 : r.best <= 50 ? 8 : 3;
     ['crazyjeff', 'bowler1', 'bowler2'].forEach(id => state.addFriendPoints(id, pts));
@@ -1478,7 +1478,7 @@ export class WorldScene extends Phaser.Scene {
     }
     const rate = readyTeam().length === 1 ? Math.max(.22, ENCOUNTER_RATE) : ENCOUNTER_RATE;
     if (state.data.flags.firstWild && Math.random() > rate) return;
-    const wild = starterEncounter(rollEncounter(this.region.suburb, isNight(state.data.minutes), this.regionId), this.region.suburb);
+    const wild = starterEncounter(scaleWild(rollEncounter(this.region.suburb, isNight(state.data.minutes), this.regionId)), this.region.suburb);
     if (!wild) return;
     state.data.flags.firstWild = true; completeTutorial('grass');
     this.startBattle({ wild }).then(r => { if (r.outcome === 'lose') this.lostBattle(); });

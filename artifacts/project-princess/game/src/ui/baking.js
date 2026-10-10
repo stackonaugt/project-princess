@@ -7,6 +7,7 @@ import {
   DECO_TYPES,
   DECO_PIECES,
   POUR_MAX,
+  POUR_RATE,
   bakeColour,
 } from "../systems/baking.js";
 import { heroIcon } from "./images.js";
@@ -21,7 +22,8 @@ export function openBaking(panel, close, opts = {}) {
     cleaned = false,
     ui = {},
     selDeco = DECO_TYPES[0].id,
-    shownStage = -1;
+    shownStage = -1,
+    pouring = null;
   const body = h("div", { class: "m-scroll bk" });
   const live = h("p", { class: "bk-live", role: "status", "aria-live": "polite" });
   const dots = h("div", { class: "bk-dots", "aria-hidden": "true" });
@@ -80,8 +82,10 @@ export function openBaking(panel, close, opts = {}) {
         { class: `bk-row ${ing.dry ? "dry" : "wet"}` },
         cup,
         h("div", { class: "bk-name" }, h("b", {}, ing.name), h("small", {}, ing.dry ? "Dry" : "Wet", ` - key ${i + 1}`)),
-        btn("-", () => pour(ing.id, -1), "bk-step", `Remove ${ing.name}`),
-        btn("+", () => pour(ing.id, 1), "bk-step", `Add ${ing.name}`),
+        s.competition
+          ? btn("Tip out", () => pour(ing.id, -POUR_MAX), "bk-step bk-pour", `Tip out the ${ing.name}`)
+          : btn("-", () => pour(ing.id, -1), "bk-step", `Remove ${ing.name}`),
+        pourButton(ing),
       );
     });
     ui.batter = h("div", { class: "bk-batter" });
@@ -117,6 +121,19 @@ export function openBaking(panel, close, opts = {}) {
     );
     mixUpdate();
     INGREDIENTS.forEach((i) => cupUpdate(i.id));
+  }
+  // Hold to pour: the cup keeps filling until you let go, so stopping on
+  // the line is the skill. Competition pours run faster and cannot be
+  // scooped back out, only tipped out and started again.
+  function pourButton(ing) {
+    const stop = () => { if (pouring === ing.id) pouring = null; };
+    return h("button", {
+      class: "wood-btn bk-tap bk-step bk-pour",
+      "aria-label": `Hold to pour ${ing.name}`,
+      onpointerdown: (e) => { e.preventDefault(); pouring = ing.id; },
+      onpointerup: stop, onpointerleave: stop, onpointercancel: stop,
+      onclick: (e) => { if (e.detail === 0) pour(ing.id, 1); },
+    }, "Pour");
   }
   function pour(id, d) {
     s.pour(id, d);
@@ -200,14 +217,23 @@ export function openBaking(panel, close, opts = {}) {
       h("button", { class: "bk-piece bk-tap", "aria-pressed": "false", onclick: () => { selDeco = t.id; decoUpdate(); } }, h("i", { class: `bk-deco ${t.id}` }), h("span", {}, t.name), h("small", {}, `key ${i + 1}`)),
     );
     ui.left = h("p", { class: "bk-left" });
+    ui.timer = h("p", { class: "bk-left bk-timer", role: "timer" });
     ui.go = btn(s.current.label, finish, "bk-go");
     body.replaceChildren(
       ...head(),
-      h("div", { class: "bk-deco-wrap" }, h("div", { class: "bk-top-cake", role: "group", "aria-label": "Cake top, tap a spot to place or lift a topping" }, slots), h("div", { class: "bk-tray" }, ui.tray, ui.left)),
+      h("div", { class: "bk-deco-wrap" }, h("div", { class: "bk-top-cake", role: "group", "aria-label": "Cake top, tap a spot to place or lift a topping" }, slots), h("div", { class: "bk-tray" }, ui.tray, ui.left, ui.timer)),
       live,
       ui.go,
     );
     decoUpdate();
+  }
+  let lastLeft = null;
+  function timerUpdate() {
+    const left = s.decoTimeLeft();
+    if (!ui.timer || left === lastLeft) return;
+    lastLeft = left;
+    ui.timer.textContent = left === null ? "" : `Time: ${left}s`;
+    ui.timer.classList.toggle("urgent", left !== null && left <= 10);
   }
   function placeAt(i) {
     s.place(i, selDeco);
@@ -228,6 +254,7 @@ export function openBaking(panel, close, opts = {}) {
     const left = DECO_PIECES - s.piecesPlaced();
     ui.left.textContent = left ? `${left} toppings left to place.` : "All placed. Lift any to rearrange.";
     ui.go.disabled = !s.canFinish();
+    timerUpdate();
   }
 
   // ---------- shared
@@ -268,10 +295,10 @@ export function openBaking(panel, close, opts = {}) {
     const k = e.key;
     let used = true;
     if (s.stage === 0 && !s.complete) {
-      if (/^[1-5]$/.test(k)) pour(INGREDIENTS[+k - 1].id, 1);
+      if (/^[1-5]$/.test(k)) pouring = INGREDIENTS[+k - 1].id;
       else if (k === "Backspace") {
         const o = s.st.order;
-        if (o.length) pour(o[o.length - 1], -1);
+        if (o.length) pour(o[o.length - 1], s.competition ? -POUR_MAX : -1);
       } else if (k === "m" || k === "M") ui.stir?.click();
       else used = false;
     } else if (s.stage === 1 && !s.complete) {
@@ -286,17 +313,24 @@ export function openBaking(panel, close, opts = {}) {
     } else used = false;
     if (used) e.preventDefault();
   }
+  function onKeyUp(e) {
+    if (/^[1-5]$/.test(e.key) && pouring === INGREDIENTS[+e.key - 1].id) pouring = null;
+  }
   document.addEventListener("keydown", onKey);
+  document.addEventListener("keyup", onKeyUp);
 
   function frame(t) {
     if (cleaned) return;
     const dt = last ? Math.min(0.1, (t - last) / 1000) : 0;
     last = t;
-    if (!document.hidden) {
+    // Nothing runs on behind the handoff card between workstations.
+    if (!document.hidden && !(single && s.stage > startStage)) {
       const before = s.stage;
+      if (pouring && s.stage === 0) pour(pouring, POUR_RATE[s.competition ? "competition" : "practice"] * dt);
       s.tick(dt);
       if (s.stage !== before) render();
       else if (s.stage === 1) ovenUpdate();
+      else if (s.stage === 2) timerUpdate();
     } else last = 0;
     raf = requestAnimationFrame(frame);
   }
@@ -310,6 +344,7 @@ export function openBaking(panel, close, opts = {}) {
       cleaned = true;
       cancelAnimationFrame(raf);
       document.removeEventListener("keydown", onKey);
+      document.removeEventListener("keyup", onKeyUp);
       const ok = s.complete || (single && s.stage > startStage);
       opts.done?.(ok ? s.result() : null);
     },

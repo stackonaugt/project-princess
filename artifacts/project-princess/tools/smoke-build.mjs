@@ -95,7 +95,7 @@ try {
     const game = window.__pp?.game;
     // Phaser may use blob URLs internally, so verify texture keys and decoded
     // dimensions rather than comparing the texture image URL to the request.
-    const prefixes = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe' };
+    const prefixes = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe', backgrounds: 'battlebg' };
     const sprites = files.filter(file => {
       const match = /^([a-z]+)\/([a-z0-9_-]+)\.(png|jpe?g|webp)$/i.exec(file);
       const key = match && prefixes[match[1]] && `${prefixes[match[1]]}-${match[2].toLowerCase()}`;

@@ -89,11 +89,49 @@ export function foeFighter(id, level) {
 // Pets on your team who still have energy.
 export const readyTeam = () => state.data.party.filter(id => state.isFound(id) && state.pet(id).hp !== 0);
 
+// Level scaling. Foes follow how strong your team is: a little below it
+// while your pets are young, level with it in the middle of the game and a
+// touch above it once they are seasoned. `power` blends the team's average
+// and best level, so one strong pet carrying two babies still counts.
+export const SCALING = { easyGap: -2, hardGap: 3, from: 5, to: 25, maxAbove: 2 };
+export function teamPower(team = readyTeam()) {
+  const ids = team.length ? team : state.data.party.filter(id => state.isFound(id));
+  if (!ids.length) return null;
+  const lvs = ids.map(petLevel);
+  return (lvs.reduce((a, b) => a + b, 0) / lvs.length + Math.max(...lvs)) / 2;
+}
+export function scaledLevel(power) {
+  const k = Math.max(0, Math.min(1, (power - SCALING.from) / (SCALING.to - SCALING.from)));
+  return power + SCALING.easyGap + (SCALING.hardGap - SCALING.easyGap) * k;
+}
+const clampLevel = lv => Math.max(1, Math.min(MAX_LEVEL, Math.round(lv)));
+// A wild thing: never more than a couple of levels above what your team can
+// handle (so a tough suburb is not a wall early on), and never below it (so
+// Laverton's bags keep up with you).
+export function scaleWild(encounter, power = teamPower()) {
+  if (!encounter || power == null) return encounter;
+  const fair = scaledLevel(power) + (Math.random() * 2 - 1);
+  return { ...encounter, level: clampLevel(Math.max(fair, Math.min(encounter.level, fair + SCALING.maxAbove))) };
+}
+// A trainer: first fights ease off for a weak team but never go above what
+// is written for them; rematches grow with you but never drop below it.
+// Once-only story fights (Julie's tutorial) stay exactly as written.
+export function scaleTrainer(id, team, power = teamPower()) {
+  const t = TRAINERS[id];
+  if (!t || t.once || power == null) return team;
+  const fair = scaledLevel(power) + 1, beaten = !!state.data.beaten[id];
+  return team.map(([foe, level]) => [foe, clampLevel(beaten ? Math.max(level, fair) : Math.min(level, fair + SCALING.maxAbove + 1))]);
+}
+
 // A first pet should be able to win a second before needing a full team.
 // Full rosters remain on rematches and when travelling with multiple pets.
 export function trainerTeam(id) {
+  return scaleTrainer(id, baseTrainerTeam(id));
+}
+function baseTrainerTeam(id) {
   const team = TRAINERS[id].team;
   const party = readyTeam();
+  // Marty's gentle first match is written to stay gentle.
   if (id === 'gordon' && !state.data.beaten.gordon && !state.isFound('marty')) return [['pet:marty', 3]];
   if (party.length !== 1 || state.data.beaten[id]) return team;
   const lv = petLevel(party[0]);

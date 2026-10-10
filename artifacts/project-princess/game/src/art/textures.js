@@ -28,7 +28,7 @@ import { AUTHORING } from '../authoring/overrides.js';
 import { assetLayout, entityArtBindings, NPC_WALK_FRAME_RATE, runtimeArtBindingFailures } from './asset-rules.js';
 
 // Folder in assets/sprites -> texture key prefix
-const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe' };
+const FOLDERS = { player: 'player', pets: 'pet', portraits: 'portrait', npcs: 'npc', objects: 'obj', tiles: 'tile', items: 'item', vehicles: 'veh', enemies: 'foe', backgrounds: 'battlebg' };
 // Character sheets get split into square frames.
 const CHARACTER_PREFIXES = ['player', 'pet', 'npc', 'foe'];
 
@@ -98,7 +98,11 @@ function stripTexture(scene, key, fw, fh, n, draw, outlined = false) {
 function splitCustom(scene, key) {
   const tex = scene.textures.get(key), src = tex.getSourceImage();
   const layout=ANIMATION_LAYOUTS[key] || {};
-  const h = layout.frameHeight || src.height, fw = layout.frameWidth || (key.startsWith('pet-') || key.startsWith('foe-') ? h : h / 2), n = Math.max(1, Math.floor(src.width / fw));
+  const h = layout.frameHeight || src.height;
+  // Square frames for pets and foes, except a single tall foe (people and
+  // bins are 16x32 or 16x20), which is one whole frame.
+  const square = key.startsWith('pet-') || (key.startsWith('foe-') && src.width % h === 0);
+  const fw = layout.frameWidth || (square ? h : key.startsWith('foe-') ? src.width : h / 2), n = Math.max(1, Math.floor(src.width / fw));
   for (let i = 0; i < n; i++) tex.add(i, 0, i * fw, 0, fw, h);
 }
 export const frameCount = (scene, key) => Math.max(1, scene.textures.get(key).frameTotal - 1);

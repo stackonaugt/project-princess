@@ -8,6 +8,9 @@ import { sfx } from '../systems/sfx.js';
 
 // Rough sizes in cm, for bragging rights.
 const SIZES = { redfin: [18, 45], carp: [25, 70], eel: [40, 110], yabby: [6, 18], oldboot: [28, 31] };
+// How fast the marker runs, and how much it darts about (a sudden change of
+// direction). Eels thrash, carp are lazy, boots just sink.
+const FIGHT = { redfin: [1.05, 0.5], carp: [0.84, 0.2], eel: [1.35, 0.9], yabby: [0.95, 0.7], oldboot: [0.7, 0] };
 
 export function openFishing(panel, close, { fish, zone, done }) {
   const status = h('p', { class: 'fish-status center' }, 'You cast out. Wait for a bite...');
@@ -17,7 +20,8 @@ export function openFishing(panel, close, { fish, zone, done }) {
   const btn = h('button', { class: 'wood-btn', disabled: true }, 'Reel in');
   let phase = 'wait', pos = 0, dir = 1, raf = 0, result = null, overAt = 0, retries = 0, lastFrame = null;
   const water = h('div', { class: 'fish-water' });
-  const zw = Math.max(0.1, zone);
+  let zw = Math.max(0.1, zone);
+  const [speed, dart] = FIGHT[fish] || [0.84, 0.3];
   let z0 = 0.15 + Math.random() * (0.7 - zw);
   target.style.left = `${z0 * 100}%`; target.style.width = `${zw * 100}%`;
   const finish = () => { cancelAnimationFrame(raf); clearTimeout(bite); done(result); };
@@ -30,8 +34,9 @@ export function openFishing(panel, close, { fish, zone, done }) {
     else { sfx.sad(); status.textContent = 'It got away! Too early, or too late.'; }
     btn.textContent = !result && retries < 1 ? 'Try once more' : 'Done'; btn.disabled = false;
     btn.onclick = !result && retries < 1 ? () => {
-      retries++; pos = 0; dir = 1; lastFrame = null; z0 = 0.15 + Math.random() * (0.7 - zw);
-      target.style.left = `${z0 * 100}%`; phase = 'bite'; btn.textContent = 'Reel in';
+      // The second go is harder: the fish is wary now and the zone shrinks.
+      retries++; pos = 0; dir = 1; lastFrame = null; zw = Math.max(0.08, zw * 0.75); z0 = 0.15 + Math.random() * (0.7 - zw);
+      target.style.left = `${z0 * 100}%`; target.style.width = `${zw * 100}%`; phase = 'bite'; btn.textContent = 'Reel in';
       btn.onclick = reel; btn.disabled = false; status.textContent = 'One more cast. Watch the green zone!'; raf = requestAnimationFrame(tick);
     } : shut;
   };
@@ -49,7 +54,8 @@ export function openFishing(panel, close, { fish, zone, done }) {
     timestamp ??= performance.now();
     const dt = lastFrame == null ? 0 : Math.min(50, timestamp - lastFrame);
     lastFrame = timestamp;
-    pos += dir * 0.84 * dt / 1000;
+    if (dart && Math.random() < dart * dt / 1000) dir = -dir;
+    pos += dir * speed * dt / 1000;
     if (pos > 1) { pos = 1; dir = -1; } if (pos < 0) { pos = 0; dir = 1; }
     marker.style.left = `calc(${pos * 100}% - 6px)`;
     raf = requestAnimationFrame(tick);

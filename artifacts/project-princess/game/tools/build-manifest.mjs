@@ -6,7 +6,7 @@ import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(fileURLToPath(new URL('.', import.meta.url)), '..', 'assets', 'sprites');
-const FOLDERS = ['player', 'pets', 'portraits', 'npcs', 'objects', 'tiles', 'items', 'vehicles'];
+const FOLDERS = ['player', 'pets', 'portraits', 'npcs', 'objects', 'tiles', 'items', 'vehicles', 'enemies', 'backgrounds'];
 
 export function listSprites() {
   const files = [];
