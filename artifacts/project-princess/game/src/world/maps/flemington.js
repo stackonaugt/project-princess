@@ -33,6 +33,7 @@ export function buildFlemington() {
   b.fenceH(31, 47, 19, 'picket', [34, 40, 45]);
   b.wildGrass(6, 23, 3, 1.4);
   b.put('billboard', 40, 21, { v: 'rent' });
+  b.npc('markteapot', 23, 14, { face: 'up' });
   b.sign(46, 15, ['Racecourse Rd, Flemington.', 'Brunswick is just up the road. Your feet are very excited.']);
 
   b.forage(24, 19, ['carrot', 'lemon']);

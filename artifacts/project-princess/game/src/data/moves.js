@@ -16,6 +16,7 @@
 //   anim     the battle animation ('lunge', 'bite', 'claw', 'beam', 'shout', 'heal', 'fade', 'hop', 'dig', 'gust', 'stink', 'flame')
 //   text     the line shown when it's used ({u} = user, {t} = target)
 import { NORTH_MOVES } from './north.js';
+import { BATTLER_MOVES } from './battlers.js';
 import { EAST_MOVES } from './east.js';
 
 import { SH_MOVES } from './summerhill.js';
@@ -246,6 +247,14 @@ Object.assign(MOVES, {
   breadcrumbs:  { name: 'Breadcrumbs', type: 'park', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} finds some breadcrumbs in his hat. Delicious. He feels better.' },
 });
 
+// Evolved moves for BIG MART, Chlo-nado and Ziggy Iggy.
+Object.assign(MOVES, {
+  towerover: { name: 'Tower Over', type: 'smelly', power: 60, effect: { foeAtk: 1 }, anim: 'lunge', text: '{u} stands up to full height. {t} has to look up. And up.' },
+  twister: { name: 'Twister', type: 'speed', power: 70, anim: 'gust', text: '{u} spins into a whirlwind and herds {t} straight off its feet.' },
+  piggyback: { name: 'Piggyback', type: 'speed', power: 65, anim: 'lunge', text: '{u} charges at {t} with Iggy hanging on and squealing.' },
+  babygiggle: { name: 'Baby Giggle', type: 'fairy', power: 0, effect: { foeAtk: 1, heal: 0.15 }, anim: 'heal', text: 'Iggy giggles. {t} cannot bring itself to fight properly, and {u} feels better.' },
+});
+
 export let PET_MOVES = {
   marty: ['smellpoo', 'bite', 'growl', 'gordonfood'],
   princess: ['growl', 'clawattack', 'humpbed', 'bite'],
@@ -261,6 +270,7 @@ export let PET_MOVES = {
 };
 
 Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston
+Object.assign(MOVES, BATTLER_MOVES);   // battlers.js
 Object.assign(MOVES, EAST_MOVES);    // Brunswick East
 MOVES = authoredValue('data/moves.js', 'MOVES', MOVES);
 PET_MOVES = authoredValue('data/moves.js', 'PET_MOVES', PET_MOVES);

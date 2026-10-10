@@ -20,6 +20,7 @@
 //  Signs and the text when you inspect things are in the map files and flavour.js.
 import { EAST_PEOPLE, EAST_FOE_TEXT, EAST_PLACES } from './east.js';
 import { NORTH_PEOPLE, NORTH_FOE_TEXT, NORTH_PLACES } from './north.js';
+import { BATTLER_PEOPLE, BATTLER_FOE_TEXT } from './battlers.js';
 //  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
 
 import { SH_PEOPLE, SH_FOE_TEXT, SH_PLACES } from './summerhill.js';
@@ -1687,6 +1688,8 @@ Object.assign(PLACES, EAST_PLACES);
 // Coburg and Preston keep their words in north.js.
 Object.assign(PEOPLE, NORTH_PEOPLE);
 Object.assign(FOE_TEXT, NORTH_FOE_TEXT);
+Object.assign(PEOPLE, BATTLER_PEOPLE);
+Object.assign(FOE_TEXT, BATTLER_FOE_TEXT);
 Object.assign(PLACES, NORTH_PLACES);
 PEOPLE = authoredValue('data/dialogue.js', 'PEOPLE', PEOPLE);
 PET_TEXT = authoredValue('data/dialogue.js', 'PET_TEXT', PET_TEXT);

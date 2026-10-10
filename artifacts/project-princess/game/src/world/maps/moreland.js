@@ -23,6 +23,7 @@ export function buildMoreland() {
   b.put('bettyhouse', 24, 9, { v: 'moreland' });
   b.sign(23, 12, ['Betty and Ward\'s.', 'You can smell the cooking from the tram stop. Ward runs the bottle shop on Sydney Rd.']);
   b.npc('betty', 28, 12, { face: 'down' });
+  b.npc('meghan', 19, 15, { face: 'right', path: [[19, 15], [29, 15], [29, 15], [19, 15]], speed: 26 });   // pram laps of Moreland Rd, near Betty's
   b.npc('ward', 30, 12, { face: 'down', at: 'home' });   // home from the bottle shop
   b.put('tree', 23, 8, { v: 'gum' });
   b.put('factory', 32, 9, { v: 'brick' });

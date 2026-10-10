@@ -8,8 +8,10 @@ const clamp = n => Math.max(0, Math.min(10, Math.round(n)));
 // The handler is always controlled by the player. Only the dog performs a
 // commanded obstacle animation; walking never teleports the handler.
 export class HandlingEvent {
-  constructor(tier = 'novice', mode = 'course', variant = 0, { area = HALL_AREA } = {}) {
-    this.tier = tier; this.mode = mode; this.course = COURSES[tier] || COURSES.novice;
+  // speedy: a Speed type pet runs the agility course faster. evolved: an
+  // evolved pet carries itself better and gets a presentation bonus.
+  constructor(tier = 'novice', mode = 'course', variant = 0, { area = HALL_AREA, speedy = false, evolved = false } = {}) {
+    this.tier = tier; this.mode = mode; this.speedy = speedy; this.evolved = evolved; this.course = COURSES[tier] || COURSES.novice;
     const kinds = mode === 'course' ? this.course.stations :
       mode === 'presentation' ? ['heel', 'sit', 'stay'] :
       tier === 'novice' ? ['heel', 'sit', 'stay', 'recall'] :
@@ -109,7 +111,7 @@ export class HandlingEvent {
     const target = { x: handler.x - 9, y: handler.y - 1 }, d = distance(this.dog, target);
     this.moving = d > 3; this.flip = target.x < this.dog.x;
     if (d > 2) {
-      const step = Math.min(d, dt * (this.tier === 'champion' ? 48 : 58));
+      const step = Math.min(d, dt * (this.tier === 'champion' ? 48 : 58) * (this.speedy && this.mode === 'course' ? 1.3 : 1));
       this.dog.x += (target.x - this.dog.x) / d * step;
       this.dog.y += (target.y - this.dog.y) / d * step;
     }
@@ -129,6 +131,7 @@ export class HandlingEvent {
       clamp(10 - this.separation * .35 - this.faults * .2),
       clamp(10 - Math.max(0, this.elapsed - targetTime) / 12 - this.faults * .25),
     ];
+    if (this.evolved && this.mode === 'presentation') for (let i = 0; i < marks.length; i++) marks[i] = clamp(marks[i] + 1.5);
     const score = Math.round(marks.reduce((a, b) => a + b, 0) / 30 * 100);
     return { score, complete: this.complete, passed: this.complete && score >= this.course.pass,
       cleanRuns: this.complete && score >= this.course.pass ? 3 : this.complete && score >= this.course.pass - 5 ? 2 : 1,

@@ -18,7 +18,7 @@ import { CROPS } from '../data/crops.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
 import { CHAPTERS } from '../data/story.js';
-import { FURNITURE, DEFAULT_FURNITURE } from '../data/furniture.js';
+import { FURNITURE, DEFAULT_FURNITURE, PLANT_SPOTS, sanitisePlants } from '../data/furniture.js';
 import { normaliseScorecards } from './scorecards.js';
 
 const VERSION = 10;
@@ -36,6 +36,7 @@ function fresh() {
     day: 1, minutes: 9 * 60,     // the very first day starts at 9am
     region: 'home', pos: null, dir: 'down',   // region = the zone you're in (see data/regions.js)
     visited: ['home'],
+    visits: {},        // zone id -> how many times you have walked in (trainers who ambush on a later visit)
     pinned: null,       // optional single story objective/request; safe for older saves
     hero: null, startGiven: false,        // 'helen' | 'hadrian' | 'aleksy' (see data/heroes.js)
     party: [],         // pet ids on your team (max 3), they follow you around
@@ -62,7 +63,7 @@ function fresh() {
     side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, bakeQuest: {cooked:[],quality:{},practices:0,entries:0}, show: {entered:false,pet:null,practice:0,practiceDay:0,divisions:{},claimed:[]}, school: { lessonDay: {}, stamps: {}, skills: {} } },
     recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
-    furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
+    furniture: { ...DEFAULT_FURNITURE, plants: {}, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
     settings: { sound: true, dayLength: 1, paused: false },
     seenIntro: false,
@@ -95,6 +96,7 @@ function sanitise(raw) {
   if (raw.forage && typeof raw.forage === 'object') d.forage = raw.forage;
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
   if (raw.beaten && typeof raw.beaten === 'object') d.beaten = raw.beaten;
+  if (raw.visits && typeof raw.visits === 'object') for (const [z, n] of Object.entries(raw.visits)) if (ZONES[z] && Number.isFinite(n)) d.visits[z] = Math.max(0, n | 0);
   if (Number.isFinite(raw.money)) d.money = Math.max(0, Math.floor(raw.money));
   if (raw.gear && typeof raw.gear === 'object') for (const [k, n] of Object.entries(raw.gear)) if (GEAR[k] && n > 0) d.gear[k] = n | 0;
   for (const r of Object.values(d.pets)) if (r.gear && !GEAR[r.gear]) r.gear = null;
@@ -127,7 +129,7 @@ function sanitise(raw) {
   }
   if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
-  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); }
+  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); if (!raw.furniture.plants) delete d.furniture.plants; sanitisePlants(d.furniture); }
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
@@ -254,10 +256,16 @@ export const state = {
 
   // Money and gear
   addMoney(n) { this.data.money = Math.max(0, this.data.money + Math.round(n)); bus.emit('money:changed'); },
-  // Put a piece of furniture (or the pot plants) in the house; buying is up to the caller.
-  placeFurniture(id) {
+  // Put a piece of furniture in the house; buying is up to the caller. A pot
+  // plant goes in one plant spot (data/furniture.js PLANT_SPOTS), not everywhere.
+  placeFurniture(id, spot) {
     const f = FURNITURE[id], furn = this.data.furniture;
     if (!f) return;
+    if (f.slot === 'plant') {
+      if (!PLANT_SPOTS[spot]) return;
+      if (!furn.plants || typeof furn.plants !== 'object') furn.plants = {};
+      if (id === 'mixed') delete furn.plants[spot]; else furn.plants[spot] = id;
+    }
     furn[f.slot] = id;
     if (!furn.owned.includes(id)) furn.owned.push(id);
     invalidateMap('home');
@@ -413,6 +421,7 @@ export const state = {
 
   // World
   visit(zone) { if (!this.data.visited.includes(zone)) this.data.visited.push(zone); },
+  countVisit(zone) { const v = this.data.visits || (this.data.visits = {}); v[zone] = (v[zone] || 0) + 1; return v[zone]; },
   suburbVisited(suburb) { return this.data.visited.some(z => ZONES[z]?.suburb === suburb); },
 
   // Team

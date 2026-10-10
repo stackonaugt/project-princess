@@ -64,6 +64,7 @@ export function buildSummerhill() {
   b.lane({ axis: 'x', pos: 23.5, dir: -1, from: -3, to: 47, every: [7, 14], speed: 56, kinds: ['veh-car-h-white', 'veh-car-h-red', 'veh-ute-h'] });
   b.lane({ axis: 'x', pos: 24.5, dir: 1, from: -3, to: 47, every: [8, 15], speed: 56, kinds: ['veh-car-h-blue', 'veh-car-h-white'] });
 
+  b.npc('guard', 10, 8, { face: 'right', still: true });   // by the doors, on his phone
   b.npc('trev', 18, 14, { path: [[18, 14], [35, 14], [35, 16], [18, 16]], speed: 30 });
   b.npc('darren', 9, 17, { path: [[9, 17], [21, 17], [21, 13], [9, 13]] });
 

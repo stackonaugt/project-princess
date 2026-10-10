@@ -13,7 +13,8 @@ import { sfx } from './sfx.js';
 
 const LABELS = { jump: 'Jump', tunnel: 'Through', weave: 'Weave', stay: 'Stay', recall: 'Come', left: 'Left', right: 'Right', heel: 'Heel', sit: 'Sit', down: 'Down' };
 export async function startHallEvent(world, { pet, tier = 'novice', mode = 'course', variant = 0, area, guided = world.regionId === 'yard' }) {
-  const session = new HandlingEvent(tier, mode, variant, { area });
+  const types = pet ? [form(pet).type].flat() : [];
+  const session = new HandlingEvent(tier, mode, variant, { area, speedy: types.includes('speed'), evolved: !!pet && isEvolved(pet) });
   if (!guided) await ui.say([
     `The steward reads the route once: ${session.stations.map(s => LABELS[s.kind]).join(' → ')}.`,
     'Remember the order. There are no labels or highlighted targets in this ring. For Stay or Come, leave your dog on the mat, step away and recall. Weave alternates Left, Right, Left, Right, Left.',

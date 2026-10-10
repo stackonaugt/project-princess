@@ -17,6 +17,7 @@ import { SHOW_ENEMIES } from './dog-show.js';
 import { PEOPLE, FOE_TEXT } from './dialogue.js';
 import { EAST_ENEMIES, EAST_TRAINERS, EAST_ENCOUNTERS } from './east.js';
 import { NORTH_ENEMIES, NORTH_TRAINERS } from './north.js';
+import { BATTLER_ENEMIES, BATTLER_TRAINERS } from './battlers.js';
 import { SH_ENEMIES, SH_ENCOUNTERS, SH_TRAINERS } from './summerhill.js';
 
 export const ENEMIES = {
@@ -407,6 +408,10 @@ TRAINERS.ziggy = {
 };
 
 Object.assign(ENEMIES, SHOW_ENEMIES);
+// A battler in every suburb (battlers.js). The golfer next door waits for your second visit to Loddon Ave.
+Object.assign(ENEMIES, BATTLER_ENEMIES);
+Object.assign(TRAINERS, BATTLER_TRAINERS);
+TRAINERS.golfer.ambush = 2;
 export const PRIZE_TRAINER = Object.fromEntries(Object.entries(TRAINERS).filter(([, t]) => t.prize).map(([id, t]) => [t.prize, id]));
 
 // Brunswick East

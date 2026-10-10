@@ -48,6 +48,7 @@ export function buildCivic() {
   b.put('bush', 7, 14, { v: 'green' }); b.put('bush', 11, 14, { v: 'green' });
   b.wildGrass(34, 16, 3, 1.6);
   b.wildGrass(20, 17, 2, 1);
+  b.npc('parking', 22, 20, { face: 'up' });
   b.sign(29, 18, ['Hobsons Bay City Council.', 'Customer service open 8:30am to 5pm. Council meets Tuesdays at 6:30pm. All welcome.']);
   b.put('powerpole', 6, 20); b.put('powerpole', 34, 20); b.put('lamp', 18, 20);
 

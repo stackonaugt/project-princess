@@ -87,10 +87,13 @@ export const TUNING = {
       evolution: { level: 16, hearts: 5, stats: { hp: 82, attack: 88, defence: 108, speed: 58, special: 100 } } },
     girlie: { stats: { hp: 82, attack: 76, defence: 66, speed: 62, special: 55 },
       evolution: { level: 16, hearts: 5, stats: { hp: 106, attack: 96, defence: 88, speed: 64, special: 70 } } },
-    chloe: { stats: { hp: 68, attack: 82, defence: 58, speed: 104, special: 60 } },
-    ziggy: { stats: { hp: 58, attack: 74, defence: 52, speed: 120, special: 64 } },
+    chloe: { stats: { hp: 68, attack: 82, defence: 58, speed: 104, special: 60 },
+      evolution: { level: 16, hearts: 5, stats: { hp: 86, attack: 100, defence: 72, speed: 124, special: 72 } } },
+    ziggy: { stats: { hp: 58, attack: 74, defence: 52, speed: 120, special: 64 },
+      evolution: { level: 16, hearts: 5, stats: { hp: 76, attack: 90, defence: 68, speed: 128, special: 80 } } },
     emilio: { stats: { hp: 90, attack: 62, defence: 80, speed: 44, special: 76 } },
-    marty: { stats: { hp: 72, attack: 64, defence: 58, speed: 52, special: 60 } },
+    marty: { stats: { hp: 72, attack: 64, defence: 58, speed: 52, special: 60 },
+      evolution: { level: 14, hearts: 5, stats: { hp: 96, attack: 84, defence: 76, speed: 54, special: 70 } } },
   },
 };
 

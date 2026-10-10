@@ -54,6 +54,7 @@ export function buildAltona() {
   // Spiro's fish and chip van, right by the creek
   b.put('fishvan', 31, 13);
   b.npc('spiro', 32, 16, { face: 'up' });
+  b.npc('amy', 22, 12, { face: 'down' });   // flyering for her comedy show
 
   b.forage(30, 23, ['tennis', 'feather']);
   b.forage(5, 23, ['chicken', 'snag']);
