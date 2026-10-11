@@ -135,7 +135,7 @@ export let PETS = [
   {
     id: 'chloe', name: 'Chloe', species: 'Kelpie', type: ['park', 'speed'], sprite: 'kelpie',
     pal: { a: '#1e1a1c', t: '#b87a3a', w: '#e8dcc8', e: '#c8a040', n: '#1a1010' },
-    owner: 'Adam and Chelsea', region: 'brunswickeast', zone: 'holmes', home: [12, 7], range: 3,
+    owner: 'Adam and Chelsea', region: 'brunswickeast', zone: 'holmes', home: [22, 10], range: 3,
     homeSpot: { zone: 'yard', x: 7, y: 8 },
     behaviour: 'patrol', patrol: [[12, 9], [13, 9], [13, 5], [11, 2], [13, 5], [13, 9]],
     sleeps: [21 * 60, 26 * 60],

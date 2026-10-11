@@ -1,5 +1,6 @@
 // Built-in item icons, 12x12 strings centred in a 16x16 texture.
 import { NORTH_ITEM_ART } from './north.js';
+import { FISHING_ITEM_ART } from '../../data/fishing.js';
 import { SH_ITEM_ART } from './summerhill.js';
 
 export const ITEM_ART = {
@@ -185,6 +186,13 @@ export function paintDrink(p, a) {
     p.blob(8, 9, 4, k); p.blob(8, 9, 3, a.body); p.r(a.label, 7, 8, 1, 1); p.r(a.label, 9, 8, 1, 1); p.r(a.label, 8, 10, 1, 1); p.r(a.label, 10, 10, 1, 1); p.r(glint, 6, 7, 1, 1);
   } else if (a.kind === 'globe') {
     p.r(k, 4, 12, 8, 3); p.r(a.cap, 5, 12, 6, 2); p.blob(8, 7, 5, k); p.blob(8, 7, 4, a.body); p.r(a.label, 6, 8, 5, 2); p.r('#f4f4f0', 6, 4, 1, 1); p.r('#f4f4f0', 10, 6, 1, 1); p.r(glint, 6, 5, 1, 1);
+  } else if (a.kind === 'cup') {   // a trophy cup on a plinth (trophies: body, label highlight, cap the plinth)
+    p.r(k, 3, 2, 10, 8); p.r(a.body, 4, 3, 8, 6); p.r(a.label, 5, 3, 2, 5); p.r(shadeHex(a.body), 10, 4, 1, 5);
+    p.r(k, 1, 3, 3, 4); p.r(a.body, 2, 4, 1, 2); p.r(k, 12, 3, 3, 4); p.r(a.body, 13, 4, 1, 2);
+    p.r(k, 6, 10, 4, 2); p.r(a.body, 7, 10, 2, 2); p.r(k, 4, 12, 8, 3); p.r(a.cap, 5, 12, 6, 2);
+  } else if (a.kind === 'rosette') {   // a show rosette: tails, a ring of petals, a gold centre
+    p.r(k, 5, 9, 3, 6); p.r(a.body, 6, 10, 1, 4); p.r(k, 9, 9, 3, 6); p.r(a.body, 10, 10, 1, 4);
+    p.blob(8, 6, 5, k); p.blob(8, 6, 4, a.body); p.blob(8, 6, 2, a.cap); p.r(a.label, 7, 5, 1, 1);
   } else if (a.kind === 'koala') {
     p.blob(8, 9, 5, k); p.blob(8, 9, 4, a.body); p.blob(4, 5, 2, k); p.blob(12, 5, 2, k); p.blob(4, 5, 1, a.label); p.blob(12, 5, 1, a.label);
     p.r(a.cap, 7, 9, 2, 3); p.r(a.cap, 6, 7, 1, 1); p.r(a.cap, 10, 7, 1, 1);
@@ -229,8 +237,12 @@ export const GEAR_ART = {
   pouch: { pal: { a: '#8a6a3a', b: '#b8905a', k: '#4a3418', r: '#e8823a' }, rows: [
     '............', '...k....k...', '...kk..kk...', '....kkkk....', '..kkaaaakk..', '.kabbbbbbak.',
     '.kaaarraaak.', '.kaarrrraak.', '.kaaaaaaaak.', '.kaaaaaaaak.', '..kkkkkkkk..', '............'] },
+  championsash: { pal: { a: '#c83a6a', b: '#f07aa0', k: '#6a1a3a', g: '#e8c040' }, rows: [
+    'kk..........', 'kak.........', '.kak........', '..kbak......', '...kbak.....', '....kbak....',
+    '.....kbak...', '......kbak..', '.....kggk...', '....kggggk..', '.....kggk...', '......kk....'] },
   bowtie: { pal: { a: '#6a3ab0', b: '#9a6ae0', k: '#3a1a6a', w: '#f4f4f0' }, rows: [
     '............', '............', '............', 'kk........kk', 'kak..kk..kak', 'kabkkaakkbak',
     'kawakaakawak', 'kak..kk..kak', 'kk........kk', '............', '............', '............'] },
 };
 Object.assign(ITEM_ART, NORTH_ITEM_ART);   // Coburg and Preston items
+Object.assign(ITEM_ART, FISHING_ITEM_ART);   // new fish, rods, the fishing cup (data/fishing.js)

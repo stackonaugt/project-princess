@@ -70,6 +70,7 @@ export function buildDonald() {
   b.entry('albion', 39, 3, 'down').entry('north', 27, 2, 'down').entry('east', 38, 16, 'left').entry('west', 1, 14, 'right');
 
   b.npc('rose', 10, 11, { face: 'up' });
+  b.npc('opal', 22, 13, { face: 'down' });
 
   b.forage(37, 7, ['sardine', 'feather']);
   b.forage(5, 22, ['chicken', 'ribbon']);

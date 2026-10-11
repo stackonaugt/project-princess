@@ -79,6 +79,7 @@ export function buildSydney() {
   b.npc('jordan', 20, 12, { face: 'down' });
   b.npc('slinks', 13, 13, { face: 'left' });
   b.npc('hipster', 27, 13, { face: 'down' });
+  b.npc('cass', 22, 18, { face: 'left' });
 
   b.lane({ axis: 'x', pos: 15.5, dir: 1, from: -6, to: 50, every: [25, 45], speed: 50, kinds: ['veh-tram-h'], tram: true });
   b.lane({ axis: 'x', pos: 16.5, dir: -1, from: -6, to: 50, every: [30, 50], speed: 50, kinds: ['veh-tram-h'], tram: true });

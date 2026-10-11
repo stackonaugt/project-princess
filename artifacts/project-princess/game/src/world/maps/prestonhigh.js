@@ -60,6 +60,7 @@ export function buildPrestonHigh() {
   b.npc('inspector', 9, 12, { face: 'down' });
   b.npc('dimi', 17, 13, { face: 'down' });
   b.npc('nell', 34, 10, { face: 'down' });
+  b.npc('zara', 24, 17, { face: 'down' });
 
   b.exit(0, 10, 1, 7, 'prestonmkt', 'south', 'Preston Market');
   b.exit(43, 18, 1, 4, 'murray', 'middle', 'Murray Rd');

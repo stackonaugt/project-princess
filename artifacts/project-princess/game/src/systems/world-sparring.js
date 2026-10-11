@@ -61,7 +61,7 @@ export function startWorldSparring(world) {
         if (target.hp <= 0) finish(true);
       });
     };
-    const tap = pointer => attack(world.cameras.main.getWorldPoint(pointer.x,pointer.y));
+    const tap = pointer => world.fromCanvas?.(pointer) !== false && attack(world.cameras.main.getWorldPoint(pointer.x,pointer.y));
     const tick = (_time, delta) => {
       if (document.hidden) return;
       const dt = Math.min(.05,delta/1000); elapsed+=dt; cooldown=Math.max(0,cooldown-dt);

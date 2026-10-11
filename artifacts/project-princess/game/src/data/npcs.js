@@ -11,6 +11,7 @@ import { PEOPLE } from './dialogue.js';
 import { EAST_NPCS } from './east.js';
 import { NORTH_NPCS } from './north.js';
 import { BATTLER_NPCS } from './battlers.js';
+import { FISHING_NPCS } from './fishing.js';
 import { SH_NPCS } from './summerhill.js';
 
 import { authoredValue } from '../authoring/overrides.js';
@@ -265,6 +266,7 @@ Object.assign(NPCS, BAKE_NPCS);
 Object.assign(NPCS, EAST_NPCS);   // Brunswick East
 Object.assign(NPCS, NORTH_NPCS);   // Coburg and Preston
 Object.assign(NPCS, BATTLER_NPCS);   // a battler in every suburb (battlers.js)
+Object.assign(NPCS, FISHING_NPCS);   // Ross Millward, the fishing comp (fishing.js)
 
 // What everyone says lives in dialogue.js.
 NPCS = authoredValue('data/npcs.js', 'NPCS', NPCS);

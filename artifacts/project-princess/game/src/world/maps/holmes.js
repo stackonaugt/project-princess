@@ -69,10 +69,14 @@ export function buildHolmes() {
   b.exit(0, 10, 1, 8, 'eblygon', 'east', 'Lygon St');
   b.exit(43, 10, 1, 8, 'moreland', 'south', 'Moreland Rd, Coburg');
   b.exit(26, 25, 2, 1, 'ebnicholson', 'east', 'Nicholson St');
-  b.entry('west', 1, 11, 'right').entry('east', 42, 11, 'left').entry('south', 26, 23, 'up');
+  // Mitchell St was moved to x 12-16 in the Studio (overrides.json), so the
+  // way in from Nicholson St lands on it, not inside the old corner house.
+  b.entry('west', 1, 11, 'right').entry('east', 42, 11, 'left').entry('south', 14, 23, 'up');
 
-  b.npc('adam', 8, 10, { face: 'down' });
-  b.npc('chelsea', 10, 10, { face: 'down' });
+  // Out the front of their unit, on the top right corner of Mitchell St
+  // (the Studio moved the unit to x 18; the auto parts shop is now west).
+  b.npc('adam', 17, 10, { face: 'down' });
+  b.npc('chelsea', 19, 10, { face: 'down' });
   b.npc('tradie', 30, 17, { face: 'up' });
 
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -6, to: 50, every: [28, 48], speed: 50, kinds: ['veh-tram-h'], tram: true });

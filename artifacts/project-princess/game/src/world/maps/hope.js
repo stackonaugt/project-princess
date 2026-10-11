@@ -60,6 +60,7 @@ export function buildHope() {
 
   b.npc('mem', 16, 9, { face: 'down', at: 'home' });
   b.npc('corni', 18, 9, { face: 'down', at: 'home' });
+  b.npc('lachlan', 22, 12, { face: 'down' });
 
   b.lane({ axis: 'y', pos: 1.5, dir: 1, from: -14, to: 38, every: [35, 60], speed: 110, kinds: ['veh-train-v'], train: true });
   b.lane({ axis: 'y', pos: 2.5, dir: -1, from: -14, to: 38, every: [40, 70], speed: 110, kinds: ['veh-train-v'], train: true });

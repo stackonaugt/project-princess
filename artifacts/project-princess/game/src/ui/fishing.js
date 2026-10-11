@@ -11,17 +11,23 @@ import { state } from '../systems/state.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
 import { FishFight, FIGHT } from '../systems/fishing.js';
+import { FISH } from '../data/fishing.js';
 import { drawPersonPreview, FRAME_W, FRAME_H } from '../art/paint/people.js';
 
 export { FIGHT };
 
-// Rough sizes in cm, for bragging rights.
-const SIZES = { redfin: [18, 45], carp: [25, 70], eel: [40, 110], yabby: [6, 18], oldboot: [28, 31] };
+// Size of a catch: one roll sets both length (cm) and weight (kg), from data/fishing.js.
+export function fishSize(id, t = Math.random()) {
+  const f = FISH[id] || { cm: [10, 40], kg: [0.2, 1] };
+  return { cm: Math.round(f.cm[0] + t * (f.cm[1] - f.cm[0])), kg: Math.round((f.kg[0] + t ** 1.6 * (f.kg[1] - f.kg[0])) * 100) / 100, big: t > 0.75 };
+}
+const kgLabel = kg => kg < 1 ? `${Math.round(kg * 1000)} g` : `${kg.toFixed(kg < 10 ? 2 : 1)} kg`;
 
 const LOST = {
   snap: 'Snap! The line broke. Easy does it next time.',
   thrown: 'It ran to the end of the line and threw the hook.',
   time: 'It wore you out and slipped away.',
+  hooter: 'The whistle goes! Lines in. That one got away.',
 };
 
 // The angler: the current hero, side on, leaning back on a bent rod.
@@ -74,7 +80,10 @@ function drawAngler(ctx, person, { lean = 0, bend = 0, cast = 0.6, splash = 0, t
   }
 }
 
-export function openFishing(panel, close, { fish, zone, done }) {
+// Extra options from systems/fishing-trip.js: ease (level, rod, lure), info
+// (a line under the title: bait left, level, rod), comp ({ ends } a
+// performance.now() deadline, shown as a clock) and onLand({ cm, kg }).
+export function openFishing(panel, close, { fish, zone, done, ease = 0, info = '', comp = null, onLand = null, onStop = null }) {
   const status = h('p', { class: 'fish-status center' }, 'You cast out. Wait for a bite...');
   const marker = h('div', { class: 'fish-marker' });
   const target = h('div', { class: 'fish-zone' });
@@ -91,7 +100,9 @@ export function openFishing(panel, close, { fish, zone, done }) {
   try { person = personCanvas(); } catch { person = null; }
   const btn = h('button', { class: 'wood-btn', type: 'button', disabled: true }, 'Reel in!');
   const water = h('div', { class: 'fish-water' });
-  const fight = new FishFight({ fish, zone });
+  const fight = new FishFight({ fish, zone, ease });
+  const infoLine = h('p', { class: 'small center fish-info' }, info);
+  const clock = comp ? h('p', { class: 'center fish-clock', style: { fontSize: '18px', fontWeight: '700', margin: '0 0 6px' } }) : null;
   target.style.left = `${fight.z0 * 100}%`; target.style.width = `${fight.zw * 100}%`;
   let phase = 'wait', raf = 0, result = null, overAt = 0, lastFrame = null, pullFx = 0, said = '', bite = 0;
 
@@ -125,11 +136,12 @@ export function openFishing(panel, close, { fish, zone, done }) {
   // A proper fuss when you land one: the fish leaps out, confetti, and its size.
   const celebrate = () => {
     sfx.found(); setTimeout(() => sfx.heart(), 250);
-    const it = ITEMS[fish], [lo, hi] = SIZES[fish] || [10, 40], cm = Math.round(lo + Math.random() * (hi - lo));
+    const it = ITEMS[fish], size = fishSize(fish);
+    onLand?.(size);
     const bits = Array.from({ length: 18 }, (_, i) => h('i', { class: 'fish-confetti', style: `--x:${Math.round(Math.cos(i * 0.35 * Math.PI) * (40 + (i % 3) * 25))}px;--y:${Math.round(-30 - Math.abs(Math.sin(i * 1.3)) * 70)}px;--c:${['#f5d63a', '#e2506a', '#6dbb58', '#f4efe0'][i % 4]};animation-delay:${(i % 6) * 30}ms` }));
     const pop = h('div', { class: 'fish-catch' }, ...bits, h('img', { class: 'pix fish-big', src: itemIcon(fish, 32), alt: '' }),
       h('b', {}, it.junk ? 'Oh no. An old boot.' : `You caught a ${it.name.toLowerCase()}!`),
-      h('span', {}, it.junk ? 'Still counts. Kind of.' : `${cm} cm. ${cm > (lo + hi) / 2 + (hi - lo) / 4 ? 'A whopper!' : 'A nice one.'}`));
+      h('span', {}, it.junk ? (comp ? 'Ross says boots do not count.' : 'Still counts. Kind of.') : `${size.cm} cm, ${kgLabel(size.kg)}. ${size.big ? 'A whopper!' : 'A nice one.'}`));
     btn.textContent = 'Done'; btn.disabled = false; btn.onclick = shut;
     water.onpointerdown = null; water.classList.remove('pulling');
     water.replaceChildren(pop, h('div', { class: 'center' }, btn));
@@ -139,6 +151,12 @@ export function openFishing(panel, close, { fish, zone, done }) {
     const dt = lastFrame == null ? 0 : Math.min(50, timestamp - lastFrame) / 1000;
     lastFrame = timestamp;
     pullFx = Math.max(0, pullFx - dt * 4);
+    // The comp clock: when it runs out, the fish on the line gets away.
+    if (comp) {
+      const left = Math.max(0, (comp.ends - performance.now()) / 1000);
+      clock.textContent = `Comp clock ${Math.floor(left / 60)}:${String(Math.floor(left % 60)).padStart(2, '0')}`;
+      if (left <= 0 && phase !== 'over') { clearTimeout(bite); fight.result = 'hooter'; draw(timestamp / 1000); return end(); }
+    }
     if (phase === 'fight') {
       fight.step(dt);
       marker.style.left = `calc(${fight.pos * 100}% - 6px)`;
@@ -161,9 +179,9 @@ export function openFishing(panel, close, { fish, zone, done }) {
   }, 900 + Math.random() * 1800);
   // Tapping or clicking anywhere on the water pulls (the button is just a big target).
   water.onpointerdown = e => { if (phase === 'over') return; e.preventDefault(); pull(); };
-  panel.replaceChildren(
-    h('div', { class: 'm-head' }, h('h2', {}, 'Fishing'), h('button', { class: 'wood-btn small', onclick: close }, 'Stop')),
-    water);
+  panel.replaceChildren(...[
+    h('div', { class: 'm-head' }, h('h2', {}, comp ? 'Fishing comp' : 'Fishing'), h('button', { class: 'wood-btn small', onclick: () => { onStop?.(); close(); } }, 'Stop')),
+    infoLine, clock, water].filter(Boolean));
   water.replaceChildren(h('div', { class: 'center' }, canvas), status, bar, meters, h('div', { class: 'center' }, btn));
   raf = requestAnimationFrame(tick);
   return { action: () => (phase === 'over' ? shut() : pull()), cleanup: finish };

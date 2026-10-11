@@ -36,6 +36,9 @@ export const drinkCount = () => Object.keys(ITEMS).filter(id => ITEMS[id].drink)
 export const decoCount = () => Object.keys(ITEMS).filter(id => ITEMS[id].deco).reduce((a, id) => a + state.count(id), 0);
 export const attendees = () => story().invited.filter(id => NPCS[id] && !isArchived('npcs', id) && state.friendHearts(id) >= CH4.rsvpHearts);
 
+// Who can be pranked in Chapter 3, by name: "Paddy, Corni, ... or Nathan".
+const prankNames = () => { const n = Object.keys(PRANKS).map(id => NPCS[id]?.name || id); return n.length > 1 ? `${n.slice(0, -1).join(', ')} or ${n.at(-1)}` : n.join(''); };
+
 // The objectives for a chapter: [{ text, done }].
 export function objectives(n = chapterNow()) {
   const s = story(), d = state.data;
@@ -53,14 +56,14 @@ export function objectives(n = chapterNow()) {
     const c = s.ch2;
     return [
       { id: 'kitchen', destination: { region: 'bunnings' }, text: 'Fish pie route: build the kitchen (Olly, Bunnings Warehouse, Altona North) — or choose the clean campaign with Paddy.', done: state.hasUpgrade('kitchen') || !!c.campaignWon },
-      { id: 'fish-pie', destination: { region: 'home', kind: 'cook' }, text: 'Fish pie route: cook a dodgy pie with fish, lemon and laxatives — or build support with Kirsty (4 hearts) and Dahlia (2 hearts).', done: !!c.pie || state.count('fishpie') > 0 || !!c.campaignWon || !!c.swapped },
+      { id: 'fish-pie', destination: { region: 'home', kind: 'cook' }, text: 'Fish pie route: bake a dodgy pie (badly) with fish, lemon and laxatives. Or build support with Kirsty (4 hearts) and Dahlia (2 hearts).', done: !!c.pie || state.count('fishpie') > 0 || !!c.campaignWon || !!c.swapped },
       { id: 'lunch-swap', destination: { region: 'civiccentre', kind: 'lunch' }, text: c.campaignWon ? 'Clean campaign won: Kirsty and Dahlia publicly back Paddy.' : `Swap the pie for Cr Bentleigh's lunch before the spill vote on ${weekday(c.deadline || 1)}, day ${c.deadline || '?'}`, done: !!c.swapped || !!c.campaignWon },
     ];
   }
   if (n === 3) return [
-    { id: 'prank-friends', text: `Prank ${CH3_PRANKS} of Helen's friends: Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim or Nicholas. Visit them first to look for a prank${count(s.pranks.length, CH3_PRANKS)}`, done: s.pranks.length >= CH3_PRANKS },
+    { id: 'prank-friends', text: `Prank ${CH3_PRANKS} of Helen's friends: ${prankNames()}. Visit them first to look for a prank${count(s.pranks.length, CH3_PRANKS)}`, done: s.pranks.length >= CH3_PRANKS },
     // Each prank you have planned: buy the thing, then go back and pull it.
-    ...state.data.side.scouted.filter(id => PRANKS[id]).map(id => ({ id: `prank-${id}`, destination: state.count(PRANKS[id].item) ? { npc: id } : undefined, text: `${PRANKS[id].label} on ${NPCS[id]?.name || id}: ${state.count(PRANKS[id].item) || s.pranks.includes(id) ? 'go back and pull it' : `buy it at ${PRANKS[id].where}`}`, done: s.pranks.includes(id) })),
+    ...state.data.side.scouted.filter(id => PRANKS[id]).map(id => ({ id: `prank-${id}`, destination: state.count(PRANKS[id].item) ? { npc: id } : undefined, text: `${PRANKS[id].label} on ${NPCS[id]?.name || id}: ${state.count(PRANKS[id].item) || s.pranks.includes(id) ? 'go back and pull it' : `buy ${ITEMS[PRANKS[id].item]?.name.toLowerCase() || 'the supplies'} at ${PRANKS[id].where}`}`, done: s.pranks.includes(id) })),
   ];
   if (n === 4) {
     const rooms = CH4.rooms.filter(id => state.hasUpgrade(id)).length;
@@ -69,7 +72,7 @@ export function objectives(n = chapterNow()) {
       { id: 'drinks', destination: { region: 'bottleshop' }, text: `Party drinks from the bottle shop${count(drinkCount(), CH4.drinks)}`, done: drinkCount() >= CH4.drinks },
       { id: 'decorations', destination: { region: 'bunnings' }, text: `Decorations from Bunnings${count(decoCount(), CH4.decos)}`, done: decoCount() >= CH4.decos },
       { id: 'invitations', text: `Invite friends (talk to them). Those with ${CH4.rsvpHearts}+ hearts will come${count(s.invited.length, CH4.invites)}`, done: s.invited.length >= CH4.invites },
-      { id: 'party', text: 'Throw the party! (Story app on the Pawphone)', done: !!s.party },
+      { id: 'party', text: 'Throw the party! The button is right under this job in the To Do app.', done: !!s.party },
     ];
   }
   return [];
@@ -83,9 +86,14 @@ export const partyReady = () => inChapter(4) && objectives(4).slice(0, 4).every(
 export const chapterFinished = n => inChapter(n) && (n === 1 || n === 3) && objectives(n).every(o => o.done);
 
 // How Paddy goes at the election: a base, plus party guests, plus how well the
-// party games went, plus being the sitting mayor. 50 or more wins.
-export function electionVotes(score, guests) {
-  const s = story();
-  const v = 24 + Math.min(30, guests * 3) + score * 1.8 + (s.ch2.deposed ? 0 : 10) + Math.min(6, state.data.council.passed.length * 2);
-  return Math.max(18, Math.min(78, Math.round(v)));
+// party went, plus being the sitting mayor and motions passed. 50 or more wins.
+// The party score (games 0 to 11, plus or minus rescues) matters most: with
+// six guests and no motions, the sitting mayor needs a score of 4 (a decent
+// party); 3 or less loses. Deposed, he needs about 6. More friends at the
+// party and passed motions lower the bar a little.
+export const ELECTION = { base: 22, perGuest: 2, guestCap: 18, perScore: 2.6, sitting: 6, perMotion: 2, motionCap: 4, min: 18, max: 78 };
+export function electionVotes(score, guests, { deposed = story().ch2.deposed, motions = state.data.council.passed.length } = {}) {
+  const E = ELECTION;
+  const v = E.base + Math.min(E.guestCap, guests * E.perGuest) + score * E.perScore + (deposed ? 0 : E.sitting) + Math.min(E.motionCap, motions * E.perMotion);
+  return Math.max(E.min, Math.min(E.max, Math.round(v)));
 }

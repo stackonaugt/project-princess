@@ -64,5 +64,6 @@ export function buildPreston() {
   b.exit(41, 0, 3, 1, 'prestonhigh', 'south', 'Preston Station');
   b.entry('vapeshop', 22, 9, 'down').entry('anaconda', 32, 9, 'down').entry('west', 1, 9, 'right').entry('east', 46, 14, 'left').entry('north', 41, 1, 'down');
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
+  b.npc('brad', 25, 9, { face: 'down' });
   return b.finish();
 }

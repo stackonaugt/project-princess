@@ -3,7 +3,7 @@ import { grassIcon } from '../ui/images.js';
 import { paintYardCourse,startYardCourse,yardTier } from '../systems/yard-course.js';
 import { beginMartyCare, martyApproach } from '../systems/pet-care.js';
 import { CRAFT_RECIPES } from '../data/crafting.js';
-import { craft,craftReason } from '../systems/crafting.js';
+import { craft,craftReason,materialCount,materialName } from '../systems/crafting.js';
 import { COMPETITORS,SHOW_DOGS,DIVISIONS,SHOW_DAY,showOpen } from '../data/dog-show.js';
 import { showReady,divisionDone,divisionProgress } from '../systems/show-progress.js';
 import { awardSkill, skill, trainingXp } from '../systems/player-skills.js';
@@ -23,8 +23,9 @@ import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SI
 const COUNCILLORS = COUNCIL_ALL;
 import { TUNING } from '../data/tuning.js';
 import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF, BAKES } from '../data/cooking.js';
+import { DODGY_MIN } from '../systems/baking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
-import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, PADDY_SPEECH, PADDY_PARTY, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
+import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, PARTY_SLUMP, PARTY_BORED, ELECTION_LOST, PADDY_SPEECH, PADDY_PARTY, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
 
 // What blocks a gated exit until you beat its keeper (`gate` on an exit).
@@ -41,14 +42,7 @@ const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
 const DUCK_ZONES = ['lake', 'wetlands', 'coburglake', 'altona', 'gardens', 'flinders'];
 const BOWLS_TROPHY = 5;
 
-const FISH_TABLES = {
-  lake: [['redfin', 40], ['carp', 35], ['eel', 10], ['oldboot', 15, true]],
-  wetlands: [['yabby', 40], ['eel', 25], ['carp', 20], ['oldboot', 15, true]],
-  altona: [['carp', 35], ['eel', 15], ['yabby', 10], ['oldboot', 40, true]],
-  default: [['carp', 50], ['yabby', 20], ['oldboot', 30, true]],
-};
-// How wide the green zone is (0 to 1): smaller is trickier.
-const FISH_ZONE = { redfin: 0.18, carp: 0.3, eel: 0.12, yabby: 0.24, oldboot: 0.4 };
+// What bites where (FISH_TABLES) and how each fish fights: data/fishing.js.
 import { HEROES } from '../data/heroes.js';
 import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
@@ -71,11 +65,17 @@ import { Traffic } from '../world/traffic.js';
 import { LocalRouter, AutoWalk } from '../world/navigation.js';
 import { state } from '../systems/state.js';
 import { binManReady, trainingStarted } from '../systems/progression-gates.js';
+import { levelOf, CLASS_LEVELS } from '../systems/training.js';
 import { startHallEvent, judgeHallEvent } from '../systems/hall-events.js';
 import { recordHallScorecard } from '../systems/show-scorecards.js';
 import { startWorldSparring } from '../systems/world-sparring.js';
 import { enterBakeOff, bakeStation, bakeNpc, saveBakeAttempt, paintBakeOff } from '../systems/bake-event.js';
+import { goFishing, rossChoices, rossAction } from '../systems/fishing-trip.js';
 import { showPresentation } from '../systems/show-presentation.js';
+import { shelfVariant } from '../data/trophies.js';
+import { trophyShelf } from '../systems/trophy-shelf.js';
+import { bowlsClubChoices, bowlsClubAction } from '../systems/bowls-club.js';
+import { maybeEventPrompt } from '../systems/event-prompts.js';
 import { controls } from '../systems/controls.js';
 import { darkness, isNight, timeLabel } from '../systems/clock.js';
 import { sfx } from '../systems/sfx.js';
@@ -103,6 +103,8 @@ export class WorldScene extends Phaser.Scene {
     const region = ZONES[this.regionId];
     this.region = region;
     this.suburb = SUBURBS[region.suburb];
+    // The trophy cabinet shows what you have won: rebuild home if that changed.
+    if (this.regionId === 'home' && getMap('home').shelf !== (state.hasUpgrade('trophyshelf') ? shelfVariant(state.data) : null)) invalidateMap('home');
     this.map = getMap(this.regionId);
     state.data.region = this.regionId;
     const firstVisit = !state.data.visited.includes(this.regionId);
@@ -150,7 +152,7 @@ export class WorldScene extends Phaser.Scene {
       if (!mode) continue;
       const pet = new Pet(this, p, { mode, index: mode === 'follow' ? followers++ : 0, near: this.player });
       if (mode !== 'follow') pet.collider = this.physics.add.collider(pet, this.layer);
-      pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }); });
+      pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }, ptr); });
       this.pets.push(pet);
     }
     // People with a routine (routines.js) only appear while they are here.
@@ -185,6 +187,7 @@ export class WorldScene extends Phaser.Scene {
       bus.on('layout:changed', () => this.onResize()),
       bus.on('game:save', () => this.save()),
       bus.on('game:hero', () => this.pickHero(true)),
+      bus.on('game:unstick', () => { if (ui.modalOpen) { ui._fromPhone = false; ui.closeModal(); } if (!ui.blocking() && this.unstick()) ui.toast('Unstuck! You shuffle to an open spot.'); }),
       bus.on('ui:modal', which => { controls.release(); if (which) this.navigation.cancel(); }),
       bus.on('navigation:walk', (point, target) => { if (!ui.blocking() && !this.leaving) this.navigation.start(point, target, target ? (target.r || 22) : 0); }),
       bus.on('input:cancel', () => { if (!ui.blocking()) this.navigation.cancel(); }),
@@ -214,7 +217,7 @@ export class WorldScene extends Phaser.Scene {
       this.time.delayedCall(900, () => ui.toast('Off-lead dog park! Your team has a lovely run. +friendship'));
     }
     this.buildStoryBits();
-    this.intro(firstVisit).then(() => this.catchUpJulie()).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime()).then(() => this.ambush());
+    this.intro(firstVisit).then(() => this.catchUpJulie()).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime()).then(() => this.ambush()).then(() => maybeEventPrompt(this));
   }
 
   // A nudge each morning about anything time sensitive today.
@@ -338,7 +341,7 @@ export class WorldScene extends Phaser.Scene {
     image.on('pointerdown', (pointer, lx, ly, event) => {
       event.stopPropagation();
       const target = targets.reduce((a, b) => Math.abs(b.x - pointer.worldX) < Math.abs(a.x - pointer.worldX) ? b : a);
-      this.tapTarget(target);
+      this.tapTarget(target, pointer);
     });
   }
 
@@ -560,7 +563,53 @@ export class WorldScene extends Phaser.Scene {
         if (!this.map.solid[y * this.map.w + x]) return { ...toWorld(x, y), dir: entry.dir };
       }
     }
-    return { ...toWorld(entry.x, entry.y), dir: entry.dir };
+    // Never arrive inside something solid (a map edit can move a street).
+    const free = this.nearestOpenTile(entry.x, entry.y);
+    return { ...toWorld(free.x, free.y), dir: entry.dir };
+  }
+
+  // The nearest walkable tile to (tx, ty), preferring one that can still reach
+  // a way out of the map (so you are never sealed in a pocket).
+  nearestOpenTile(tx, ty, needExit = false) {
+    const { w, h, solid } = this.map;
+    const open = (x, y) => x >= 0 && y >= 0 && x < w && y < h && !solid[y * w + x];
+    let reach = null;
+    if (needExit) {
+      reach = new Uint8Array(w * h); const q = [];
+      for (const e of this.map.exits) if (e.to) for (let y = e.y; y < e.y + e.h; y++) for (let x = e.x; x < e.x + e.w; x++) if (open(x, y) && !reach[y * w + x]) { reach[y * w + x] = 1; q.push([x, y]); }
+      while (q.length) { const [x, y] = q.pop(); for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) { const X = x + dx, Y = y + dy; if (open(X, Y) && !reach[Y * w + X]) { reach[Y * w + X] = 1; q.push([X, Y]); } } }
+      if (!reach.some(Boolean)) reach = null;
+    }
+    // When unsticking, also want room to move: at least three open sides.
+    const roomy = (x, y) => !needExit || [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => open(x + dx, y + dy)).length >= 3;
+    const ok = (x, y) => open(x, y) && (!reach || reach[y * w + x]) && roomy(x, y);
+    for (let r = 0; r < Math.max(w, h); r++) {
+      let best = null, bd = Infinity;
+      for (let y = ty - r; y <= ty + r; y++) for (let x = tx - r; x <= tx + r; x++) {
+        if (Math.max(Math.abs(x - tx), Math.abs(y - ty)) !== r || !ok(x, y)) continue;
+        const d = Math.hypot(x - tx, y - ty); if (d < bd) { bd = d; best = { x, y }; }
+      }
+      if (best) return best;
+    }
+    return { x: tx, y: ty };
+  }
+
+  // Settings > Unstick me: hop to the nearest open tile that can reach a way out.
+  unstick() {
+    if (!this.player?.active || this.leaving) return false;
+    const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 1) / T);
+    let spot = this.nearestOpenTile(tx, ty, true);
+    if (this.map.solid[spot.y * this.map.w + spot.x]) {
+      const e = this.map.entries; const first = e.start || e.station || Object.values(e)[0];
+      spot = first ? this.nearestOpenTile(first.x, first.y) : spot;
+    }
+    const p = toWorld(spot.x, spot.y);
+    this.navigation.cancel();
+    this.player.body.reset(p.x, p.y);
+    this.trail.length = 0;
+    this.arrivedAt = this.time.now;   // don't fall straight through an exit you land beside
+    this.save();
+    return true;
   }
 
   // ------------------------------------------------------------ lighting & weather
@@ -681,8 +730,14 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // ------------------------------------------------------------ input
+  // Phaser also hears presses that land on the HTML over the canvas (Bag, Phone,
+  // the A button...). Only a press that started on the canvas is a world tap.
+  fromCanvas(pointer) {
+    const el = pointer?.downElement || pointer?.event?.target;
+    return !el || el === this.game.canvas;
+  }
   onTap(pointer) {
-    if (ui.blocking() || this.leaving) return;
+    if (ui.blocking() || this.leaving || !this.fromCanvas(pointer)) return;
     const wx = pointer.worldX, wy = pointer.worldY;
     let best = null, bd = 14;
     for (const c of this.candidates()) {
@@ -696,8 +751,8 @@ export class WorldScene extends Phaser.Scene {
     this.tapMarker.setPosition(wx, wy).setVisible(true).setAlpha(1);
     this.tweens.add({ targets: this.tapMarker, alpha: 0, duration: 600, onComplete: () => this.tapMarker.setVisible(false) });
   }
-  tapTarget(t) {
-    if (ui.blocking() || this.leaving) return;
+  tapTarget(t, pointer) {
+    if (ui.blocking() || this.leaving || (pointer && !this.fromCanvas(pointer))) return;
     const x = t.ref ? t.ref.x : t.x, y = t.ref ? t.ref.y : t.y;
     if (Math.hypot(x - this.player.x, y - this.player.y) < 30) return this.interact(t);
     this.navigation.start({ x, y }, t, t.r || 22);
@@ -731,6 +786,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'course') return this.coursePractice();
     if (t.kind === 'sparring') return this.sparring();
     if (t.kind === 'showdesk') return this.dogShow();
+    if (t.kind === 'trophyshelf') return trophyShelf(this);
     if (t.kind === 'sign') return ui.say(t.lines);
     if (t.kind === 'look') return t.bin ? this.checkBin(t) : ui.say(pick(t.lines));
     if (t.kind === 'sleep') return this.sleep(t);
@@ -787,7 +843,12 @@ export class WorldScene extends Phaser.Scene {
     if (f.bins.includes(t.bin) || Math.random() > 0.35) { if (!f.bins.includes(t.bin)) f.bins.push(t.bin); return ui.say(pick(t.lines)); }
     f.bins.push(t.bin);
     const r = Math.random();
-    if (r < 0.45) {
+    if (r < 0.3) {
+      // Scrap for the shed: crafting materials are free if you are not fussy.
+      const id = pick(['timber', 'cloth', 'cord', 'bolts']);
+      state.addItem(id); sfx.pickup(); ui.toast(`+1 ${ITEMS[id].name}`, itemIcon(id, 32));
+      ui.say([pick(['Hard rubbish gold. Folded in beside the pizza boxes:', 'Someone was clearing out the garage:', 'Too good to go to the tip:']) + ` ${ITEMS[id].name.toLowerCase()}.`]);
+    } else if (r < 0.6) {
       const n = 1 + Math.floor(Math.random() * 4);
       state.addMoney(n); sfx.pickup(); ui.toast(`+$${n}`);
       ui.say([pick(['You lift the lid. Under a pizza box: a few coins.', 'Someone has binned a jar of loose change. You rescue it.', 'A gold coin glints at the bottom. Worth the smell.']), `You found $${n}.`]);
@@ -848,21 +909,10 @@ export class WorldScene extends Phaser.Scene {
     this.save();
   }
 
-  async goFishing() {
-    if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
-    if (this.emilioWaiting()) return this.emilio();
-    const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
-    // Every cast costs one bait, caught or not. No bait, no fishing.
-    if (state.count('bait') < 1) return ui.say(['No bait left. Bazza at Anaconda in Preston sells it, a couple of dollars a tub.']);
-    state.removeItem('bait');
-    let r = Math.random() * table.reduce((a, [, w, j]) => a + (j ? w / 2 : w), 0), fish = table[0][0];
-    for (const [id, w, j] of table) { r -= j ? w / 2 : w; if (r <= 0) { fish = id; break; } }
-    state.data.minutes += 10;
-    this.save();
-    const got = await ui.fish(fish, FISH_ZONE[fish]);
-    if (got) { awardSkill('gathering',15); state.addItem(got); state.data.stats.fish = (state.data.stats.fish || 0) + 1; ui.toast(`+1 ${ITEMS[got].name}`, itemIcon(got, 32)); }
-    this.save();
-  }
+  // A cast (systems/fishing-trip.js): bait, the daily limit per spot, the rod,
+  // the fishing skill and the catch.
+  goFishing() { return goFishing(this); }
+
 
   // ------------------------------------------------------------ pets
   heartsFx(target, n = 3) {
@@ -980,10 +1030,14 @@ export class WorldScene extends Phaser.Scene {
     if (result.score === 3) school.stamps[id] = (school.stamps[id] || 0) + 1;
     school.skills ??= {};
     school.skills[id] ??= {};
+    const levelBefore = levelOf(school.skills[id], result.drill);
     school.skills[id][result.drill] = (school.skills[id][result.drill] || 0) + result.score;
+    const levelNow = levelOf(school.skills[id], result.drill);
+    const promoted = levelNow > levelBefore ? [`${form(id).name} moves up to ${CLASS_LEVELS[levelNow]} in ${result.title.toLowerCase()}! ${form(id).name} is quicker now, and the lessons get harder.`] : [];
+    if (promoted.length) sfx.found();
     state.addPoints(id, 2 + result.score * 2);
     this.save();
-    await ui.say([`${form(id).name} practised ${result.title.toLowerCase()}: ${result.score}/3 clean runs and ${xp} training XP.`, `Gold stars: ${school.stamps[id] || 0}. Extra practice is always available; tomorrow brings new lesson choices.`], opts);
+    await ui.say([`${form(id).name} practised ${result.title.toLowerCase()}: ${result.score}/3 clean runs and ${xp} training XP.`, ...promoted, `Gold stars: ${school.stamps[id] || 0}. Extra practice is always available; tomorrow brings new lesson choices.`], opts);
     if (canEvolve(id)) await this.evolveInWorld(pet);
   }
 
@@ -1144,8 +1198,10 @@ export class WorldScene extends Phaser.Scene {
       if (info.shop && npcZone(npc.id) === this.regionId && npc.spot?.at !== 'home') choices.push({ label: 'Shop', value: 'shop' });
       if (npc.spot?.sing) choices.push({ label: 'Sing karaoke', value: 'karaoke' });
       if (npc.spot?.bowls) choices.push({ label: 'Have a bowl', value: 'bowls' });
+      choices.push(...bowlsClubChoices(npc.id, state.data));   // the treasurer: join the club, the Wednesday championship
       if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
       if(npc.id==='betty') choices.push({label:'Practise a competition bake',value:'bakepractice'});
+      choices.push(...rossChoices(npc.id));   // Ross Millward's fishing comp (systems/fishing-trip.js)
       if (npc.id === 'betty' && weekday(day) === BAKE_OFF.day) choices.push({ label: 'Enter the bake-off', value: 'bakeoff' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
       if (npc.id === 'paddy' && inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) choices.push({ label: 'Plan a clean campaign for Paddy', value: 'cleanCampaign' });
@@ -1165,8 +1221,10 @@ export class WorldScene extends Phaser.Scene {
       if (act === 'shop') { await ui.shop(info.shop); }
       if (act === 'karaoke') { await this.karaoke(npc, opts); break; }
       if (act === 'bowls') { await this.bowls(npc, opts); break; }
+      if (act?.startsWith?.('club:')) { await bowlsClubAction(this, act, opts); if (act === 'club:comp') break; }
       if (act === 'party') await this.streetParty(npc, opts);
       if(act==='bakepractice') await this.cook(true);
+      if (String(act).startsWith('ross')) await rossAction(this, act, opts);
       if (act === 'bakeoff') { await this.bakeOff(npc, opts); if (this.leaving) break; }
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'cleanCampaign') await this.cleanCampaign(opts);
@@ -1211,9 +1269,9 @@ export class WorldScene extends Phaser.Scene {
     if (r.rival && r.best < r.rival && !side.trophy) {
       side.bowlsWins++;
       if (side.bowlsWins >= BOWLS_TROPHY) {
-        side.trophy = true; sfx.found(); invalidateMap('home');
+        side.trophy = true; state.addItem('newcomerscup'); sfx.found(); invalidateMap('home');
         await ui.say(['Crazy Jeff clears his throat. The old blokes take their hats off.', '"By order of the committee: the Brunswick Bowls Club Newcomer\'s Cup. First one we have given out since 1987."', 'It is very shiny and slightly dented. They will drop it round to the house.'], { name: 'Crazy Jeff', portrait: npcIcon('crazyjeff') });
-        ui.banner('The Newcomer\'s Cup!', 'It is on the shelf at home');
+        ui.banner('The Newcomer\'s Cup!', state.hasUpgrade('trophyshelf') ? 'It is in the trophy cabinet at home' : 'It is in the lounge at home');
       }
     }
     this.save();
@@ -1345,9 +1403,12 @@ export class WorldScene extends Phaser.Scene {
     const d = state.data, A = NPCS.paddy.advice;
     if (!state.foundIds().length) return A.noPets;
     if (!d.party.length) return A.oneTeam;
+    // Once, early on: the shed in the backyard builds the pets a training course.
+    const noCourse = A.shed && !state.count('coursekit');
+    if (noCourse && !d.flags.paddyShed) { d.flags.paddyShed = d.day; return A.shed; }
     if (!d.flags.garden) return A.noGarden;
     if (state.foundCount() >= 1 && !Object.keys(d.council.given).length && !d.council.passed.length) return A.noMotion;
-    const rest = [A.swing, A.train, A.friends, A.types, A.rest];
+    const rest = [A.swing, A.train, A.friends, A.types, A.rest, ...(noCourse ? [A.shed] : [])];
     return rest[d.day % rest.length];
   }
 
@@ -1372,7 +1433,9 @@ export class WorldScene extends Phaser.Scene {
       return ui.say([`${npc.info.name} squints at the ${name}. "Hang on. That's mine. I gave you that."`, `"Keep it. Re-gifting to the person who gifted it is a bold move, though."`], opts);
     }
     // Some things (Betty's cooking) everyone loves, unless they've said otherwise.
-    const taste = fi.loves.includes(item) || (ITEMS[item].loved && !fi.dislikes.includes(item)) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
+    // ...and some things (Cr Bentleigh's pie) most people like. giftLines: { who: [taste, line] } overrides both.
+    const special = ITEMS[item].giftLines?.[npc.id];
+    const taste = special ? special[0] : fi.loves.includes(item) || (ITEMS[item].loved && !fi.dislikes.includes(item)) ? 'love' : fi.likes.includes(item) || (ITEMS[item].liked && !fi.dislikes.includes(item)) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
     // How well it was made counts too: a 3 star bake wins anyone over, and only
     // Paddy will say a 1 star one is good.
     const stars = state.nextBakeStars(item);
@@ -1381,7 +1444,7 @@ export class WorldScene extends Phaser.Scene {
     f.giftedDay = state.data.day; f.reactions[item] = taste;
     const r = state.addFriendPoints(npc.id, FRIEND_POINTS[reaction]);
     const n = npc.info.name;
-    const text = stars !== null && stars <= 1 ? (npc.id === 'paddy'
+    const text = special ? special[1] : stars !== null && stars <= 1 ? (npc.id === 'paddy'
       ? `Paddy takes a huge bite of the ${name}. "Mmm! Honestly, love, it's really good." He is a terrible liar, and a lovely husband.`
       : `${n} takes a bite of the ${name} and chews for a long time. "...Did you make this yourself? I can tell."`)
       : stars >= 3 ? `${n} takes one bite of the ${name} and closes their eyes. "That is perfect. Perfect! Who taught you that?"` : {
@@ -1558,9 +1621,9 @@ export class WorldScene extends Phaser.Scene {
     });
   }
   async workbench(){
-    addTutorial('craft', 'Crafting at the shed', 'Buy timber, cloth, cord and bolts from Materials at Bunnings in Altona North. Use the tools by the shed to craft two starter hurdles, then add the course extension and weave poles.');
+    addTutorial('craft', 'Crafting at the shed', 'Scavenge scrap timber, fabric, cord and bolts from bins and the junk pile by the shed, or buy new wood, fabric, rope and screws at Bunnings in Altona North. Use the tools by the shed to craft two starter hurdles, then add the course extension and weave poles.');
     for(;;){
-      const choices=Object.entries(CRAFT_RECIPES).map(([id,r])=>({label:r.name,value:id,note:`${craftReason(id)||'Ready to make'} · `+Object.entries(r.needs).map(([k,n])=>`${ITEMS[k].name} ${state.count(k)}/${n}`).join(', ')}));
+      const choices=Object.entries(CRAFT_RECIPES).map(([id,r])=>({label:r.name,value:id,note:`${craftReason(id)||'Ready to make'} · `+Object.entries(r.needs).map(([k,n])=>`${materialName(k)} ${materialCount(k)}/${n}`).join(', ')}));
       const id=await ui.say({text:`Garden shed. Crafting level ${skill('crafting').level}.`,choices:[...choices,{label:'Put the tools away',value:null}]},{cancelValue:null});
       if(!id)return;
       const result=craft(id);if(!result.ok){await ui.say(result.reason);continue;}
@@ -1584,7 +1647,7 @@ export class WorldScene extends Phaser.Scene {
     this.yardCourse=paintYardCourse(this);
   }
   async coursePractice(){
-    if(this.regionId==='yard'&&!state.count('coursekit'))return ui.say(['Buy materials at Bunnings, then craft two starter hurdles using the tools at the shed.','Jean lends equipment for practice at the Exhibition Building, too.']);
+    if(this.regionId==='yard'&&!state.count('coursekit'))return ui.say(['Gather scrap from bins and the junk pile by the shed (or buy new at Bunnings), then craft two starter hurdles at the shed.','Jean lends equipment for practice at the Exhibition Building, too.']);
     const pet=await this.chooseCoursePet();if(!pet)return;
     const tier=this.regionId==='yard'?yardTier():await ui.say({text:'Choose a practice layout.',choices:[{label:'Novice',value:'novice'},{label:'City circuit',value:'open'},{label:'Championship',value:'champion'},{label:'Later',value:null}]},{cancelValue:null});if(!tier)return;
     const mode=this.regionId==='yard'?await ui.say({text:'Home practice has labels and guidance. What would you like to rehearse?',choices:[{label:'Agility course',value:'course'},{label:'Obedience routine',value:'obedience'},{label:'Later',value:null}]},{cancelValue:null}):'course';if(!mode)return;
@@ -1628,8 +1691,9 @@ export class WorldScene extends Phaser.Scene {
       const d=DIVISIONS.find(d=>!sh.claimed.includes(d.id));if(!d)return ui.say(['Jean: "Exhibition champion! Your rosette is in your bag. The practice ring stays open, and the other owners are always happy to share tips."'],opts);
       const p=divisionProgress(d.id);
       if(divisionDone(d.id)){
-        sh.claimed.push(d.id);state.addMoney(d.reward);gainXp(petFighter(sh.pet),50);awardSkill('handling',60);if(d.id==='champion')state.addItem('showrosette');this.save();
-        await ui.say([`Jean: "${d.name} complete. ${form(sh.pet).name} and ${HEROES[state.data.hero||'helen'].name} make a wonderful team."`,`$${d.reward}, 50 pet XP and 60 pet handling XP.`,d.id==='champion'?'The audience claps as Jean pins on your champion rosette. Mira promises a celebratory dog walk. Bear insists on a belly rub.':'Your next division is unlocked. Take a break or continue.'],opts);continue;
+        sh.claimed.push(d.id);state.addMoney(d.reward);gainXp(petFighter(sh.pet),50);awardSkill('handling',60);if(d.id==='champion'){state.addItem('showrosette');state.addItem('bestinshow');state.addGear('championsash');invalidateMap('home');}this.save();
+        if(d.id==='champion')ui.banner('Best in Show!','A cup for the cabinet and the Champion\'s sash, which nobody else has');
+        await ui.say([`Jean: "${d.name} complete. ${form(sh.pet).name} and ${HEROES[state.data.hero||'helen'].name} make a wonderful team."`,`$${d.reward}, 50 pet XP and 60 pet handling XP.`,d.id==='champion'?'The audience claps as Jean pins on your champion rosette and hands over the Best in Show cup. Mira promises a celebratory dog walk. Bear insists on a belly rub.':'Your next division is unlocked. Take a break or continue.'],opts);continue;
       }
       const event=await ui.say({text:`${d.name}. ${d.description}`,choices:[...d.rivals.map(id=>({label:`Play-fight: ${NPCS[id].name}${p.battles.includes(id)?' (won)':''}`,value:id,note:COMPETITORS.find(c=>c.id===id).tip})),{label:`Agility course${p.course?' (qualified)':''}`,value:'course'},{label:`Obedience: ${d.obedience}${p.obedience>=2?' (qualified)':''}`,value:'obedience'},{label:'Take a break',value:null}]},{...opts,cancelValue:null});if(!event)return;
       if(event==='course'){
@@ -1681,7 +1745,7 @@ export class WorldScene extends Phaser.Scene {
       if (!pet) {
         const d = PETS.find(p => p.id === id);
         pet = new Pet(this, d, { mode: 'follow', index: state.data.party.indexOf(id), near: this.player });
-        pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }); });
+        pet.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'pet', ref: pet }, ptr); });
         this.pets.push(pet);
       } else if (pet.mode !== 'follow') this.joinTeam(pet);
     }
@@ -1972,7 +2036,7 @@ export class WorldScene extends Phaser.Scene {
   // ------------------------------------------------------------ main loop
   spawnNpc(n) {
     const npc = new Npc(this, n.id, NPCS[n.id], n);
-    npc.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'npc', ref: npc }); });
+    npc.on('pointerdown', (ptr, lx, ly, ev) => { ev.stopPropagation(); this.tapTarget({ kind: 'npc', ref: npc }, ptr); });
     // People stay interactive but cannot pin the player against a wall or each other.
     npc.collider = null;
     return npc;
@@ -2102,14 +2166,14 @@ export class WorldScene extends Phaser.Scene {
       const npc = this.visitor('paddy');
       await ui.say(PADDY_SPILL, { name: 'Paddy', portrait: npcIcon('paddy') });
       if (npc) this.removeNpc(npc);
-      await ui.say([PADDY_SPILL_HINT, `The spill vote is at council on ${weekday(s.ch2.deadline)} night, day ${s.ch2.deadline}. Check the Story app on your Pawphone.`]);
+      await ui.say([PADDY_SPILL_HINT, `The spill vote is at council on ${weekday(s.ch2.deadline)} night, day ${s.ch2.deadline}. Check the To Do app on your Pawphone.`]);
     }
     if (n === 3) {
       if (d.hero === 'helen') { s.heroBefore = 'helen'; d.hero = 'hadrian'; this.player.refreshLook(); }
       if (!this.sibling) this.sibling = new Sibling(this, this.player.x + 10, this.player.y + 2, 'aleksy');
       await ui.say(['Helen: "Right, I\'m off to Nanna and Pop\'s. Dad\'s in charge. Be good, boys!"', 'The front door closes. The boys look at each other.', 'You are playing as both twins until Helen gets home. Swap between them with Swap twins in Settings.']);
     }
-    if (n === 4) await ui.say(['Helen: "Right, team. The September Babies Bash. We\'re going to throw the party of the century, and the whole town is invited."', 'Check the Story app on your Pawphone for the to-do list.']);
+    if (n === 4) await ui.say(['Helen: "Right, team. The September Babies Bash. We\'re going to throw the party of the century, and the whole town is invited."', 'Check the To Do app on your Pawphone for the list.']);
     this.save();
   }
 
@@ -2157,23 +2221,35 @@ export class WorldScene extends Phaser.Scene {
       const sprite = this.add.image(pos.x, pos.y - 8, 'item-fishpie').setOrigin(0.5, 1).setDepth(pos.y + 8).setScale(fitScale(this, 'item-fishpie', 12));
       this.lunchSpot = { kind: 'lunch', x: pos.x, y: pos.y - 4, r: 18, sprite, bubble: 'fx-bubble-alert' };
       this.interactables.push(this.lunchSpot);
+    } else if (this.regionId === 'civiccentre' && story().ch2.swapped && state.data.day < (story().ch2.sickUntil || 0)) {
+      // Her booth while she is off sick: nothing left to swap.
+      const pos = toWorld(22.5, 9);
+      this.lunchSpot = { kind: 'lunch', x: pos.x, y: pos.y - 4, r: 18, bubble: 'fx-bubble-dots', quiet: true };
+      this.interactables.push(this.lunchSpot);
     }
-    for (const id of story().pranks) {
-      const npc = this.npcs.find(n => n.id === id && !n.gone);
-      if (npc) this.drawPrankMarker(npc, id);
+    // Sinead still has the bubble wand: the odd bubble drifts up when she puffs on it.
+    if (story().pranks.includes('sinead')) {
+      this.time.addEvent({ delay: 3500, loop: true, callback: () => {
+        const npc = this.npcs.find(n => n.id === 'sinead' && !n.gone && n.visible);
+        if (npc && Math.random() < 0.45) this.vapeBubbles(npc, 1 + (Math.random() < 0.3 ? 1 : 0));
+      } });
     }
   }
-  drawPrankMarker(npc, id) {
-    const colors = { paddy: 0xe2506a, corni: 0xf4efe0, mem: 0x8c8a82, rose: 0x4f79b8, slinks: 0x74349b, sinead: 0x8bd8eb, tim: 0x65a94d, nicholas: 0xe6c64c };
-    const g = this.add.graphics().setDepth(npc.y + 30);
-    const x = Math.round(npc.x - 6), y = Math.round(npc.y - 33), color = colors[id] || 0xf4efe0;
-    g.fillStyle(0x28231e, 1); g.fillRect(x - 1, y - 1, 14, 10); g.fillStyle(color, 1); g.fillRect(x, y, 12, 8);
-    if (id === 'corni') { g.fillStyle(0xffffff, 1); g.fillRect(x + 2, y + 2, 3, 3); g.fillRect(x + 7, y + 2, 3, 3); g.fillStyle(0x28231e, 1); g.fillRect(x + 3, y + 3, 1, 1); g.fillRect(x + 8, y + 3, 1, 1); }
-    else if (id === 'paddy') { g.fillStyle(0x8f2937, 1); g.fillRect(x + 2, y + 3, 8, 3); g.fillRect(x + 4, y + 1, 4, 2); }
-    else if (id === 'sinead') { g.fillStyle(0xffffff, 0.9); g.fillCircle(x + 3, y + 3, 2); g.fillCircle(x + 8, y + 1, 1.5); }
-    else if (id === 'tim') { g.fillStyle(0x2d642e, 1); g.fillRect(x + 2, y + 2, 6, 4); g.fillRect(x + 7, y + 1, 3, 3); g.fillRect(x + 1, y + 6, 2, 2); }
-    else { g.fillStyle(0xffffff, 0.9); g.fillRect(x + 2, y + 2, 8, 1); g.fillRect(x + 2, y + 5, 5, 1); }
-    this.tweens.add({ targets: g, y: g.y - 2, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.inOut' });
+  // Single soap bubbles from someone's mouth: each wobbles up, drifts and pops.
+  vapeBubbles(npc, n = 1, gap = 420) {
+    const side = npc.dir === 'left' ? -1 : npc.dir === 'right' ? 1 : 0;
+    for (let i = 0; i < n; i++) this.time.delayedCall(i * gap, () => {
+      if (!npc.active) return;
+      const x = npc.x + side * 5, y = npc.y - 21, r = 1.6 + Math.random() * 1.6;
+      const b = this.add.circle(x, y, r, 0xbfe8f4, 0.3).setStrokeStyle(1, 0xffffff, 0.9).setDepth(9500);
+      const shine = this.add.circle(x - r * 0.4, y - r * 0.4, 0.7, 0xffffff, 0.95).setDepth(9501);
+      const dx = (side || (Math.random() < 0.5 ? -1 : 1)) * (10 + Math.random() * 14), rise = 26 + Math.random() * 18, life = 1500 + Math.random() * 900;
+      this.tweens.add({ targets: [b, shine], y: `-=${rise}`, duration: life, ease: 'Sine.out' });
+      this.tweens.add({ targets: [b, shine], x: `+=${dx}`, duration: life, ease: 'Sine.inOut' });
+      this.tweens.add({ targets: b, scale: 1.25, duration: life * 0.5, yoyo: true, ease: 'Sine.inOut' });
+      // pop
+      this.time.delayedCall(life, () => { this.tweens.add({ targets: [b, shine], scale: 2, alpha: 0, duration: 120, onComplete: () => { b.destroy(); shine.destroy(); } }); });
+    });
   }
   lesleyHere() { return this.npcs.some(n => n.id === 'lesley' && !n.gone); }
 
@@ -2188,7 +2264,8 @@ export class WorldScene extends Phaser.Scene {
     const needsText = n => Object.entries(n).map(([k, c]) => `${c} ${ITEMS[k].name.toLowerCase()}`).join(', ');
     const has = n => Object.entries(n).every(([k, c]) => state.count(k) >= c);
     const choices = this.knownRecipes().filter(rid=>!practice||COOK_RECIPES[rid].baked).map(rid => ({ label: ITEMS[rid].name, value: rid, icon: itemIcon(rid, 32), note: `${has(COOK_RECIPES[rid].needs) ? '✓ ' : ''}${needsText(COOK_RECIPES[rid].needs)}` }));
-    if (inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon) choices.unshift({ label: RECIPES.fishpie.name, value: 'fishpie', note: RECIPES.fishpie.needs });
+    // One dodgy pie at a time: the option goes once there is one in the bag.
+    if (inChapter(2) && !story().ch2.swapped && !story().ch2.campaignWon && !state.count('fishpie')) choices.unshift({ label: RECIPES.fishpie.name, value: 'fishpie', note: RECIPES.fishpie.needs });
     const pick_ = await ui.say({ text: 'The oven. Cook something?', choices: [...choices, { label: 'Not now', value: null }] }, { cancelValue: null });
     if (!pick_) return;
     if (pick_ === 'fishpie') return this.cookFishPie();
@@ -2210,6 +2287,10 @@ export class WorldScene extends Phaser.Scene {
     const fish = Object.keys(ITEMS).find(id => ITEMS[id].fish && state.count(id) >= CH2_RECIPE.fish);
     const r = RECIPES.fishpie;
     if (!fish || state.count('lemon') < CH2_RECIPE.lemon || state.count('laxatives') < CH2_RECIPE.laxatives) return ui.say([`You need ${r.needs}. Catch a fish at Edwardes Lake, Edgars Creek or Kororoit Creek. Lemons grow on every second tree in Melbourne.`, 'Laxatives: Stavros\'s deli at Preston Market has some behind the counter, and so does the milk bar on Nicholson St, Brunswick East.']);
+    // Baked by hand like everything else, only this time you try to do it badly.
+    const prep = await ui.baking({ name: r.name, recipe: 'fishpie' });
+    if (!prep) return;
+    if (prep.stars < DODGY_MIN) return ui.say(r.tooNice);
     state.removeItem(fish); state.removeItem('lemon'); state.removeItem('laxatives');
     state.addItem('fishpie');
     story().ch2.pie = true;
@@ -2222,6 +2303,7 @@ export class WorldScene extends Phaser.Scene {
   // Cr Bentleigh's lunch on the booth in the foyer (Chapter 2).
   async lunch(t) {
     const s = story(), c2 = s.ch2;
+    if (c2.swapped) return ui.say([LUNCH.already]);
     if (!this.lesleyHere()) return ui.say(['An empty booth. Cr Bentleigh eats her lunch here every weekday, 11am to 3pm.']);
     await ui.say(LUNCH.look);
     if (!state.count('fishpie')) return ui.say([LUNCH.noPie]);
@@ -2247,6 +2329,8 @@ export class WorldScene extends Phaser.Scene {
     state.removeItem('fishpie');
     t.sprite.setTint(0xc8a050);
     await ui.say(LUNCH.swap);
+    // Her own pie goes in your bag.
+    state.addItem('lesleypie'); sfx.pickup(); ui.toast(`+1 ${ITEMS.lesleypie.name}`, itemIcon('lesleypie', 32));
     if (lesley) { lesley.setVisible(true); await lesley.scriptTo([P(13, 13), P(20, 11), P(21, 9)], 70); lesley.setDir('right'); }
     await ui.say(LUNCH.eat, { name: 'Cr Lesley Bentleigh', portrait: npcIcon('lesley') });
     c2.swapped = true; c2.sickUntil = state.data.day + 7;
@@ -2273,10 +2357,12 @@ export class WorldScene extends Phaser.Scene {
     if (pr.item) state.removeItem(pr.item);
     const [setup, ...rest] = pr.lines;
     await ui.say([setup], opts);
-    await this.reactFx(npc, pr.react);
+    // The bubble wand: she puffs, and out come single bubbles, one by one.
+    if (pr.react === 'bubbles') { this.vapeBubbles(npc, 6, 450); await new Promise(r => this.time.delayedCall(1400, r)); }
+    else await this.reactFx(npc, pr.react);
     await ui.say(rest, opts);
     s.pranks.push(npc.id);
-    this.drawPrankMarker(npc, npc.id);
+    if (pr.react === 'bubbles') this.vapeBubbles(npc, 2, 700);
     state.addFriendPoints(npc.id, 5);
     sfx.heart(); this.heartsFx(npc, 4);
     ui.toast(PRANK_AFTER(s.pranks.length));
@@ -2379,7 +2465,7 @@ export class WorldScene extends Phaser.Scene {
     const p = this.party, id = npc.id, opts = { name: NPCS[id]?.name, portrait: npcIcon(id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
     if (id === 'paddy') return ui.say([pick(PADDY_PARTY)], opts);
-    if (p.heard.includes(id)) return ui.say([pick(PARTY_MINGLE)(NPCS[id]?.name || 'A guest')], opts);
+    if (p.heard.includes(id)) return ui.say([pick(p.slump ? PARTY_BORED : PARTY_MINGLE)(NPCS[id]?.name || 'A guest')], opts);
     p.heard.push(id);
     this.heartsFx(npc, 2);
     await ui.say(PARTY_STORIES[id] || PARTY_STORY_DEFAULT(NPCS[id]?.name || 'A guest'), opts);
@@ -2396,16 +2482,40 @@ export class WorldScene extends Phaser.Scene {
     const GAMES = [1, 2, 'karaoke', 3];
     const all = p.heard.length >= p.guests.length;
     do {
-      const g = GAMES[p.games++];
+      const g = GAMES[p.games++], before = p.score;
       if (g === 'karaoke') {
         await ui.say(['Paddy wheels out the karaoke machine. "Who\'s first? Not me. Definitely me."']);
         const r = await ui.karaoke({ intro: 'Paddy hands you the mic. "Make your mother proud. She\'s right there."' });
         p.score += r?.stars || 0;
       } else p.score = await ui.party(p.guests, { only: g, score: p.score });
+      // A game that scored 1 or less: the party goes flat. Before the last game, try to rescue it.
+      const gained = p.score - before;
+      if (gained >= 2 && p.slump) { p.slump = false; ui.toast(PARTY_SLUMP.better); }
+      if (gained <= 1 && p.games < GAMES.length) { p.slump = true; await this.partyRescue(); }
     } while (all && p.games < GAMES.length);
     this.partyGaming = false;
     if (p.games >= GAMES.length) return this.partyEnd();
     ui.toast('Back to mingling!');
+  }
+  // The party is going badly: Helen notices, and you pick a way to save it
+  // (PARTY_SLUMP in data/story.js). Twice a party at most.
+  async partyRescue() {
+    const p = this.party, S = PARTY_SLUMP;
+    p.rescues ??= [];
+    sfx.sad();
+    const left = S.choices.filter(c => !p.rescues.includes(c.id));
+    if (p.rescues.length >= 2 || !left.length) { await ui.say([pick(S.notice)]); return ui.toast('The party is flat. Talk to your guests, then nail the next game.'); }
+    const id = await ui.say({ text: `${pick(S.notice)} ${S.ask}`, choices: [...left.map(c => ({ label: c.label, value: c.id })), { label: 'Ride it out', value: null }] }, { cancelValue: null });
+    const c = S.choices.find(x => x.id === id);
+    if (!c) return ui.say(['Helen tops up the chip bowls and hopes for the best.']);
+    p.rescues.push(c.id);
+    let gain = c.gain || 0, text = c.text;
+    if (c.risky) { const ok = Math.random() < 0.5; gain = ok ? c.gain : -(c.lose || 0); text = ok ? c.win : c.fail; }
+    p.score = Math.max(0, p.score + gain);
+    if (gain > 0) { p.slump = false; sfx.heart(); for (const n of this.npcs) if (!n.gone && (p.guests.includes(n.id) || n.id === 'paddy')) this.heartsFx(n, 1); }
+    else if (gain < 0) sfx.bump();
+    await ui.say(text);
+    ui.toast(gain > 0 ? `Party saved a bit! Party score +${gain}.` : gain < 0 ? `Oops. Party score ${gain}.` : 'The party is still a bit flat.');
   }
   async partyEnd() {
     const s = story(), d = state.data, { guests, score } = this.party;
@@ -2437,9 +2547,9 @@ export class WorldScene extends Phaser.Scene {
     s.done[4] = d.day;
     this.save();
     await ui.say(['A week later, Hobsons Bay votes.']);
-    await ui.news({ lines: NEWS_RESULT(votes, won, s.ch2.deposed), votes });
+    await ui.news({ lines: NEWS_RESULT(votes, won, s.ch2.deposed, score <= 3), votes });
     if (won) sfx.found();
-    await ui.card({ kicker: 'The end, for now', title: won ? 'Mayor Paddy!' : 'So close!', lines: THE_END, button: 'Keep playing' });
+    await ui.card({ kicker: 'The end, for now', title: won ? 'Mayor Paddy!' : 'Mayor Bentleigh...', lines: won ? THE_END : [...ELECTION_LOST, ...THE_END], button: 'Keep playing' });
     s.chapter = 5;
     this.partying = false;
     // Helen wakes up in bed the next morning, the backyard empty.
@@ -2498,14 +2608,14 @@ export class WorldScene extends Phaser.Scene {
     for (const n of this.npcs) if (!n.gone) n.update(this.player, dt, blocked);
     this.crowd.update(this.player, dt, blocked);
     const tick = Math.floor(state.data.minutes / 10);
-    if (tick !== this.routineTick) { this.routineTick = tick; this.syncRoutines(); this.maybeMeeting(); }
+    if (tick !== this.routineTick) { this.routineTick = tick; this.syncRoutines(); this.maybeMeeting(); maybeEventPrompt(this); }
     this.traffic.update(dt, this.player, blocked, this.crowd.list);
     this.updateDecor(dt, blocked);
     this.updateLighting();
     this.updateRain();
     if (!blocked && !ui.activity && !this.checkMartyEncounter()) { this.checkExits(); this.checkEncounter(); }
     if (!blocked && time > (this.nextStoryCheck || 0)) { this.nextStoryCheck = time + 1000; this.checkStory(); }
-    if (this.lunchSpot) this.lunchSpot.sprite.setVisible(this.lesleyHere());
+    if (this.lunchSpot?.sprite) this.lunchSpot.sprite.setVisible(this.lesleyHere());
 
     const t = blocked ? null : this.findTarget();
     if (t) {

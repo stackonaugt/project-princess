@@ -21,6 +21,7 @@
 import { EAST_PEOPLE, EAST_FOE_TEXT, EAST_PLACES } from './east.js';
 import { NORTH_PEOPLE, NORTH_FOE_TEXT, NORTH_PLACES } from './north.js';
 import { BATTLER_PEOPLE, BATTLER_FOE_TEXT } from './battlers.js';
+import { FISHING_PEOPLE } from './fishing.js';
 //  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
 
 import { SH_PEOPLE, SH_FOE_TEXT, SH_PLACES } from './summerhill.js';
@@ -733,6 +734,7 @@ export let PEOPLE = {
       friends: 'Make friends around town. At four hearts they\'ll jump in to help if you battle near where they live.',
       types: 'In a battle, pick moves that suit the foe. Water beats fire, park beats water. Look for "Strong!" on the button.',
       rest: 'Pets get their energy back when you come home. Or have a nap. Naps are underrated. I am a mayor and I know this.',
+      shed: 'Have you looked in the shed out the back? The tools are all there. Grab timber, cloth, cord and bolts from Bunnings and build the pets a course in the yard.',
     },
     helpsInBattle: 'Paddy sweeps in, robes flapping. "As mayor, I declare this play-fight in our favour."',
     leaving: ['Paddy grabs his keys and the robes in a dry-cleaning bag.', 'Paddy: "Off to council. Big day of arguing about bins. Love you!"'],
@@ -1689,6 +1691,7 @@ Object.assign(PLACES, EAST_PLACES);
 Object.assign(PEOPLE, NORTH_PEOPLE);
 Object.assign(FOE_TEXT, NORTH_FOE_TEXT);
 Object.assign(PEOPLE, BATTLER_PEOPLE);
+Object.assign(PEOPLE, FISHING_PEOPLE);   // Ross Millward (fishing.js)
 Object.assign(FOE_TEXT, BATTLER_FOE_TEXT);
 Object.assign(PLACES, NORTH_PLACES);
 PEOPLE = authoredValue('data/dialogue.js', 'PEOPLE', PEOPLE);

@@ -530,6 +530,9 @@ export const BRUNSEAST = {
 
 // New item icons (12x12, same format as ITEM_ART in items.js).
 export const EAST_ITEM_ART = {
+  gianttomato: { pal: { a: '#e0302a', b: '#f07a6a', k: '#7a1a18', g: '#3f8a3e', d: '#b02020' }, rows: [
+    '....g.gg....', '...gggggg...', '..kkkggkkk..', '.kbbaaaaaak.', 'kbbaaaaaaadk', 'kbaaaaaaaadk',
+    'kaaaaaaaaadk', 'kaaaaaaaaddk', 'kdaaaaaaaddk', '.kddaaaaddk.', '..kkddddkk..', '....kkkk....'] },
   cannoli: { pal: { a: '#d8923a', b: '#f0c070', k: '#6a3a1a', w: '#f8f4e8', g: '#7ab04a' }, rows: [
     '............', '............', '............', '.gkkkkkkkkg.', 'gwkbaabbakwg', 'gwkaaaaaakwg',
     'gwkaabaaakwg', '.gkkkkkkkkg.', '............', '..w.w..w.w..', '............', '............'] },

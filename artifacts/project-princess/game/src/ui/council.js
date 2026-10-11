@@ -5,7 +5,7 @@ import { state } from '../systems/state.js';
 import { MOTIONS, MOTION_ORDER, MAX_PER_MEETING } from '../data/council.js';
 import { ITEMS } from '../data/items.js';
 import { NPCS } from '../data/npcs.js';
-import { itemIcon, npcIcon } from './images.js';
+import { itemIcon, npcHead } from './images.js';
 import { weekday } from '../data/routines.js';
 import { sfx } from '../systems/sfx.js';
 
@@ -42,7 +42,7 @@ export function openCouncil(panel, close) {
             const sw = m.votes.swing[w];
             // The board only says who is undecided. Asking them (or Paddy) tells you what they want.
             const known = state.swingKnown(id, w);
-            return h('div', { class: 'gear-row' }, h('img', { class: 'pix', src: npcIcon(w), alt: '', width: 24, height: 24 }), h('span', { class: 'small' }, known ? `${short(w)}: undecided. To do: ${sw.todo}.` : `${short(w)}: undecided. Ask them about it.`));
+            return h('div', { class: 'gear-row' }, h('img', { class: 'pix council-head', src: npcHead(w, 32), alt: '', width: 32, height: 32 }), h('span', { class: 'small' }, known ? `${short(w)}: undecided. To do: ${sw.todo}.` : `${short(w)}: undecided. Ask them about it.`));
           }) : [];
           return h('div', { class: 'note' },
             h('h4', {}, m.title),

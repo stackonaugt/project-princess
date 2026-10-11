@@ -69,8 +69,8 @@ test('a fight always ends within the time limit', () => {
 });
 
 test('every cast uses one bait, and there is no fishing without it', () => {
-  const src = readFileSync(new URL('../game/src/scenes/WorldScene.js', import.meta.url), 'utf8');
-  const body = src.slice(src.indexOf('async goFishing()'), src.indexOf('// ------------------------------------------------------------ pets'));
+  const src = readFileSync(new URL('../game/src/systems/fishing-trip.js', import.meta.url), 'utf8');
+  const body = src.slice(src.indexOf('export async function goFishing'), src.indexOf('// ------------------------------------------------------------ Ross'));
   assert.match(body, /if \(state\.count\('bait'\) < 1\) return ui\.say/);
   const removeAt = body.indexOf("state.removeItem('bait')"), fishAt = body.indexOf('ui.fish(');
   assert.ok(removeAt > 0 && removeAt < fishAt, 'bait is taken before the cast');

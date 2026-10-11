@@ -189,6 +189,7 @@ body.touch.talking #joyZone { pointer-events: none; }
 .num { font-size: 12px; opacity: .6; }
 .meta { margin: 0; font-size: 14px; opacity: .8; }
 .pix { image-rendering: pixelated; }
+.council-head { width: 32px; height: 32px; object-fit: cover; object-position: top; flex: none; border-radius: 4px; background: rgba(0,0,0,.06); }
 .type { font-size: 12px; font-weight: 600; color: #fff; padding: 1px 8px; border-radius: 10px; border: 2px solid rgba(0, 0, 0, .25); }
 .hearts { display: inline-flex; gap: 2px; margin: 3px 0; }
 .hearts i { width: 11px; height: 10px; background: var(--parch-dark); clip-path: polygon(0 20%, 20% 0, 50% 20%, 80% 0, 100% 20%, 100% 50%, 50% 100%, 0 50%); }
@@ -596,12 +597,13 @@ body.touch .bt-btn { min-height: 52px; }
 .training-person img { height:80px; width:auto; image-rendering:pixelated; }
 .training-person span { display:block; font-size:15px; color:#342c23; background:#f4edda; border-radius:4px; }
 .training-hurdle { position:absolute; bottom:20px; width:12px; background:#b47b44; border:2px solid #67452d; transform:translateX(-50%); }
-.training-hurdle span { position:absolute; top:-28px; left:-14px; font-size:14px; white-space:nowrap; }
+.training-hurdle::before { content:''; position:absolute; top:4px; left:-14px; width:36px; height:5px; background:repeating-linear-gradient(90deg,#e2506a 0 6px,#f7f1e3 6px 12px); border:2px solid #67452d; }
 .training-target { position:absolute; bottom:8px; width:64px; height:30px; border:3px dashed #3d7042; border-radius:50%; transform:translateX(-50%); font-size:13px; text-align:center; }
-.training-toy { position:absolute; bottom:90px; transform:translateX(-50%); padding:4px; background:#f5d57a; border-radius:8px; font-size:13px; }
+.training-toy { position:absolute; bottom:90px; width:30px; height:30px; transform:translateX(-50%); image-rendering:pixelated; z-index:4; }
+.training-box-toy { width:26px; height:26px; margin-top:4px; image-rendering:pixelated; }
 .training-box { position:absolute; bottom:18px; width:46px; height:38px; border:3px solid #795631; background:#ba9159; text-align:center; transform:translateX(-50%); line-height:30px; font-size:14px; }
 .training-box.open { background:#dfc79e; border-style:dashed; }
-.training-distraction { position:absolute; bottom:18px; font-size:13px; padding:4px; background:#d4e7b8; border-radius:8px; }
+.training-distraction { position:absolute; bottom:22px; width:30px; height:30px; image-rendering:pixelated; }
 .training-meter { display:block; width:100%; height:18px; accent-color:#4f8f4c; }
 .training-meter[hidden] { display:none; }
 .training-status { min-height:3em; }

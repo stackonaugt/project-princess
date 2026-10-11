@@ -20,6 +20,7 @@ export function buildBowls() {
   b.put('bowlsclub', 4, 2);
   b.fill(4, 5, 32, 2, 'f');
   b.put('bench', 14, 6); b.put('bench', 24, 6);
+  b.npc('treasurer', 19, 6, { face: 'down' });   // Maureen: membership and the Wednesday championship (data/bowls-club.js)
 
   // The two greens, with ditches of fine gravel around them
   b.fill(2, 8, 17, 11, 'g'); b.fill(3, 9, 15, 9, 'L');

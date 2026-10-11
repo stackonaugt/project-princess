@@ -16,6 +16,8 @@ export const GEAR = {
   pouch:   { name: 'Snack pouch', price: 55, desc: 'A little energy back every turn.', bonus: { regen: 0.06 } },
   // Not for sale: the fairy at Coburg Station gives it away (forType: only works on that type).
   fairycollar: { name: 'Fairy collar', price: 0, gift: true, forType: 'fairy', desc: 'A gift from a real fairy. Fairy types only: +30% special and more lucky hits.', bonus: { special: 1.3, crit: 0.06 } },
+  // Not for sale: the Exhibition Dog Show's champion prize (a `gift` gear never shows in a shop).
+  championsash: { name: 'Champion\'s sash', price: 0, gift: true, desc: 'Best in Show. +10% attack, defence, speed and special. Walks a little taller.', bonus: { attack: 1.1, defence: 1.1, speed: 1.1, special: 1.1 } },
   bowtie:  { name: 'Fancy bow tie', price: 45, desc: '+30% experience from battles. Learning is classy.', bonus: { xp: 1.3 } },
 };
 tune(GEAR, TUNING.gear);   // prices from the tuning sheet (data/tuning.js)

@@ -35,6 +35,8 @@ export function openMenu(panel, close) {
         } }, (DAY_LENGTHS.find(o => o[0] === (d.settings.dayLength || 1)) || DAY_LENGTHS[0])[1])),
         // Helen until free play; in Chapter 3 you swap between the twins.
         twins || free ? row(twins ? 'Twins' : 'Character', h('button', { class: 'wood-btn small', onclick: () => { close(); setTimeout(() => bus.emit('game:hero'), 50); } }, twins ? 'Swap twins' : 'Change')) : null,
+        // Wedged behind something? Hop to the nearest open spot with a way out.
+        row('Stuck?', h('button', { class: 'wood-btn small', onclick: () => { close(); setTimeout(() => bus.emit('game:unstick'), 50); } }, 'Unstick me')),
         canFull ? row('Full screen', h('button', { class: 'wood-btn small', onclick: () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(() => {}) }, 'Toggle')) : null),
       h('div', { class: 'set-group' }, h('h4', {}, 'Saving'),
         h('p', { class: 'small' }, 'Your game saves itself every few seconds on this device.'),

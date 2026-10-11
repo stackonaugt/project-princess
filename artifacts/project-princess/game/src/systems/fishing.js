@@ -12,7 +12,15 @@
 //
 // FIGHT is [speed, dart] per fish: how hard it pulls, and how often it darts
 // (a sudden change of direction). Eels thrash, carp are lazy, boots just sink.
-export const FIGHT = { redfin: [1.05, 0.5], carp: [0.84, 0.2], eel: [1.35, 0.9], yabby: [0.95, 0.7], oldboot: [0.7, 0] };
+// The numbers live with each fish in data/fishing.js (FISH).
+import { FISH } from '../data/fishing.js';
+export const FIGHT = Object.fromEntries(Object.entries(FISH).map(([id, f]) => [id, f.fight]));
+
+// How much easier a fight is (0 to MAX_EASE): fishing level, the rod and the
+// golden lure. Each level is a bit easier; each better rod a bit more.
+export const MAX_EASE = 0.5;
+export const fishingEase = ({ level = 1, rodTier = 1, lure = 0 } = {}) =>
+  Math.min(MAX_EASE, Math.max(0, (level - 1) * 0.035 + (rodTier - 1) * 0.05 + lure));
 
 export const FIGHT_TUNING = {
   timeLimit: 30,      // seconds before the fish gets away regardless
@@ -31,10 +39,15 @@ const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
 
 export class FishFight {
   // zone: width of the green zone (0 to 1). rng: injectable for tests.
-  constructor({ fish, zone = 0.2, rng = Math.random } = {}) {
-    const [speed, dart] = FIGHT[fish] || [0.84, 0.3];
-    this.fish = fish; this.speed = speed; this.dart = dart; this.rng = rng;
-    this.zw = clamp(zone * 1.2, 0.17, 0.4);
+  // ease (0 to MAX_EASE, see fishingEase): a wider zone, a calmer fish, a
+  // line that strains less and a shorter hold.
+  constructor({ fish, zone = 0.2, ease = 0, rng = Math.random } = {}) {
+    const [speed0, dart0] = FIGHT[fish] || [0.84, 0.3];
+    ease = clamp(ease, 0, MAX_EASE);
+    const speed = speed0 * (1 - ease * 0.35), dart = dart0 * (1 - ease * 0.5);
+    this.fish = fish; this.speed = speed; this.dart = dart; this.rng = rng; this.ease = ease;
+    this.strain = 1 - ease * 0.6;
+    this.zw = clamp(zone * 1.2 * (1 + ease), 0.12, 0.45);
     this.z0 = 0.15 + rng() * (0.7 - this.zw);
     this.centre = this.z0 + this.zw / 2;
     this.pos = this.centre;
@@ -43,7 +56,7 @@ export class FishFight {
     this.vel = this.run * (0.9 + speed * 0.5);
     this.stamina = 1;
     this.tire = 6 + speed * 4;             // seconds until it is worn out
-    this.hold = 2 + speed * 1.4;           // seconds in the zone needed (once tired)
+    this.hold = (2 + speed * 1.4) * (1 - ease * 0.4);   // seconds in the zone needed (once tired)
     this.tension = 0; this.progress = 0; this.edge = 0; this.t = 0;
     this.result = null;                    // 'caught' | 'snap' | 'thrown' | 'time'
     this.pulledAt = -99;
@@ -57,7 +70,7 @@ export class FishFight {
     if (this.over) return false;
     const toward = Math.sign(this.centre - this.pos) || 0;
     this.vel += toward * FIGHT_TUNING.kick;
-    this.tension += FIGHT_TUNING.tapTension + FIGHT_TUNING.freshTension * this.stamina;
+    this.tension += (FIGHT_TUNING.tapTension + FIGHT_TUNING.freshTension * this.stamina) * this.strain;
     this.pulledAt = this.t;
     if (this.tension >= 1) this.result = 'snap';
     return true;

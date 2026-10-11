@@ -25,7 +25,7 @@ export let ITEMS = {
   cheese:    { name: 'Cheese stick', price: 4,       desc: 'Individually wrapped. Very fancy.' },
   snag:      { name: 'Sausage in bread', price: 5,   desc: 'From the hardware barn sausage sizzle. Onions on the bottom, as is correct.' },
   croissant: { name: 'Almond croissant', price: 7,   desc: 'From a Sydney Rd cafe. Costs about as much as a small car.' },
-  lemon:     { name: 'Backyard lemon', price: 2,     desc: 'Every Reservoir backyard has a lemon tree. This is proof.' },
+  lemon:     { name: 'Lemon', price: 2,     desc: 'Every Reservoir backyard has a lemon tree. Coles sells them anyway.' },
   tennis:    { name: 'Tennis ball', price: 4,        desc: 'Slightly damp. Nobody knows why.' },
   ribbon:    { name: 'Pink ribbon', price: 8,        desc: 'Perfect for a pom-pom.' },
   duckfeather: { name: 'Duck feather', price: 4,   desc: 'Soft, brown and a bit damp. A thank you from the ducks.' },
@@ -86,19 +86,21 @@ export let ITEMS = {
   umbrella:   { name: 'Four seasons umbrella', price: 15, gift: true, art: { kind: 'brolly', body: '#3a6aa8', label: '#e8c040', cap: '#2a2a30' }, desc: 'For Melbourne\'s four seasons in one day. Mostly the wet one.' },
   mykicase:   { name: 'Myki wallet', price: 8, gift: true, art: { kind: 'packet', body: '#7ab040', label: '#2a2a30', cap: '#f4f0e6' }, desc: 'A little green wallet for your myki. Touching on has never been so stylish.' },
 
-  // Fishing (Anaconda, Preston): bait, and what you catch. Fish are treats; sell
-  // them at James's (sell: price paid).
-  bait:       { name: 'Bait', price: 2, farm: true, desc: 'A tub of wriggly worms. Better bites while you have some.' },
-  redfin:     { name: 'Redfin', sell: 14, fish: true, desc: 'Stripy, spiky and good eating. Cats go feral for it.' },
-  carp:       { name: 'Carp', sell: 6, fish: true, desc: 'A pest, honestly. Still counts as a fish.' },
-  eel:        { name: 'Shortfin eel', sell: 18, fish: true, desc: 'Slippery and ancient. Eels have lived in Melbourne creeks forever.' },
-  yabby:      { name: 'Yabby', sell: 10, fish: true, desc: 'A little freshwater crayfish. Pinchy.' },
-  oldboot:    { name: 'Old boot', sell: 1, junk: true, desc: 'Size 11. Full of pond water. Someone, somewhere, is limping.' },
+  // Fishing: bait, fish and junk live in data/fishing.js (FISHING_ITEMS, merged below).
   thermos:    { name: 'Thermos', price: 24, gift: true, desc: 'Keeps tea hot for twelve hours. Keeps soup hot for a whole council meeting.' },
   headtorch:  { name: 'Head torch', price: 20, gift: true, desc: 'For night runs, possum spotting and finding the car keys.' },
 
   // The story (data/story.js). story: true items are for the plot: not treats, not presents.
-  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon, laxatives and three days on a windowsill. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  fishpie:    { name: 'Very dodgy fish pie', story: true, desc: 'Fish, lemon and laxatives, baked as badly as humanly possible. For Cr Bentleigh\'s lunch. Do NOT eat.' },
+  // Swapped off Cr Bentleigh's booth. A genuinely good pie: most people like it
+  // (liked: true), and a few have something to say about it (giftLines, WorldScene.giveFriendGift).
+  lesleypie:  { name: 'Cr Bentleigh\'s fish pie', gift: true, liked: true, art: { kind: 'cake', body: '#e8c078', cap: '#d0a050', label: '#f4f4f0' },
+    desc: 'Her homemade fish pie, sticky note and all: "LESLEY\'S. DO NOT TOUCH." It smells annoyingly good.',
+    giftLines: {
+      lesley: ['love', 'Cr Bentleigh: "MY PIE! Where did you... never mind. I will not ask. I will eat it. Thank you."'],
+      paddy: ['like', 'Paddy: "Is that Lesley\'s pie? Love, we can\'t... Oh, go on then. It\'s a cracking pie. Don\'t tell her."'],
+      malcolm: ['like', 'Cr Dismay: "Lesley\'s fish pie! She never shares. I feel like I\'m getting away with something."'],
+    } },
   laxatives:  { name: 'Laxatives', price: 12, story: true, art: { kind: 'packet', body: '#e8eef4', label: '#3a7ac8', cap: '#c83a3a' }, desc: 'Extra strength. "Do not exceed the stated dose." Noted.' },
   // Chapter 3 prank supplies (data/story.js PRANKS). Bunnings, the $2 shop and James's milk bar.
   whoopee:    { name: 'Whoopee cushion', price: 3, story: true, art: { kind: 'ball', body: '#d83a4a', label: '#f08090' }, desc: 'Pink rubber, maximum comedy. Place under an unsuspecting dad.' },
@@ -108,6 +110,9 @@ export let ITEMS = {
   grapejuice: { name: 'Grape juice', price: 3, story: true, art: { kind: 'wine', body: '#6a2a5a', label: '#f4e8c8', cap: '#3a1a2a' }, desc: 'In a wine bottle. From a distance, it is a shiraz. Up close, it is for kids.' },
   crayons:    { name: 'Crayons', price: 2, story: true, art: { kind: 'packet', body: '#e8c040', label: '#3a9a4a', cap: '#c8443a' }, desc: 'Twenty-four colours. Enough to redraw an entire train timetable. With dinosaurs.' },
   bubbles:    { name: 'Bubble wand', price: 2, story: true, art: { kind: 'packet', body: '#f0a830', label: '#8ad0e8', cap: '#f4f4f0' }, desc: 'A little bottle of bubble mix shaped like a vape. Mango scented, sort of.' },
+  wrapping:   { name: 'Wrapping paper', price: 3, story: true, art: { kind: 'packet', body: '#e2506a', label: '#f5d63a', cap: '#3a8ad8' }, desc: 'Three rolls and a lot of sticky tape. Enough to wrap a box in a box in a box.' },
+  rubberchicken: { name: 'Rubber chicken', price: 2, story: true, art: { kind: 'packet', body: '#f2cc3a', label: '#e8873a', cap: '#d83a4a' }, desc: 'Squawks when squeezed. From a distance, almost a chook.' },
+  chalk:      { name: 'Footpath chalk', price: 2, story: true, art: { kind: 'packet', body: '#f4f4f0', label: '#e8a0b0', cap: '#8ad0e8' }, desc: 'Big fat sticks of chalk. Perfect for drawing a finish line where there isn\'t one.' },
   wigglescd:  { name: 'Wiggles CD', price: 5, story: true, art: { kind: 'globe', body: '#e8c040', label: '#c8443a', cap: '#3a7ac8' }, desc: 'Hot Potato, Fruit Salad, the hits. Guaranteed to start a dance-off.' },
   // Party decorations (deco: true) from Bunnings, for the September Babies Bash.
   bunting:    { name: 'Bunting', price: 6, deco: true, desc: 'Ten metres of little triangle flags. Gets tangled just by looking at it.' },
@@ -166,9 +171,15 @@ export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift 
 Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston
 import { CRAFT_ITEMS } from './crafting.js';
 Object.assign(ITEMS,CRAFT_ITEMS);
+import { FISHING_ITEMS } from './fishing.js';
+Object.assign(ITEMS, FISHING_ITEMS);   // fish, junk and the fishing comp's prizes (data/fishing.js)
 Object.assign(ITEMS, {
   groomrosette: { ...ITEMS.showrosette, name: 'Grooming Rosette', desc: 'Awarded for gentle care and a well-presented coat.' },
   breedrosette: { ...ITEMS.showrosette, name: 'Breed Presentation Rosette', desc: 'Awarded for breed character, condition and calm movement.' },
+  // The Exhibition championship's own trophy, for the cabinet at home (data/trophies.js).
+  bestinshow: { name: 'Best in Show cup', story: true, trophy: true, trophyArt: 'rosette', art: { kind: 'rosette', body: '#c83a6a', label: '#f8d860', cap: '#e8b830' },
+    desc: 'Exhibition Dog Show champion. Only one handler a season takes it home.',
+    trophyText: 'Best in Show, the Exhibition Dog Show championship: three divisions, six play-fights and a lot of very patient sits.' },
 });
 tune(ITEMS, TUNING.items);   // prices from the tuning sheet (data/tuning.js)
 ITEMS = authoredValue('data/items.js', 'ITEMS', ITEMS);

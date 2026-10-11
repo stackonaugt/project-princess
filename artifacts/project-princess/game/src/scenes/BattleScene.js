@@ -29,6 +29,11 @@ import { moveAnimations } from '../data/move-animations.js';
 import { playEvolution } from '../systems/evolution-fx.js';
 import * as R from '../systems/battle.js';
 
+// Where the fighters stand on a supplied battle background, as fractions of
+// the image (the 320x180 templates: pad centres at (90, 152) and (224, 108),
+// feet one unit below). Draw new art with ground under these spots.
+const BG_ANCHORS = { mine: { x: 90 / 320, y: 156 / 180 }, foe: { x: 224 / 320, y: 112 / 180 } };
+
 const hex = c => parseInt(c.slice(1), 16);
 const MAX_TEAM = 3;
 // Chance each turn (from the second) that a nearby friend turns up, and when your pet is low on energy.
@@ -102,6 +107,7 @@ export class BattleScene extends Phaser.Scene {
     this.horizon = Math.round(field * 0.4);
     this.foePos = { x: Math.round(W * 0.7), y: Math.round(Math.max(field * 0.52, this.horizon + 10 * this.unit)) };
     this.minePos = { x: Math.round(W * 0.23), y: Math.round(field - 6 * this.unit) };
+    this.fitBackground(W, field);
     this.drawBg(W, H);
     if (!this.animating) {
       this.place(this.foeSpr, this.foe, this.foePos);
@@ -152,23 +158,46 @@ export class BattleScene extends Phaser.Scene {
     if (f.float) this.tweens.add({ targets: spr, y: '-=' + this.unit * 2, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
   }
 
+  // Which supplied battle background PNG (if any) this battle uses: a
+  // location-specific one wins over suburb art, then the shared default.
+  // Optional night variants retain the artist's colours without a tint.
+  backgroundKey() {
+    const night = isNight(state.data.minutes);
+    const names = (this.opts.exhibition ? ['exhibition'] : [this.opts.region, this.opts.suburb, 'default']).filter(Boolean);
+    const keys = names.flatMap(name => night ? [`battlebg-${name}-night`, `battlebg-${name}`] : [`battlebg-${name}`]);
+    return keys.find(key => custom.has(key) && this.textures.exists(key)) || null;
+  }
+  // Cover the field with the art (cropped, never squashed), bottom aligned,
+  // and stand the fighters where the art's ground is. Backgrounds follow the
+  // template layout (BG_ANCHORS): your pet on the lower-left pad, the foe on
+  // the upper-right one. A narrow phone can't show both pads, so the crop
+  // slides to keep them in view and the fighters are kept on screen, still at
+  // the art's ground height.
+  fitBackground(W, field) {
+    const key = this.backgroundKey();
+    this.bgFit = null;
+    if (!key) return;
+    const src = this.textures.get(key).getSourceImage();
+    const k = Math.max(W / src.width, field / src.height), dw = src.width * k, dh = src.height * k;
+    const mid = (BG_ANCHORS.mine.x + BG_ANCHORS.foe.x) / 2 * dw;
+    const left = Math.round(Math.min(0, Math.max(W - dw, W / 2 - mid))), top = field - dh;
+    this.bgFit = { key, left, top, dw, dh };
+    const u = this.unit, at = a => ({ x: left + a.x * dw, y: top + a.y * dh });
+    const mine = at(BG_ANCHORS.mine), foe = at(BG_ANCHORS.foe);
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    this.minePos = { x: Math.round(clamp(mine.x, 9 * u, W * 0.42)), y: Math.round(clamp(mine.y, field * 0.55, field - 2 * u)) };
+    this.foePos = { x: Math.round(clamp(foe.x, W * 0.58, W - 9 * u)), y: Math.round(clamp(foe.y, field * 0.3, this.minePos.y - 8 * u)) };
+  }
+
   drawBg(W, H) {
     const g = this.bg, S = SCENERY[this.opts.suburb] || SCENERY.laverton, u = this.unit, hz = this.horizon;
     const night = isNight(state.data.minutes);
     g.clear();
-    // A location-specific PNG wins over suburb art, then the shared default.
-    // Optional night variants retain the artist's colours without a tint.
-    const names = (this.opts.exhibition ? ['exhibition'] : [this.opts.region, this.opts.suburb, 'default']).filter(Boolean);
-    const keys = names.flatMap(name => night ? [`battlebg-${name}-night`, `battlebg-${name}`] : [`battlebg-${name}`]);
-    const background = keys.find(key => custom.has(key) && this.textures.exists(key));
-    this.backgroundArt.setVisible(Boolean(background));
-    if (background) {
-      const field = Math.max(1, H - (B.panelHeight() || 170));
-      // Cover, not squash: keep the art's shape, centre it and take a slice
-      // that fills the field (a phone shows the middle of a wide picture).
-      const src = this.textures.get(background).getSourceImage();
-      const k = Math.max(W / src.width, field / src.height);
-      this.backgroundArt.setTexture(background).setOrigin(0.5, 1).setPosition(W / 2, field).setDisplaySize(src.width * k, src.height * k);
+    const fit = this.bgFit;
+    this.backgroundArt.setVisible(Boolean(fit));
+    if (fit) {
+      // Cover, not squash (see fitBackground): the art keeps its shape.
+      this.backgroundArt.setTexture(fit.key).setOrigin(0, 0).setPosition(fit.left, fit.top).setDisplaySize(fit.dw, fit.dh);
       return;
     }
     if (this.opts.exhibition) {

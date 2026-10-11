@@ -195,7 +195,7 @@ test('Farming preserves existing Gathering XP and shortcut opens only after Mart
 });
 test('shed crafting uses shop materials and yard upgrades add real stations on a clear lawn',()=>{
   newPetSave();assert.deepEqual(COURSES.yardstarter.stations,['jump','jump']);
-  assert.ok(SHOPS.bunnings.tabs.includes('materials'));assert.ok(SHOPS.bunnings.materials.includes('bolts'));
+  assert.ok(SHOPS.bunnings.tabs.includes('materials'));assert.ok(SHOPS.bunnings.materials.includes('screws'));
   assert.equal(CRAFT_RECIPES.courseextension.requires,'coursekit');assert.equal(CRAFT_RECIPES.weavekit.requires,'courseextension');
   state.addItem('coursekit');invalidateMap('yard');const map=getMap('yard');
   assert.ok(map.objects.find(o=>o.kind==='gardenshed'&&o.interact==='workbench'));

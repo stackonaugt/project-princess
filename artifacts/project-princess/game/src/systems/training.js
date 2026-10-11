@@ -20,15 +20,46 @@ export function lessonPlan({ id, day, skills = {}, behaviour, species = '' }) {
   const profile = PROFILES[id] || { pace: behaviour === 'zoomies' ? 1.15 : .9, toy: /cat/i.test(species) ? 'feather' : 'ball', order: Object.keys(ACTIVITIES), detail: 'Work at your pet’s pace and reward the behaviour you want.' };
   const offset = (day - 1 + Math.floor(hash(id.length, id.charCodeAt(0), 12) * 6)) % 6;
   const choices = [0,1,2].map(i => profile.order[(offset + i) % 6]);
-  const legacy = { recall: 'Recall', settle: 'Settle', agility: 'Obstacle course' };
-  return { ...profile, choices, level: activity => Math.min(3, Math.floor(((skills[activity] || 0) + (skills[legacy[activity]] || 0)) / 6)) };
+  return { ...profile, choices, level: activity => levelOf(skills, activity) };
+}
+
+// Class levels: every 6 clean runs in an activity moves a pet up a class.
+// Each class makes the lesson harder (more hurdles, more boxes, smaller
+// targets, longer waits) and the pet better at it (quicker, steadier).
+// From Advanced up, the pet no longer waits at a hurdle: cue the jump in time
+// or it knocks the bar. Earlier classes stay forgiving.
+export const CLASS_LEVELS = ['Puppy class', 'Beginner', 'Intermediate', 'Advanced', 'Top of the class'];
+export const POINTS_PER_LEVEL = 6;
+const LEGACY = { recall: 'Recall', settle: 'Settle', agility: 'Obstacle course' };
+export const skillPoints = (skills = {}, activity) => (skills[activity] || 0) + (skills[LEGACY[activity]] || 0);
+export const levelOf = (skills, activity) => Math.min(CLASS_LEVELS.length - 1, Math.floor(skillPoints(skills, activity) / POINTS_PER_LEVEL));
+// The numbers for one class level (pure, so tests can read them).
+export function difficulty(level) {
+  const L = Math.max(0, Math.min(CLASS_LEVELS.length - 1, level | 0));
+  return {
+    level: L, name: CLASS_LEVELS[L],
+    skill: 1 + L * 0.1,                         // the pet: quicker on its feet
+    hurdles: [1, 2, 2, 3, 3][L],
+    strict: L >= 3,                              // pet runs on: miss the cue, knock the bar
+    jumpWindow: 16 - L * 2,                      // % of the field before a hurdle where a cue counts
+    throwTolerance: Math.max(8, 19 - L * 3),
+    aimPeriod: 1100 - L * 120,
+    boxes: [3, 3, 4, 4, 5][L],
+    peek: 1500 - L * 150,                        // ms the toy is shown going into its box
+    calmTime: 1300 + L * 300,
+    earlyRewardCounts: L >= 2,                   // rewarding too soon spoils the clean run
+    checkIn: 1500 - L * 150,                     // ms a recall check-in lasts
+    recallThinking: Math.max(250, 650 - L * 100),
+    leadGood: 3000 + L * 400,
+    leadPull: Math.max(14, 20 - L * 1.5),        // a trained pet pulls less
+  };
 }
 
 // Pure simulation, driven by elapsed time and player actions. No timers or DOM.
 export class TrainingSession {
   constructor(opts, activity) {
     this.opts = opts; this.profile = lessonPlan(opts); this.activity = activity;
-    this.level = this.profile.level(activity); this.name = opts.name; this.hero = opts.heroName || 'Helen';
+    this.level = this.profile.level(activity); this.diff = difficulty(this.level); this.name = opts.name; this.hero = opts.heroName || 'Helen';
     this.round = 0; this.score = 0; this.phase = 'ready'; this.clock = 0; this.petX = 60; this.heroX = 10;
     this.status = `${this.profile.detail} Today’s setup changes with the day and your progress.`;
     this.moving = false; this.heroMoving = false; this.petY = 0; this.flip = false;
@@ -44,12 +75,13 @@ export class TrainingSession {
     this.attentionAt = 900 + this.seed * 1200;
     this.petX = this.activity === 'agility' ? 14 : this.activity === 'lead' ? 22 : 58;
     this.heroX = 10;
-    this.hurdles = this.level > 0 ? [35+this.seed*5,65+this.seed*5] : [45+this.seed*20];
+    const D = this.diff;
+    this.hurdles = D.hurdles === 1 ? [45+this.seed*20] : D.hurdles === 2 ? [35+this.seed*5,65+this.seed*5] : [30+this.seed*4,52+this.seed*4,74+this.seed*4];
     this.hurdleIndex = 0; this.hurdle = this.hurdles[0];
-    this.throwTolerance = 19-this.level*2;
-    this.jump = 0; this.jumpQueued = 0; this.jumpAcross = null; this.boxCount = this.level >= 2 ? 4 : 3;
+    this.throwTolerance = D.throwTolerance;
+    this.jump = 0; this.jumpQueued = 0; this.jumpAcross = null; this.boxCount = D.boxes;
     this.box = Math.floor(this.seed * this.boxCount); this.openBoxes = []; this.aim = 15;
-    this.status = `Run ${this.round} of 3. ${ACTIVITIES[this.activity].help}`;
+    this.status = `Run ${this.round} of 3 (${D.name}). ${ACTIVITIES[this.activity].help}`;
   }
   finishRound(clean = true) {
     this.score += clean ? 1 : 0; this.phase = 'feedback'; this.feedback = 1300;
@@ -62,11 +94,12 @@ export class TrainingSession {
     if (this.phase !== 'playing') return;
     const a = this.activity;
     if (a === 'recall' && this.stage === 'play') {
-      this.clean = this.attentive; this.stage = 'return'; this.thinking = this.clean ? 0 : 650;
+      this.clean = this.attentive; this.stage = 'return'; this.thinking = this.clean ? 0 : this.diff.recallThinking;
       this.status = this.clean ? `${this.hero} calls. ${this.name} comes running!` : `${this.name} finishes sniffing, then comes back to ${this.hero}.`;
     } else if (a === 'settle') {
       if (this.stage === 'play') { this.stage = 'calm'; this.calmTime = 0; this.status = `${this.name} settles. Wait for a full moment of calm.`; }
-      else if (this.calmTime >= 1300 + this.level * 250) this.finishRound();
+      else if (this.calmTime >= this.diff.calmTime) this.finishRound(this.clean);
+      else if (this.diff.earlyRewardCounts) { this.clean = false; this.status = `Too soon! ${this.name} pops up for the treat. Wait for the calm bar, then reward.`; }
       else this.status = 'Almost. Keep waiting for the calm bar to fill, then reward.';
     } else if (a === 'agility') {
       if (this.jump > 0) return;
@@ -75,7 +108,7 @@ export class TrainingSession {
     } else if (a === 'fetch' && this.stage === 'play') {
       this.ball = this.aim; this.clean = Math.abs(this.ball - this.target) < this.throwTolerance;
       this.stage = 'out'; this.status = `${this.name} chases the ${this.profile.toy}!`;
-    } else if (a === 'scent' && this.clock >= 1500 && this.stage === 'play') {
+    } else if (a === 'scent' && this.clock >= this.diff.peek && this.stage === 'play') {
       const choice = box ?? this.focus;
       this.chosenBox = choice; this.stage = 'search'; this.status = `${this.name} sniffs box ${choice + 1}...`;
     } else if (a === 'lead') { this.easyFor = 1100; this.status = `${this.hero} says “easy”. The lead goes slack.`; }
@@ -89,11 +122,11 @@ export class TrainingSession {
       return;
     }
     if (this.phase !== 'playing') return;
-    const speed = 24 * this.profile.pace, a = this.activity;
+    const speed = 24 * this.profile.pace * this.diff.skill, a = this.activity;
     this.moving = false; this.heroMoving = false; this.petY = 0;
     if (a === 'recall') {
       if (this.stage === 'play') {
-        this.attentive = Math.floor(Math.max(0,this.clock - this.attentionAt) / (1500-this.level*150)) % 2 === 0 && this.clock >= this.attentionAt;
+        this.attentive = Math.floor(Math.max(0,this.clock - this.attentionAt) / this.diff.checkIn) % 2 === 0 && this.clock >= this.attentionAt;
         const x = 58 + Math.sin(this.clock / 600) * 8; this.flip = this.attentive; this.moving = !this.attentive; this.petX = x;
         this.status = this.attentive ? `${this.name} checks in with ${this.hero}. Call now.` : `${this.name} is sniffing around. Wait for a check-in.`;
       } else {
@@ -102,12 +135,20 @@ export class TrainingSession {
       }
     } else if (a === 'settle') {
       if (this.stage === 'play') { this.moving = true; this.petX = 52 + Math.sin(this.clock/450)*12; this.flip = Math.cos(this.clock/450)<0; }
-      else { this.calmTime += dt; this.calm = Math.min(1,this.calmTime/(1300+this.level*250)); this.heroX = 10 + Math.min(12,this.calmTime/150); this.status = this.calm >= 1 ? 'Calm bar full. Reward now.' : 'Let that calm behaviour last a little longer.'; }
+      else { this.calmTime += dt; this.calm = Math.min(1,this.calmTime/this.diff.calmTime); this.heroX = 10 + Math.min(12,this.calmTime/150); this.status = this.calm >= 1 ? 'Calm bar full. Reward now.' : 'Let that calm behaviour last a little longer.'; }
     } else if (a === 'agility') {
       this.jump = Math.max(0,this.jump-dt); this.jumpQueued = Math.max(0,this.jumpQueued-dt);
       this.petY = this.jump > 0 ? -Math.sin(this.jump/650*Math.PI)*38 : 0;
       if (this.stage === 'play') {
-        if (this.petX < this.hurdle-10) { this.petX += speed*seconds; this.moving = true; }
+        if (this.diff.strict && !this.jumpAcross && this.petX >= this.hurdle-10 && !(this.jump > 0 || this.jumpQueued > 0)) {
+          // Advanced classes: no waiting. The pet runs straight through and knocks the bar.
+          this.clean = false; this.status = `Clunk! ${this.name} knocks the bar. Cue the jump a little earlier.`;
+          this.jumpAcross = { from: this.petX, to: this.hurdle + 8, time: 0, knock: true };
+        }
+        if (this.petX < this.hurdle-10 && !this.jumpAcross) {
+          this.petX += speed*seconds; this.moving = true;
+          if (this.diff.strict) this.status = this.hurdle-10-this.petX < this.diff.jumpWindow ? 'Now! Cue the jump.' : `${this.name} is running at the hurdle. Get ready...`;
+        }
         else if (this.jump > 0 || this.jumpQueued > 0 || this.jumpAcross) {
           if (!this.jumpAcross) {
             this.jumpAcross = { from: this.petX, to: this.hurdle + 8, time: 0 };
@@ -116,9 +157,9 @@ export class TrainingSession {
           this.jumpAcross.time += dt;
           const p = Math.min(1, this.jumpAcross.time / 650);
           this.petX = this.jumpAcross.from + (this.jumpAcross.to - this.jumpAcross.from) * p;
-          this.petY = -Math.sin(p * Math.PI) * 38;
+          this.petY = this.jumpAcross.knock ? 0 : -Math.sin(p * Math.PI) * 38;
           this.moving = true;
-          this.status = 'Over the hurdle!';
+          if (!this.jumpAcross.knock) this.status = 'Over the hurdle!';
           if (p < 1) return;
           this.jumpAcross = null; this.jump = 0; this.petY = 0;
           this.hurdleIndex++;
@@ -126,9 +167,9 @@ export class TrainingSession {
           else this.stage='cleared';
         }
         else this.status = `${this.name} waits at the hurdle. Press Jump whenever you’re ready.`;
-      } else { this.petX += speed*seconds; this.moving = true; if (this.petX >= 85) this.finishRound(); }
+      } else { this.petX += speed*seconds; this.moving = true; if (this.petX >= 85) this.finishRound(this.clean); }
     } else if (a === 'fetch') {
-      if (this.stage === 'play') { this.aim = 15 + (Math.sin(this.clock/(1100-this.level*100))+1)*35; this.status = Math.abs(this.aim-this.target)<this.throwTolerance ? 'Throw marker is in the patch. Throw now.' : 'Aim at the highlighted patch.'; }
+      if (this.stage === 'play') { this.aim = 15 + (Math.sin(this.clock/this.diff.aimPeriod)+1)*35; this.status = Math.abs(this.aim-this.target)<this.throwTolerance ? 'Throw marker is in the patch. Throw now.' : 'Aim at the highlighted patch.'; }
       else if (this.stage === 'out') {
         const d = this.ball-this.petX; this.flip = d<0; this.moving = true; this.petX += Math.sign(d)*Math.min(Math.abs(d),speed*seconds);
         if (Math.abs(d)<2) this.stage='return';
@@ -136,7 +177,7 @@ export class TrainingSession {
     } else if (a === 'scent') {
       if (this.stage === 'play') {
         this.petX=25+(Math.sin(this.clock/1000)+1)*28; this.moving=true; this.flip=Math.cos(this.clock/1000)<0;
-        this.status = this.clock<1500 ? `Watch the ${this.profile.toy}. Remember which box it goes into.` : 'Choose a box to search. Empty boxes are another clue.';
+        this.status = this.clock<this.diff.peek ? `Watch the ${this.profile.toy}. Remember which box it goes into.` : 'Choose a box to search. Empty boxes are another clue.';
       } else {
         const target=20+this.chosenBox*(60/(this.boxCount-1)), d=target-this.petX;
         this.moving = Math.abs(d)>1; this.flip=d<0; this.petX+=Math.sign(d)*Math.min(Math.abs(d),speed*seconds);
@@ -148,11 +189,11 @@ export class TrainingSession {
     } else if (a === 'lead') {
       this.heroMoving=true; this.moving=true; this.heroX=10+Math.min(60,this.clock/140);
       this.easyFor=Math.max(0,this.easyFor-dt);
-      const target=this.heroX+(this.easyFor>0?8:20+this.profile.pace*3);
+      const target=this.heroX+(this.easyFor>0?8:this.diff.leadPull+this.profile.pace*3);
       this.petX += (target-this.petX)*Math.min(1,seconds*3);
       this.gap=this.petX-this.heroX; if (this.gap>=4&&this.gap<=15) this.goodTime+=dt;
       this.status = this.gap<=15 ? 'Walking together. The lead is loose.' : `${this.name} is pulling ahead. Give a gentle Easy cue.`;
-      if (this.clock>=7000) this.finishRound(this.goodTime>=3000);
+      if (this.clock>=7000) this.finishRound(this.goodTime>=this.diff.leadGood);
     }
   }
 }

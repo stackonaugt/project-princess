@@ -47,7 +47,7 @@ export let CHAPTERS = {
       'The boys have a plan. The plan is pranks.',
     ],
     done: [
-      'Helen is home. She has had eleven texts from her friends, and nine of them are photos of googly eyes.',
+      'Helen is home. She has had eleven texts from her friends, and nine of them just say "YOUR SONS".',
       '"I leave you two alone for ONE day..." She is trying very hard not to laugh. She is failing.',
     ],
   },
@@ -126,13 +126,16 @@ export let LUNCH = {
   watching: 'Cr Bentleigh is guarding her lunch like a magpie in spring. You need a distraction.',
   noPet: 'Bring a pet along. Nothing distracts a councillor like a dog in the civic centre.',
   distract: pet => [`${pet} tears across the foyer and does three laps of the reception desk.`, 'Cr Bentleigh: "WHO LET AN ANIMAL INTO THE CIVIC CENTRE?! I am writing to MYSELF about this!"', 'She storms off to find a ranger. Her lunch sits there, unguarded.'],
-  swap: ['Quick! You swap her fish pie for your very dodgy one and put the sticky note back on top.'],
+  swap: ['Quick! You swap her fish pie for your very dodgy one and put the sticky note back on top.', 'Her homemade fish pie goes in your bag. It smells genuinely lovely.'],
+  already: 'You already swapped the pie, silly.',
   eat: ['Cr Bentleigh stomps back to her booth. "Typical. No rangers anywhere. Right. LUNCH."', 'She sits down and digs in.', '"Hmm. Fishier than usual. Lemony. Warm, somehow."', '"Oh. Oh no. Oh, my tummy."', '"I need to go home. I may be some time. A WEEK, possibly."'],
 };
 
 // The kitchen (Chapter 2 onwards): what you can cook.
 export let RECIPES = {
-  fishpie: { name: 'Very dodgy fish pie', needs: 'any fish, a lemon and laxatives', text: ['You bake the fish, the lemon and the whole packet of laxatives into a pie. You leave it on the windowsill for three days, just to be sure.', 'It smells like the bottom of Kororoit Creek. Perfect.'] },
+  // Baked in the baking mini-game with the goals inverted (BAKES.fishpie in data/cooking.js).
+  fishpie: { name: 'Very dodgy fish pie', needs: 'any fish, a lemon and laxatives', text: ['The fish, the lemon and the whole packet of laxatives, baked into one terrible pie.', 'It smells like the bottom of Kororoit Creek. Perfect.'],
+    tooNice: ['You sniff the pie. It smells... fine. Nice, even. Cr Bentleigh would ask for seconds.', 'You scrape it back into the dish. The fish, lemon and laxatives are still good for another go. Do it worse this time.'] },
 };
 
 // Chapter 3: the twins' pranks. Talk to one of these friends and pick "Prank".
@@ -159,11 +162,11 @@ export let PRANKS = {
     scout: ['Slinks swirls a glass of shiraz. "Notes of blackberry. Notes of a long week at the department."'],
     plan: ['Hadrian: "It\'s purple. Grape juice is purple."', 'Aleksy: "Coles sells grape juice in a bottle that looks like wine!"'],
     lines: ['You swap Slinks\'s glass of shiraz for grape juice.', 'Slinks takes a sip. "Hmm. Fruit forward. Very... young. VERY young."', 'Slinks: "Boys. Where is my wine."'] },
-  sinead: { item: 'bubbles', react: 'shake', label: 'Bubble vape', where: 'the $2 shop at Summerhill',
+  sinead: { item: 'bubbles', react: 'bubbles', label: 'Bubble vape', where: 'the $2 shop at Summerhill',
     scout: ['Sinead takes a long puff of her Mango Ice. "Don\'t vape, boys. Do as I say, not as I do."'],
     plan: ['Aleksy: "The $2 shop has bubble wands that look JUST like that."', 'Hadrian: "Swap it. Swap it now. Well, after we buy it."'],
-    lines: ['You swap Sinead\'s Mango Ice vape for a bubble wand that looks just like it.', 'Sinead takes a big puff. A stream of bubbles floats out over Loddon Ave.', 'Sinead: "Okay. That is actually very calming. I am charging you for the session."'] },
-  tim: { item: 'crayons', react: 'jump', label: 'Toy train timetable', where: 'the Lincraft stall at Summerhill',
+    lines: ['You swap Sinead\'s Mango Ice vape for a bubble wand that looks just like it.', 'Sinead takes a big puff. Out floats one little bubble. Then another. Then another.', 'Sinead: "Okay. That is actually very calming. I am charging you for the session."'] },
+  tim: { item: 'crayons', react: 'jump', label: 'Dinosaur timetable', where: 'the Lincraft stall at Summerhill',
     scout: ['Tim taps the Upfield line timetable on his fridge. "Every ten minutes. One day. One glorious day."'],
     plan: ['Hadrian: "We could make him a better timetable."', 'Aleksy: "With dinosaurs. Lincraft has crayons."'],
     lines: ['You swap the Upfield line timetable on Tim\'s fridge for one you drew yourself. Every train is a dinosaur.', 'Tim: "Twenty minute frequency, all day, on a T-rex? That\'s better service than the real thing."'] },
@@ -171,8 +174,20 @@ export let PRANKS = {
     scout: ['Nicholas does a little spin on the spot. "Twelve years of ballet. The body never forgets."'],
     plan: ['Aleksy: "Dance-off."', 'Hadrian: "DANCE-OFF. We need the Wiggles. James at the milk bar has the CD."'],
     lines: ['You put on the Wiggles at full volume and challenge Nicholas to a dance-off.', 'Nicholas does a perfect pirouette. You fall over. Twice.', 'Nicholas: "I won, but you two have real stage presence."'] },
+  adam: { item: 'wrapping', react: 'shake', label: 'Parcel in a parcel', where: 'the Lincraft stall at Summerhill',
+    scout: ['Adam signs for another parcel. "Not mine. Not mine either. I get every delivery on Holmes St and none of them are for me."'],
+    plan: ['Hadrian: "What if one WAS for him?"', 'Aleksy: "A box in a box in a box. Lincraft has wrapping paper."'],
+    lines: ['You wrap a box in a box in a box, write "ADAM, UNIT 1" on it and leave it on his doormat.', 'Adam unwraps for ten whole minutes. The last box has a note in crayon: "GOTCHA".', 'Adam: "Finally, a parcel for me. And it\'s the best one I\'ve ever had."'] },
+  chelsea: { item: 'rubberchicken', react: 'jump', label: 'Rubber chicken', where: 'the $2 shop at Summerhill',
+    scout: ['Chelsea counts the chooks in the pen out the back. "One, two, three. All present. Chloe, stop herding them."'],
+    plan: ['Aleksy: "What if there were FOUR chooks?"', 'Hadrian: "A rubber one! The $2 shop has rubber chickens."'],
+    lines: ['You sneak a rubber chicken into the chook pen while Chloe isn\'t looking.', 'Chelsea: "One, two, three... four? We have three chooks." She picks it up. It squawks.', 'Chelsea: "Boys! Chloe has been trying to herd that thing for five minutes."'] },
+  nathan: { item: 'chalk', react: 'spin', label: 'Fake finish line', where: 'the Lincraft stall at Summerhill',
+    scout: ['Nathan jogs past. "Lap twelve! Every lap is exactly one point eight kilometres. I count them all."'],
+    plan: ['Hadrian: "He counts the laps..."', 'Aleksy: "...what if there was another finish line? Halfway round. Lincraft has chalk."'],
+    lines: ['You chalk a big FINISH line halfway round the lake loop.', 'Nathan: "Lap thirteen! Lap fourteen? That was quick. Am I getting faster?" Rusty does not care. Rusty is on lap ninety.', 'Nathan: "Hang on. That\'s chalk. Boys! Get back here!"'] },
 };
-const ITEM_A = { whoopee: 'a whoopee cushion', googly: 'googly eyes', rubbermouse: 'a rubber mouse', bookmark: 'a bookmark', grapejuice: 'grape juice', bubbles: 'a bubble wand', crayons: 'crayons', wigglescd: 'the Wiggles CD' };
+const ITEM_A = { whoopee: 'a whoopee cushion', googly: 'googly eyes', rubbermouse: 'a rubber mouse', bookmark: 'a bookmark', grapejuice: 'grape juice', bubbles: 'a bubble wand', crayons: 'crayons', wigglescd: 'the Wiggles CD', wrapping: 'wrapping paper', rubberchicken: 'a rubber chicken', chalk: 'footpath chalk' };
 export const PRANK_NEED = pr => `You need ${ITEM_A[pr.item] || 'the right thing'} for that. Try ${pr.where}.`;
 export const PRANK_AFTER = n => `"Got one!" Pranks pulled: ${n} of 3.`;
 
@@ -185,12 +200,21 @@ export const NEWS_OPEN = deposed => [
     : 'Mayor Paddy McPherson is up for re-election, after surviving a dramatic spill attempt and a mysterious outbreak of fish pie.',
   'Meanwhile in Laverton, the McPhersons are said to be planning a party. More after the weather: four seasons, in one day.',
 ];
-export const NEWS_RESULT = (votes, won, deposed) => [
+// `flop` is true when the party itself went badly (a low party score).
+export const NEWS_RESULT = (votes, won, deposed, flop = false) => [
   'Good evening. This is West is Best News with the Hobsons Bay election result.',
   `The count is in. Paddy McPherson: ${votes}% of the vote.`,
   won
     ? (deposed ? 'Paddy McPherson wins back the mayoralty! Lesley Bentleigh has demanded a recount, then a re-recount, then a cup of tea.' : 'Paddy McPherson is re-elected Mayor of Hobsons Bay! The September Babies Bash is being called the turning point of the campaign.')
-    : 'It is not quite enough. Paddy falls short this time, but locals say the September Babies Bash will be talked about for years.',
+    : flop
+      ? 'It is not enough. Cr Lesley Bentleigh is the new Mayor of Hobsons Bay. Locals describe the McPhersons\' party as "quiet" and "mostly sausages".'
+      : 'It is not quite enough. Cr Lesley Bentleigh is the new Mayor of Hobsons Bay, but locals say the September Babies Bash will be talked about for years.',
+  ...(won ? [] : ['Paddy McPherson says he will keep serving as a councillor, keep fighting for more trees, and maybe throw a better party next time.']),
+];
+// The end card after a loss (THE_END follows it).
+export let ELECTION_LOST = [
+  'Paddy lost the election. He takes it well. He takes it with a sausage in each hand, but well.',
+  'Paddy: "Bentleigh can have the chain. I\'ve got you three. And four years to plan a better party."',
 ];
 
 // Party invitations (Chapter 4): what friends say when you ask them.
@@ -235,6 +259,34 @@ export let PARTY_MINGLE = [
   name => `${name} is teaching the twins a dance. It is mostly stomping.`,
   name => `${name} raises a sausage in a toast to you.`,
 ];
+// When the party is going badly (a game scores 1 or less): Helen notices,
+// and you choose how to rescue it. `gain` is party score; `risky` rolls for
+// `gain` or `lose`. At most two rescues a party (WorldScene.partyRescue).
+export let PARTY_SLUMP = {
+  notice: [
+    'The party has gone a bit flat. Someone is checking the footy scores on their phone. Somebody is reading the Bunnings catalogue.',
+    'Uh oh. The music is too quiet, the chips are gone and two guests are talking about leaving "before the traffic". There is no traffic.',
+    'Helen: "Why is everyone standing near the side gate? Nobody stands near the side gate at a good party."',
+  ],
+  ask: 'Helen: "Quick. How do we save this?"',
+  choices: [
+    { id: 'barbie', label: 'Fire up the barbie', gain: 1, text: ['Paddy flips forty sausages at once. The smell does all the work. Everyone drifts back from the side gate.'] },
+    { id: 'nutbush', label: 'Put on Nutbush City Limits', gain: 1, text: ['The first note hits and the whole backyard lines up. Nobody can resist the Nutbush. Not even the bloke by the side gate.'] },
+    { id: 'twins', label: 'Let the twins put on a show', risky: true, gain: 2, lose: 1,
+      win: ['The twins do a "show". It is mostly falling over, on purpose. Standing ovation. Paddy cries.'],
+      fail: ['The twins do a "show". It ends with cake in somebody\'s hair and a guest quietly leaving through the side gate.'] },
+    { id: 'speech', label: 'Get Paddy to say a few words', gain: 0, text: ['Paddy talks about stormwater drainage for eleven minutes. People are polite. Very polite.', 'Helen: "Okay. Not that. Never that."'] },
+  ],
+  better: 'The party picks back up. Somebody turns the music up without being asked.',
+};
+// What guests say while the party is flat (instead of the happy mingle lines).
+export let PARTY_BORED = [
+  name => `${name} checks the time. Then checks it again.`,
+  name => `${name}: "Lovely party. Lovely. Is that the time? It isn't? Oh."`,
+  name => `${name} is reading the back of a chip packet with great interest.`,
+  name => `${name}: "Is there more ice? There's no ice. That's fine. It's fine."`,
+];
+
 // Paddy at the party: a line if you chat, then his speech at the end.
 export let PADDY_PARTY = [
   'Paddy: "Have you had a snag? Have a snag. I\'m saving my speech for later. It\'s a good one. I wrote it on a napkin."',
@@ -288,4 +340,6 @@ PARTY_MINGLE = authoredValue('data/story.js', 'PARTY_MINGLE', PARTY_MINGLE);
 PADDY_PARTY = authoredValue('data/story.js', 'PADDY_PARTY', PADDY_PARTY);
 PADDY_SPEECH = authoredValue('data/story.js', 'PADDY_SPEECH', PADDY_SPEECH);
 PARTY_END = authoredValue('data/story.js', 'PARTY_END', PARTY_END);
+PARTY_SLUMP = authoredValue('data/story.js', 'PARTY_SLUMP', PARTY_SLUMP);
+ELECTION_LOST = authoredValue('data/story.js', 'ELECTION_LOST', ELECTION_LOST);
 THE_END = authoredValue('data/story.js', 'THE_END', THE_END);

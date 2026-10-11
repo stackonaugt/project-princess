@@ -26,6 +26,16 @@ export function beats(lines, lv) {
   });
   return out;
 }
+// Songs are cut to about a minute (the owner found full songs too long):
+// start a few seconds before the first line, stop at the first line that
+// starts after SONG_SECONDS of singing. Used by the park and the party.
+export const SONG_SECONDS = 55;
+export function songWindow(lines) {
+  const first = lines[0]?.[0] ?? 0, start = Math.max(0, first - 3);
+  const cut = lines.find(([t]) => t >= first + SONG_SECONDS);
+  const end = cut ? cut[0] : (lines.at(-1)?.[0] ?? first) + 5;
+  return { start, end, lines: lines.filter(([t]) => t < end) };
+}
 // How fast a song is: words per second over the whole song (for the song list)
 const pace = song => { const w = song.lines.reduce((n, [, t]) => n + t.split(/\s+/).length, 0), d = song.lines.at(-1)[0] - song.lines[0][0] || 1; return w / d; };
 
@@ -53,7 +63,7 @@ export function openKaraoke(panel, close, { done, intro }) {
   };
 
   const sing = (song, lv) => {
-    const lines = song.lines, cuesAt = beats(lines, lv), hit = cuesAt.map(() => null), PERFECT = lv.perfect, GOOD = lv.good;
+    const win = songWindow(song.lines), lines = win.lines, cuesAt = beats(lines, lv), hit = cuesAt.map(() => null), PERFECT = lv.perfect, GOOD = lv.good;
     let perfect = 0, good = 0, shown = -1;
     const stage = h('div', { class: 'kara-stage' }, h('img', { class: 'pix kara-singer', src: heroIcon(state.data.hero), alt: '' }), h('div', { class: 'kara-notes' }));
     const prev = h('p', { class: 'kara-line prev' }), cur = h('p', { class: 'kara-line cur' + (lv.every ? ' words' : '') }), next = h('p', { class: 'kara-line next' });
@@ -93,7 +103,8 @@ export function openKaraoke(panel, close, { done, intro }) {
       cur.style.setProperty('--fill', `${Math.max(0, Math.min(1, (t - a) / Math.max(0.5, b - a))) * 100}%`);
       const span = lv.every ? 2.5 : 4;   // seconds of lane on screen
       cues.forEach((c, k) => { const x = (cuesAt[k].t - t) / span; c.style.left = `${15 + x * 85}%`; c.style.display = x < -0.2 || x > 1.05 ? 'none' : ''; if (hit[k] === null && t - cuesAt[k].t > GOOD) { hit[k] = 'miss'; c.classList.add('miss'); } });
-      if (audio.ended) return finish(hit, cuesAt.length);
+      if (t >= win.end - 1.2 && audio.volume > 0) audio.volume = Math.max(0, audio.volume - 0.03);   // fade out
+      if (audio.ended || t >= win.end) return finish(hit, cuesAt.length);
       raf = requestAnimationFrame(tick);
     };
     panel.replaceChildren(h('div', { class: 'm-head' }, h('h2', {}, song.title), stopBtn),
@@ -101,6 +112,8 @@ export function openKaraoke(panel, close, { done, intro }) {
     score();
     audio = new Audio(`assets/karaoke/${song.id}.mp3`);
     audio.volume = state.data.settings.sound ? 0.8 : 0;
+    audio.currentTime = win.start;
+    audio.addEventListener('loadedmetadata', () => { if (audio && audio.currentTime < win.start - 0.5) audio.currentTime = win.start; }, { once: true });
     audio.play().catch(() => { feedback.textContent = 'Tap Sing! to start the music.'; });
     action = press;
     tick();
