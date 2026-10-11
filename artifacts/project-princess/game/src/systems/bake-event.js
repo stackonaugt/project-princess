@@ -11,7 +11,7 @@ import { sfx } from './sfx.js';
 import { raiseScorecard } from './judge-votes.js';
 import { recordScorecard, BAKE_CRITERIA } from './scorecards.js';
 
-const SESSION_KEYS = ['stage', 'clock', 'value', 'score', 'quality', 'results', 'complete', 'feedback', 'st', 'competition'];
+const SESSION_KEYS = ['recipeId', 'juiceQ', 'stars', 'stage', 'clock', 'value', 'score', 'quality', 'results', 'complete', 'feedback', 'st', 'competition'];
 export function bakeAttempt(world) {
   if (world.bakeAttempt) return world.bakeAttempt;
   const raw = state.data.flags.bakeAttempt;
@@ -32,6 +32,11 @@ export function saveBakeAttempt(world) {
 }
 export function paintBakeOff(world) {
   if (world.regionId !== 'bakeoff') return;
+  // The Great Coburg Bake Off banner and bunting across the back wall.
+  const w = 22 * 16, bg = world.add.graphics().setDepth(2 * 16);
+  for (let x = 8; x < w - 8; x += 10) bg.fillStyle([0xd83a4a, 0xf2d23a, 0x3a8ad8, 0x5aa83a][(x / 10 | 0) % 4]).fillTriangle(x, 18, x + 8, 18, x + 4, 25);
+  bg.fillStyle(0x3a2416).fillRect(w / 2 - 72, 4, 144, 13).fillStyle(0xfbf3df).fillRect(w / 2 - 71, 5, 142, 11);
+  world.add.text(w / 2, 10.5, 'THE GREAT COBURG BAKE OFF', { fontFamily: 'monospace', fontSize: '8px', fontStyle: 'bold', color: '#a8283a', resolution: 4 }).setOrigin(.5).setDepth(2 * 16 + 1);
   const g = world.add.graphics().setDepth(9 * 16);
   for (let i = 0; i < 3; i++) {
     const x = (4.5 + i * 6) * 16, y = 7.5 * 16;
@@ -42,7 +47,7 @@ export function paintBakeOff(world) {
   }
 }
 export async function enterBakeOff(world, npc, opts = {}) {
-  if (weekday(state.data.day) !== BAKE_OFF.day) return ui.say('The bake-off opens on Saturday. Betty can help you practise before then.', opts);
+  if (weekday(state.data.day) !== BAKE_OFF.day) return ui.say('The Great Coburg Bake Off is on Saturdays. Betty can help you practise before then.', opts);
   const week = Math.floor(state.data.day / 7);
   if (state.data.flags.bakeoffWeek === week) return ui.say([BAKE_OFF.done], opts);
   if (world.regionId !== 'bakeoff') {
@@ -61,7 +66,7 @@ export async function enterBakeOff(world, npc, opts = {}) {
     choices: [...entries.map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32) })),
       { label: 'Look around first', value: null }] }, { ...opts, cancelValue: null });
   if (!id) return;
-  world.bakeAttempt = { id, week, session: new BakingSession({competition:true}), helped: false, drama: false };
+  world.bakeAttempt = { id, week, session: new BakingSession({ competition: true, recipe: id }), helped: false, drama: false };
   world.save();
   await ui.say(['Registration complete. Walk to the preparation bench, then the oven and decorating table.',
     'Meghan glances at your entry and straightens her tablecloth. Betty pretends not to notice.'], opts);
@@ -125,7 +130,7 @@ export async function judgeBakeOff(world, opts = {}) {
   state.data.flags.lastBakeResult = { week: a.week, name: ITEMS[a.id].name, total, marks, place, rivals: rivals.map(c => ({ name: c.name, score: c.score })) };
   recordScorecard(state.data, {
     kind: 'bakeoff', entryId: a.id, entryName: ITEMS[a.id].name,
-    event: 'Bake-off', division: 'Saturday bake-off',
+    event: 'The Great Coburg Bake Off', division: 'Saturday',
     criteria: BAKE_CRITERIA.map((label, i) => ({ label, judge: ['Betty', 'Ruth', 'Hallie'][i], score: marks[i] })),
     outcome: `${['1st', '2nd', '3rd', '4th'][place] || `${place + 1}th`} place`,
   });
@@ -135,8 +140,8 @@ export async function judgeBakeOff(world, opts = {}) {
     const lowerCard = await raiseScorecard(world, ['betty', 'bakejudge', 'bakehallie'][i], marks[i]);
     try { await ui.say([
     `${['Betty · taste', 'Ruth · texture', 'Hallie · presentation'][i]} raises a card: ${marks[i]}/10.`,
-    marks[i] >= 8 ? ['Light, balanced batter. The flavour comes through.', 'A lovely rise and golden crumb. You watched your oven carefully.', 'A balanced finish with room for every decoration.'][i] :
-      ['Measure carefully and stop mixing when the batter is glossy.', 'Watch the rise and colour together, not just the heat setting.', 'Balance the decorations and give the centre a clear finish.'][i],
+    marks[i] >= 8 ? ['Light, balanced batter. The flavour comes through.', 'A lovely rise and golden crumb. You watched your oven carefully.', 'The topping suits it and the piping is clean. Beautiful.'][i] :
+      ['Measure carefully and stop mixing when the batter is glossy.', 'Watch the rise and colour together, not just the heat setting.', 'Choose a topping that suits the bake, then pipe the pattern slowly and cleanly.'][i],
     ], opts); } finally { lowerCard(); }
   }
   await ui.say([`Your ${ITEMS[a.id].name.toLowerCase()}: ${total}/30.`,

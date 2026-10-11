@@ -56,6 +56,7 @@ export function buildCoburgLake() {
   b.ellipse(17, 27, 4, 2, '"', '.').ellipse(28, 21, 3, 1.6, '"', '.').ellipse(40, 2, 2.5, 1.5, '"', '.').ellipse(4, 4, 3, 1.5, '"', '.');
 
   b.npc('kostas', 10, 13, { face: 'right' });
+  b.npc('kos', 10, 10, { face: 'down' });   // the pollster, off his bike
 
   b.exit(0, 8, 1, 1, 'coburgmall', 'north', 'Coburg Station');
   b.exit(30, 29, 3, 1, 'coburgsyd', 'east', 'Sydney Rd, Coburg');

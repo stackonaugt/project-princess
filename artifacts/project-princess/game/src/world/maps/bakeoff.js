@@ -14,9 +14,9 @@ export function buildBakeOff() {
   b.put('counter', 4, 11, { interact: 'bakeprep', v: 'plain' });
   b.put('counter', 10, 11, { interact: 'bakeoven', v: 'stove' });
   b.put('table', 16, 11, { interact: 'bakedecor' });
-  b.sign(3, 10, ['Preparation bench. Precisely measure dry ingredients, whisk four times, add wet ingredients, then fold four times.']);
-  b.sign(9, 10, ['Oven station. Adjust for the uneven heat. Watch the rise and colour, then remove at golden.']);
-  b.sign(15, 10, ['Decorating station. Balance all three toppings and give the centre room.']);
+  b.sign(3, 10, ['Preparation bench. Squeeze any lemons gently, remember the fill lines, whisk the dry ingredients four times, then fold in the wet four times.']);
+  b.sign(9, 10, ['Oven station. The door stays shut: steer the uneven heat by the timer and thermometer, and peek only when you must.']);
+  b.sign(15, 10, ['Finishing station. Pick a topping that suits the bake, then pipe its pattern before time is called.']);
   b.put('bench', 2, 14); b.put('bench', 17, 14);
   for (let i = 0; i < 6; i++) b.npc(`showguest${i}`, i < 3 ? 2 : 19, 4 + i % 3 * 4, { still: true, face: i < 3 ? 'right' : 'left' });
   b.set(10, 17, 'D').set(11, 17, 'D');

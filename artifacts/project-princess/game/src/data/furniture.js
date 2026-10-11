@@ -4,9 +4,10 @@
 // price and buy it; it is delivered straight away. Swap back any time from the
 // shop's Furniture tab.
 // state.data.furniture: { couch, bed, rug, lamp, bookcase, sidetable, armchair,
-// plant, owned: [ids] }. Each slot holds the id of the piece in the house;
+// plant, plants: { spot: id }, owned: [ids] }. Each slot holds the id of the piece in the house;
 // home.js draws them. `obj` and `v` are the object kind and variant it is drawn
 // as (the couch faces away in the lounge, so home.js swaps front for back).
+import { TUNING, tune } from './tuning.js';
 export const SLOTS = { couch: 'Couch', bed: 'Bed', rug: 'Rug', lamp: 'Lamp', bookcase: 'Bookcase', sidetable: 'Side table', armchair: 'Armchair', plant: 'Pot plants' };
 
 export const FURNITURE = {
@@ -50,7 +51,8 @@ export const FURNITURE = {
   recliner: { slot: 'armchair', obj: 'armchair', v: 'recliner', price: 210, name: 'Electric recliner', desc: 'Push a button, feet go up. Push it again, feet stay up.' },
   egg:      { slot: 'armchair', obj: 'armchair', v: 'egg', price: 95, name: 'Hanging egg chair', desc: 'A rattan egg on a stand. Spin slowly and think about rates.' },
   beanbag:  { slot: 'armchair', obj: 'armchair', v: 'beanbag', price: 30, name: 'Beanbag', desc: 'A purple vinyl beanbag. Getting out of it is the hard part.' },
-  // pot plants (Olly, Bunnings). They replace every pot plant in the house.
+  // pot plants (Olly, Bunnings). Each one bought replaces one plant spot (or a
+  // matching pair) in the house: PLANT_SPOTS below.
   mixed:    { slot: 'plant', obj: 'plant', v: 'fiddle', price: 0, name: 'The old pot plants', desc: 'A fiddle leaf fig and some ferns. Hanging in there.', shop: 'bunnings' },
   monstera: { slot: 'plant', obj: 'plant', v: 'monstera', price: 65, name: 'Monstera', desc: 'Big holey leaves. Every Brunswick lounge room has one.', shop: 'bunnings' },
   bird:     { slot: 'plant', obj: 'plant', v: 'bird', price: 80, name: 'Bird of paradise', desc: 'Tall paddle leaves and orange flowers like a bird\'s head.', shop: 'bunnings' },
@@ -59,8 +61,43 @@ export const FURNITURE = {
   ivy:      { slot: 'plant', obj: 'plant', v: 'ivy', price: 20, name: 'Devil\'s ivy', desc: 'Trails everywhere and will not die. Not even if you try.', shop: 'bunnings' },
   cactus:   { slot: 'plant', obj: 'plant', v: 'cactus', price: 12, name: 'Cactus', desc: 'Prickly, low effort, keeps the cats off the windowsill.', shop: 'bunnings' },
 };
+tune(FURNITURE, TUNING.furniture);   // prices from the tuning sheet (data/tuning.js)
 export const FURNITURE_ORDER = Object.keys(FURNITURE);
 // What starts in the house.
 export const DEFAULT_FURNITURE = { couch: 'old', bed: 'sage', rug: 'red', lamp: 'brasslamp', bookcase: 'oak', sidetable: 'oaktable', armchair: 'mustard', plant: 'mixed' };
 // The piece in a slot of the house right now.
 export const placed = (furn, slot) => FURNITURE[furn?.[slot]]?.slot === slot ? FURNITURE[furn[slot]] : FURNITURE[DEFAULT_FURNITURE[slot]];
+
+// Where pot plants stand at home (maps/home.js). A spot with two pots is a
+// matching pair and is always replaced together. `v` is what the old pot
+// plants ('mixed') look like there; `needs` is the upgrade that builds the room.
+export const PLANT_SPOTS = {
+  hall:    { name: 'Hall', v: ['fiddle'] },
+  lounge:  { name: 'Lounge, by the bookshelf', v: ['fern'] },
+  bedroom: { name: 'Your bedroom', v: ['fern'] },
+  kitchen: { name: 'Kitchen', v: ['fiddle'], needs: 'kitchen' },
+  twins:   { name: 'Twins\' room (the pair)', v: ['fern', 'fiddle'], needs: 'twinsroom' },
+  study:   { name: 'Study', v: ['fiddle'], needs: 'study' },
+};
+export const PLANT_SPOT_ORDER = Object.keys(PLANT_SPOTS);
+const isPlant = id => FURNITURE[id]?.slot === 'plant';
+// The plant in a spot right now (the old pot plants unless one was bought).
+export const plantAt = (furn, spot) => isPlant(furn?.plants?.[spot]) ? furn.plants[spot] : 'mixed';
+// The variant drawn for pot number `i` of a spot.
+export const plantVariant = (furn, spot, i = 0) => {
+  const id = plantAt(furn, spot), def = PLANT_SPOTS[spot].v;
+  return id === 'mixed' ? def[Math.min(i, def.length - 1)] : FURNITURE[id].v;
+};
+// The plant spots that exist at home right now (some rooms need an upgrade).
+export const plantSpots = hasUpgrade => PLANT_SPOT_ORDER.filter(spot => !PLANT_SPOTS[spot].needs || hasUpgrade(PLANT_SPOTS[spot].needs));
+// Old saves had one plant for the whole house: keep their plants where they were.
+export function sanitisePlants(furn) {
+  const raw = furn.plants && typeof furn.plants === 'object' && !Array.isArray(furn.plants) ? furn.plants : null;
+  furn.plants = {};
+  for (const spot of PLANT_SPOT_ORDER) {
+    const id = raw ? raw[spot] : furn.plant;
+    if (isPlant(id) && id !== 'mixed') furn.plants[spot] = id;
+  }
+  if (!isPlant(furn.plant)) furn.plant = 'mixed';
+  return furn;
+}

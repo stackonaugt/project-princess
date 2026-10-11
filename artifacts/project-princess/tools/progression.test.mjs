@@ -23,6 +23,13 @@ import {
 } from "../game/src/systems/show-progress.js";
 import { getMap, invalidateMap } from "../game/src/data/regions.js";
 import { LocalRouter } from "../game/src/world/navigation.js";
+
+// Pick the best topping and trace the piping pattern exactly.
+function finishWell(s) {
+  s.chooseTopping(s.toppingChoices()[0].id);
+  for (const st of s.pattern()) { for (let i = 1; i < st.length; i++) for (let k = 0; k <= 5; k++) s.pipe(st[i - 1][0] + (st[i][0] - st[i - 1][0]) * k / 5, st[i - 1][1] + (st[i][1] - st[i - 1][1]) * k / 5); s.lift(); }
+}
+
 const point = (x, y) => ({ x: x * 16 + 8, y: y * 16 + 12 });
 const reset = () =>
   state.importCode(
@@ -140,7 +147,7 @@ test("baking scores preparation instead of a random bonus; missed stages still p
   s.setHeat(.58);
   while (s.stage === 1 && s.st.brown < .62) s.tick(.05);
   s.action();
-  for (const [slot, type] of [[8, 'cream'], [0, 'berry'], [2, 'leaf'], [4, 'berry'], [6, 'leaf']]) s.place(slot, type);
+  finishWell(s);
   s.action();
   assert.equal(s.result().score, 3);
   const miss = new BakingSession();

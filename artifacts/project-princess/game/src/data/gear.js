@@ -6,6 +6,7 @@
 //          crit: extra chance of a lucky hit
 //          regen: fraction of max HP back at the end of every turn
 //          xp: experience multiplier
+import { TUNING, tune } from './tuning.js';
 export const GEAR = {
   lead:    { name: 'Sturdy lead', price: 30, desc: '+15% defence. Keeps them grounded.', bonus: { defence: 1.15 } },
   collar:  { name: 'Studded collar', price: 35, desc: '+15% attack. Very punk.', bonus: { attack: 1.15 } },
@@ -17,4 +18,5 @@ export const GEAR = {
   fairycollar: { name: 'Fairy collar', price: 0, gift: true, forType: 'fairy', desc: 'A gift from a real fairy. Fairy types only: +30% special and more lucky hits.', bonus: { special: 1.3, crit: 0.06 } },
   bowtie:  { name: 'Fancy bow tie', price: 45, desc: '+30% experience from battles. Learning is classy.', bonus: { xp: 1.3 } },
 };
+tune(GEAR, TUNING.gear);   // prices from the tuning sheet (data/tuning.js)
 export const GEAR_ORDER = Object.keys(GEAR);

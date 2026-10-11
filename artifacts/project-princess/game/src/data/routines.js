@@ -101,10 +101,12 @@ export function isAt(id, place, d) {
 // different for each person. Night owls come out in the afternoon and stay
 // till close. People at your place, and the ones the story needs on the spot
 // (Ben Carroll on Parliament's steps, Julie's tutorial), are always about.
-const ALWAYS = new Set(['bencarroll', 'julie']);
+const ALWAYS = new Set(['bencarroll', 'julie', 'sam']);
 const NIGHT_OWLS = { mrwilkinson: 14 * 60, possumpat: 17 * 60 };
+// Opening hours by shop id, [open, close] in hours (25 = 1am). Plenty Road
+// Convenience (vapeshop) never shuts and Sam never leaves.
 const SHOP_HOURS = {
-  milkbar: [6, 23], spells: [7, 23], vapeshop: [9, 23], coffeecart: [6.5, 15], donuts: [7, 18], fruit: [7, 17], qvdeli: [7, 17],
+  milkbar: [6, 23], spells: [7, 23], vapeshop: [0, 99], coffeecart: [6.5, 15], donuts: [7, 18], fruit: [7, 17], qvdeli: [7, 17],
   souvenirs: [9, 18], chemist: [8, 21], hotbread: [7, 18], twodollar: [9, 18], pide: [6, 19], deli: [7, 17], fruitveg: [7, 17],
   opshop: [10, 17], gelateria: [11, 25], bottleshop: [10, 22], bookshop: [9, 19], bunnings: [6, 21], fishvan: [8, 18], anaconda: [9, 21], cozzo: [9, 18], petshop: [9, 18],
 };

@@ -58,7 +58,7 @@ export function buildLoddon() {
   b.lane({ axis: 'x', pos: 21.5, dir: -1, from: -3, to: 34, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-ute-h'] });
 
   b.npc('sinead', 19, 13, { face: 'down' });
-  b.npc('golfer', 25, 12, { face: 'left' });
+  b.npc('golfer', 25, 20, { face: 'down', still: true });   // out on Loddon Ave in front of his place next door: he challenges you on your second visit
 
   b.forage(3, 6, ['tennis', 'snag']);
   b.forage(16, 9, ['chicken', 'tennis']);

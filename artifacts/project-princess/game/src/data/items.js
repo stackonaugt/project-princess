@@ -17,6 +17,7 @@ import { NORTH_ITEMS } from './north.js';
 import { SH_ITEMS } from './summerhill.js';
 
 import { authoredValue } from '../authoring/overrides.js';
+import { TUNING, tune } from './tuning.js';
 export let ITEMS = {
   chicken:   { name: 'Chicken necky', price: 6,      desc: 'A crunchy dog treat. Smells incredible if you are a dog.' },
   sardine:   { name: 'Sardine', price: 6,            desc: 'One whole sardine. Oily, shiny, beloved.' },
@@ -169,4 +170,5 @@ Object.assign(ITEMS, {
   groomrosette: { ...ITEMS.showrosette, name: 'Grooming Rosette', desc: 'Awarded for gentle care and a well-presented coat.' },
   breedrosette: { ...ITEMS.showrosette, name: 'Breed Presentation Rosette', desc: 'Awarded for breed character, condition and calm movement.' },
 });
+tune(ITEMS, TUNING.items);   // prices from the tuning sheet (data/tuning.js)
 ITEMS = authoredValue('data/items.js', 'ITEMS', ITEMS);

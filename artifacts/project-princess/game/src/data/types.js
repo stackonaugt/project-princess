@@ -1,11 +1,11 @@
-// The sixteen pet types and how they match up in battle.
+// The seventeen pet types and how they match up in battle.
 //
 //   strong  this type's attacks do DOUBLE damage to these types
 //   resist  this type's attacks do HALF damage to these types
 //
 // Rock was too strong (it hit four types hard and almost nothing hurt it), so
 // it lost Fire from its strong list, and Water and Park now hit it hard too.
-// Ghost is weak only to Fairy.
+// Ghost is weak only to Fairy. Dirt (Muddy) is new: Water washes it away.
 
 export const TYPES = {
   rock:    { name: 'Rock',    colour: '#9a7a4c', blurb: 'Solid. Dense. Mostly dense.',                 strong: ['fairy', 'smelly', 'old'],          resist: ['steel', 'leather'] },
@@ -19,10 +19,11 @@ export const TYPES = {
   plastic: { name: 'Plastic', colour: '#4ab8c8', blurb: 'Lightweight, flexible, will outlive us all.', strong: ['smelly', 'steel', 'water'],        resist: ['fire', 'plastic'] },
   steel:   { name: 'Steel',   colour: '#7a8698', blurb: 'Cold, hard and hard to bend.',                strong: ['fire', 'leather'],                 resist: ['steel', 'rock'] },
   leather: { name: 'Leather', colour: '#8a4a2a', blurb: 'Tough, worn in, smells faintly of shoes.',    strong: ['rock', 'steel', 'speed'],          resist: ['fire', 'ghost'] },
-  water:   { name: 'Water',   colour: '#3a8ad8', blurb: 'Puddles, sprinklers and the Merri Creek.',    strong: ['fire', 'rock', 'caffeine'],        resist: ['water', 'park', 'plastic'] },
+  water:   { name: 'Water',   colour: '#3a8ad8', blurb: 'Puddles, sprinklers and the Merri Creek.',    strong: ['fire', 'rock', 'caffeine', 'dirt'], resist: ['water', 'park', 'plastic'] },
   park:    { name: 'Park',    colour: '#5aa83a', blurb: 'Gum nuts, magpies and wet grass.',            strong: ['water', 'rock', 'booze'],          resist: ['fire', 'plastic', 'park', 'steel'] },
   caffeine:{ name: 'Caffeine',colour: '#8a5a32', blurb: 'Fast, jittery, and talks too much.',          strong: ['old', 'psychic', 'booze'],         resist: ['caffeine', 'steel'] },
   speed:   { name: 'Speed',   colour: '#e8b030', blurb: 'Gone before you finished the sentence.',     strong: ['old', 'rock', 'plastic'],          resist: ['speed', 'caffeine'] },
+  dirt:    { name: 'Dirt',    colour: '#8a6236', blurb: 'Mud, puddles and the back paddock.',          strong: ['fire', 'steel', 'smelly'],         resist: ['park', 'plastic'] },
   booze:   { name: 'Booze',   colour: '#c89a2a', blurb: 'Loud, brave and wobbly. Sorry tomorrow.',     strong: ['street', 'psychic', 'fairy'],      resist: ['old', 'booze', 'rock'] },
 };
 

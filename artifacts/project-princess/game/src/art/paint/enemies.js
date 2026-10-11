@@ -10,6 +10,7 @@ import { drawPerson, drawBaby } from './people.js';
 import { PET_FRAMES, BASE_PALETTE } from '../sprites.js';
 import { NORTH_FOE_ART } from './north.js';
 import { SH_FOE_ART } from './summerhill.js';
+import { BATTLER_FOE_ART } from './battlers.js';
 
 const pet = (frame, pal) => p => p.sprite(PET_FRAMES[frame][0], { ...BASE_PALETTE, ...pal }, 0, 0);
 
@@ -269,3 +270,4 @@ export const FOE_ART = {
   ...SH_FOE_ART,
 };
 Object.assign(FOE_ART, NORTH_FOE_ART);   // Coburg and Preston foes
+Object.assign(FOE_ART, BATTLER_FOE_ART);   // data/battlers.js

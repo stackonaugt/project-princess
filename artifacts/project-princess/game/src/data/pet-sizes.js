@@ -5,7 +5,9 @@ export const PET_SIZES = {
   marty: 18, princess: 16, salami: 10, spooky: 16, poppy: 18, rusty: 18,
   stanley: 18, girlie: 20, chloe: 20, ziggy: 16, emilio: 16,
 };
+// Evolved forms that change size. BIG MART is Marty, just very tall.
+export const EVOLVED_SIZES = { spooky: 20, princess: 18, marty: 30 };
 export function petSize(id, evolved = false) {
-  const size = evolved && id === 'spooky' ? 20 : evolved && id === 'princess' ? 18 : PET_SIZES[id];
+  const size = evolved && EVOLVED_SIZES[id] ? EVOLVED_SIZES[id] : PET_SIZES[id];
   return Number.isFinite(size) ? Math.max(6, Math.min(32, size)) : 16;
 }

@@ -9,10 +9,12 @@ import { frameCount, custom } from '../art/textures.js';
 import { SHOW_JUDGES } from '../data/dog-show.js';
 import { raiseScorecard } from './judge-votes.js';
 import { hallCriteria } from './scorecards.js';
+import { sfx } from './sfx.js';
 
 const LABELS = { jump: 'Jump', tunnel: 'Through', weave: 'Weave', stay: 'Stay', recall: 'Come', left: 'Left', right: 'Right', heel: 'Heel', sit: 'Sit', down: 'Down' };
 export async function startHallEvent(world, { pet, tier = 'novice', mode = 'course', variant = 0, area, guided = world.regionId === 'yard' }) {
-  const session = new HandlingEvent(tier, mode, variant, { area });
+  const types = pet ? [form(pet).type].flat() : [];
+  const session = new HandlingEvent(tier, mode, variant, { area, speedy: types.includes('speed'), evolved: !!pet && isEvolved(pet) });
   if (!guided) await ui.say([
     `The steward reads the route once: ${session.stations.map(s => LABELS[s.kind]).join(' → ')}.`,
     'Remember the order. There are no labels or highlighted targets in this ring. For Stay or Come, leave your dog on the mat, step away and recall. Weave alternates Left, Right, Left, Right, Left.',
@@ -52,7 +54,7 @@ export async function startHallEvent(world, { pet, tier = 'novice', mode = 'cour
       world.onResize();
       resolve({ ...session.result(), cancelled: !complete });
     };
-    let lastCue = mode === 'course' ? 'jump' : 'heel';
+    let lastCue = mode === 'course' ? 'jump' : 'heel', shownFeedback = 0;
     const cue = id => { lastCue = id; session.cue(id, world.player); world.player.perform?.('wave'); };
     const buttons = h('div', { class: 'hall-cues' }, ...Object.entries(LABELS).map(([id, label]) =>
       h('button', { class: 'wood-btn small', 'data-cue': id, onclick: () => cue(id) }, label)));
@@ -75,7 +77,17 @@ export async function startHallEvent(world, { pet, tier = 'novice', mode = 'cour
       status.textContent = guided ? session.message :
         `${session.index}/${session.stations.length} complete · ${session.faults} faults · ${session.phase === 'action' ? 'Your dog responds.' : 'Lead calmly. Choose the next cue from memory.'}`;
       counter.textContent = `Station ${Math.min(session.index + 1, session.stations.length)} of ${session.stations.length} · walk with the joystick or arrows`;
+      // A tick or a cross pops over the dog after every cue, in practice and in the ring.
+      if (session.feedback && session.feedback.n !== shownFeedback) {
+        shownFeedback = session.feedback.n;
+        const ok = session.feedback.ok;
+        const mark = world.add.text(session.dog.x, session.dog.y - 18, ok ? '✓' : '✗', { fontSize: '12px', fontStyle: 'bold', color: ok ? '#7be07b' : '#ff6a5a', stroke: '#1e1a16', strokeThickness: 3 }).setOrigin(.5, 1).setDepth(9600);
+        world.tweens.add({ targets: mark, y: mark.y - 12, alpha: 0, delay: 350, duration: 600, onComplete: () => mark.destroy() });
+        ok ? sfx.select() : sfx.bump();
+      }
       guide.clear();
+      // The weave poles are hard to read, so the next pole is always marked, even in the ring.
+      if (!guided && session.phase === 'weave') guide.lineStyle(1, 0xffffff, .7).strokeEllipse(session.target.x, session.target.y, 14, 7);
       if (guided && session.target) guide.lineStyle(2, session.ready ? 0xf4d16b : 0xffffff, .85).strokeEllipse(session.target.x, session.target.y, 29, 13);
       for (const button of buttons.children) {
         const id = button.dataset.cue;

@@ -29,11 +29,67 @@
   wild foes follow `teamPower()` from two levels below a young team to three
   above a seasoned one; first trainer fights only ease down, rematches only
   grow, `once` fights stay as written. `node game/tools/balance.mjs` prints it.
-- Mini-game difficulty: bake-off pours are hold-to-pour (tip out, no scooping
-  back), the hall oven drifts on two waves, decorating has a `DECO_TIME` limit
-  and a stage needs 70 to count clean. Fishing marker speed and darting depend
-  on the fish (`FIGHT`), the retry zone shrinks; the old bowlers' mark tightens
+- **The tuning sheet** `src/data/tuning.js` (the owner's, like pet-sizes.js):
+  shop prices (items, gear, upgrades, furniture, seeds, crop sell prices), money
+  earned (wild payouts, a multiplier on every battle payout, request bonuses,
+  bake off prizes) and pet base stats and evolution thresholds. It is applied
+  over the data files at load (`tune()`); Studio overrides still win over it.
+- **Baking** (`systems/baking.js`, `ui/baking.js`, per recipe `BAKES` in
+  `data/cooking.js`): every bake, at home, at Betty's practice and in **The
+  Great Coburg Bake Off**, has its own coloured ingredients, oven (heat, time,
+  allowed peeks, how fragile), toppings (with a `fit` per bake) and piping
+  pattern (`PIPING`). Rounds: squeeze lemons first if the recipe has `juice`
+  (over-squeezing drops pips), pour from memory (lines flash for `FLASH_TIME`,
+  nothing comes back out), a shut oven with a timer and limited peeks that let
+  heat out (a cool oven caps the rise, a hot one burns), then pick a topping and
+  trace the pattern. One star a round, ±0.5 for the juice, out of 3 in halves;
+  lemonade is squeeze then sweeten, 1.5 each. Stars are kept per bake in the bag
+  (`state.data.bakeStars`, oldest first): 3 stars is loved by anyone, 1 or less
+  is disliked by everyone except Paddy. In the competition the judges still mark
+  each round out of 10 and nothing is shown before judging.
+- Type matchups (`state.data.matchups`) record every type tried; the move menu
+  shows Strong or Weak only after a matchup is tried (`knownEffect`), a toast
+  says when the Petdex learns one, and the Petdex has a Matchups tab.
+- Evolutions: Rusty is **Steely** (steel; Danger Paws, Sharpen), Girlie is
+  **Muddy** (dirt/water; `girlie-evolved.png` is Girlie's sheet splattered
+  with mud), the new **Dirt** type. Marty is **BIG MART** (same art, very
+  tall: `EVOLVED_SIZES` in pet-sizes.js), Chloe is **Chlo-nado** (same type,
+  a whirlwind round her legs), Ziggy is **Ziggy Iggy** (the owner's cousin
+  Iggy, a baby, rides on his back). Their `-evolved.png` sheets are reference
+  art made from the base sheets. Emilio does not evolve.
+- A line written as `Name: "..."` shows that person's name and portrait
+  (`speakerOf` in `ui/ui.js`). The dog show judges on Sundays 9 to 5
+  (`SHOW_DAY`); the practice ring is open every day. Plenty Road Convenience
+  never closes (`ALWAYS`). Agility cues get a tick or a cross over the dog.
+- Mini-game difficulty: the hall oven drifts on two waves, finishing has a
+  `DECO_TIME` limit and a stage needs 70 to count clean. The old bowlers' mark tightens
   with `side.bowlsWins`.
+- **Fishing** (`systems/fishing.js` rules, `ui/fishing.js` screen): the fish
+  bolts out of the green zone and you tap to pull it back; a landing bar only
+  fills while it sits in the zone and you keep pulling. Too many taps snap the
+  line, and a fish left at the end of the bar throws the hook. Per-fish pull
+  and darting come from `FIGHT`. Every cast uses one bait (no bait, no
+  fishing; Emilio's bread at the lake is the exception). The panel shows the
+  current hero pulling the rod.
+- **A battler in every suburb** (`src/data/battlers.js`, art in
+  `src/art/paint/battlers.js`): Kos the pollster (Coburg Lake), Lambros the
+  Deputy Mayor (Bell St, outside the town hall; Meghan Hopper now walks
+  Moreland Rd), the bored Summerhill security guard (one trolley, then he
+  gives up), Mark Teapot and the tiny Member for Point Cook (Flemington), Amy
+  with the couch, Austin (they/them) and Nala (Altona), Parking Officer Pam
+  (Civic Parade) and Doggies Dave (Footscray). A trainer's `ambush: n` walks
+  up and challenges you on your nth visit to the zone (`state.data.visits`,
+  `WorldScene.ambush`) until beaten once: the golfer next door (2nd visit to
+  Loddon Ave, standing on the street) and Tito Ramon, the karaoke dad (4th
+  visit to Lohse St Reserve). Looks gained `short`, `belly` and `tie`.
+- **Move animations**: `SIGNATURE_ANIMATIONS` in `src/data/move-animations.js`
+  maps a pet's special move to its routine (Poppy's scoot, zoomies, herd,
+  fetch, nap...) and wins over the move's own `anim`; `ANIMATION_POSES` says
+  which sheet action each routine cycles. Evolutions play a glow, flicker,
+  burst and reveal with sound (`systems/evolution-fx.js`) in battle and in
+  the world. Battle background PNGs cover the field (cropped, not squashed).
+- Dog show: a Speed type pet runs the agility course faster, and an evolved
+  pet gets a presentation bonus (`HandlingEvent` options).
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.
@@ -50,7 +106,7 @@ Brunswick East is a full suburb, reached east off Donald St. Five outdoor zones 
 
 **The route.** The world is one walkable chain, laid out from the owner's marked-up map. Laverton is a loop: Allen St (left to Laverton Station, down to the west end of Woods St), Woods St (east end up into the top of Lohse St Reserve), Lohse (Maher Rd down to the station, east to the council). Then the council (`civic`, suburb Altona, between) and down to the three in-between city zones (`altona` Kororoit Creek Rd with Bunnings, `footscray` Barkly St with Franco Cozzo, `flemington` Racecourse Rd) that represent the long walk, Brunswick Station (Dawson St east to Sydney Rd), Hope St, Sydney Rd (on to Albion St, which goes down to Donald St), Donald St (east into Brunswick East: Holmes St, Fleming Park, the bowls club, Lygon St and back up Nicholson St, a loop; Brunswick East's Lygon St carries on east into Carlton's Lygon St and its Nicholson St south into Carlton's), Bell St, Coburg (`coburg`: north up Sydney Rd to Coburg's shops, station and lake, which loop; south down Lygon St to Moreland Rd; north-east up a lane to Preston Market), Plenty Rd, Preston (`preston`: north up High St to Preston Station, which loops through the market and back to Bell St; the market's west side leads to Murray Rd), Loddon Ave (our unit on Plenty Rd), the Edwardes Lake zones, Glasgow Ave, Reservoir Station. Brunswick Station's south lane leads down to Lygon St, Carlton, which runs west to Carlton Gardens and east to Brunswick East's Lygon St; the gardens' north path goes up past Murchison Square to Nicholson St, which runs north to Brunswick East and south to Bourke St at Spring St; Bourke St's trams turn down to Swanston St, which runs east to Flinders St, and the laneways join the two (a loop). The train skips the in-between zones (their suburbs have `between: true` and no station). Loops: Laverton above, Sydney Rd and Albion St up to Bell St, Coburg's Sydney Rd, station and lake, Bell St, Preston Market, Preston Station and Plenty Rd, and the skyrail path joining Reservoir Station to the athletics track. Albion St's west end (Brunswick West) is a locked hook for later.
 
-**Battles.** Pokémon-style play-fights with 16 types (pets can have two). Wild things jump out of tall grass; pet owners and other trainers battle you when you talk to them. You win each pet (except Princess, who is free) by beating their owner. Pets level up, and evolve when level and friendship are both high enough (Princess into Flamcess, Poppy into Floppy). Battles pay a little money, spent at the shops (pet shop, Bunnings, the milk bar, the bottle shop, Brunswick Bound, Anaconda, Franco Cozzo, Plenty Road Convenience).
+**Battles.** Pokémon-style play-fights with 17 types (pets can have two). Wild things jump out of tall grass; pet owners and other trainers battle you when you talk to them. You win each pet (except Princess, who is free) by beating their owner. Pets level up, and evolve when level and friendship are both high enough (Princess into Flamcess, Poppy into Floppy). Battles pay a little money, spent at the shops (pet shop, Bunnings, the milk bar, the bottle shop, Brunswick Bound, Anaconda, Franco Cozzo, Plenty Road Convenience).
 
 **Who you play.** You are Helen (`src/data/heroes.js`). In chapter 3 you play the twins, Hadrian and Aleksy, together: the other twin follows you (`Sibling` in entities.js, `twinsTogether()`) and Settings > Swap twins swaps them. Chapter 4 goes back to Helen. After the chapter 4 party (free play, `canPickHero()`) anyone can be picked in Settings. Each has a perk (`talkBonus`, `runBoost`, `forageBonus`) and starting treats (given once, `setHero`). Saved as `state.data.hero`.
 
@@ -114,7 +170,7 @@ src/
     pets.js           The pets: stats, behaviours, favourite treats, dialogue by heart level
     npcs.js           Townsfolk: lines, hints about unfound pets, daily gifts
     items.js          Treats, crops, presents (gift), drinks (drink), fertiliser (farm); isTreat()
-    types.js          The 16 battle types, matchup chart (strong/resist), effectiveness()
+    types.js          The 17 battle types, matchup chart (strong/resist), effectiveness()
     moves.js          Every battle move (type, power, effect, animation, text) and PET_MOVES
     enemies.js        Wild things, the Bin Man's bins, ENCOUNTERS per suburb, TRAINERS (owners and others)
     gear.js           Pet shop gear (leads, collars...) and their battle bonuses
@@ -231,8 +287,8 @@ Four chapters, words in `src/data/story.js`, state in `state.data.story` (see `s
 ### Cooking and baking
 
 - `src/data/cooking.js`: pantry items (`ingredient: true`, Coles' Pantry tab at Summerhill), dishes (`dish`, `homegrown`, `baked`), cook books (`book: true` with `cookbook: [recipes]`, sold at Brunswick Bound; having one in the bag teaches them) and `RECIPES` with `learn`: `'start'`, `{ book }`, `{ hearts: [who, n] }` (taught at that heart scene: Trish's lemon delicious at 10, Betty's sponge at 8) or `{ gift: who }` (Nonna Concetta's oil cake, the first time you give her something she loves). Learnt recipes are in `state.data.recipes`. Cook at the stove at home (`cook()`); the Chapter 2 fish pie is listed only while it is needed.
-- **The bake-off**: Saturdays, talk to Betty on Moreland Rd and enter something baked. Recipe `score` plus luck against three rivals, one of them always Meghan Hopper (`BAKE_OFF.meghan`), the serial Labor candidate who nearly always wins. Betty tells you about it the first time you chat (`side.bake`) and it becomes a side mission on the To Do list: a secret recipe (one not from a book) gets `secretBonus` and is what it takes to beat her. Prizes $60/$25/$10 and a blue ribbon, once a week (`flags.bakeoffWeek`). The Cheats app has Go to the bake-off.
-- **Meghan Hopper** (`src/data/north.js`) pushes a pram with her cat Whitlam in it up and down Bell St, Coburg (`pram: true` on the NPC draws it). She battles with him.
+- **The Great Coburg Bake Off**: Saturdays, talk to Betty on Moreland Rd and enter something baked. Recipe `score` plus luck against three rivals, one of them always Meghan Hopper (`BAKE_OFF.meghan`), the serial Labor candidate who nearly always wins. Betty tells you about it the first time you chat (`side.bake`) and it becomes a side mission on the To Do list: a secret recipe (one not from a book) gets `secretBonus` and is what it takes to beat her. Prizes (tuning sheet, now $80/$40/$15) and a blue ribbon, once a week (`flags.bakeoffWeek`). The Cheats app has Go to the bake-off.
+- **Meghan Hopper** (`src/data/north.js`) pushes a pram with her cat Whitlam in it up and down Moreland Rd, Coburg (she moved from Bell St) (`pram: true` on the NPC draws it). She battles with him.
 - **House paint**: Lincraft's Paint tab sets `state.data.wallPaint`, which recolours the painted walls at home.
 
 ### Farming and house upgrades
@@ -268,7 +324,7 @@ Roughly in the order they build on each other. The groundwork noted for each alr
 - Ideas still open: a Rat King of Sydney Rd boss in the laneways, a Boom Gate boss at a level crossing, the Myki Inspector as a wandering mini-boss, a Hoon in a Commodore on Aviation Rd at night, magpies only swooping in spring, battle music.
 
 ### Done: evolutions and the story
-- Every original pet evolves: Flamcess (fire), Floppy (plastic/rock), Sopressa (street/old), Ghost (ghost/psychic, evolved Spooky), Centurionely (Stanley as a Roman centurion, steel), Even Rustier (Rusty in sheet metal, steel/speed).
+- Every original pet evolves: Flamcess (fire), Floppy (plastic/rock), Sopressa (street/old), Ghost (ghost/psychic, evolved Spooky), Centurionely (Stanley as a Roman centurion, steel), Steely (Rusty in forged steel, steel), Muddy (Girlie, dirt/water).
 - The four story chapters (see **The story** above).
 
 ### More economy

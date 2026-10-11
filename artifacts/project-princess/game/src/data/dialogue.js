@@ -20,6 +20,7 @@
 //  Signs and the text when you inspect things are in the map files and flavour.js.
 import { EAST_PEOPLE, EAST_FOE_TEXT, EAST_PLACES } from './east.js';
 import { NORTH_PEOPLE, NORTH_FOE_TEXT, NORTH_PLACES } from './north.js';
+import { BATTLER_PEOPLE, BATTLER_FOE_TEXT } from './battlers.js';
 //  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
 
 import { SH_PEOPLE, SH_FOE_TEXT, SH_PLACES } from './summerhill.js';
@@ -1419,6 +1420,7 @@ export let PET_TEXT = {
     night: ['Girlie is curled up in a black heap. You can only find her by the snoring.'],
     rain: ['Girlie is delighted by the rain. She has found a puddle. She is in the puddle.'],
     asleep: ['Girlie is asleep, paws paddling. She is swimming in her dreams.'],
+    evolvedBio: 'Girlie found the biggest puddle in Carlton Gardens and never really came out. Muddy is half lab, half wetland, and wants a cuddle.',
   },
   rusty: {
     bio: 'A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.',
@@ -1434,7 +1436,7 @@ export let PET_TEXT = {
     night: ['Rusty is tucked under a blanket. Only his nose is showing.'],
     rain: ['Rusty refuses to go out in the rain. He is staring at you like it is your fault.'],
     asleep: ['Rusty is asleep, legs twitching. He is winning a race in his dreams.'],
-    evolvedBio: 'Rusty, rebuilt in sheet metal. Even Rustier is faster than a Vline train and squeaks a bit going round corners.',
+    evolvedBio: 'Rusty, forged in steel. Steely is faster than a Vline train, sharpens his claws on the fence and squeaks a bit going round corners.',
   },
 };
 
@@ -1686,6 +1688,8 @@ Object.assign(PLACES, EAST_PLACES);
 // Coburg and Preston keep their words in north.js.
 Object.assign(PEOPLE, NORTH_PEOPLE);
 Object.assign(FOE_TEXT, NORTH_FOE_TEXT);
+Object.assign(PEOPLE, BATTLER_PEOPLE);
+Object.assign(FOE_TEXT, BATTLER_FOE_TEXT);
 Object.assign(PLACES, NORTH_PLACES);
 PEOPLE = authoredValue('data/dialogue.js', 'PEOPLE', PEOPLE);
 PET_TEXT = authoredValue('data/dialogue.js', 'PET_TEXT', PET_TEXT);

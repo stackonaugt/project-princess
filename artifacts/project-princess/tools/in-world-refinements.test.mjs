@@ -7,6 +7,13 @@ import { TrainingSession } from '../game/src/systems/training.js';
 import { getMap } from '../game/src/data/regions.js';
 import { MOVES } from '../game/src/data/moves.js';
 
+// Pick the best topping and trace the piping pattern exactly.
+function finishWell(s) {
+  s.chooseTopping(s.toppingChoices()[0].id);
+  for (const st of s.pattern()) { for (let i = 1; i < st.length; i++) for (let k = 0; k <= 5; k++) s.pipe(st[i - 1][0] + (st[i][0] - st[i - 1][0]) * k / 5, st[i - 1][1] + (st[i][1] - st[i - 1][1]) * k / 5); s.lift(); }
+}
+
+
 test('home routines retain show station order and never move the handler automatically', () => {
   const area={x:32,y:96,w:240,h:128};
   for (const mode of ['course','obedience']) {
@@ -64,7 +71,7 @@ test('a carefully steered competition oven can still produce a winning bake', ()
   assert.ok(s.st.rise>.95);
   assert.ok(s.stageQuality()>=90);
   s.finishStage();
-  for(const [slot,type] of [[0,'berry'],[2,'cream'],[4,'berry'],[6,'leaf'],[8,'cream']])s.place(slot,type);
+  finishWell(s);
   assert.equal(s.stageQuality(),100);
   s.finishStage();
   assert.ok(s.results.reduce((n,r)=>n+Math.floor(r.quality/10),0)>=29);

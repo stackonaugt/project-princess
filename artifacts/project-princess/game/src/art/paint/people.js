@@ -27,6 +27,8 @@
 //   rips       a torn shirt, skin showing through (true)
 //   holding    something in one hand: 'monkey' | 'teddy' (toys), 'pint' (a Guinness),
 //              'wine' (a glass of red), 'book', 'vape', 'bass' (a bass guitar), 'mic'
+//   belly      a round tummy over the belt (true)     tie  a necktie (colour)
+//   short      a short person: same body on stubby legs (true)
 //   baby       true draws a toddler instead (see drawBaby). Toddlers also take
 //              motif (colour) + print ('teddy' | 'star' | 'heart', or a plain patch),
 //              and pants (+ pantsPattern) for a top and trousers instead of a onesie.
@@ -44,11 +46,22 @@ export function drawPerson(p, look, dir, step, action = null) {
   L.sleeve = L.coat || L.blazer || L.shirt;
   L.twoPiece = !!look.pants;
   if (L.baby) return drawBaby(p, L, dir, step);
+  if (L.short && !L._short && typeof document !== 'undefined') return shortPerson(p, L, dir, step, action);
   const bob = step ? -1 : 0;
   L.action=action;
   if (dir === 'left') side(p, L, step, bob); else front(p, L, dir === 'up', step, bob);
   if (dir !== 'up') extras(p, L, dir, bob);
   headwear(p, L, dir, bob);
+}
+
+// A short person: draw them full size off screen, then drop everything above
+// the knees three pixels so they stand on stubby legs.
+function shortPerson(p, L, dir, step, action) {
+  const c = document.createElement('canvas'); c.width = FRAME_W; c.height = FRAME_H;
+  drawPerson(painter(c.getContext('2d')), { ...L, _short: true }, dir, step, action);
+  const ctx = p.ctx;
+  ctx.drawImage(c, 0, 0, FRAME_W, 26, 0, 3, FRAME_W, 26);
+  ctx.drawImage(c, 0, 29, FRAME_W, 3, 0, 29, FRAME_W, 3);
 }
 
 // Paint the same outlined frame used by the generated in-game sprite, for
@@ -232,12 +245,14 @@ function legs(p, L, step, bob, x1, x2, w) {
 function torso(p, L, x, w, bob, back, side) {
   const s = L.shirt, sd = shade(s, -0.2), sl = shade(s, 0.15);
   p.r(s, x, 17 + bob, w, 9);
+  if (L.belly) { if (side) { p.r(s, x - 1, 20 + bob, 1, 5); p.r(s, x - 2, 21 + bob, 1, 3); } else p.r(s, x - 1, 20 + bob, w + 2, 5); }
   pattern(p, L.shirtPattern, s, L.shirtAccent, x, 17 + bob, w, 9, bob);
   if (!L.shirtPattern) p.r(sl, x + 1, 17 + bob, w - 3, 1);
   p.r(L.shirtPattern ? DIM : sd, x + w - 2, 18 + bob, 2, 8);
   if (!L.pinafore) p.r(shade(L.pants, -0.1), x, 25 + bob, w, 1); // belt line
   if (L.jersey && back && !side) { p.r('#f4f4f0', 6, 19 + bob, 3, 1); p.r('#f4f4f0', 8, 20 + bob, 1, 3); } // number 7
   if (L.rips && !back) [[2, 19], [3, 20], [5, 21], [6, 22], [3, 23]].forEach(([i, j]) => p.r(i < w - 2 ? L.skin : DIM, x + i, j + bob, 1, 1));
+  if (L.tie && !back) { const t = L.tie; if (side) p.r(t, x, 18 + bob, 1, 6); else { p.r(shade(t, 0.2), x + w / 2 - 1, 17 + bob, 2, 1); p.r(t, x + w / 2 - 1, 18 + bob, 2, 7); p.r(shade(t, -0.25), x + w / 2, 19 + bob, 1, 6); } }
   if (L.blazer) blazer(p, L, x, w, bob, back, side);
   if (L.coat) {
     const c = L.coat, d = shade(c, -0.22), l = shade(c, 0.15);

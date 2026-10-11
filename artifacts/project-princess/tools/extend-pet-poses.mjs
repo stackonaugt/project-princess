@@ -30,10 +30,14 @@ export const PET_POSE_SHEETS = [
   { id: 'stanley', cut: 12, split: 8 },
   { id: 'stanley-evolved', cut: 12, split: 8 },
   { id: 'girlie', cut: 13, split: 8 },
+  { id: 'girlie-evolved', cut: 13, split: 8 },
   { id: 'chloe', cut: 12, split: 8 },
+  { id: 'chloe-evolved', cut: 12, split: 8 },
   { id: 'ziggy', cut: 12, split: 8 },
+  { id: 'ziggy-evolved', cut: 12, split: 8 },
   { id: 'emilio', cut: 13, split: 8, bird: true },
   { id: 'marty', cut: 12, split: 8 },
+  { id: 'marty-evolved', cut: 12, split: 8 },
 ];
 
 function transform(source, position) {

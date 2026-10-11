@@ -13,6 +13,7 @@
 // Dishes marked homegrown use your own veggies: three of them throw the
 // street party for the community garden motion (data/council.js).
 
+import { TUNING } from './tuning.js';
 export const COOK_ITEMS = {
   // Pantry (ingredient: true). Eggs are Nonna Concetta's `egg`, sold at Coles too.
   flour:     { name: 'Plain flour', price: 3, ingredient: true, art: { kind: 'packet', body: '#f4f0e6', label: '#2a6ab8', cap: '#e8c040' }, desc: 'A kilo of plain flour. It will get everywhere.' },
@@ -33,7 +34,7 @@ export const COOK_ITEMS = {
   sponge:    { name: 'Victoria sponge', gift: true, dish: true, baked: true, loved: true, art: { kind: 'cake', body: '#f4e0a8', cap: '#f4f4f0', label: '#d83a4a' }, desc: 'Betty\'s sponge: jam, cream and a dusting of icing sugar. Light as a cloud.' },
   lemondelicious: { name: 'Lemon delicious', gift: true, dish: true, baked: true, loved: true, art: { kind: 'cake', body: '#f4e88a', cap: '#d8a040', label: '#f4f4f0' }, desc: 'Trish\'s secret pudding: lemon sponge on top, lemon sauce underneath. A family heirloom.' },
   bike:      { name: 'Shiny red bike', price: 180, gift: true, art: { kind: 'globe', body: '#c8302a', label: '#f4f4f0', cap: '#1e1e24' }, desc: 'A proper road bike with a bell. For someone who never got one as a kid.' },
-  blueribbon: { name: 'Blue ribbon', story: true, art: { kind: 'globe', body: '#2a5ad8', label: '#f4f4f0', cap: '#e8c040' }, desc: 'First prize, Moreland Rd Bake-Off. Betty pinned it on you herself.' },
+  blueribbon: { name: 'Blue ribbon', story: true, art: { kind: 'globe', body: '#2a5ad8', label: '#f4f4f0', cap: '#e8c040' }, desc: 'First prize, the Great Coburg Bake Off. Betty pinned it on you herself.' },
 
   // Cook books (book: true, so Brunswick Bound sells them). Having one in your bag teaches its recipes.
   cbgarden:  { name: 'From the Patch: Easy Veg', price: 24, gift: true, book: true, cookbook: ['ratatouille', 'pumpkinsoup', 'sugo'], art: { cover: '#5ab04a', band: '#e8c040' }, desc: 'A cook book for gluts. Ratatouille, pumpkin soup and a proper sugo.' },
@@ -63,7 +64,7 @@ export const TEACH_LINES = {
   lemondelicious: ['Trish: "I\'ve never written this down. My mother never wrote it down. Her mother never wrote it down."', '"Lemon delicious. It makes its own sauce. Like magic. Don\'t tell Gordon how much butter."', 'You learnt a recipe: Lemon delicious. It is the best thing you will ever bake.'],
 };
 
-// The Moreland Rd Bake-Off: every Saturday at Betty's, one entry a week.
+// The Great Coburg Bake Off: every Saturday at the hall by Betty's, one entry a week.
 // Your score is the recipe's score plus a little luck (and a point if you grew
 // some of it yourself), against three rivals.
 export const BAKE_OFF = {
@@ -76,7 +77,7 @@ export const BAKE_OFF = {
   // lemon delicious) gets the bonus that can beat her.
   meghan: { name: 'Meghan Hopper', dishes: ['a nine layer torte with a perfect mirror glaze', 'a pavlova shaped like the Labor rose', 'a croquembouche taller than Whitlam'], score: 10 },
   secretBonus: 2,
-  rivalry: ['Betty: "Oh, while you\'re here. The Moreland Rd Bake-Off. Every Saturday, here at mine."',
+  rivalry: ['Betty: "Oh, while you\'re here. The Great Coburg Bake Off. Every Saturday, in the hall by mine."',
     '"And every Saturday, Meghan Hopper wins it. Nine layer tortes. Mirror glazes. She pushes her cat around in a PRAM, and she still has time to temper chocolate."',
     '"I\'m not bitter. I\'m a little bitter. Help me beat her, love. You\'ll need a special recipe, something somebody has handed down. Nothing from a book will do it."'],
   beatMeghan: ['Betty screams. Ward drops a beer in the next room.', 'Betty: "YOU BEAT MEGHAN HOPPER! Twelve years! TWELVE YEARS!"', 'Meghan Hopper: "Congratulations! Genuinely! I\'ll be demanding a recount, but genuinely!"'],
@@ -90,7 +91,81 @@ export const BAKE_OFF = {
     { name: 'Tito Ramon', dish: 'ube crinkle cookies, very purple' },
     { name: 'Deb from Coles', dish: 'a Coles mud cake she swears she made' },
   ],
-  prize: [60, 25, 10],           // dollars for first, second, third
+  prize: TUNING.money.bakeOff,   // dollars for first, second, third (data/tuning.js)
   results: ['First place!', 'Second place.', 'Third place.', 'Fourth place.'],
   win: 'Betty pins a blue ribbon on you. "Best in show. I\'m not crying, it\'s the icing sugar."',
+};
+
+// How each bake plays in the baking mini-game (home kitchen, Betty's practice
+// and the Great Coburg Bake Off). Edit freely:
+//   ingredients  poured in this order. target is out of 10 on the cup. colour is the cup fill.
+//   juice        lemons to squeeze first (squeeze too hard and pips go in)
+//   oven         heat: the ideal dial (0 cool to 1 hot), time: seconds at that heat,
+//                checks: how often you may open the door (each one lets heat out),
+//                fragile: how likely an early peek makes it sink (0 to 1)
+//   look         how the cake is drawn: shape, crumb and crust colours
+//   toppings     flavours to finish with; fit 1 suits it perfectly, 0 is a crime
+//   piping       the pattern you trace on top (see PIPING in systems/baking.js)
+const ING = {
+  flour: { name: 'Plain flour', colour: '#f3ecdc', dry: true },
+  sugar: { name: 'Caster sugar', colour: '#fbfaf5', dry: true },
+  butter: { name: 'Soft butter', colour: '#f2d36b', dry: false },
+  eggs: { name: 'Eggs', colour: '#f2b632', dry: false },
+  milk: { name: 'Milk', colour: '#ffffff', dry: false },
+  chips: { name: 'Choc chips', colour: '#5a3020', dry: true },
+  oil: { name: 'Olive oil', colour: '#b9b23a', dry: false },
+  strawberry: { name: 'Strawberries', colour: '#d83a4a', dry: false },
+  water: { name: 'Cold water', colour: '#cfe8f6', dry: false },
+};
+const ing = (id, target) => ({ id, target, ...ING[id] });
+export const BAKES = {
+  cookies: {
+    ingredients: [ing('flour', 6), ing('sugar', 3), ing('butter', 5), ing('eggs', 2), ing('chips', 4)],
+    oven: { heat: 0.7, time: 12, checks: 3, fragile: 0 },
+    look: { shape: 'cookies', crumb: '#e2b46a', crust: '#b8783a' },
+    toppings: [{ id: 'choc', name: 'Choc drizzle', colour: '#4a2616', fit: 1 }, { id: 'icing', name: 'White icing', colour: '#fbf6ee', fit: 0.7 }, { id: 'caramel', name: 'Salted caramel', colour: '#c88a3a', fit: 0.9 }, { id: 'banana', name: 'Banana cream', colour: '#f2e49a', fit: 0.2 }],
+    piping: 'zigzag',
+  },
+  scones: {
+    ingredients: [ing('flour', 7), ing('sugar', 1), ing('butter', 3), ing('milk', 4)],
+    oven: { heat: 0.75, time: 12, checks: 3, fragile: 0.1 },
+    look: { shape: 'scones', crumb: '#f1dca8', crust: '#c89048' },
+    toppings: [{ id: 'jamcream', name: 'Jam and cream', colour: '#d83a4a', fit: 1 }, { id: 'cream', name: 'Whipped cream', colour: '#fffaf0', fit: 0.8 }, { id: 'choc', name: 'Choc ganache', colour: '#4a2616', fit: 0.3 }, { id: 'lemon', name: 'Lemon icing', colour: '#f6ee9a', fit: 0.4 }],
+    piping: 'dots',
+  },
+  strawtart: {
+    ingredients: [ing('flour', 6), ing('sugar', 3), ing('butter', 4), ing('eggs', 2), ing('strawberry', 5)],
+    oven: { heat: 0.6, time: 16, checks: 2, fragile: 0.2 },
+    look: { shape: 'tart', crumb: '#f0d38a', crust: '#c8904a' },
+    toppings: [{ id: 'glaze', name: 'Strawberry glaze', colour: '#e0505e', fit: 1 }, { id: 'cream', name: 'Vanilla cream', colour: '#fffaf0', fit: 0.85 }, { id: 'choc', name: 'Dark chocolate', colour: '#4a2616', fit: 0.6 }, { id: 'lemon', name: 'Lemon curd', colour: '#f6e070', fit: 0.4 }],
+    piping: 'lattice',
+  },
+  oilcake: {
+    juice: 2,
+    ingredients: [ing('flour', 5), ing('sugar', 4), ing('eggs', 4), ing('oil', 4)],
+    oven: { heat: 0.55, time: 20, checks: 2, fragile: 0.35 },
+    look: { shape: 'loaf', crumb: '#f2df7c', crust: '#c8963e' },
+    toppings: [{ id: 'lemon', name: 'Lemon icing', colour: '#f6ee9a', fit: 1 }, { id: 'sugar', name: 'Icing sugar dust', colour: '#ffffff', fit: 0.9 }, { id: 'cream', name: 'Whipped cream', colour: '#fffaf0', fit: 0.6 }, { id: 'banana', name: 'Banana cream', colour: '#f2e49a', fit: 0.1 }],
+    piping: 'wave',
+  },
+  sponge: {
+    ingredients: [ing('flour', 5), ing('sugar', 5), ing('butter', 5), ing('eggs', 4), ing('milk', 1)],
+    oven: { heat: 0.55, time: 20, checks: 1, fragile: 0.6 },
+    look: { shape: 'layer', crumb: '#f6e2a8', crust: '#d8a656', filling: '#d83a4a' },
+    toppings: [{ id: 'cream', name: 'Jam and cream', colour: '#fffaf0', fit: 1 }, { id: 'icing', name: 'Icing sugar dust', colour: '#ffffff', fit: 0.9 }, { id: 'choc', name: 'Choc icing', colour: '#4a2616', fit: 0.45 }, { id: 'banana', name: 'Banana cream', colour: '#f2e49a', fit: 0.2 }],
+    piping: 'ring',
+  },
+  lemondelicious: {
+    juice: 2,
+    ingredients: [ing('sugar', 4), ing('butter', 2), ing('eggs', 3), ing('flour', 2), ing('milk', 6)],
+    oven: { heat: 0.5, time: 22, checks: 1, fragile: 0.7 },
+    look: { shape: 'pudding', crumb: '#f6e48a', crust: '#d8a040' },
+    toppings: [{ id: 'sugar', name: 'Icing sugar dust', colour: '#ffffff', fit: 1 }, { id: 'cream', name: 'Pouring cream', colour: '#fffaf0', fit: 0.9 }, { id: 'lemon', name: 'Candied lemon', colour: '#f2d23a', fit: 0.85 }, { id: 'banana', name: 'Banana cream', colour: '#f2e49a', fit: 0.05 }],
+    piping: 'spiral',
+  },
+  // Not baked: squeeze the lemons, then sugar and water. 1.5 stars each.
+  lemonade: {
+    juice: 3, drink: true,
+    ingredients: [ing('sugar', 3), ing('water', 7)],
+  },
 };

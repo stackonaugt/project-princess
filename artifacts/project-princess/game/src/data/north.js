@@ -79,7 +79,7 @@ export const NORTH_NPCS = {
     name: 'Betty', gift: ['lasagne', 'roast', 'bananabread', 'shepherds', 'lamington', 'crumble', 'quiche', 'scones'],
     look: { hair: '#141010', hairStyle: 'long', skin: '#8a5a3e', shirt: '#1e1e22', pants: '#1e1e22', shoes: '#2a2a2a', lips: '#7a3a3a' },
   },
-  // Meghan Hopper: Bell St regular, pushes her cat in a pram, wins every bake-off.
+  // Meghan Hopper: Moreland Rd regular (moved from Bell St), pushes her cat in a pram, wins every bake-off.
   meghan: {
     name: 'Meghan Hopper', pram: true,
     look: { hair: '#24181c', hairStyle: 'long', skin: '#f6d6c4', shirt: '#1e1e24', blazer: '#c4eadc', pants: '#2a2a30', shoes: '#1e1e22', lips: '#d8606a' },   // from Seb's photo: long dark hair with a fringe, mint blazer, black top
@@ -329,7 +329,7 @@ export const NORTH_PEOPLE = {
     helpsInBattle: 'Betty marches over with a plate of food. Your pet eats and is instantly, completely restored.',
   },
   meghan: {
-    role: 'Walks Bell St with her cat Whitlam in a pram. Has run for preselection more times than anyone can count. Wins every bake-off',
+    role: 'Walks Moreland Rd with her cat Whitlam in a pram. Has run for preselection more times than anyone can count. Wins every bake-off',
     lines: [
       ['Hi! Meghan Hopper. You might know me from the ballot paper. Every ballot paper. Since 2010.'],
       ['This is Whitlam. He prefers the pram. Walking is for cats without ambition.'],

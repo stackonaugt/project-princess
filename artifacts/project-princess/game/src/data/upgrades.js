@@ -3,6 +3,7 @@
 // maps check state.data.upgrades when they are built (world/maps/home.js,
 // yard.js). Tools (tool: true) change how farming works (WorldScene.usePlot,
 // state.newDay).
+import { TUNING, tune } from './tuning.js';
 export const UPGRADES = {
   veggiepatch: { name: 'Backyard veggie patch', price: 60, desc: 'Six garden beds in the backyard. Grow your own pet treats.' },
   petdoor:     { name: 'Pet door', price: 80, desc: 'Pets at home wander out and bring you a little something most mornings.' },
@@ -14,6 +15,7 @@ export const UPGRADES = {
   sprinkler:   { name: 'Backyard sprinkler', price: 90, tool: true, desc: 'Your backyard beds water themselves every morning.' },
   rod:         { name: 'Fishing rod', price: 60, tool: true, fishing: true, desc: 'Cast off at Edwardes Lake, Edgars Creek or Kororoit Creek. Face the water and press A.' },
 };
+tune(UPGRADES, TUNING.upgrades);   // prices from the tuning sheet (data/tuning.js)
 export const UPGRADE_ORDER = Object.keys(UPGRADES).filter(id => !UPGRADES[id].tool);
 export const TOOL_ORDER = Object.keys(UPGRADES).filter(id => UPGRADES[id].tool && !UPGRADES[id].fishing);
 export const FISHING_ORDER = Object.keys(UPGRADES).filter(id => UPGRADES[id].fishing);

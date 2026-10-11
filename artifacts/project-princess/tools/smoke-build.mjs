@@ -271,8 +271,8 @@ try {
     'A same-day Exhibition replay after reload must not award handling XP twice');
   assert.equal(replayedExhibitionProgress.petXp,completedExhibitionProgress.petXp,
     'A same-day Exhibition replay after reload must not award pet XP twice');
-  await page.evaluate(()=>{window.__pp.ui.baking({name:'Test scones'});});
-  await page.getByRole('heading',{name:'Test scones: workbench',exact:true}).waitFor();
+  await page.evaluate(()=>{window.__pp.ui.baking({name:'Test scones',recipe:'scones'});});
+  await page.getByRole('heading',{name:'Test scones',exact:true}).waitFor();
   await page.getByRole('button',{name:'Cancel',exact:true}).click();
   assert.equal(await page.evaluate(()=>window.__pp.ui.modalOpen),false,'Cancelling baking must close and clean up');
   // Follow the new Woods encounter and care tutorial in this disposable save.
@@ -411,6 +411,8 @@ try {
   await page.evaluate(()=>window.__pp.ui.openModal('phone'));
   // Completing practice can clear the unread count; the app remains available.
   await page.getByRole('button',{name:/^To Do/}).click();
+  // A finished tutorial moves to the Completed tab.
+  await page.getByRole('button',{name:'Completed',exact:true}).click();
   await page.getByText('Practise the yard course',{exact:true}).waitFor();
   await page.evaluate(()=>{window.__pp.ui.closeModal();window.__pp.ui.closeModal();});
   // Concrete screenshot-reference cases, using only this disposable save.

@@ -20,6 +20,7 @@
 
 import { PET_TEXT } from './dialogue.js';
 import { authoredValue } from '../authoring/overrides.js';
+import { TUNING } from './tuning.js';
 
 export let PETS = [
   {
@@ -94,10 +95,10 @@ export let PETS = [
     loves: ['chicken', 'redfin', 'cheese'], likes: ['snag', 'sardine', 'tennis', 'carrot'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 66, attack: 78, defence: 50, speed: 115, special: 48 },
     evolution: {
-      name: 'Even Rustier', species: 'Whippet (sheet metal)', type: ['steel', 'speed'], level: 16, hearts: 5, sprite: 'evenrustier',
+      name: 'Steely', species: 'Whippet (forged steel)', type: 'steel', level: 16, hearts: 5, sprite: 'evenrustier',
       pal: { a: '#9aa2ac', b: '#6a727c', k: '#b8642a', w: '#e8eef4', r: '#4a4e56', o: '#c87a3a', e: '#e83a2a', n: '#1a1010' },
       stats: { hp: 86, attack: 108, defence: 82, speed: 130, special: 56 },
-      moves: ['sliceanddice', 'turbozoom', 'rustcloud', 'oilchange'],
+      moves: ['dangerpaws', 'sharpen', 'turbozoom', 'oilchange'],
     },
   },
   {
@@ -123,6 +124,13 @@ export let PETS = [
     behaviour: 'wander', sleeps: [14 * 60, 16 * 60],
     loves: ['chicken', 'jamdonut', 'hotchips', 'tennis'], likes: ['snag', 'cheese', 'sardine', 'croissant', 'carrot', 'pumpkin', 'potato', 'gelato', 'prosciutto', 'redfin'], dislikes: ['lemon'],
     stats: { hp: 82, attack: 76, defence: 66, speed: 62, special: 55 },
+    evolution: {
+      // Art: assets/sprites/pets/girlie-evolved.png (Girlie's sheet, splattered with mud).
+      name: 'Muddy', species: 'Black labrador (mostly mud)', type: ['dirt', 'water'], level: 16, hearts: 5, sprite: 'lab',
+      pal: { a: '#4a3624', b: '#2e2216', l: '#6e5232' },
+      stats: { hp: 106, attack: 96, defence: 88, speed: 64, special: 70 },
+      moves: ['muddypaws', 'puddlejump', 'shakeoff', 'dirtnap'],
+    },
   },
   {
     id: 'chloe', name: 'Chloe', species: 'Kelpie', type: ['park', 'speed'], sprite: 'kelpie',
@@ -133,6 +141,13 @@ export let PETS = [
     sleeps: [21 * 60, 26 * 60],
     loves: ['prosciutto', 'chicken', 'tennis'], likes: ['cheese', 'snag', 'sardine', 'egg'], dislikes: ['lemon', 'basil', 'kombucha'],
     stats: { hp: 68, attack: 82, defence: 58, speed: 104, special: 60 },
+    evolution: {
+      name: 'Chlo-nado', species: 'Kelpie (whirlwind)', type: ['park', 'speed'], level: 16, hearts: 5, sprite: 'kelpie',
+      pal: { a: '#1e1a1c', t: '#b87a3a', w: '#e8dcc8', e: '#c8a040', n: '#1a1010' },
+      stats: { hp: 86, attack: 100, defence: 72, speed: 124, special: 72 },
+      moves: ['twister', 'herd', 'kelpiestare', 'heelnip'],
+      bio: 'Chloe herds so fast she has become weather. Chlo-nado rounds up the whole of Holmes St in one lap, then sits on her bar stool.',
+    },
   },
   {
     // Ziggy was Mads's cat. Nobody owns him now: win a play-fight with him
@@ -144,6 +159,13 @@ export let PETS = [
     behaviour: 'wander', sleeps: [12 * 60, 14 * 60],
     loves: ['sardine', 'chicken', 'cheese'], likes: ['redfin', 'prosciutto', 'snag'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 58, attack: 74, defence: 52, speed: 120, special: 64 },
+    evolution: {
+      name: 'Ziggy Iggy', species: 'Black and white cat (with baby)', type: ['speed', 'street'], level: 16, hearts: 5, sprite: 'kitten',
+      pal: { a: '#1a1a1e', w: '#f4f4f0', e: '#c8e040', n: '#1a1010' },
+      stats: { hp: 76, attack: 90, defence: 68, speed: 128, special: 80 },
+      moves: ['piggyback', 'zoomcat', 'scratch', 'babygiggle'],
+      bio: 'Ziggy has picked up a passenger: little Iggy rides on his back everywhere. Ziggy pretends to mind. He does not mind.',
+    },
   },
   {
     // Emilio only turns up if you fish Edwardes Lake with bread (see goFishing).
@@ -162,6 +184,13 @@ export let PETS = [
     homeSpot: { zone: 'yard', x: 18, y: 8 }, behaviour: 'wander', sleeps: [19 * 60, 26 * 60],
     loves: ['chicken', 'cheese', 'snag'], likes: ['egg', 'sardine', 'tennis'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 72, attack: 64, defence: 58, speed: 52, special: 60 },
+    evolution: {
+      name: 'BIG MART', species: 'Cavoodle (very, very tall)', type: 'smelly', level: 14, hearts: 5, sprite: 'cavoodle',
+      pal: { a: '#655c52', b: '#403d3b', c: '#8d867d', e: '#171616', n: '#24201d', h: '#cf7335' },
+      stats: { hp: 96, attack: 84, defence: 76, speed: 54, special: 70 },
+      moves: ['towerover', 'smellpoo', 'bite', 'gordonfood'],
+      bio: 'Same Marty. Same curls, same harness, same smell. Just enormous. He can see into the neighbours\' kitchens now, and he does.',
+    },
     bio: 'Trish and Gordon’s brown-grey cavoodle. Soft curls, orange harness, spectacularly questionable perfume.',
     clue: 'Trish and Gordon can introduce you on Woods St during the day.',
     funFact: 'Gordon is the source of all the best human food.', favouriteSpot: 'Beside Gordon on the couch.',
@@ -172,6 +201,14 @@ export let PETS = [
 
 
 // What pets say, and their Petdex text, live in dialogue.js.
+// Stats and evolution thresholds from the tuning sheet (data/tuning.js).
+for (const p of PETS) {
+  const t = TUNING.pets[p.id];
+  if (!t) continue;
+  if (t.stats) p.stats = { ...p.stats, ...t.stats };
+  if (t.evolution && p.evolution) for (const k of ['level', 'hearts']) if (Number.isFinite(t.evolution[k])) p.evolution[k] = t.evolution[k];
+  if (t.evolution?.stats && p.evolution) p.evolution.stats = { ...p.evolution.stats, ...t.evolution.stats };
+}
 PETS = authoredValue('data/pets.js', 'PETS', PETS);
 for (const p of PETS) {
   const t = PET_TEXT[p.id] || {};

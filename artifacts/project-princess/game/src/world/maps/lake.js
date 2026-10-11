@@ -14,7 +14,15 @@ export function buildLake() {
   // The lake: two overlapping basins, a path loop and an island
   b.ellipse(25, 14, 15.5, 10.5, 'f');
   b.ellipse(25, 14, 14.3, 9.4, '.');
-  b.ellipse(23, 13, 11.5, 7, '~').ellipse(31, 16, 8, 5.5, '~');
+  // Keep a grass margin inside the path loop. Water that touched the stepped
+  // path tiles took flush, square banks, which notched the curved shoreline.
+  b.ellipse(23.5, 13, 10.4, 6.3, '~').ellipse(30.5, 15.5, 7, 4.6, '~');
+  // Trim one-tile nubs and fill one-tile bites left by sampling the ellipses.
+  for (let pass = 0; pass < 2; pass++) for (let y = 4; y < 25; y++) for (let x = 10; x < 41; x++) {
+    const c = b.get(x, y), wet = [[0, -1], [1, 0], [0, 1], [-1, 0]].filter(([dx, dy]) => b.get(x + dx, y + dy) === '~').length;
+    if (c === '~' && wet <= 1) b.set(x, y, '.');
+    else if (c === '.' && wet >= 3) b.set(x, y, '~');
+  }
   b.ellipse(27, 12, 1.8, 1.1, '.', '~');
   b.put('tall', 27, 12, { v: 'willowgum' });
   for (let i = 0; i < 40; i++) {

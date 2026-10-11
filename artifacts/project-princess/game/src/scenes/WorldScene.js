@@ -4,7 +4,7 @@ import { paintYardCourse,startYardCourse,yardTier } from '../systems/yard-course
 import { beginMartyCare, martyApproach } from '../systems/pet-care.js';
 import { CRAFT_RECIPES } from '../data/crafting.js';
 import { craft,craftReason } from '../systems/crafting.js';
-import { COMPETITORS,SHOW_DOGS,DIVISIONS } from '../data/dog-show.js';
+import { COMPETITORS,SHOW_DOGS,DIVISIONS,SHOW_DAY,showOpen } from '../data/dog-show.js';
 import { showReady,divisionDone,divisionProgress } from '../systems/show-progress.js';
 import { awardSkill, skill, trainingXp } from '../systems/player-skills.js';
 // The main game scene: one region at a time. Restarted (with new data)
@@ -21,7 +21,8 @@ import { isAt, onDuty, inMeeting, isMeetingDay, weekday } from '../data/routines
 import { todayJobs } from '../ui/calendar.js';
 import { MOTIONS, MOTION_ORDER, COUNCIL_ALL, BOOK_RECS, SWING, COUNCIL_VIEWS, SILLY_MOTIONS, SILLY_DEBATE, sillyFor, sillyYes } from '../data/council.js';
 const COUNCILLORS = COUNCIL_ALL;
-import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF } from '../data/cooking.js';
+import { TUNING } from '../data/tuning.js';
+import { RECIPES as COOK_RECIPES, RECIPE_ORDER, TEACH_LINES, BAKE_OFF, BAKES } from '../data/cooking.js';
 import { REQUEST_BONUS } from '../data/requests.js';
 import { CHAPTERS, PADDY_SPILL, PADDY_SPILL_HINT, LUNCH, RECIPES, PRANKS, PRANK_AFTER, PRANK_NEED, NEWS_OPEN, NEWS_RESULT, RSVP, THE_END, PARTY_STORIES, PARTY_STORY_DEFAULT, PARTY_MINGLE, PARTY_END, PADDY_SPEECH, PADDY_PARTY, CH2_RECIPE, CH4, CH1, CH1_PAPER, CH1_HELEN, CH1_ENROLLED, SCHOOL_FEE, SCHOOL_LINES, SCHOOL_DEFAULT } from '../data/story.js';
 import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees, electionVotes } from '../systems/story.js';
@@ -34,7 +35,7 @@ const GATES = {
 // People you can't invite to the party (Chapter 4).
 const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
 
-// What you can catch where: [item, weight, junk?]. Bait halves the junk.
+// What you can catch where: [item, weight, junk?]. Every cast uses bait, which halves the junk.
 // Where there are ducks to feed (with stale bread), and how many old-bloke
 // wins at bowls earn the Newcomer's Cup.
 const DUCK_ZONES = ['lake', 'wetlands', 'coburglake', 'altona', 'gardens', 'flinders'];
@@ -53,12 +54,13 @@ import { ITEMS } from '../data/items.js';
 import { TYPES } from '../data/types.js';
 import { TRAINERS, PRIZE_TRAINER, fineFor } from '../data/enemies.js';
 import { rollEncounter, scaleWild, starterEncounter, readyTeam, START_LEVEL, gainXp, petFighter } from '../systems/battle.js';
-import { form, formText, canEvolve, evolve } from '../systems/forms.js';
+import { form, formText, canEvolve, evolve, petTex, isEvolved } from '../systems/forms.js';
+import { playEvolution } from '../systems/evolution-fx.js';
 import { friendInfo, FRIEND_POINTS } from '../data/friends.js';
 import { CROPS } from '../data/crops.js';
 import { typeName } from '../data/types.js';
 import { flavourFor } from '../data/flavour.js';
-import { FURNITURE } from '../data/furniture.js';
+import { FURNITURE, PLANT_SPOTS, plantAt, plantSpots } from '../data/furniture.js';
 import { OBJECTS, LIGHT_SOURCES } from '../art/paint/objects.js';
 import { paintGround, TILE_NAMES } from '../art/paint/tiles.js';
 import { painter } from '../art/paint/painter.js';
@@ -105,6 +107,8 @@ export class WorldScene extends Phaser.Scene {
     state.data.region = this.regionId;
     const firstVisit = !state.data.visited.includes(this.regionId);
     state.visit(this.regionId);
+    // Walking back in (not a reload or waking up) counts as a visit: some trainers wait for your second or fourth.
+    this.visitNo = this.entryName && !this.newDay ? state.countVisit(this.regionId) : (state.data.visits?.[this.regionId] || 0);
     // A rest at home fixes everyone.
     const tired = region.home && Object.values(state.data.pets).some(r => r.hp !== null && r.hp !== undefined);
     if (region.home) state.healAll();
@@ -210,7 +214,7 @@ export class WorldScene extends Phaser.Scene {
       this.time.delayedCall(900, () => ui.toast('Off-lead dog park! Your team has a lovely run. +friendship'));
     }
     this.buildStoryBits();
-    this.intro(firstVisit).then(() => this.catchUpJulie()).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime());
+    this.intro(firstVisit).then(() => this.catchUpJulie()).then(() => this.parkTutorial()).then(() => this.morningNews()).then(() => this.maybeMeeting()).then(() => this.partyTime()).then(() => this.ambush());
   }
 
   // A nudge each morning about anything time sensitive today.
@@ -749,6 +753,20 @@ export class WorldScene extends Phaser.Scene {
     const f = FURNITURE[t.id], furn = state.data.furniture;
     const who = f.shop === 'bunnings' ? 'Olly' : 'Franco';
     const text = `${f.name}. $${f.price}. ${f.desc}`;
+    // A pot plant replaces one spot at home (or a matching pair): ask which.
+    if (f.slot === 'plant') {
+      const spots = plantSpots(u => state.hasUpgrade(u)).filter(spot => plantAt(furn, spot) !== t.id);
+      if (!spots.length) return ui.say([text, 'Every plant spot at home already has one of these.']);
+      const spot = await ui.say({ text: `${text} Which plant at home should it replace?`, choices: [
+        ...spots.map(id => ({ label: `${PLANT_SPOTS[id].name} (${FURNITURE[plantAt(furn, id)].name})`, value: id })),
+        { label: 'Not now', value: false }] }, { cancelValue: false });
+      if (!spot) return;
+      if (!state.spend(f.price)) { sfx.bump(); return ui.say([`You need $${f.price}. You have $${state.data.money}.`]); }
+      state.placeFurniture(t.id, spot);
+      sfx.pickup();
+      ui.toast(`${f.name}: ${PLANT_SPOTS[spot].name}`);
+      return ui.say([`Olly nods. "Good choice. I'll drop it round on my way home and swap the old one out for you."`]);
+    }
     if (furn[f.slot] === t.id) return ui.say([text, 'You already have this one at home.']);
     const owned = furn.owned.includes(t.id);
     const go = await ui.say({ text, choices: [owned ? { label: 'Put it back in the house', value: true } : { label: `Buy it ($${f.price})`, value: true }, { label: 'Not now', value: false }] }, { cancelValue: false });
@@ -834,12 +852,14 @@ export class WorldScene extends Phaser.Scene {
     if (!state.hasUpgrade('rod')) return ui.say(['The water looks fishy. You would need a fishing rod. Bazza at Anaconda in Preston sells them.']);
     if (this.emilioWaiting()) return this.emilio();
     const table = FISH_TABLES[this.regionId] || FISH_TABLES.default;
-    const bait = state.count('bait') > 0;
-    if (bait) state.removeItem('bait');
-    let r = Math.random() * table.reduce((a, [, w, j]) => a + (bait && j ? w / 2 : w), 0), fish = table[0][0];
-    for (const [id, w, j] of table) { r -= bait && j ? w / 2 : w; if (r <= 0) { fish = id; break; } }
+    // Every cast costs one bait, caught or not. No bait, no fishing.
+    if (state.count('bait') < 1) return ui.say(['No bait left. Bazza at Anaconda in Preston sells it, a couple of dollars a tub.']);
+    state.removeItem('bait');
+    let r = Math.random() * table.reduce((a, [, w, j]) => a + (j ? w / 2 : w), 0), fish = table[0][0];
+    for (const [id, w, j] of table) { r -= j ? w / 2 : w; if (r <= 0) { fish = id; break; } }
     state.data.minutes += 10;
-    const got = await ui.fish(fish, FISH_ZONE[fish] + (bait ? 0.06 : 0));
+    this.save();
+    const got = await ui.fish(fish, FISH_ZONE[fish]);
     if (got) { awardSkill('gathering',15); state.addItem(got); state.data.stats.fish = (state.data.stats.fish || 0) + 1; ui.toast(`+1 ${ITEMS[got].name}`, itemIcon(got, 32)); }
     this.save();
   }
@@ -1057,15 +1077,30 @@ export class WorldScene extends Phaser.Scene {
   }
 
   // A pet that's levelled up enough evolves once your friendship is strong enough.
+  // Pokémon style (systems/evolution-fx.js): glow, flicker, burst, fanfare.
+  // ui.activity holds every input while it plays; this.evolving stops a second start.
   async evolveInWorld(pet) {
-    const id = pet.id, before = form(id).name;
-    await ui.say([`What's this? ${before} is glowing!`]);
-    sfx.found();
-    const cam = this.cameras.main;
-    for (let i = 0; i < 6; i++) { pet.setTintFill(0xffffff); await new Promise(r => setTimeout(r, 140)); pet.clearTint(); await new Promise(r => setTimeout(r, 120)); }
-    cam.flash(500, 255, 255, 255);
-    evolve(id);
-    pet.refreshForm();
+    const id = pet.id;
+    if (this.evolving || !canEvolve(id)) return;
+    this.evolving = true;
+    const before = form(id).name;
+    try {
+      await ui.say([`What's this? ${before} is glowing!`]);
+      const hold = { evolution: true }, wasScripted = pet.scripted;
+      ui.activity = hold;
+      pet.scripted = true; pet.actionPose = null;
+      pet.body?.setVelocity?.(0, 0); pet.anims?.stop();
+      try {
+        await playEvolution(this, pet, { from: petTex(id), to: `pet-${id}-evolved`, depth: 9100, reveal: () => { evolve(id); pet.refreshForm(); } });
+      } finally {
+        if (ui.activity === hold) ui.activity = null;
+        pet.scripted = wasScripted;
+      }
+      if (!isEvolved(id)) { evolve(id); pet.refreshForm(); }
+      await this.finishEvolution(pet, id, before);
+    } finally { this.evolving = false; }
+  }
+  async finishEvolution(pet, id, before) {
     this.heartsFx(pet, 10);
     const d = form(id);
     ui.banner('Evolution!', `${before} became ${d.name}`);
@@ -1087,7 +1122,8 @@ export class WorldScene extends Phaser.Scene {
     const trainer = TRAINERS[npc.id];
     const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
     // Trainers you have never beaten go straight to their challenge.
-    if (trainer && !done && !state.data.beaten[npc.id]) return this.challenge(npc, trainer, opts);
+    // (Ambushers, like the karaoke dad, wait for their visit: until then they just chat.)
+    if (trainer && !done && !state.data.beaten[npc.id] && !(trainer.ambush && (this.visitNo || 0) < trainer.ambush)) return this.challenge(npc, trainer, opts);
     const f = state.friend(npc.id);
     if (!f.met) { f.met = true; bus.emit('friends:changed'); }
     // Chris hands out the community garden plots the first time you chat
@@ -1336,12 +1372,19 @@ export class WorldScene extends Phaser.Scene {
       return ui.say([`${npc.info.name} squints at the ${name}. "Hang on. That's mine. I gave you that."`, `"Keep it. Re-gifting to the person who gifted it is a bold move, though."`], opts);
     }
     // Some things (Betty's cooking) everyone loves, unless they've said otherwise.
-    const reaction = fi.loves.includes(item) || (ITEMS[item].loved && !fi.dislikes.includes(item)) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
+    const taste = fi.loves.includes(item) || (ITEMS[item].loved && !fi.dislikes.includes(item)) ? 'love' : fi.likes.includes(item) ? 'like' : fi.dislikes.includes(item) ? 'dislike' : 'neutral';
+    // How well it was made counts too: a 3 star bake wins anyone over, and only
+    // Paddy will say a 1 star one is good.
+    const stars = state.nextBakeStars(item);
+    const reaction = stars === null ? taste : stars >= 3 ? 'love' : stars <= 1 ? (npc.id === 'paddy' ? 'love' : 'dislike') : taste;
     state.removeItem(item);
-    f.giftedDay = state.data.day; f.reactions[item] = reaction;
+    f.giftedDay = state.data.day; f.reactions[item] = taste;
     const r = state.addFriendPoints(npc.id, FRIEND_POINTS[reaction]);
     const n = npc.info.name;
-    const text = {
+    const text = stars !== null && stars <= 1 ? (npc.id === 'paddy'
+      ? `Paddy takes a huge bite of the ${name}. "Mmm! Honestly, love, it's really good." He is a terrible liar, and a lovely husband.`
+      : `${n} takes a bite of the ${name} and chews for a long time. "...Did you make this yourself? I can tell."`)
+      : stars >= 3 ? `${n} takes one bite of the ${name} and closes their eyes. "That is perfect. Perfect! Who taught you that?"` : {
       love: `${n} LOVES the ${name}! "How did you know?"`,
       like: `${n} is pleased with the ${name}. "Ta, that's lovely."`,
       neutral: `${n} takes the ${name} politely. "Oh. Thanks."`,
@@ -1403,7 +1446,7 @@ export class WorldScene extends Phaser.Scene {
       state.data.beaten[npc.id] = state.data.day;
       await ui.say(t.win, opts);
       if (firstToday && (t.money ?? (t.prize ? 0 : 20))) {
-        const cash = t.money ?? (t.prize ? 0 : 20);
+        const cash = Math.round((t.money ?? (t.prize ? 0 : 20)) * TUNING.money.allMoney);
         state.addMoney(cash);
         sfx.pickup();
         await ui.say(`${t.name} hands over $${cash}. Fair's fair.`, opts);
@@ -1451,6 +1494,28 @@ export class WorldScene extends Phaser.Scene {
     const lines = [`You befriended ${d.name}, the ${typeName(d.type).toLowerCase()} type ${d.species.toLowerCase()}!`, `${d.name} was added to your Petdex, and will hang out at your place on Allen St.`];
     if (state.foundCount() === PETS.length) lines.push("That's everyone! Every pet in Melbourne is your friend now. Well, these ones. For now.");
     await ui.say(lines, { name: d.name, portrait: petPortrait(id) });
+  }
+
+  // Trainers with `ambush: n` (data/enemies.js) walk up and challenge you on your
+  // nth visit to their zone or any later one, until you have beaten them once.
+  async ambush() {
+    // Wait for any welcome or story lines to finish first.
+    for (let i = 0; i < 100 && ui.blocking(); i++) await new Promise(r => this.time.delayedCall(300, r));
+    if (this.leaving || this.party || ui.blocking()) return;
+    for (const npc of this.npcs) {
+      const t = TRAINERS[npc.id];
+      if (!t?.ambush || npc.gone || !npc.visible || state.data.beaten[npc.id] || this.visitNo < t.ambush) continue;
+      if (!readyTeam().length) return;
+      await new Promise(r => this.time.delayedCall(500, r));
+      if (this.leaving || ui.blocking()) return;
+      npc.pause(8);
+      ui.toast(`${npc.info.name} has spotted you!`);
+      const dx = this.player.x - npc.x, dy = this.player.y - npc.y, d = Math.hypot(dx, dy);
+      if (d > 28 && d < 16 * 14) await npc.scriptTo([[this.player.x - dx / d * 20, this.player.y - dy / d * 20]], 70);
+      npc.faceTowards(this.player.x, this.player.y);
+      await this.challenge(npc, t, { name: npc.info.name, portrait: npcIcon(npc.id) });
+      return;
+    }
   }
 
   // Once per visit, the neighbours call out as Helen passes their garden.
@@ -1543,7 +1608,7 @@ export class WorldScene extends Phaser.Scene {
   async showCompetitor(npc,opts){
     if(npc.id==='showjean')return this.dogShow(opts);
     const c=COMPETITORS.find(c=>c.id===npc.id);
-    if(!c)return ui.say(npc.info.lines,opts);
+    if(!c){const ls=npc.info.lines||[];return ui.say(ls[state.data.day%Math.max(1,ls.length)]||[],opts);}
     await ui.say([`${c.intro}`,`${c.dog.charAt(0).toUpperCase()+c.dog.slice(1)} is a ${SHOW_DOGS[c.dog].breed.toLowerCase()}.`,c.tip],opts);
     if(await ui.say({text:'Check your division events with Jean?',choices:[{label:'Open show programme',value:true},{label:'Keep exploring',value:false}]},{...opts,cancelValue:false}))await this.dogShow();
   }
@@ -1556,6 +1621,9 @@ export class WorldScene extends Phaser.Scene {
       if(!await ui.say({text:`Register ${form(pet).name}? This dog stays your partner throughout all three divisions. Entry is free.`,choices:[{label:'Register',value:true},{label:'Later',value:false}]},{...opts,cancelValue:false}))return;
       sh.entered=true;sh.pet=pet;this.save();
     }
+    // The divisions are a Sunday event. Practise in the ring the rest of the week.
+    if(!showOpen(state.data.day,state.data.minutes,weekday)&&DIVISIONS.some(d=>!sh.claimed.includes(d.id)))
+      return ui.say([`Jean: "Judging is on ${SHOW_DAY.day}s, 9am to 5pm. Come back then with ${form(sh.pet).name}."`,'"The practice ring and the grooming table are open every day. Use them."'],opts);
     for(;;){
       const d=DIVISIONS.find(d=>!sh.claimed.includes(d.id));if(!d)return ui.say(['Jean: "Exhibition champion! Your rosette is in your bag. The practice ring stays open, and the other owners are always happy to share tips."'],opts);
       const p=divisionProgress(d.id);
@@ -1817,6 +1885,13 @@ export class WorldScene extends Phaser.Scene {
     this.navigation.cancel();
     sfx.bump();
     const back = { x: ex.x === 0 ? 1 : ex.x === this.map.w - 1 ? -1 : 0, y: ex.y === 0 ? 1 : ex.y === this.map.h - 1 ? -1 : 0 };
+    // A door in the middle of a map (the dog show, the bake-off hall) has no
+    // edge to push back from: step back out the way you came, clear of the
+    // doorway, so taps and buttons do not keep re-reading the notice.
+    if (!back.x && !back.y) {
+      const d = { up: [0, 1], down: [0, -1], left: [1, 0], right: [-1, 0] }[this.player.dir] || [0, 1];
+      back.x = d[0] * 1.6; back.y = d[1] * 1.6;
+    }
     this.player.setPosition(this.player.x + back.x * 10, this.player.y + back.y * 10);
     this.player.target = null;
     ui.say(lines);
@@ -2120,12 +2195,14 @@ export class WorldScene extends Phaser.Scene {
     const r = COOK_RECIPES[pick_];
     if (!has(r.needs)) return ui.say([`You need ${needsText(r.needs)}.`, 'Veggies come from your garden. Flour, sugar, butter, milk, eggs and choc chips are on the Pantry shelf at Coles.']);
     let preparation=null;
-    if(practice){preparation=await ui.baking({name:ITEMS[pick_].name});if(!preparation)return;}
+    // Bakes and lemonade are made by hand (ui/baking.js); soups just happen.
+    if(BAKES[pick_]){preparation=await ui.baking({name:ITEMS[pick_].name,recipe:pick_});if(!preparation)return;}
     for (const [k, c] of Object.entries(r.needs)) for (let i = 0; i < c; i++) state.removeItem(k);
-    state.addItem(pick_); awardSkill('cooking', 25);
+    if(preparation) state.addBake(pick_, preparation.stars); else state.addItem(pick_);
+    awardSkill('cooking', 25);
     const bq = state.data.side.bakeQuest; if (!bq.cooked.includes(pick_)) bq.cooked.push(pick_);
-    if(preparation){bq.practices++;bq.quality[pick_]=Math.max(Number(bq.quality[pick_])||0,preparation.score);awardSkill('cooking',preparation.score*5);}
-    sfx.found(); ui.toast(`+1 ${ITEMS[pick_].name}`, itemIcon(pick_, 32));
+    if(preparation){if(practice)bq.practices++;bq.quality[pick_]=Math.max(Number(bq.quality[pick_])||0,preparation.score);awardSkill('cooking',preparation.score*5);}
+    if (!preparation) sfx.found(); ui.toast(`+1 ${ITEMS[pick_].name}`, itemIcon(pick_, 32));
     await ui.say([r.text]);
     this.save();
   }

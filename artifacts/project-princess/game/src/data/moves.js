@@ -16,6 +16,7 @@
 //   anim     the battle animation ('lunge', 'bite', 'claw', 'beam', 'shout', 'heal', 'fade', 'hop', 'dig', 'gust', 'stink', 'flame')
 //   text     the line shown when it's used ({u} = user, {t} = target)
 import { NORTH_MOVES } from './north.js';
+import { BATTLER_MOVES } from './battlers.js';
 import { EAST_MOVES } from './east.js';
 
 import { SH_MOVES } from './summerhill.js';
@@ -80,7 +81,15 @@ export let MOVES = {
   pilum:      { name: 'Pilum', type: 'steel', power: 75, anim: 'lunge', text: '{u} hurls a little Roman javelin. It is beautifully made.' },
   testudo:    { name: 'Testudo', type: 'steel', power: 0, effect: { selfDef: 1, heal: 0.3 }, anim: 'heal', text: '{u} forms a tortoise of shields. It is one dog, but the formation is perfect.' },
   venividivici:{ name: 'Veni Vidi Vici', type: 'steel', power: 95, effect: { recoil: 0.1 }, anim: 'claw', text: '{u} came. {u} saw. {u} conquered {t}.', recoilText: '{u} pulled something in his little sandals.' },
-  // Even Rustier (Rusty evolved, steel and speed)
+  // Steely (Rusty evolved, steel). Slice and Dice and Rust Cloud are kept for old saves and the Studio.
+  dangerpaws: { name: 'Danger Paws', type: 'steel', power: 90, anim: 'claw', text: '{u} flashes four steel paws at {t}. Danger. Paws.' },
+  sharpen:    { name: 'Sharpen', type: 'steel', power: 0, effect: { selfAtk: 2 }, anim: 'heal', text: '{u} sharpens his claws on the Colorbond. Shing. His attack rises sharply.' },
+  // Muddy (Girlie evolved, dirt and water)
+  muddypaws:  { name: 'Muddy Paws', type: 'dirt', power: 80, anim: 'lunge', text: '{u} jumps up on {t} with four muddy paws. That will not come out in the wash.' },
+  puddlejump: { name: 'Puddle Jump', type: 'water', power: 75, anim: 'lunge', text: '{u} lands in a puddle right next to {t}. Everyone is soaked.' },
+  shakeoff:   { name: 'Shake Off', type: 'dirt', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'gust', text: '{u} shakes from nose to tail. Mud goes everywhere, mostly on {t}.' },
+  dirtnap:    { name: 'Dirt Nap', type: 'dirt', power: 0, effect: { heal: 0.4 }, anim: 'bed', text: '{u} flops into a cool patch of mud for a snooze. Bliss.' },
+  // Even Rustier's old moves (Rusty evolved, steel and speed)
   sliceanddice:{ name: 'Slice and Dice', type: 'steel', power: 85, anim: 'claw', text: '{u} goes through {t} like a mandoline through a zucchini.' },
   turbozoom:  { name: 'Turbo Zoom', type: 'speed', power: 80, anim: 'lunge', text: '{u} hits 90km/h on the athletics track and forgets to stop.' },
   rustcloud:  { name: 'Rust Cloud', type: 'steel', power: 0, effect: { foeDef: 1, foeAtk: 1 }, anim: 'gust', text: '{u} shakes off a cloud of rust flakes. {t} gets them in its eyes.' },
@@ -238,6 +247,14 @@ Object.assign(MOVES, {
   breadcrumbs:  { name: 'Breadcrumbs', type: 'park', power: 0, effect: { heal: 0.35 }, anim: 'heal', text: '{u} finds some breadcrumbs in his hat. Delicious. He feels better.' },
 });
 
+// Evolved moves for BIG MART, Chlo-nado and Ziggy Iggy.
+Object.assign(MOVES, {
+  towerover: { name: 'Tower Over', type: 'smelly', power: 60, effect: { foeAtk: 1 }, anim: 'lunge', text: '{u} stands up to full height. {t} has to look up. And up.' },
+  twister: { name: 'Twister', type: 'speed', power: 70, anim: 'gust', text: '{u} spins into a whirlwind and herds {t} straight off its feet.' },
+  piggyback: { name: 'Piggyback', type: 'speed', power: 65, anim: 'lunge', text: '{u} charges at {t} with Iggy hanging on and squealing.' },
+  babygiggle: { name: 'Baby Giggle', type: 'fairy', power: 0, effect: { foeAtk: 1, heal: 0.15 }, anim: 'heal', text: 'Iggy giggles. {t} cannot bring itself to fight properly, and {u} feels better.' },
+});
+
 export let PET_MOVES = {
   marty: ['smellpoo', 'bite', 'growl', 'gordonfood'],
   princess: ['growl', 'clawattack', 'humpbed', 'bite'],
@@ -253,6 +270,7 @@ export let PET_MOVES = {
 };
 
 Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston
+Object.assign(MOVES, BATTLER_MOVES);   // battlers.js
 Object.assign(MOVES, EAST_MOVES);    // Brunswick East
 MOVES = authoredValue('data/moves.js', 'MOVES', MOVES);
 PET_MOVES = authoredValue('data/moves.js', 'PET_MOVES', PET_MOVES);

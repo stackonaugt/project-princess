@@ -72,6 +72,6 @@ export function buildCoburg() {
   // Lived-in touches: pot plants and bikes outside shops (walk-through)
   b.scatter([0, 0, b.w, b.h], 0.012, [['potplant', 3, ['succulent', 'herbs', 'fern', 'geranium']], ['bike', 2, ['blue', 'red']]], { clearance: 0, on: 'fc' });
   // Meghan Hopper walks Whitlam up and down Bell St in his pram.
-  b.npc('meghan', 33, 14, { face: 'right', path: [[33, 14], [46, 14], [46, 14], [33, 14]], speed: 26 });
+  b.npc('lambros', 36, 9, { face: 'down' });   // the Deputy Mayor, outside the town hall
   return b.finish();
 }

@@ -9,7 +9,7 @@ import { ITEMS, isTreat } from '../data/items.js';
 import { GEAR, GEAR_ORDER } from '../data/gear.js';
 import { CROPS, CROP_ORDER } from '../data/crops.js';
 import { UPGRADES, UPGRADE_ORDER, TOOL_ORDER, FISHING_ORDER } from '../data/upgrades.js';
-import { FURNITURE, FURNITURE_ORDER, SLOTS } from '../data/furniture.js';
+import { FURNITURE, FURNITURE_ORDER, SLOTS, PLANT_SPOTS, plantAt, plantSpots } from '../data/furniture.js';
 import { HEROES } from '../data/heroes.js';
 import { SHOPS } from '../data/shops.js';
 import { SPELLS, SPELL_ORDER, spellPrice } from '../data/east.js';
@@ -30,6 +30,7 @@ export function sellPrice(id) {
 export function openShop(panel, close, shopId = 'petshop') {
   const shop = SHOPS[shopId];
   const msg = h('p', { class: 'small center', role: 'status' });
+  let plantFor = null;   // the pot plant waiting for a spot at home (Pot plants tab)
   if (!shop.tabs.includes(tabFor[shopId])) tabFor[shopId] = shop.tabs[0];
   const buy = (name, price, give) => () => {
     if (!state.spend(price)) { sfx.bump(); return; }
@@ -63,7 +64,16 @@ export function openShop(panel, close, shopId = 'petshop') {
     if (tab === 'party') return Object.keys(ITEMS).filter(id => ITEMS[id].deco).map(itemRow);
     if (tab === 'books') return Object.keys(ITEMS).filter(id => ITEMS[id].book).map(itemRow);
     if (tab === 'fishing') return [...upgradeRows(FISHING_ORDER), itemRow('bait')];
-    if (tab === 'furniture' || tab === 'plants') return FURNITURE_ORDER.filter(id => (FURNITURE[id].shop === 'bunnings') === (tab === 'plants')).map(id => {
+    // A pot plant replaces one spot at home (or a matching pair): pick it next.
+    if (tab === 'plants') return FURNITURE_ORDER.filter(id => FURNITURE[id].shop === 'bunnings').map(id => {
+      const c = FURNITURE[id], spots = plantSpots(u => state.hasUpgrade(u));
+      const here = spots.filter(spot => plantAt(state.data.furniture, spot) === id).length;
+      return { name: c.name, desc: `${c.desc}${here ? ` At home: ${here} of ${spots.length} spots.` : ''}`, price: c.price,
+        owned: here === spots.length, ownedLabel: 'In every spot ✓',
+        btnLabel: plantFor === id ? 'Choosing…' : c.price ? null : 'Put it back', free: !c.price,
+        act: () => { plantFor = plantFor === id ? null : id; msg.textContent = ''; sfx.select(); render(); } };
+    });
+    if (tab === 'furniture') return FURNITURE_ORDER.filter(id => FURNITURE[id].shop !== 'bunnings').map(id => {
       const c = FURNITURE[id], f = state.data.furniture, owned = f.owned.includes(id), here = f[c.slot] === id;
       const place = () => { state.placeFurniture(id); sfx.pickup(); msg.textContent = `${c.name} is in the house now.`; render(); };
       return { name: c.name, desc: `${SLOTS[c.slot]}. ${c.desc}`, price: c.price, owned: here, ownedLabel: 'In the house ✓',
@@ -108,6 +118,21 @@ export function openShop(panel, close, shopId = 'petshop') {
         h('p', {}, '"Nice try, little mate. Come back in about eighteen years. Or bring Helen."')));
     return;
   }
+  // Where the chosen pot plant goes: one spot (or pair) at home.
+  const plantChooser = () => {
+    const id = plantFor, c = FURNITURE[id], furn = state.data.furniture;
+    return h('div', { class: 'note plant-chooser' },
+      h('p', {}, `Where should the ${c.name} go? It replaces the plant there.`),
+      ...plantSpots(u => state.hasUpgrade(u)).map(spot => {
+        const now = plantAt(furn, spot), same = now === id;
+        return h('button', { class: 'wood-btn small', disabled: same || state.data.money < c.price, onclick: () => {
+          if (c.price && !state.spend(c.price)) { sfx.bump(); return; }
+          state.placeFurniture(id, spot); plantFor = null; sfx.pickup();
+          msg.textContent = `${c.name} is in the house now. Spot: ${PLANT_SPOTS[spot].name}.`; render();
+        } }, `${PLANT_SPOTS[spot].name}: ${same ? 'already here' : FURNITURE[now].name}`);
+      }),
+      h('button', { class: 'wood-btn small', onclick: () => { plantFor = null; sfx.select(); render(); } }, 'Not now'));
+  };
   const render = () => {
     const tab = tabFor[shopId], rows = tab === 'sell' || tab === 'fish' ? rowsForRest(tab) : rowsFor(tab);
     panel.replaceChildren(...[
@@ -125,7 +150,8 @@ export function openShop(panel, close, shopId = 'petshop') {
         tab === 'tools' ? h('p', { class: 'small' }, 'Garden tools work as soon as you buy them.') : null,
         tab === 'books' ? h('p', { class: 'small' }, 'Classics and the latest hits. Books make lovely presents. Some friends are big readers.') : null,
         tab === 'fishing' ? h('p', { class: 'small' }, 'With a rod, face the water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A.') : null,
-        tab === 'plants' ? h('p', { class: 'small' }, 'One kind of pot plant for the whole house. Olly delivers it on the way home.') : null,
+        tab === 'plants' ? h('p', { class: 'small' }, 'Each pot plant replaces one plant at home, or a matching pair. Pick the spot after you choose. Olly drops it round on the way home.') : null,
+        tab === 'plants' && plantFor ? plantChooser() : null,
         tab === 'furniture' ? h('p', { class: 'small' }, 'Beds, couches, rugs, lamps and more. Delivered straight away. Things you own can go back in any time. Megalo service!') : null,
         tab === 'sell' ? h('p', { class: 'small' }, state.inParty('princess') ? 'Princess is charming the shopkeeper. You get 20% more.' : 'Crops sell well. Treats go for half what they cost.') : null,
         tab === 'fish' ? h('p', { class: 'small' }, 'Spiro pays better for fish than anyone in Melbourne. Catch them at Edwardes Lake, Edgars Creek or right here in Kororoit Creek.') : null,

@@ -18,7 +18,7 @@ import { CROPS } from '../data/crops.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
 import { CHAPTERS } from '../data/story.js';
-import { FURNITURE, DEFAULT_FURNITURE } from '../data/furniture.js';
+import { FURNITURE, DEFAULT_FURNITURE, PLANT_SPOTS, sanitisePlants } from '../data/furniture.js';
 import { normaliseScorecards } from './scorecards.js';
 
 const VERSION = 10;
@@ -36,6 +36,7 @@ function fresh() {
     day: 1, minutes: 9 * 60,     // the very first day starts at 9am
     region: 'home', pos: null, dir: 'down',   // region = the zone you're in (see data/regions.js)
     visited: ['home'],
+    visits: {},        // zone id -> how many times you have walked in (trainers who ambush on a later visit)
     pinned: null,       // optional single story objective/request; safe for older saves
     hero: null, startGiven: false,        // 'helen' | 'hadrian' | 'aleksy' (see data/heroes.js)
     party: [],         // pet ids on your team (max 3), they follow you around
@@ -48,7 +49,8 @@ function fresh() {
     farm: {},          // plot id -> { crop, growth, watered (day), boost } (see data/crops.js)
     soil: {},          // plot id -> { family, crop } from its last finished crop
     upgrades: {},      // upgrade id -> true (see data/upgrades.js)
-    matchups: [],      // type matchups seen in battle, 'fire>water' (the Petdex shows them)
+    matchups: [],      // type matchups tried in battle, 'fire>water' (the Petdex shows the strong and weak ones)
+    bakeStars: {},     // star ratings of the baked things in the bag, oldest first: { sponge: [3, 1.5] }
     flags: {},         // one-off story flags, e.g. garden (Chris gave you plots)
     spell: null,       // today's protection spell from the milk bar: { id, day }
     inventory: {},     // item id -> count
@@ -61,7 +63,7 @@ function fresh() {
     side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, bakeQuest: {cooked:[],quality:{},practices:0,entries:0}, show: {entered:false,pet:null,practice:0,practiceDay:0,divisions:{},claimed:[]}, school: { lessonDay: {}, stamps: {}, skills: {} } },
     recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
-    furniture: { ...DEFAULT_FURNITURE, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
+    furniture: { ...DEFAULT_FURNITURE, plants: {}, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
     settings: { sound: true, dayLength: 1, paused: false },
     seenIntro: false,
@@ -94,6 +96,7 @@ function sanitise(raw) {
   if (raw.forage && typeof raw.forage === 'object') d.forage = raw.forage;
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
   if (raw.beaten && typeof raw.beaten === 'object') d.beaten = raw.beaten;
+  if (raw.visits && typeof raw.visits === 'object') for (const [z, n] of Object.entries(raw.visits)) if (ZONES[z] && Number.isFinite(n)) d.visits[z] = Math.max(0, n | 0);
   if (Number.isFinite(raw.money)) d.money = Math.max(0, Math.floor(raw.money));
   if (raw.gear && typeof raw.gear === 'object') for (const [k, n] of Object.entries(raw.gear)) if (GEAR[k] && n > 0) d.gear[k] = n | 0;
   for (const r of Object.values(d.pets)) if (r.gear && !GEAR[r.gear]) r.gear = null;
@@ -107,6 +110,7 @@ function sanitise(raw) {
   if (raw.flags && typeof raw.flags === 'object') d.flags = raw.flags;
   d.scorecards = normaliseScorecards(raw.scorecards);
   if (Array.isArray(raw.matchups)) d.matchups = raw.matchups.filter(k => typeof k === 'string');
+  if (raw.bakeStars && typeof raw.bakeStars === 'object') for (const [k, v] of Object.entries(raw.bakeStars)) if (Array.isArray(v)) d.bakeStars[k] = v.filter(n => typeof n === 'number' && n >= 0 && n <= 3);
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, known: Array.isArray(raw.council.known) ? raw.council.known : [], metDay: raw.council.metDay };
   if (typeof raw.wallPaint === 'string') d.wallPaint = raw.wallPaint;
@@ -125,7 +129,7 @@ function sanitise(raw) {
   }
   if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
-  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); }
+  if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); if (!raw.furniture.plants) delete d.furniture.plants; sanitisePlants(d.furniture); }
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
@@ -239,18 +243,29 @@ export const state = {
   removeItem(item, n = 1) {
     const left = this.count(item) - n;
     if (left > 0) this.data.inventory[item] = left; else delete this.data.inventory[item];
+    const stars = this.data.bakeStars[item];
+    if (stars) { while (stars.length > Math.max(0, left)) stars.shift(); if (!stars.length) delete this.data.bakeStars[item]; }
     bus.emit('bag:changed');
   },
+  // A bake goes in the bag with its star rating; the oldest one is given away first.
+  addBake(item, stars) { this.addItem(item); (this.data.bakeStars[item] ||= []).push(stars); },
+  nextBakeStars(item) { const s = this.data.bakeStars[item] || []; return s.length >= this.count(item) && s.length ? s[0] : null; },
   bagItems() { return Object.keys(ITEMS).filter(k => this.count(k) > 0); },
   // What a pet will eat (no drinks, presents or fertiliser).
   treatItems() { return this.bagItems().filter(isTreat); },
 
   // Money and gear
   addMoney(n) { this.data.money = Math.max(0, this.data.money + Math.round(n)); bus.emit('money:changed'); },
-  // Put a piece of furniture (or the pot plants) in the house; buying is up to the caller.
-  placeFurniture(id) {
+  // Put a piece of furniture in the house; buying is up to the caller. A pot
+  // plant goes in one plant spot (data/furniture.js PLANT_SPOTS), not everywhere.
+  placeFurniture(id, spot) {
     const f = FURNITURE[id], furn = this.data.furniture;
     if (!f) return;
+    if (f.slot === 'plant') {
+      if (!PLANT_SPOTS[spot]) return;
+      if (!furn.plants || typeof furn.plants !== 'object') furn.plants = {};
+      if (id === 'mixed') delete furn.plants[spot]; else furn.plants[spot] = id;
+    }
     furn[f.slot] = id;
     if (!furn.owned.includes(id)) furn.owned.push(id);
     invalidateMap('home');
@@ -406,6 +421,7 @@ export const state = {
 
   // World
   visit(zone) { if (!this.data.visited.includes(zone)) this.data.visited.push(zone); },
+  countVisit(zone) { const v = this.data.visits || (this.data.visits = {}); v[zone] = (v[zone] || 0) + 1; return v[zone]; },
   suburbVisited(suburb) { return this.data.visited.some(z => ZONES[z]?.suburb === suburb); },
 
   // Team
