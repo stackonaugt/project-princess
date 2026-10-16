@@ -13,6 +13,7 @@
 import { MapBuilder } from '../MapBuilder.js';
 import { state } from '../../systems/state.js';
 import { placed, plantVariant } from '../../data/furniture.js';
+import { shelfVariant } from '../../data/trophies.js';
 
 export function buildHome() {
   const b = new MapBuilder({ id: 'home', w: 24, h: 19, fill: 'W', seed: 41 });
@@ -72,9 +73,13 @@ export function buildHome() {
   b.put('picture', 20, 8, { v: 'dog', onWall: true });
   b.put('picture', 22, 8, { v: 'family', onWall: true });
   b.put('doormat', 16, 17);
-  if (state.data.side?.trophy) b.put('trophy', 22, 16, { v: 'bowls' });   // the Newcomer's Cup from the bowls club
-  else b.put('boxes', 22, 16, { v: 'stack' });
-  b.put('boxes', 21, 17, { v: 'open' });
+  // The trophy cabinet (house upgrade): every trophy you win goes on show (data/trophies.js).
+  if (state.hasUpgrade('trophyshelf')) b.put('trophyshelf', 21, 16, { v: shelfVariant(state.data), interact: 'trophyshelf' });
+  else {
+    if (state.data.side?.trophy) b.put('trophy', 22, 16, { v: 'bowls' });   // the Newcomer's Cup from the bowls club
+    else b.put('boxes', 22, 16, { v: 'stack' });
+    b.put('boxes', 21, 17, { v: 'open' });
+  }
 
   // Bedrooms
   b.put('bed', 3, 12, { v: F('bed') });
@@ -126,6 +131,7 @@ export function buildHome() {
   b.entry('cot', 2, 4, 'down');           // the twins wake up in their room
   b.entry('start', 3, 15, 'down');
   const map = b.finish();
+  map.shelf = state.hasUpgrade('trophyshelf') ? shelfVariant(state.data) : null;   // WorldScene rebuilds home when this changes
   map.wallPaint = state.data.wallPaint || null;   // paint from the Lincraft stall at Summerhill
   return map;
 }

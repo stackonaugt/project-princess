@@ -28,6 +28,7 @@ import { createBattleEffectTextures, playBattleAnimation } from '../systems/batt
 import { moveAnimations } from '../data/move-animations.js';
 import { playEvolution } from '../systems/evolution-fx.js';
 import * as R from '../systems/battle.js';
+import { backgroundKeys, fitBackdrop, isPhoneField, templateFor } from '../systems/battle-backdrop.js';
 
 const hex = c => parseInt(c.slice(1), 16);
 const MAX_TEAM = 3;
@@ -60,6 +61,8 @@ export class BattleScene extends Phaser.Scene {
     this.makeFx();
     this.bg = this.add.graphics().setDepth(0);
     this.backgroundArt = this.add.image(0, 0, '__WHITE').setOrigin(0).setDepth(1).setVisible(false);
+    // Stretched edge pixels that fill any gap round art shrunk to keep both pads on screen.
+    this.backgroundEdges = ['l', 'r', 't', 'tl', 'tr'].map(() => this.add.image(0, 0, '__WHITE').setOrigin(0).setDepth(0.5).setVisible(false));
     this.foes = this.trainer ? R.trainerTeam(this.opts.trainer).map(([id, lv]) => R.foeFighter(id, lv)) : [R.foeFighter(this.opts.wild.id, this.opts.wild.level)];
     this.team = (this.opts.exhibitionPet?[this.opts.exhibitionPet]:R.readyTeam()).map(R.petFighter);
     this.foe = this.foes[0];
@@ -102,6 +105,7 @@ export class BattleScene extends Phaser.Scene {
     this.horizon = Math.round(field * 0.4);
     this.foePos = { x: Math.round(W * 0.7), y: Math.round(Math.max(field * 0.52, this.horizon + 10 * this.unit)) };
     this.minePos = { x: Math.round(W * 0.23), y: Math.round(field - 6 * this.unit) };
+    this.fitBackground(W, field);
     this.drawBg(W, H);
     if (!this.animating) {
       this.place(this.foeSpr, this.foe, this.foePos);
@@ -152,23 +156,60 @@ export class BattleScene extends Phaser.Scene {
     if (f.float) this.tweens.add({ targets: spr, y: '-=' + this.unit * 2, duration: 700, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
   }
 
+  // Which supplied battle background PNG (if any) this battle uses: a
+  // location-specific one wins over suburb art, then the shared default. A
+  // portrait field prefers <name>-phone.png, a landscape one <name>.png, and
+  // each falls back to the other shape. Night versions keep the artist's
+  // colours without a tint. Rules in systems/battle-backdrop.js.
+  backgroundKey(W, field) {
+    const night = isNight(state.data.minutes);
+    const names = this.opts.exhibition ? ['exhibition'] : [this.opts.region, this.opts.suburb, 'default'];
+    const keys = backgroundKeys(names, { night, phone: isPhoneField(W, field) });
+    return keys.find(key => custom.has(key) && this.textures.exists(key)) || null;
+  }
+  // Cover the field with the art (cropped, never squashed), bottom aligned,
+  // and stand the fighters exactly on the art's pads (the template anchors
+  // for that shape). Fighters are sized to the art, so they fit the pads on
+  // any screen. See fitBackdrop for when the art shrinks instead of cropping.
+  fitBackground(W, field) {
+    const key = this.backgroundKey(W, field);
+    this.bgFit = null;
+    if (!key) return;
+    const src = this.textures.get(key).getSourceImage();
+    const fit = fitBackdrop({ W, field, iw: src.width, ih: src.height, template: templateFor(key) });
+    this.bgFit = { key, iw: src.width, ih: src.height, ...fit };
+    this.unit = fit.unit;
+    this.minePos = fit.mine;
+    this.foePos = fit.foe;
+  }
+  // Fill any gap left round shrunk art by stretching its outermost pixels.
+  drawBgEdges(W) {
+    const fit = this.bgFit, [l, r, t, tl, tr] = this.backgroundEdges;
+    for (const e of this.backgroundEdges) e.setVisible(false);
+    if (!fit || fit.covers) return;
+    const tex = this.textures.get(fit.key), { iw, ih } = fit;
+    // Adding a frame to a one-frame texture makes it the default, so the art itself is always drawn with '__BASE'.
+    const frame = (name, x, y, w, h) => { if (!tex.has(name)) tex.add(name, 0, x, y, w, h); return name; };
+    const show = (img, name, x, y, w, h) => { if (w > 0 && h > 0) img.setTexture(fit.key, name).setPosition(x, y).setDisplaySize(w, h).setVisible(true); };
+    const right = fit.left + fit.dw, top = Math.max(0, fit.top);
+    show(l, frame('__edge-l', 0, 0, 1, ih), 0, fit.top, fit.left, fit.dh);
+    show(r, frame('__edge-r', iw - 1, 0, 1, ih), right, fit.top, W - right, fit.dh);
+    show(t, frame('__edge-t', 0, 0, iw, 1), fit.left, 0, fit.dw, top);
+    show(tl, frame('__edge-tl', 0, 0, 1, 1), 0, 0, fit.left, top);
+    show(tr, frame('__edge-tr', iw - 1, 0, 1, 1), right, 0, W - right, top);
+  }
+
   drawBg(W, H) {
     const g = this.bg, S = SCENERY[this.opts.suburb] || SCENERY.laverton, u = this.unit, hz = this.horizon;
     const night = isNight(state.data.minutes);
     g.clear();
-    // A location-specific PNG wins over suburb art, then the shared default.
-    // Optional night variants retain the artist's colours without a tint.
-    const names = (this.opts.exhibition ? ['exhibition'] : [this.opts.region, this.opts.suburb, 'default']).filter(Boolean);
-    const keys = names.flatMap(name => night ? [`battlebg-${name}-night`, `battlebg-${name}`] : [`battlebg-${name}`]);
-    const background = keys.find(key => custom.has(key) && this.textures.exists(key));
-    this.backgroundArt.setVisible(Boolean(background));
-    if (background) {
-      const field = Math.max(1, H - (B.panelHeight() || 170));
-      // Cover, not squash: keep the art's shape, centre it and take a slice
-      // that fills the field (a phone shows the middle of a wide picture).
-      const src = this.textures.get(background).getSourceImage();
-      const k = Math.max(W / src.width, field / src.height);
-      this.backgroundArt.setTexture(background).setOrigin(0.5, 1).setPosition(W / 2, field).setDisplaySize(src.width * k, src.height * k);
+    const fit = this.bgFit;
+    this.backgroundArt.setVisible(Boolean(fit));
+    if (!fit) for (const e of this.backgroundEdges) e.setVisible(false);
+    if (fit) {
+      // Cover, not squash (see fitBackground): the art keeps its shape.
+      this.backgroundArt.setTexture(fit.key, '__BASE').setOrigin(0, 0).setPosition(fit.left, fit.top).setDisplaySize(fit.dw, fit.dh);
+      this.drawBgEdges(W);
       return;
     }
     if (this.opts.exhibition) {

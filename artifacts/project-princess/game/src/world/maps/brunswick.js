@@ -70,6 +70,7 @@ export function buildBrunswick() {
   b.entry('station', 15, 11, 'down').entry('west', 1, 20, 'right').entry('east', 38, 20, 'left').entry('north', 26, 2, 'down');
 
   b.npc('abby', 26, 4, { path: [[26, 4], [26, 16], [30, 17], [26, 16]] });
+  b.npc('hiviskev', 17, 13, { face: 'down' });
 
   b.lane({ axis: 'y', pos: 19.5, dir: 1, from: -14, to: 40, every: [35, 60], speed: 110, kinds: ['veh-train-v'], train: true });
   b.lane({ axis: 'y', pos: 20.5, dir: -1, from: -14, to: 40, every: [40, 70], speed: 110, kinds: ['veh-train-v'], train: true });

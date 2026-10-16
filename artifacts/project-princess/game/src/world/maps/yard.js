@@ -50,7 +50,7 @@ export function buildYard() {
   b.entry('backdoor', 13, 15, 'up').entry('gate', 24, 19, 'up');
   b.npc('paddy', 8, 11, { face: 'down', at: 'yard' });   // weekends: Paddy is home, pottering in the yard
   // Family clutter: the twins' trampoline and toys, garden bits
-  b.put('trampoline', 12, 6);
+  b.put('trampoline', 12, 6);   // Studio places it at 8,3 (overrides.json), clear of the veggie beds and the course lawn
   b.put('trike', 6, 12); b.put('ball', 10, 13, { v: 'beach' }); b.put('ball', 22, 9, { v: 'soccer' });
   b.put('wheelbarrow', 7, 5); b.put('hosereel', 18, 13);
   b.put('potplant', 3, 14, { v: 'herbs' }); b.put('potplant', 15, 14, { v: 'geranium' }); b.put('potplant', 16, 14, { v: 'succulent' });
@@ -63,7 +63,10 @@ export function buildYard() {
   b.put('flowerbed', 8, 1, { v: 'natives' }); b.put('gnome', 4, 5, { v: 'red' });
   // Append new furniture after the original objects so existing Studio
   // index-based placements still refer to the same props.
-  b.put('toolbox',24,5); b.put('sawhorse',25,6);
+  // In the corner by the junk pile, clear of the shed door and the carport.
+  b.put('toolbox',28,8); b.put('sawhorse',27,9);
+  // The junk pile by the shed: a bit of scrap for crafting turns up every day.
+  b.forage(27, 7, ['timber', 'cloth', 'cord', 'bolts']);
   b.put('sign', 17, 14, {interact:'course'});
   b.put('sign', 18, 7, {interact:'sparring'});
   const map = b.finish();

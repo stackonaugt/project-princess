@@ -5,6 +5,7 @@ import {
   POUR_MAX,
   POUR_RATE,
   bakeColour,
+  DODGY_MIN,
 } from "../systems/baking.js";
 import { heroIcon } from "./images.js";
 import { state } from "../systems/state.js";
@@ -40,6 +41,15 @@ export function bakeSideSVG(look = {}, { rise = 1, brown = .62, sunk = 0, toppin
         `<path d="${dome(20, 80, base - 22 - ht * .3)}" fill="${crust}" stroke="#3a2416"/>` +
         (topping ? `<path d="M26 ${base - 24 - ht * .3} Q50 ${base - 32 - ht * .3} 74 ${base - 24 - ht * .3}" stroke="${top}" stroke-width="4" fill="none" stroke-linecap="round"/>` : '');
       break;
+    case 'pie': { // a pie dish with a pastry lid, and a fish tail poking out
+      const y = base - 14 - ht * .3;
+      body = `<path d="M14 ${base} L10 ${base - 16} L90 ${base - 16} L86 ${base} Z" fill="#f4f1ea" stroke="#3a3a40"/>` +
+        `<path d="${dome(14, 86, y)}" fill="${crust}" stroke="#3a2416"/>` +
+        `<path d="M38 ${y - 2} l4 4 M50 ${y - 4} l0 5 M62 ${y - 2} l-4 4" stroke="#3a2416" stroke-width="1.5"/>` +
+        `<path d="M84 ${y + 4} l9 -7 l0 14 Z" fill="#9aa8b0" stroke="#3a3a40"/>` +
+        (topping ? `<path d="M18 ${y - 1} Q50 ${y - 10 + dip * 2} 82 ${y - 1}" stroke="${top}" stroke-width="5" fill="none" stroke-linecap="round"/>` : '');
+      break;
+    }
     case 'loaf':
       body = `<path d="${dome(18, 82, base - ht)}" fill="${crust}" stroke="#3a2416"/>` +
         `<path d="M24 ${base - 6} L76 ${base - 6}" stroke="${crumb}" stroke-width="2" opacity=".6"/>` +
@@ -231,7 +241,7 @@ export function openBaking(panel, close, opts = {}) {
       ui.go = btn(s.current.label, finish, "bk-go"); ui.go.disabled = true;
       ui.timer = h("p", { class: "bk-left bk-timer", role: "timer" });
       body.replaceChildren(...head(),
-        h("h3", { class: "bk-sub" }, "Which topping suits it?"),
+        h("h3", { class: "bk-sub" }, s.spec.dodgy ? "Which topping suits it LEAST?" : "Which topping suits it?"),
         h("div", { class: "bk-toppings" }, ...s.toppingChoices().map(t =>
           h("button", { class: "bk-piece bk-tap", onclick: () => { s.chooseTopping(t.id); sfx.select(); render(); } }, h("i", { class: "bk-swatch", style: { background: t.colour } }), h("span", {}, t.name)))),
         ui.timer, live, ui.go);
@@ -241,15 +251,17 @@ export function openBaking(panel, close, opts = {}) {
     ui.nozzle = h("i", { class: "bk-nozzle" });
     ui.wrap = h("div", { class: "bk-pipe-wrap" }, ui.top, ui.nozzle);
     const at = e => { const r = ui.top.getBoundingClientRect(); return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height]; };
-    ui.top.onpointerdown = e => { e.preventDefault(); ui.top.setPointerCapture?.(e.pointerId); piping = true; s.pipe(...at(e)); topUpdate(); };
+    // Only a touch that starts on the cake itself pipes.
+    ui.top.onpointerdown = e => { const p = at(e); if (Math.hypot(p[0] - .5, p[1] - .5) > .5) return; e.preventDefault(); ui.top.setPointerCapture?.(e.pointerId); piping = true; s.pipe(...p); topUpdate(); };
     ui.top.onpointermove = e => { if (piping) { s.pipe(...at(e)); topUpdate(); } };
     ui.top.onpointerup = ui.top.onpointercancel = () => { piping = false; s.lift(); };
     ui.timer = h("p", { class: "bk-left bk-timer", role: "timer" });
     ui.go = btn(s.current.label, finish, "bk-go");
     const t = s.toppingChoices().find(x => x.id === s.st.topping);
+    // Done sits above the cake, so reaching it never means scrolling across the piping.
     body.replaceChildren(...head(),
-      h("p", { class: "bk-sub" }, `${t.name}. Trace the pattern in one careful go: there is no taking it back.`),
-      ui.wrap, ui.timer, live, ui.go);
+      h("p", { class: "bk-sub" }, s.spec.dodgy ? `${t.name}. Pipe it anywhere but the dotted pattern.` : `${t.name}. Trace the pattern in one careful go: there is no taking it back.`),
+      ui.go, ui.timer, live, ui.wrap);
     topUpdate();
   }
   function topUpdate() {
@@ -294,18 +306,20 @@ export function openBaking(panel, close, opts = {}) {
           h("p", {}, "Take it to the judges. They will tell you what they think."), btn("Finish", () => close(), "bk-go")));
       return;
     }
-    const n = r.stars, per = s.spec.drink ? 1.5 : 1, cls = n >= 3 ? ' best' : n <= 1 ? ' wonky' : '';
+    const n = r.stars, per = s.spec.drink ? 1.5 : 1, dodgy = !!s.spec.dodgy, cls = dodgy ? (n >= DODGY_MIN ? ' wonky' : '') : n >= 3 ? ' best' : n <= 1 ? ' wonky' : '';
     const pics = s.spec.drink
       ? h("div", { class: "bk-glass" + cls, role: "img", "aria-label": "A glass of lemonade" }, h("span", {}))
       : h("div", { class: "bk-show" + cls }, bakeSideSVG(s.spec.look, { ...(oven || {}), topping: t?.colour }),
         (() => { const d = h("div", { class: "bk-top-cake small", role: "img", "aria-label": "From above" }); d.innerHTML = topSVG(s.spec.look, t, fin?.ink, null); return d; })());
     body.replaceChildren(h("div", { class: "bk-final bk-celebrate" + cls },
       h("h3", {}, opts.name || 'Bake complete'), pics,
-      h("p", { class: "bk-stars", "aria-label": `${n} out of 3 stars` }, starText(n)),
-      h("p", {}, n >= 3 ? 'Perfect. Anyone would love this.' : n >= 2 ? 'Lovely work.' : n > 1 ? 'Rustic, but honest.' : 'Oh dear. Paddy will still say it is good.'),
+      dodgy ? h("p", { class: "small" }, "Dodginess") : null,
+      h("p", { class: "bk-stars", "aria-label": `${n} out of 3 ${dodgy ? 'for dodginess' : 'stars'}` }, starText(n)),
+      h("p", {}, dodgy ? (n >= 2.5 ? 'A crime against fish. Cr Bentleigh will never know what hit her.' : n >= DODGY_MIN ? 'Revolting. Perfect.' : 'Hmm. This is actually edible. Far too nice. Try again, and do it worse.')
+        : n >= 3 ? 'Perfect. Anyone would love this.' : n >= 2 ? 'Lovely work.' : n > 1 ? 'Rustic, but honest.' : 'Oh dear. Paddy will still say it is good.'),
       h("ul", { class: "bk-list" }, r.results.map(x => h("li", {}, h("b", {}, x.name), h("span", {}, `${Math.round(x.quality / 100 * per * 2) / 2} of ${per} ★`)))),
       btn("Done", () => close(), "bk-go")));
-    if (n >= 2) sfx.trumpet(); else sfx.sad();
+    if (dodgy ? n >= DODGY_MIN : n >= 2) sfx.trumpet(); else sfx.sad();
   }
 
   function onKey(e) {

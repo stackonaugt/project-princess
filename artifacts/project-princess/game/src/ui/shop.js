@@ -16,6 +16,7 @@ import { SPELLS, SPELL_ORDER, spellPrice } from '../data/east.js';
 import { invalidateMap } from '../data/regions.js';
 import { itemIcon } from './images.js';
 import { sfx } from '../systems/sfx.js';
+import { rodLock, fishingLevel } from '../systems/angler.js';
 
 const TAB_NAMES = { materials: 'Materials', spells: 'Spells', treats: 'Treats', gear: 'Gear', seeds: 'Seeds', tools: 'Tools', upgrades: 'House', gifts: 'Presents', remedies: 'Remedies', pranks: 'Pranks', drinks: 'Drinks', lollies: 'Lollies', vapes: 'Vapes', books: 'Books', fishing: 'Fishing', furniture: 'Furniture', plants: 'Pot plants', sell: 'Sell', fish: 'Sell fish', party: 'Party', pantry: 'Pantry', paint: 'Paint' };
 const tabFor = {};
@@ -80,7 +81,7 @@ export function openShop(panel, close, shopId = 'petshop') {
         btnLabel: owned ? 'Put it in' : null, free: owned,
         act: owned ? place : () => { if (!state.spend(c.price)) { sfx.bump(); return; } place(); } };
     });
-    if (tab === 'gear') return GEAR_ORDER.map(id => ({ name: GEAR[id].name, desc: GEAR[id].desc, price: GEAR[id].price, icon: itemIcon(`gear-${id}`, 32), have: state.gearCount(id), act: buy(GEAR[id].name, GEAR[id].price, () => state.addGear(id)) }));
+    if (tab === 'gear') return GEAR_ORDER.filter(id => !GEAR[id].gift).map(id => ({ name: GEAR[id].name, desc: GEAR[id].desc, price: GEAR[id].price, icon: itemIcon(`gear-${id}`, 32), have: state.gearCount(id), act: buy(GEAR[id].name, GEAR[id].price, () => state.addGear(id)) }));
     if (tab === 'seeds') return (shop.seeds || CROP_ORDER).map(id => {
       const c = CROPS[id];
       return { name: `${c.name} seeds`, desc: `${c.blurb} Ready in ${c.days} days${c.regrow ? ', keeps producing' : ''}.`, price: c.seed, icon: itemIcon(`seed-${id}`, 32), have: state.seedCount(id), act: buy(`${c.name} seeds`, c.seed, () => state.addSeeds(id)) };
@@ -90,14 +91,15 @@ export function openShop(panel, close, shopId = 'petshop') {
   };
   const upgradeRows = ids => ids.map(id => {
       const u = UPGRADES[id], owned = state.hasUpgrade(id);
-      return { name: u.name, desc: u.desc, price: u.price, owned, act: buy(u.name, u.price, () => {
+      // Rods (data/fishing.js) wait for your fishing level and the rod before.
+      return { name: u.name, desc: u.desc, price: u.price, owned, locked: owned ? null : rodLock(id), icon: u.equipment ? itemIcon(id, 32) : null, act: buy(u.name, u.price, () => {
         state.data.upgrades[id] = true;
         invalidateMap('home'); invalidateMap('yard');
         bus.emit('upgrade', id);
       }) };
     });
   const rowsForRest = tab => {
-    if (tab === 'sell') return state.bagItems().map(id => ({
+    if (tab === 'sell') return state.bagItems().filter(id => !ITEMS[id].trophy).map(id => ({
       name: ITEMS[id].name, desc: `You have ${state.count(id)}.`, price: sellPrice(id), icon: itemIcon(id, 32), sell: true,
       act: () => { state.removeItem(id); state.addMoney(sellPrice(id)); sfx.pickup(); state.save(); msg.textContent = `Sold: ${ITEMS[id].name} for $${sellPrice(id)}.`; render(); },
     }));
@@ -149,7 +151,7 @@ export function openShop(panel, close, shopId = 'petshop') {
         tab === 'pantry' ? h('p', { class: 'small' }, 'Baking supplies for the kitchen at home. Cook books from Brunswick Bound teach new recipes.') : null,
         tab === 'tools' ? h('p', { class: 'small' }, 'Garden tools work as soon as you buy them.') : null,
         tab === 'books' ? h('p', { class: 'small' }, 'Classics and the latest hits. Books make lovely presents. Some friends are big readers.') : null,
-        tab === 'fishing' ? h('p', { class: 'small' }, 'With a rod, face the water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A.') : null,
+        tab === 'fishing' ? h('p', { class: 'small' }, `With a rod, face the water at Edwardes Lake, Edgars Creek, Coburg Lake or Kororoit Creek and press A. One bait per cast. Bazza sells the better rods as your fishing gets better (you are level ${fishingLevel()}).`) : null,
         tab === 'plants' ? h('p', { class: 'small' }, 'Each pot plant replaces one plant at home, or a matching pair. Pick the spot after you choose. Olly drops it round on the way home.') : null,
         tab === 'plants' && plantFor ? plantChooser() : null,
         tab === 'furniture' ? h('p', { class: 'small' }, 'Beds, couches, rugs, lamps and more. Delivered straight away. Things you own can go back in any time. Megalo service!') : null,
@@ -160,7 +162,7 @@ export function openShop(panel, close, shopId = 'petshop') {
         ...rows.map(r => h('div', { class: 'shop-row' },
           r.icon ? h('img', { class: 'pix', src: r.icon, alt: '' }) : h('span', { class: 'shop-glyph' }, '🏠'),
           h('div', { class: 'shop-info' }, h('b', {}, r.name), h('p', {}, r.desc), h('small', {}, r.have ? `You have ${r.have}` : '')),
-          r.owned ? h('span', { class: 'meta' }, r.ownedLabel || 'Done ✓')
+          r.owned ? h('span', { class: 'meta' }, r.ownedLabel || 'Done ✓') : r.locked ? h('span', { class: 'meta' }, `🔒 ${r.locked}`)
             : h('button', { class: 'wood-btn small', disabled: !r.sell && !r.free && state.data.money < r.price, onclick: r.act }, r.btnLabel || (r.sell ? `Sell $${r.price}` : `$${r.price}`)))),
         msg)].filter(Boolean));
   };

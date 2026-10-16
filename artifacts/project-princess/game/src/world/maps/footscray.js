@@ -39,6 +39,7 @@ export function buildFootscray() {
   b.put('mural', 26, 13, { v: 'b' });
   b.put('billboard', 34, 13, { v: 'trains' });
   b.npc('doggies', 22, 12, { face: 'down' });
+  b.npc('rosa', 26, 15, { face: 'down' });
   b.sign(44, 12, ['Barkly St, Footscray.', 'Halfway to Brunswick. Have a pho. You have earned it.']);
 
   b.forage(31, 23, ['croissant', 'cheese']);

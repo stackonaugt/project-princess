@@ -47,6 +47,27 @@
   (`state.data.bakeStars`, oldest first): 3 stars is loved by anyone, 1 or less
   is disliked by everyone except Paddy. In the competition the judges still mark
   each round out of 10 and nothing is shown before judging.
+- Chapter 2's dodgy fish pie is baked in the same mini-game with the goals
+  inverted (`BAKES.fishpie.dodgy`: each round scores 100 minus its quality) and
+  needs `DODGY_MIN` stars of dodginess, or the ingredients are kept for another
+  go. No windowsill. The stove stops offering it while one is in the bag. The
+  swap puts her own pie (`lesleypie`, a present most people like; `giftLines`
+  per person) in your bag, and her booth then says you already swapped it.
+  Ingredient cups are grey so white sugar and milk show: keep colours off grey.
+- Crafting: scrap (`timber`, `cloth`, `cord`, `bolts`) comes from wheelie bins
+  and the junk pile forage spot by the yard shed; Bunnings sells new, dearer
+  `wood`, `fabric`, `rope`, `screws`. Recipes are written in scrap and
+  `MATERIAL_ALTS` (data/crafting.js) lets new stock stand in, scrap used first.
+  Homemade presents (birdhouse, planter box, wine rack, tote bag, cushion, toy
+  tram) carry `lovedBy`/`likedBy`, merged into tastes in data/friends.js.
+- **House finds** (`data/house-finds.js`, `systems/house-finds.js`): seven
+  once-per-save presents in the house and yard, each under a pulsing gold star
+  (`HOUSE_FINDS`: zone, tile, item, lines; taken ids in `state.data.houseFinds`).
+  New presents (rose cutting, teacup, wattle, Paddy's IOU to Jack, socket set)
+  carry `lovedBy`/`likedBy`. A To Do note ("Look around the house") nudges new
+  players. Gordon is Marty's trainer, so like any unbeaten trainer he only
+  takes gifts after the gentle Marty match; Trish takes them straight away.
+  Checks: `tools/house-finds.test.mjs`.
 - Type matchups (`state.data.matchups`) record every type tried; the move menu
   shows Strong or Weak only after a matchup is tried (`knownEffect`), a toast
   says when the Petdex learns one, and the Petdex has a Matchups tab.
@@ -70,7 +91,27 @@
   line, and a fish left at the end of the bar throws the hook. Per-fish pull
   and darting come from `FIGHT`. Every cast uses one bait (no bait, no
   fishing; Emilio's bread at the lake is the exception). The panel shows the
-  current hero pulling the rod.
+  current hero pulling the rod, and a line with bait left, fishing level,
+  rod and fish landed here today.
+- **Fishing, round two** (all numbers and words in `src/data/fishing.js`,
+  merged into ITEMS/UPGRADES/NPCS/PEOPLE/FRIENDS/ITEM_ART; progress in
+  `systems/angler.js`; the trip and the comp in `systems/fishing-trip.js`,
+  which `WorldScene.goFishing` calls). Fish have tiers 0 to 3 (`FISH`: fight,
+  zone, cm and kg); cheap ones fight as before but sell for less. Four fish
+  (not junk) per spot per day, then "all fished out" (`DAILY_FISH`,
+  `state.data.fishing`). **Fishing** is a player skill (Skills app): catches
+  give XP by tier and `fishingEase()` makes fights easier with level, rod
+  tier and the golden lure. Rods are upgrades `rod`, `rod2` (carbon, fishing
+  level 3) and `rod3` (Pro, level 5); Anaconda shows them locked until then
+  (`rodLock`). A fish above your rod's tier bites and snaps the line. **Ross
+  Millward** (scout leader, Coburg Lake) runs the comp: show him a tier 2
+  fish once (brown trout or bass), then Sundays 7am to noon, once a week, a
+  150 second real-time round (`COMP`), bait supplied, total kg against three
+  rivals. First win: `fishtrophy` (`trophy: true`, `trophyText`) and the
+  golden lure; prize money each time. Bait is `bait: true` and sits in the
+  Bag's **Fishing** tab (it was filed under Garden). The Bag's **Equipment**
+  tab lists anything with `equipment: '<slot>'` (`EQUIPMENT_SLOTS`: rods,
+  tackle, clothing such as the training vest, weapons later) plus pet gear.
 - **A battler in every suburb** (`src/data/battlers.js`, art in
   `src/art/paint/battlers.js`): Kos the pollster (Coburg Lake), Lambros the
   Deputy Mayor (Bell St, outside the town hall; Meghan Hopper now walks
@@ -82,6 +123,14 @@
   `WorldScene.ambush`) until beaten once: the golfer next door (2nd visit to
   Loddon Ave, standing on the street) and Tito Ramon, the karaoke dad (4th
   visit to Lohse St Reserve). Looks gained `short`, `belly` and `tie`.
+- **Round four battlers** (also in `src/data/battlers.js`, merged from the
+  `R4_*` tables at the bottom; art at the end of `src/art/paint/battlers.js`):
+  Geelong Greg (Laverton Station), Rosa the fruit shop (Barkly St), Hi-Vis Kev
+  and his boom gate (Brunswick Station), Op Shop Opal (Donald St), Landlord
+  Lachlan (Hope St), Cyclist Cass (Sydney Rd), Trainspotter Terry (Reservoir
+  Station), Yarn Bomber Yvonne (Glasgow Ave), Burnout Brad (Plenty Rd,
+  Preston), Zara the uni student (Preston Station), Professor Ponsonby
+  (Nicholson St, Carlton) and PT Tayla (Carlton Gardens). Invented locals.
 - **Move animations**: `SIGNATURE_ANIMATIONS` in `src/data/move-animations.js`
   maps a pet's special move to its routine (Poppy's scoot, zoomies, herd,
   fetch, nap...) and wins over the move's own `anim`; `ANIMATION_POSES` says
@@ -90,6 +139,73 @@
   the world. Battle background PNGs cover the field (cropped, not squashed).
 - Dog show: a Speed type pet runs the agility course faster, and an evolved
   pet gets a presentation bonus (`HandlingEvent` options).
+- World taps only count when the press started on the canvas
+  (`WorldScene.fromCanvas`): Phaser also hears presses on the HTML HUD, which
+  used to walk you to whatever sat under the Bag/Phone buttons.
+- `tools/entries.test.mjs` checks every exit's entry exists, is walkable and
+  can reach other exits (Studio map edits can move streets: Holmes St's
+  Mitchell St is at x12-16 now, so its `south` entry is 14,23). A solid entry
+  falls back to the nearest open tile; Settings > Unstick me
+  (`game:unstick`, `WorldScene.unstick`) hops to an open tile with a way out.
+- Battle backgrounds come in two shapes (`src/systems/battle-backdrop.js`,
+  `BG_TEMPLATES`): desktop `<name>.png` 320x180 and phone `<name>-phone.png`
+  192x320 (night: `-night`, `-night-phone`). A portrait field (`isPhoneField`)
+  prefers the phone file, then falls back to the other shape. `fitBackdrop`
+  covers the field bottom aligned, puts the feet exactly on the template
+  anchors and sizes the fighters to the art (`unit` from `pet`); if covering
+  would push a pad off screen it shrinks the art and BattleScene stretches the
+  edge pixels into the gap. No art: the drawn scenery is unchanged. Guides and
+  starters: `tools/export-battle-backgrounds.mjs` (keeps existing starters
+  unless `--force`); tests in `tools/backgrounds.test.mjs`.
+- Yard: the trampoline's Studio spot (overrides.json) is now 8,3, off the veggie
+  beds; the toolbox and saw horse sit by the junk pile (28,8 / 27,9).
+  Council noticeboard faces use `npcHead()` (top square of the sprite).
+- Chapter 3/4 round (`tools/story-round.test.mjs`): Adam, Chelsea and Nathan
+  are prankable (wrapping paper and chalk at Lincraft, a rubber chicken at the
+  $2 shop). The old over-the-head prank marker boxes are gone; a pranked Sinead
+  blows single bubbles (`vapeBubbles`) during the prank and now and then after.
+  The party decides the vote: `ELECTION` in systems/story.js (sitting mayor,
+  six guests, no motions: party score 4 wins, 3 loses). A game scoring 1 or
+  less makes the party flat (`PARTY_SLUMP`, `PARTY_BORED`, `partyRescue`, two
+  rescues a party). A loss makes Bentleigh mayor (`ELECTION_LOST`). The Throw
+  the party button sits under its To Do job. Karaoke and the party's karaoke
+  play about a minute (`songWindow`, `SONG_SECONDS` in ui/karaoke.js).
+- **Karaoke mic mode**: before each song (park and party) pick Tap along or
+  Sing with the mic; the choice is `settings.karaokeMic` (also a Settings
+  toggle). Mic mode (`systems/karaoke-mic.js`) asks for the mic from the tap,
+  calibrates a quiet second in the song's intro, then counts word onsets
+  (rise over the threshold, or dip-and-rise) judged by the same `judgeAt` and
+  `scoreOf` as taps, so rewards are unchanged. Any failure (denied, no mic,
+  http on a LAN IP) falls back to tapping and turns the setting off. Mic tracks
+  stop on finish, Stop and Close. Tests: `tools/karaoke-mic.test.mjs`.
+- Pet school classes (`CLASS_LEVELS`, `difficulty()` in systems/training.js):
+  six clean runs per class, five classes. Each makes the lesson harder and the
+  pet quicker; from Advanced the pet no longer waits at a hurdle. Toys, the
+  box toy and recall distractions are pixel SVGs (`ui/training-props.js`).
+  Paddy's advice tells you once about building a course at the shed
+  (`advice.shed`, `flags.paddyShed`), then keeps it in rotation until you craft one.
+- **Bowls** distances are edge to edge (`systems/bowls.js`, 1.25 cm a pixel, a
+  toucher is 0 cm; it was centre to centre at 8 cm/px, so touching read 64 cm).
+  The rivals' bowls are drawn in red. Maureen the treasurer (east.js, bowls
+  club) takes a $40 membership once Crazy Jeff is beaten (play-fight or one
+  end); members play the **club championship** Wednesdays 10am to 4pm, once a
+  week (`data/bowls-club.js`): Stan, Merv, then Jeff, out on the first loss.
+  Win: $100, 3 giant tomato seeds (`unique` crop, never in a shop) and the
+  `bowlscup` the first time. Dog show champion also gets `bestinshow` and the
+  `championsash` gear (gift gear is now hidden from the pet shop).
+- **Trophy cabinet** (upgrade `trophyshelf`, lounge): shows up to 6 items with
+  `trophy: true` (`trophyText`, `trophyArt`; `data/trophies.js`), look at each,
+  swap when you own more. Home is rebuilt when its contents change.
+- **Event pop-ups** (`data/events.js` registry, `systems/event-prompts.js`):
+  council, bake off, dog show, bowls comp and fishing comp offer Go now / Not
+  now once per event per day, only once `known(data)`. Add more with `registerEvent`.
+- **The words file** `game/words.js` holds every line of dialogue and story
+  text (PEOPLE, PET_TEXT, PLACES and the story.js tables, `WORD_TABLES` in
+  `src/authoring/words-file.js`) as `key = text` under `[TABLE.id]` headings,
+  so the owner can search and edit it on GitHub. `authoredValue()` applies it
+  last, so it wins over the data files and Studio text. Edit wording there, not
+  in the data files. After adding new text in code run `node game/tools/words.mjs`
+  (it keeps edits); `tools/words.test.mjs` fails while it is out of date.
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.
@@ -238,7 +354,7 @@ archive/prototype.html  The original single-file canvas prototype, kept for refe
 - **Feeding the ducks** (`ui/bowls.js` with `{ mode: 'ducks' }`): face water in a `DUCK_ZONES` zone with stale bread and press A (with a rod you choose ducks or fishing). Same game reskinned, no bias. Each feed gives a duck feather; ten good feeds (within 40 cm, `side.duckWins`) win a duckling who follows you everywhere (`Duckling` in entities.js, `side.duckling`). Nobody says so outright: Chris and Kostas hint. At Edwardes Lake the bread brings out Emilio first, until he is found.
 - **Bins**: checking a wheelie bin sometimes turns up a few coins or an item (a lemon, stale bread...), once per bin per day (`checkBin`, `flags.bins`).
 - **Shopfronts**: an object with `shop` and `keeper` (Coles in the mall) can be shopped at by walking up to it while the keeper is there. Shopkeepers only offer Shop in their own zone, never when they are out and about.
-- **Fishing**: buy a rod (and bait) at Anaconda, face water at Edwardes Lake, Edgars Creek or Kororoit Creek and press A. Catches by zone in `FISH_TABLES` (WorldScene), with a catch celebration and size in cm (`ui/fishing.js`). Fish are treats; Spiro's fish van on Kororoit Creek Rd (`fishvan` shop, `fish` tab) pays 50% more than James.
+- **Fishing**: buy a rod (and bait) at Anaconda, face water at Edwardes Lake, Edgars Creek, Coburg Lake or Kororoit Creek and press A. Catches by zone in `FISH_TABLES` (`data/fishing.js`), with a catch celebration and size in cm (`ui/fishing.js`). Fish are treats; Spiro's fish van on Kororoit Creek Rd (`fishvan` shop, `fish` tab) pays 50% more than James.
 - **Cheats**: add `?cheat=1` to the URL once (stored in localStorage) for a Cheats app on the Pawphone (money, items, warp, time and day, pausing the clock, pets, hearts, upgrades, motions). `?cheat=0` turns it off.
 - **Pets** have one chat per day (+friendship) and one treat per day (love/like/neutral/dislike). 25 points per heart, 10 hearts. Lines unlock by heart level. Behaviours live in `Pet.think()`: `patrol` (Princess), `stalk` (Salami), `phase` (Spooky teleports, solid at night), `zoomies` (Poppy charges and bonks), `aloof` (Stanley walks away until 3 hearts, approaches at 6). Rusty (Nathan's whippet, Speed type) uses `zoomies` too. Girlie (Dell's black lab, Water/Park, Carlton Gardens) wanders; win her by beating Dell. Chloe (Adam and Chelsea's kelpie, Holmes St) is won by beating Adam. Ziggy (a tiny black and white cat who was Mads's, Nicholson St, Carlton) has no trainer: he challenges you himself (`challenge`). Emilio (a big old duck in a top hat) is the secret pet: toss stale bread into Edwardes Lake. Pets can sleep on a schedule.
 
@@ -281,8 +397,8 @@ Four chapters, words in `src/data/story.js`, state in `state.data.story` (see `s
 
 1. **Helen's Pet Training School.** One Nation has cancelled early childhood education; Helen opens a pet school. Find all six pets, train three to level 10, evolve one.
 2. **Get Bent!** Paddy's morning scene (Rayna is away, Bentleigh moves a spill). Build the kitchen, cook the very dodgy fish pie at the stove (any fish and a lemon), and swap it for Cr Bentleigh's lunch on the foyer booth (weekdays 11am to 3pm; a pet on your team causes the distraction). She goes home sick for a week and Paddy survives. Miss the spill vote (the second Tuesday) and Paddy is deposed: the swing votes need double hearts (`state.swingHearts`) until he wins the election. The sabotage is all data in story.js (`LUNCH`, `RECIPES`) so it can be swapped for something gentler.
-3. **Boys Go Wild!** Trish and Gordon have gastro and leave Woods St; Helen is away and both twins are out together. Talk to Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim or Nicholas and choose Look for a prank: the boys visit, then whisper a plan (`PRANKS` in story.js: `scout`, `plan`, `item`, `where`). The prank goes on the To Do list (`side.scouted`); buy the item (googly eyes and the rubber mouse at Lincraft, the bookmark at Brunswick Bound, whoopee cushions at Bunnings or the $2 shop...: each shop's `pranks` tab), then go back and pull it. Three pranks finishes it.
-4. **Election Season.** West is Best News, then finish the kitchen, twins' room and study, buy 6 drinks and 4 decorations (Bunnings Party tab), invite 6 friends (talk menu; 3+ hearts means they come), then Throw the party from the Story app. At the party you mingle: walk up to guests to hear their stories (`partyChat`), and every two stories a game starts, in order: behind the bar (five orders), the dance floor (pick one of the karaoke songs and dance to it), karaoke, then guest trivia (`ui.party(guests, { only, score })`, `ui.karaoke`). Paddy is there too. The yard exits are locked until it ends. At the end Paddy gives a speech, Helen passes out, everyone goes home and you wake up in bed the next morning. Games score 0 to 11 or so; `electionVotes()` turns guests, score and being the sitting mayor into a vote share, shown on a filling bar. Then the "That's it for now" pop-up and chapter 5 (free play).
+3. **Boys Go Wild!** Trish and Gordon have gastro and leave Woods St; Helen is away and both twins are out together. Talk to Paddy, Corni, Mem, Rose, Slinks, Sinead, Tim, Nicholas, Adam, Chelsea or Nathan and choose Look for a prank: the boys visit, then whisper a plan (`PRANKS` in story.js: `scout`, `plan`, `item`, `where`). The prank goes on the To Do list (`side.scouted`); buy the item (googly eyes and the rubber mouse at Lincraft, the bookmark at Brunswick Bound, whoopee cushions at Bunnings or the $2 shop...: each shop's `pranks` tab), then go back and pull it. Three pranks finishes it.
+4. **Election Season.** West is Best News, then finish the kitchen, twins' room and study, buy 6 drinks and 4 decorations (Bunnings Party tab), invite 6 friends (talk menu; 3+ hearts means they come), then Throw the party from the To Do app (the button sits under the job). At the party you mingle: walk up to guests to hear their stories (`partyChat`), and every two stories a game starts, in order: behind the bar (five orders), the dance floor (pick one of the karaoke songs and dance to it), karaoke, then guest trivia (`ui.party(guests, { only, score })`, `ui.karaoke`). Paddy is there too. The yard exits are locked until it ends. At the end Paddy gives a speech, Helen passes out, everyone goes home and you wake up in bed the next morning. Games score 0 to 11, plus or minus rescues when it goes flat; `electionVotes()` turns guests, score, being the sitting mayor and passed motions into a vote share, shown on a filling bar. A bad party loses. Then the "That's it for now" pop-up and chapter 5 (free play).
 
 ### Cooking and baking
 

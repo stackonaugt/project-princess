@@ -34,7 +34,8 @@ export const COOK_ITEMS = {
   sponge:    { name: 'Victoria sponge', gift: true, dish: true, baked: true, loved: true, art: { kind: 'cake', body: '#f4e0a8', cap: '#f4f4f0', label: '#d83a4a' }, desc: 'Betty\'s sponge: jam, cream and a dusting of icing sugar. Light as a cloud.' },
   lemondelicious: { name: 'Lemon delicious', gift: true, dish: true, baked: true, loved: true, art: { kind: 'cake', body: '#f4e88a', cap: '#d8a040', label: '#f4f4f0' }, desc: 'Trish\'s secret pudding: lemon sponge on top, lemon sauce underneath. A family heirloom.' },
   bike:      { name: 'Shiny red bike', price: 180, gift: true, art: { kind: 'globe', body: '#c8302a', label: '#f4f4f0', cap: '#1e1e24' }, desc: 'A proper road bike with a bell. For someone who never got one as a kid.' },
-  blueribbon: { name: 'Blue ribbon', story: true, art: { kind: 'globe', body: '#2a5ad8', label: '#f4f4f0', cap: '#e8c040' }, desc: 'First prize, the Great Coburg Bake Off. Betty pinned it on you herself.' },
+  blueribbon: { name: 'Blue ribbon', story: true, trophy: true, trophyArt: 'ribbon', art: { kind: 'globe', body: '#2a5ad8', label: '#f4f4f0', cap: '#e8c040' }, desc: 'First prize, the Great Coburg Bake Off. Betty pinned it on you herself.',
+    trophyText: 'First prize in the Great Coburg Bake Off. Betty pinned it on you herself, and Meghan Hopper demanded a recount.' },
 
   // Cook books (book: true, so Brunswick Bound sells them). Having one in your bag teaches its recipes.
   cbgarden:  { name: 'From the Patch: Easy Veg', price: 24, gift: true, book: true, cookbook: ['ratatouille', 'pumpkinsoup', 'sugo'], art: { cover: '#5ab04a', band: '#e8c040' }, desc: 'A cook book for gluts. Ratatouille, pumpkin soup and a proper sugo.' },
@@ -116,7 +117,12 @@ const ING = {
   oil: { name: 'Olive oil', colour: '#b9b23a', dry: false },
   strawberry: { name: 'Strawberries', colour: '#d83a4a', dry: false },
   water: { name: 'Cold water', colour: '#cfe8f6', dry: false },
+  fish: { name: 'Raw fish', colour: '#e9a08a', dry: false },
+  lemon: { name: 'Lemon, pips and all', colour: '#f2d23a', dry: false },
+  laxatives: { name: 'Laxatives', colour: '#7ab8e8', dry: true },
 };
+// The cups are drawn grey (ui/baking.css) so white ingredients (sugar, milk,
+// flour) show up. Keep ingredient colours away from mid grey.
 const ing = (id, target) => ({ id, target, ...ING[id] });
 export const BAKES = {
   cookies: {
@@ -162,6 +168,17 @@ export const BAKES = {
     look: { shape: 'pudding', crumb: '#f6e48a', crust: '#d8a040' },
     toppings: [{ id: 'sugar', name: 'Icing sugar dust', colour: '#ffffff', fit: 1 }, { id: 'cream', name: 'Pouring cream', colour: '#fffaf0', fit: 0.9 }, { id: 'lemon', name: 'Candied lemon', colour: '#f2d23a', fit: 0.85 }, { id: 'banana', name: 'Banana cream', colour: '#f2e49a', fit: 0.05 }],
     piping: 'spiral',
+  },
+  // Chapter 2's very dodgy fish pie (WorldScene.cookFishPie). dodgy: true turns
+  // every round inside out: the worse it goes, the more stars of dodginess.
+  // It needs DODGY_MIN (systems/baking.js) before it is fit for Cr Bentleigh.
+  fishpie: {
+    dodgy: true,
+    ingredients: [ing('fish', 4), ing('lemon', 2), ing('laxatives', 1), ing('milk', 3)],
+    oven: { heat: 0.55, time: 16, checks: 2, fragile: 0.2 },
+    look: { shape: 'pie', crumb: '#e9d6a8', crust: '#d0a050', filling: '#e9b6a0' },
+    toppings: [{ id: 'pastry', name: 'Pastry lid', colour: '#e8c078', fit: 1 }, { id: 'mash', name: 'Mashed potato', colour: '#f4ecc8', fit: 0.9 }, { id: 'sprinkles', name: 'Hundreds and thousands', colour: '#f07ab0', fit: 0.05 }, { id: 'custard', name: 'Custard', colour: '#f6d84a', fit: 0.1 }],
+    piping: 'lattice',
   },
   // Not baked: squeeze the lemons, then sugar and water. 1.5 stars each.
   lemonade: {

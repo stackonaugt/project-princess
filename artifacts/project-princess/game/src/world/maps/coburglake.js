@@ -57,6 +57,7 @@ export function buildCoburgLake() {
 
   b.npc('kostas', 10, 13, { face: 'right' });
   b.npc('kos', 10, 10, { face: 'down' });   // the pollster, off his bike
+  b.npc('ross', 10, 16, { face: 'right' });   // Ross Millward, scout leader: the fishing comp (data/fishing.js)
 
   b.exit(0, 8, 1, 1, 'coburgmall', 'north', 'Coburg Station');
   b.exit(30, 29, 3, 1, 'coburgsyd', 'east', 'Sydney Rd, Coburg');

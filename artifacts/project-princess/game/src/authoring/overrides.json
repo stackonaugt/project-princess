@@ -113,7 +113,7 @@
           },
           {
             "index": 121,
-            "x": 13,
+            "x": 8,
             "y": 3,
             "source": {
               "kind": "trampoline",
@@ -5383,7 +5383,7 @@
             "giftLine": "Here, take some treats for the dogs. I buy them in bulk. Do not tell Gordon how much bulk.",
             "heartScenes": {
               "2": [
-                "Come in, come in. I made too much \\pierogi. I always make too much.",
+                "Come in, come in. I made too much pierogi. I always make too much.",
                 "You leave with a container. It is still warm."
               ],
               "4": [

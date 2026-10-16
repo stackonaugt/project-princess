@@ -47,6 +47,7 @@ export function buildResStation() {
   b.npc('james', 3, 23, { face: 'up' });
   b.npc('ghost', 26, 10, { face: 'down', at: 'night' });   // only after dark
   b.npc('stranger', 39, 14, { face: 'left' });
+  b.npc('terry', 22, 19, { face: 'up' });
 
   b.lane({ axis: 'x', pos: 3.3, dir: 1, from: -12, to: 56, every: [30, 55], speed: 120, kinds: ['veh-train-h'], train: true, sky: true });
   b.lane({ axis: 'x', pos: 4.3, dir: -1, from: -12, to: 56, every: [35, 60], speed: 120, kinds: ['veh-train-h'], train: true, sky: true });

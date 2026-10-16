@@ -66,6 +66,12 @@ export const EAST_NPCS = {
     name: 'Abby\'s Aunt', gift: 'honey',
     look: { hair: '#c8a868', hairStyle: 'bob', skin: '#f2c8a8', shirt: '#f4efe0', blazer: '#5a6a8a', pants: '#3a3a48', shoes: '#4a3a2a', glasses: '#8a6a4a' },
   },
+  // The bowls club treasurer (invented). Takes the membership fees and runs
+  // the Wednesday club championship (data/bowls-club.js).
+  treasurer: {
+    name: 'Maureen the Treasurer',
+    look: { hair: '#d8d0e0', hairStyle: 'bob', skin: '#f0c8a8', shirt: '#f4f4f0', collar: true, blazer: '#2a6a4a', pants: '#f4f4f0', shoes: '#f4f4f0', glasses: '#6a4a8a', holding: 'book' },
+  },
   // Black hair, hoodie up. Asks after Nathan and Rose.
   michael: {
     name: 'Michael',
@@ -222,6 +228,20 @@ export const EAST_PEOPLE = {
     },
     helpsInBattle: 'Abby\'s aunt says something calm and kind. Your pet takes a deep breath and gets back up.',
   },
+  treasurer: {
+    role: 'Treasurer of the Brunswick Bowls Club. Keeps the honesty tin honest',
+    lines: [
+      ['Membership is forty dollars. That gets you a locker, a badge and a vote at the AGM. The AGM is mostly about scones.'],
+      ['Crazy Jeff says I am terrifying. I keep accurate books. Some people find that frightening.'],
+      ['Club championship is every Wednesday, ten till four. Members only. The tomato seeds are the real prize, between you and me.'],
+      ['Thirty one years of minutes. Not one missing. The bowls I leave to the boys.'],
+    ],
+    heartScenes: {
+      3: ['Maureen shows you the ledger from 1987. Next to "hailstorm" someone has written "never again" in very neat handwriting. It was her.'],
+      6: ['Maureen: "You pay on time and you never argue with the umpire. You would make a lovely treasurer one day." High praise.'],
+    },
+    helpsInBattle: 'Maureen reads out the club rules, very slowly. The foe loses the will to keep going.',
+  },
   michael: {
     role: 'Hoodie up, hanging round Fleming Park',
     lines: [
@@ -278,6 +298,15 @@ export const EAST_ITEMS = {
   beans:      { name: 'Bag of coffee beans', price: 16, gift: true, desc: 'Roasted up the road. Tasting notes of stone fruit and rent.' },
   honey:      { name: 'Merri Creek honey', price: 10, gift: true, desc: 'From the hives by the creek. The bees commute about three kilometres.' },
   kombucha:   { name: 'Kombucha', price: 7, gift: true, desc: 'Homebrewed ginger kombucha. Fizzy, sour and very good for you, apparently.' },
+  // Grown from the seeds you only get for winning the club championship.
+  gianttomato: { name: 'Giant tomato', crop: true, sell: 40, desc: 'The size of a lawn bowl. The old blokes were not exaggerating, for once.' },
+  // Trophies (trophy: true) go on the trophy cabinet at home (data/trophies.js).
+  newcomerscup: { name: 'Newcomer\'s Cup', story: true, trophy: true, trophyArt: 'cup', art: { kind: 'cup', body: '#e8b830', label: '#f8d860', cap: '#8a5a2a' },
+    desc: 'The Brunswick Bowls Club Newcomer\'s Cup. Slightly dented.',
+    trophyText: 'The Brunswick Bowls Club Newcomer\'s Cup, for beating the old blokes five times. First one they have given out since 1987.' },
+  bowlscup: { name: 'Club Champion\'s Cup', story: true, trophy: true, trophyArt: 'bowl', art: { kind: 'cup', body: '#d8d8e0', label: '#ffffff', cap: '#2a2a32' },
+    desc: 'Brunswick Bowls Club Champion. Your name goes on the honour board under Crazy Jeff\'s, eleven times.',
+    trophyText: 'The Brunswick Bowls Club Championship Cup, for winning the Wednesday club championship. Merv still wants a recount.' },
 };
 
 // Protection spells from the milk bar (spell: true). They go on a pet like

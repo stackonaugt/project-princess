@@ -24,6 +24,7 @@ import { SH_MOVES } from './summerhill.js';
 import { authoredValue } from '../authoring/overrides.js';
 export let MOVES = {
   smellpoo: { name: 'Smelly poo', type: 'smelly', power: 35, anim: 'stink', text: '{u} proudly shares the smell of something he found on the walk. {t} regrets having a nose.' },
+  shart: { name: 'Shart', type: 'smelly', power: 35, anim: 'stink', text: '{u} got into some old ham. It is not a fart. It is not a poo. He sprays it all over {t}.' },
   gordonfood: { name: 'Human Food from Gordon', type: 'street', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: 'Gordon slips {u} a little snack. Energy restored. Trish saw that, Gordon.' },
   // Princess (fairy)
   crownclaw: { name: 'Crown Claw', type: 'fairy', power: 70, anim: 'claw', text: '{u} delivers a precise, royal swipe.' },
@@ -256,7 +257,7 @@ Object.assign(MOVES, {
 });
 
 export let PET_MOVES = {
-  marty: ['smellpoo', 'bite', 'growl', 'gordonfood'],
+  marty: ['shart', 'bite', 'growl', 'gordonfood'],
   princess: ['growl', 'clawattack', 'humpbed', 'bite'],
   poppy: ['charge', 'scoot', 'dig', 'chew'],
   spooky: ['fadeout', 'nibble', 'hop', 'stretch'],

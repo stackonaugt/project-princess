@@ -27,6 +27,7 @@ function bakeWell(s, { topping = 0 } = {}) {
 
 test('every bake can earn three stars when it is made well', () => {
   for (const id of Object.keys(BAKES)) {
+    if (BAKES[id].dodgy) continue;   // the Chapter 2 fish pie scores the other way (cooking-crafting.test.mjs)
     const s = new BakingSession({ recipe: id });
     bakeWell(s);
     assert.equal(s.complete, true, id);

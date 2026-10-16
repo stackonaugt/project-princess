@@ -283,7 +283,8 @@ export const ui = {
   },
 
   // Fishing. Resolves with the item caught, or null.
-  fish(fish, zone) { return new Promise(resolve => { this._fishOpts = { fish, zone, done: resolve }; this.openModal('fishing'); }); },
+  // extra: { ease, info, comp, onLand } (see ui/fishing.js and systems/fishing-trip.js)
+  fish(fish, zone, extra = {}) { return new Promise(resolve => { this._fishOpts = { ...extra, fish, zone, done: resolve }; this.openModal('fishing'); }); },
   baking(opts) { return new Promise(resolve=>{this._bakingOpts={...opts,done:resolve};this.openModal('baking');}); },
   training(opts) { return new Promise(resolve => { this._trainingOpts = { ...opts, done: resolve }; this.openModal('training'); }); },
 

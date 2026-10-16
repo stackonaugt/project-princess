@@ -32,7 +32,7 @@ export const TUNING = {
     honey: 10, kombucha: 7, flour: 3, sugar: 3, butter: 5, milk: 3,
     chocchips: 4, bike: 180, cbgarden: 24, cbbaking: 26, pide: 5, fetta: 6,
     baklava: 6, olivejar: 9, cardigan: 8, timber: 5, cloth: 3, cord: 3,
-    bolts: 3,
+    bolts: 3, wood: 12, fabric: 9, rope: 7, screws: 8,
   },
   // Pet shop gear (data/gear.js)
   gear: {

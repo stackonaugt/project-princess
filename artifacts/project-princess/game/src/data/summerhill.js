@@ -232,9 +232,9 @@ export const SH_SHOPS = {
   chemist: { name: 'Summerhill Discount Chemist', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['handcream', 'sunscreen'] },
   newsagent: { name: 'Summerhill Newsagency', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['puzzlebook', 'bdaycard', 'paperback'] },
   hotbread: { name: 'Bakers Delight', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts'], gifts: ['sausageroll', 'vanillaslice', 'fingerbun'] },
-  twodollar: { name: 'Everything $2', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts', 'pranks'], gifts: ['fidget', 'fakeplant', 'flowers'], pranks: ['bubbles', 'whoopee'] },
+  twodollar: { name: 'Everything $2', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['gifts', 'pranks'], gifts: ['fidget', 'fakeplant', 'flowers'], pranks: ['bubbles', 'whoopee', 'rubberchicken'] },
   // Lincraft (the owner asked for the real name): craft bits for pranks, and wall paint for home.
-  lincraft: { name: 'Lincraft', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['pranks', 'paint'], pranks: ['googly', 'rubbermouse', 'crayons'],
+  lincraft: { name: 'Lincraft', where: 'Summerhill Shopping Centre, Reservoir', tabs: ['pranks', 'paint'], pranks: ['googly', 'rubbermouse', 'crayons', 'wrapping', 'chalk'],
     paints: [['Builder\'s White', null, 0], ['Sage Green', '#b8c8a8', 40], ['Musk Stick Pink', '#f0c4c8', 40], ['Bondi Blue', '#a8c8e0', 40], ['Banana Custard', '#f0e0a0', 40], ['Terracotta', '#d8a088', 40], ['Lavender Haze', '#c8b8e0', 40]] },
 };
 

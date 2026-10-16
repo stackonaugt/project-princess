@@ -17,6 +17,8 @@ export const CROPS = {
   strawberry: { name: 'Strawberry', days: 4, seed: 6, sell: 13, yield: 2, regrow: 3, family: 'berry', colour: '#e83a5a', blurb: 'Princess will do anything for one.' },
   chilli:     { name: 'Chilli', days: 5, seed: 6, sell: 14, yield: 3, regrow: 3, family: 'fruiting', colour: '#e8502a', blurb: 'Fire-type pets love these in a battle.' },
   pumpkin:    { name: 'Pumpkin', days: 6, seed: 8, sell: 24, yield: 1, family: 'vine', colour: '#e89030', blurb: 'Huge. A whole battle\'s worth of energy.' },
+  // Not sold anywhere (unique): the seeds are a prize for winning the bowls club championship.
+  gianttomato: { name: 'Giant tomato', days: 6, seed: 0, sell: 40, yield: 1, regrow: 4, family: 'fruiting', companions: ['basil'], colour: '#e0302a', unique: true, blurb: 'The size of a lawn bowl, the old blokes reckon. Only for club champions.' },
 };
 tune(CROPS, TUNING.seeds, 'seed'); tune(CROPS, TUNING.crops, 'sell');   // from the tuning sheet (data/tuning.js)
-export const CROP_ORDER = Object.keys(CROPS);
+export const CROP_ORDER = Object.keys(CROPS).filter(id => !CROPS[id].unique);   // what the shops sell

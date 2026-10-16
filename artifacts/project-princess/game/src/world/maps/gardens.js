@@ -58,6 +58,7 @@ export function buildGardens() {
   b.npc('jun', 9, 18, { face: 'right' });
   b.npc('dell', 16, 23, { face: 'left' });
   b.npc('possumpat', 30, 28, { path: [[30, 28], [56, 28], [30, 28]] });
+  b.npc('tayla', 29, 23, { face: 'down' });
 
   b.forage(46, 21, ['feather', 'chicken']);
   b.forage(4, 33, ['tennis', 'strawberry']);

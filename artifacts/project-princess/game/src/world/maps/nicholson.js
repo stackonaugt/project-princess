@@ -57,5 +57,6 @@ export function buildNicholson() {
   b.entry('north', 32, 1, 'down').entry('south', 32, 38, 'up').entry('gardens', 19, 38, 'up');
   liven(b, 0.008);
   b.noDress = true;
+  b.npc('ponsonby', 15, 21, { face: 'right' });
   return b.finish();
 }

@@ -53,6 +53,7 @@ export function buildGlasgow() {
   b.npc('pina', 9, 15, { face: 'up' });
   b.npc('tim', 23, 7, { face: 'down', at: 'glasgow' });
   b.npc('nicholas', 27, 7, { face: 'left', at: 'glasgow' });
+  b.npc('yvonne', 24, 15, { face: 'left' });
 
   b.lane({ axis: 'x', pos: 13.5, dir: 1, from: -3, to: 38, every: [14, 26], speed: 50, kinds: ['veh-car-h-white', 'veh-car-h-red'] });
 

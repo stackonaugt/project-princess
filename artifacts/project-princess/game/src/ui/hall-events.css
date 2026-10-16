@@ -14,3 +14,17 @@ body.hall-event #hudGuidance {display:none}
 .groom-zones {display:flex;gap:8px;justify-content:center;margin:20px 0}
 .groom-zones button {min-width:80px;min-height:70px;touch-action:none}
 @media (min-width:700px) { .hall-event-bar {left:22%;right:22%} .hall-cues {grid-template-columns:repeat(7,minmax(0,1fr))} }
+.groom-panel {max-height:calc(100dvh - 30%);overflow:auto;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.groom-picture {position:relative;width:96px;height:96px;margin:6px auto}
+.groom-dog {width:96px;height:96px;image-rendering:pixelated}
+.groom-brush {position:absolute;width:22px;height:10px;margin:-5px 0 0 -11px;border-radius:3px 3px 2px 2px;background:linear-gradient(#a0602a 0 45%,#f4e4c0 45%);box-shadow:0 1px 0 #3a2418;opacity:0;pointer-events:none}
+.groom-picture.brushing .groom-brush {opacity:1;animation:groom-sweep .45s ease-in-out infinite alternate}
+@keyframes groom-sweep {from{transform:translateX(-12px) rotate(-12deg)} to{transform:translateX(12px) rotate(12deg)}}
+.groom-sparkle {position:absolute;left:0;right:0;top:4px;color:#e8b830;font-size:16px;opacity:0;pointer-events:none}
+.groom-sparkle.show {animation:groom-shine .7s ease-out}
+@keyframes groom-shine {0%{opacity:0;transform:translateY(8px)} 30%{opacity:1} 100%{opacity:0;transform:translateY(-10px)}}
+.groom-meter {position:relative;height:12px;margin:4px auto 8px;max-width:240px;border:2px solid var(--wood);border-radius:6px;background:#e8d8b0;overflow:hidden}
+.groom-zone {position:absolute;top:0;bottom:0;background:#9cd08a}
+.groom-fill {position:absolute;left:0;top:0;bottom:0;width:0;background:#c86a3a;opacity:.85}
+.groom-fill.good {background:#3a8a3a}
+.groom-zones button {-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}

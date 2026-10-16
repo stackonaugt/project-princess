@@ -12,6 +12,7 @@
 import { PEOPLE } from './dialogue.js';
 import { EAST_FRIENDS } from './east.js';
 import { NORTH_FRIENDS } from './north.js';
+import { FISHING_FRIENDS } from './fishing.js';
 import { SH_FRIENDS } from './summerhill.js';
 import { ITEMS } from './items.js';
 
@@ -194,6 +195,14 @@ export const FRIENDS = {
 
 Object.assign(FRIENDS, EAST_FRIENDS);   // Brunswick East
 Object.assign(FRIENDS, NORTH_FRIENDS);   // Coburg and Preston
+
+// Homemade presents (data/crafting.js) say who loves or likes them.
+for (const [id, it] of Object.entries(ITEMS)) for (const [list, who] of [['loves', it.lovedBy], ['likes', it.likedBy]])
+  for (const w of who || []) {
+    const f = FRIENDS[w] || (FRIENDS[w] = { loves: [], likes: ['croissant', 'snag', 'tomato', 'strawberry', 'flowers', 'gaytime', 'draught'], dislikes: [] });
+    if (!f[list].includes(id)) f[list].push(id);
+  }
+Object.assign(FRIENDS, FISHING_FRIENDS);   // Ross Millward (fishing.js)
 
 // Heart scenes and battle-help lines live in dialogue.js.
 for (const [id, f] of Object.entries(FRIENDS)) {

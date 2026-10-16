@@ -17,15 +17,13 @@ Drop PNG files into these folders and they replace the built-in pixel art. No co
 | `tiles/` | `<tile name>.png`, e.g. `grass.png` | A ground tile | One tile (16x16 or 32x32 recommended) |
 | `enemies/` | `<enemy id>.png`, e.g. `bag.png`, `recycling.png` | Things you battle (animals facing right; bins and objects facing the front) | 16x16 (bins 16x20, people 16x32) |
 | `vehicles/` | `tram.png`, `train-h.png`, `car-h-red.png`, ... | Trams, trains, cars and bikes | Same size as the template |
-| `backgrounds/` | `<zone id>.png`, `<suburb id>.png`, or `default.png` | Battle scenery, without using the Studio | Full scene; 320x180 recommended |
+| `backgrounds/` | `<zone id>.png`, `<suburb id>.png` or `default.png`, plus `-phone` versions | Battle scenery, without using the Studio | Desktop 320x180, phone 192x320 |
 
 ## Draw your own battle backgrounds
 
-Put a complete, opaque PNG in `assets/sprites/backgrounds/`. For example, `laverton.png` replaces Laverton battle scenery, `fleming.png` replaces battles in Fleming Park, and `default.png` is used everywhere without a more specific image. Names are the zone/suburb IDs in `src/world/maps/`. A zone image takes priority over a suburb image, which takes priority over `default.png`. Missing images keep the built-in scenery.
+The full, plain-words guide is `backgrounds/README.md`. In short: draw a **320 x 180** PNG for computers (`laverton.png`) and, if you like, a **192 x 320** PNG for phones (`laverton-phone.png`). The game picks the right shape for the screen by itself and stands the pets exactly on the spots marked in `backgrounds/templates/guide-desktop-big.png` and `guide-phone-big.png`. Night versions are `laverton-night.png` and `laverton-night-phone.png`. A zone image beats a suburb image, which beats `default.png`; with no image the built-in scenery is drawn.
 
-Start at **320x180 pixels** for a pixel-art landscape. Draw the scenery only: the game supplies pets, people, effects and the controls. Leave clear ground around the lower-left quarter for your pet and the middle-right for the opponent. The image fills the area above the battle controls; screen proportions can stretch it, so avoid text and important details at the edges. Optional `laverton-night.png`, `fleming-night.png` or `default-night.png` files are selected at night; otherwise the normal image keeps its original colours.
-
-Commit/upload your PNGs with the game files and deploy normally. The existing manifest generator discovers them automatically; no Studio export or authoring JSON change is needed. With a plain web server, run `node tools/build-manifest.mjs` from the game folder before serving it.
+Upload the PNGs with the game files and deploy normally. The manifest generator finds them by itself. With a plain web server, run `node tools/build-manifest.mjs` from the game folder before serving it.
 
 **The template file names are the ids.** Every pet, person, enemy, item, vehicle and object in the game has a template in `templates/` under the name it loads from, so the easiest way to find an id is to look there.
 

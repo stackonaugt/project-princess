@@ -22,7 +22,7 @@
 .bk-row.wet { border-left-color: var(--bk-teal); }
 .bk-name { display: grid; line-height: 1.2; min-width: 0; }
 .bk-name small { opacity: .7; font-size: 12px; }
-.bk-cup { position: relative; width: 34px; height: 44px; border: 3px solid var(--wood-dark); border-top-width: 2px; border-radius: 3px 3px 9px 9px; background: #fffdf6; overflow: hidden; }
+.bk-cup { position: relative; width: 34px; height: 44px; border: 3px solid var(--wood-dark); border-top-width: 2px; border-radius: 3px 3px 9px 9px; background: #8e9399; /* grey, so white sugar, flour and milk show (no ingredient is grey) */ overflow: hidden; }
 .bk-fill { position: absolute; left: 0; right: 0; bottom: 0; height: 0; background: var(--bk-terra); transition: height .15s; }
 .bk-row.dry .bk-fill { background: #e9dcc0; }
 .bk-row.wet .bk-fill { background: #e2b24e; }
@@ -106,7 +106,7 @@
 .bk-sub { margin: 0; text-align: center; }
 .bk-toppings { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
 .bk-swatch { display: inline-block; width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--wood-dark); vertical-align: middle; margin-right: 6px; }
-.bk-pipe-wrap { position: relative; width: min(280px, 80vw); margin: 0 auto; }
+.bk-pipe-wrap { position: relative; width: min(280px, 72vw); margin: 0 auto 16px; } /* gutters either side stay scrollable */
 .bk-top-cake.bk-pipe { width: 100%; height: auto; aspect-ratio: 1; touch-action: none; cursor: crosshair; }
 .bk-top-cake.small { width: 110px; height: 110px; }
 .bk-nozzle { position: absolute; width: 10px; height: 10px; margin: -5px 0 0 -5px; border: 2px solid #3a2416; border-radius: 50%; pointer-events: none; }

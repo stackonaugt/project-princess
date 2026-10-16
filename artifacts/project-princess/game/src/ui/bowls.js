@@ -7,18 +7,23 @@
 // same game reskinned: toss stale bread to a paddling duck, no bias.
 import { h } from './dom.js';
 import { sfx } from '../systems/sfx.js';
+import { BOWL_R as R, gapCm, rivalMark, rivalBowls } from '../systems/bowls.js';
 
-const W = 220, H = 360, CM = 8;            // canvas size; centimetres per pixel
-const START = { x: W / 2, y: H - 24 }, DECEL = 60, VMAX = 195, BIAS = 34, R = 5;
+// Distances (edge to edge, in cm) and the old blokes' marks live in systems/bowls.js.
+const W = 220, H = 360;                    // canvas size
+const START = { x: W / 2, y: H - 24 }, DECEL = 60, VMAX = 195, BIAS = 34;
 const GREEN = { x0: 14, y0: 14, x1: W - 14, y1: H - 6 };
 
-export function openBowls(panel, close, { done, mode = 'bowls', wins = 0 }) {
+// Options: `rival` sets the mark to beat (the club championship), `rivalName`
+// and `title` change the words. Otherwise the old blokes' mark comes from `wins`.
+export function openBowls(panel, close, { done, mode = 'bowls', wins = 0, rival: mark = null, rivalName = 'Crazy Jeff', title = null }) {
   const ducks = mode === 'ducks', bias = ducks ? 0 : BIAS;
   // The old blokes lift their game every time you beat them: the more ends
   // you have won, the closer their best bowl sits to the jack.
-  const lift = Math.min(4, Math.max(0, wins));
-  const rival = ducks ? null : Math.round(Math.max(8, 18 - lift * 2) + Math.random() * (55 - lift * 9));
+  const rival = ducks ? null : (mark ?? rivalMark(wins));
   const jack = { x: W / 2 + (Math.random() - 0.5) * 90, y: 60 + Math.random() * 70 };
+  // Their bowls are already on the green, so you can see what you have to beat.
+  const theirs = ducks ? [] : rivalBowls(jack, rival, GREEN);
   const bowls = [];                         // { x, y, cm } where each one stopped
   let phase = 'aim', t0 = performance.now(), aim = 0, power = 0, roll = null, raf = 0, result = null;
   const cv = h('canvas', { width: W, height: H, class: 'bowls-green pix' });
@@ -26,7 +31,7 @@ export function openBowls(panel, close, { done, mode = 'bowls', wins = 0 }) {
   const tip = h('p', { class: 'center bowls-tip' });
   const info = h('p', { class: 'small center meta' });
   const btn = h('button', { class: 'wood-btn kara-btn', tabindex: '-1', onpointerdown: e => { e.preventDefault(); press(); } }, 'Lock aim');
-  const head = h('div', { class: 'm-head' }, h('h2', {}, ducks ? 'Feed the ducks' : 'Lawn bowls'), h('button', { class: 'wood-btn small', onclick: close }, 'Close'));
+  const head = h('div', { class: 'm-head' }, h('h2', {}, ducks ? 'Feed the ducks' : title || 'Lawn bowls'), h('button', { class: 'wood-btn small', onclick: close }, 'Close'));
   panel.replaceChildren(head, h('div', { class: 'm-scroll bowls' }, tip, h('div', { class: 'center' }, cv), h('div', { class: 'center' }, btn), info));
 
   const best = () => bowls.filter(b => b.cm !== null).reduce((m, b) => Math.min(m, b.cm), Infinity);
@@ -60,6 +65,7 @@ export function openBowls(panel, close, { done, mode = 'bowls', wins = 0 }) {
       g.fillStyle = '#4a9a46';
       for (let y = GREEN.y0; y < GREEN.y1; y += 40) g.fillRect(GREEN.x0, y, GREEN.x1 - GREEN.x0, 20);
       g.fillStyle = '#f4f0e6'; g.fillRect(START.x - 12, START.y - 4, 24, 14);   // the mat
+      theirs.forEach(b => ball(b.x, b.y, R, '#a8302a', '#e8706a'));   // the other side's bowls, in red
       ball(jack.x, jack.y, 3, '#f4f4f0', '#ffffff');
     }
     bowls.forEach(b => b.cm !== null && bowl(b.x, b.y));
@@ -95,12 +101,12 @@ export function openBowls(panel, close, { done, mode = 'bowls', wins = 0 }) {
   };
 
   const stop = (ditch = false) => {
-    const d = ditch ? null : Math.round(Math.hypot(roll.x - jack.x, roll.y - jack.y) * CM);
+    const d = ditch ? null : gapCm(roll.x, roll.y, jack, mode);
     bowls.push({ x: roll.x, y: roll.y, cm: d });
     roll = null;
     if (d === null) { sfx.bump(); say(ducks ? 'Into the reeds. A rat gets that one.' : 'In the ditch! Crazy Jeff winces.'); }
     else if (ducks) { (d <= 40 ? sfx.found : sfx.blip)(); say(d <= 40 ? `${d} cm! Right under its beak. Gobbled.` : d <= 60 ? `${d} cm. The duck paddles over, eventually.` : `${d} cm. A seagull swoops in and nicks it.`); }
-    else { (d <= 30 ? sfx.found : sfx.blip)(); say(d <= 15 ? `${d} cm! A toucher, nearly. The old blokes clap.` : d <= 50 ? `${d} cm from the jack. Lovely bowl.` : `${d} cm away. Bit heavy, bit light, who knows.`); }
+    else { (d <= 30 ? sfx.found : sfx.blip)(); say(d === 0 ? 'A toucher! Resting right on the jack. The old blokes clap.' : d <= 15 ? `${d} cm! A toucher, nearly. The old blokes clap.` : d <= 50 ? `${d} cm from the jack. Lovely bowl.` : `${d} cm away. Bit heavy, bit light, who knows.`); }
     status();
     if (bowls.length >= 3) return setTimeout(finish, 900);
     setTimeout(() => { phase = 'aim'; t0 = performance.now(); btn.textContent = 'Lock aim'; say(ducks ? 'Next bit of bread. Aim, then strength.' : 'Next bowl. Aim, then strength.'); }, 900);
@@ -125,7 +131,7 @@ export function openBowls(panel, close, { done, mode = 'bowls', wins = 0 }) {
     if (ducks) return say(result.best === null ? 'Not one crumb reached a duck. The seagulls are thrilled.'
       : result.best <= 40 ? `Closest crumb: ${result.best} cm. The ducks are delighted. One quacks at you, very pointedly.`
       : `Closest crumb: ${result.best} cm. The ducks get there in the end.`);
-    if (result.best !== null && result.best < rival) return say(`Closest bowl: ${result.best} cm, inside Crazy Jeff's ${rival}. You win the end! The old blokes are stunned.`);
+    if (result.best !== null && result.best < rival) return say(`Closest bowl: ${result.best} cm, inside ${rivalName}'s ${rival}. You win the end! The old blokes are stunned.`);
     say(result.best === null ? 'All three in the ditch. Crazy Jeff says even he did that once. In 1974.'
       : result.best <= 15 ? `Closest bowl: ${result.best} cm. Crazy Jeff wants you on the pennant team.`
       : result.best <= 50 ? `Closest bowl: ${result.best} cm. Not bad at all for a first timer.`
@@ -133,7 +139,7 @@ export function openBowls(panel, close, { done, mode = 'bowls', wins = 0 }) {
   };
 
   say(ducks ? 'Toss the bread close to the duck. Press A (or tap) to aim, then again for strength.'
-    : `The old blokes are ${rival} cm off the jack. Get closer to win. Aim first: press A when the line points where you want. Bowls curve right as they slow.`);
+    : `${rivalName === 'Crazy Jeff' ? 'The old blokes are' : `${rivalName} is`} ${rival} cm off the jack (the red bowls). Get closer with your blue ones to win. Aim first: press A when the line points where you want. Bowls curve right as they slow.`);
   status();
   raf = requestAnimationFrame(tick);
   return { action: press, cleanup: () => { cancelAnimationFrame(raf); done(result); } };

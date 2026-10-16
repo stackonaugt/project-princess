@@ -79,6 +79,7 @@ export function buildStation() {
 
   b.npc('jack', 31, 12, { face: 'down' });
   b.npc('ardi', 22, 16, { face: 'up' });
+  b.npc('vlinegreg', 25, 18, { face: 'left' });
 
   const train = { axis: 'x', from: -12, to: 56, speed: 120, kinds: ['veh-train-h'], train: true, under: true };
   b.lane({ ...train, pos: 9.5, dir: 1, every: [30, 55] });

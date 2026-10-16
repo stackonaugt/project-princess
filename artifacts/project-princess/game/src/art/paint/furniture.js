@@ -482,6 +482,36 @@ export const FURNITURE = {
       p.r('#3a2a10', 5, 6, 6, 1);
     },
   },
+  // The trophy cabinet (house upgrade): glass-fronted, two shelves of three.
+  // The variant lists what is on show, e.g. 'cup.ribbon.bowl' (data/trophies.js shelfVariant).
+  trophyshelf: {
+    foot: [2, 1], tex: [32, 36], variants: ['empty'],
+    paint(p, v) {
+      box(p, 0, 0, 32, 36, woodD); p.r(woodL, 0, 0, 32, 2); p.r('#e8c040', 13, 1, 6, 1);   // a little brass plate on top
+      const arts = !v || v === 'empty' ? [] : String(v).split('.').slice(0, 6);
+      for (let s = 0; s < 2; s++) {
+        const y = 4 + s * 15;
+        p.r('#3a2412', 2, y, 28, 13); p.r(woodL, 2, y + 12, 28, 1);
+        for (let i = 0; i < 3; i++) {
+          const a = arts[s * 3 + i], x = 4 + i * 9, b = y + 12;   // b: the shelf the trophy stands on
+          if (!a) continue;
+          const gold = a === 'silvercup' || a === 'fish' ? '#c8ccd8' : '#e8b830', hi = a === 'silvercup' || a === 'fish' ? '#f4f4f8' : '#f8d860';
+          if (a === 'ribbon' || a === 'rosette') {
+            const c = a === 'ribbon' ? '#2a5ad8' : '#c83a6a';
+            p.r(c, x + 1, b - 5, 2, 5); p.r(c, x + 4, b - 5, 2, 5);
+            p.blob(x + 3.5, b - 7, 3, c); p.r('#e8c040', x + 2, b - 8, 3, 2);
+          } else {
+            p.r(woodL, x, b - 2, 7, 2); p.r(gold, x + 3, b - 4, 1, 2);
+            p.r(gold, x + 1, b - 10, 5, 6); p.r(hi, x + 1, b - 10, 2, 4); p.r(gold, x, b - 9, 1, 2); p.r(gold, x + 6, b - 9, 1, 2);
+            if (a === 'bowl') { p.blob(x + 5, b - 3, 1.6, '#1e1a18'); }
+            if (a === 'fish') { p.r('#3a8ad0', x + 2, b - 8, 3, 1); p.r('#3a8ad0', x + 5, b - 9, 1, 3); }
+          }
+        }
+      }
+      p.r('rgba(200,230,255,0.22)', 2, 4, 28, 28); p.r('rgba(255,255,255,0.45)', 4, 6, 1, 24); p.r(woodD, 15, 4, 2, 28);   // glass doors
+      p.r('#e8c040', 13, 18, 1, 3); p.r('#e8c040', 18, 18, 1, 3);
+    },
+  },
   sidetable: {
     foot: [1, 1], tex: [16, 18], variants: ['oak', 'marble', 'glass', 'cane', 'stump'],
     paint(p, v) {

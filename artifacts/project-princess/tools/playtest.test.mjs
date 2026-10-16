@@ -114,7 +114,7 @@ test('Marty has a curly cavoodle sprite, Stinky matchup and all four moves', () 
   assert.equal(PET_BY_ID.marty.owner, 'Trish and Gordon');
   assert.equal(effectiveness('smelly', 'fairy'), 2);
   assert.equal(MOVES.gordonfood.name, 'Human Food from Gordon');
-  assert.deepEqual(PET_MOVES.marty, ['smellpoo', 'bite', 'growl', 'gordonfood']);
+  assert.deepEqual(PET_MOVES.marty, ['shart', 'bite', 'growl', 'gordonfood']);
   assert.ok(MOVES.gordonfood.effect.heal > 0);
   assert.equal(PET_FRAMES.cavoodle.length, 2);
   assert.notDeepEqual(...PET_FRAMES.cavoodle);
@@ -129,7 +129,7 @@ test('first Marty match is level three even with two pets; rematches return to f
   assert.deepEqual(trainerTeam('gordon'), [['pet:marty', 8]]);
 });
 
-test('a fresh Princess wins the gentle match using Claw Attack against worst-case Smell Poo hits', () => {
+test('a fresh Princess wins the gentle match using Claw Attack against worst-case Shart hits', () => {
   newPetSave(); state.findPet('princess'); state.pet('princess').level = 5;
   const princess = petFighter('princess'), marty = foeFighter('pet:marty', 3), random = Math.random;
   try {
@@ -137,7 +137,7 @@ test('a fresh Princess wins the gentle match using Claw Attack against worst-cas
       Math.random = () => 0.5; marty.hp -= damage(princess, marty, MOVES.clawattack).dmg;
       if (marty.hp <= 0) break;
       let sample = 0; Math.random = () => sample++ === 0 ? 0 : 0.999;
-      princess.hp -= damage(marty, princess, MOVES.smellpoo).dmg;
+      princess.hp -= damage(marty, princess, MOVES.shart).dmg;
     }
     assert.ok(marty.hp <= 0 && princess.hp > 0, `Princess ${princess.hp}, Marty ${marty.hp}`);
   } finally { Math.random = random; }
@@ -195,7 +195,7 @@ test('Farming preserves existing Gathering XP and shortcut opens only after Mart
 });
 test('shed crafting uses shop materials and yard upgrades add real stations on a clear lawn',()=>{
   newPetSave();assert.deepEqual(COURSES.yardstarter.stations,['jump','jump']);
-  assert.ok(SHOPS.bunnings.tabs.includes('materials'));assert.ok(SHOPS.bunnings.materials.includes('bolts'));
+  assert.ok(SHOPS.bunnings.tabs.includes('materials'));assert.ok(SHOPS.bunnings.materials.includes('screws'));
   assert.equal(CRAFT_RECIPES.courseextension.requires,'coursekit');assert.equal(CRAFT_RECIPES.weavekit.requires,'courseextension');
   state.addItem('coursekit');invalidateMap('yard');const map=getMap('yard');
   assert.ok(map.objects.find(o=>o.kind==='gardenshed'&&o.interact==='workbench'));

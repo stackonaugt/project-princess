@@ -55,17 +55,23 @@ function fresh() {
     spell: null,       // today's protection spell from the milk bar: { id, day }
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
+    houseFinds: [],    // house and yard find spots already picked up, once per save (data/house-finds.js)
     npcDay: {},        // npc id -> last day they gave a gift
+    // Fishing (data/fishing.js, systems/fishing-trip.js): fish landed per spot today
+    // (day, caught: zone -> n), a log of every catch (fish id -> n), the biggest
+    // (fish id -> kg), shown Ross a rare fish (member), the comp week entered, and wins.
+    fishing: { day: 0, caught: {}, log: {}, best: {}, member: false, compWeek: -1, compWins: 0 },
     council: { given: {}, passed: [], lost: {}, silly: [], won: {}, known: [] },   // motions (data/council.js): items chipped in, passed ids, id -> day it lost a vote, SILLY_MOTIONS indexes that passed, motion -> councillors won over
     wallPaint: null,   // the colour of the walls at home (Lincraft paint, Summerhill)
+    shelf: [],         // trophy ids picked to show in the trophy cabinet (data/trophies.js); the rest fill in after
     // Side missions and mini-games: pranks scoped out (Chapter 3), duck feeding,
     // bowls wins, the bake-off rivalry (0 untold, 1 Betty asked, 2 Meghan beaten).
-    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bake: 0, bakeQuest: {cooked:[],quality:{},practices:0,entries:0}, show: {entered:false,pet:null,practice:0,practiceDay:0,divisions:{},claimed:[]}, school: { lessonDay: {}, stamps: {}, skills: {} } },
+    side: { scouted: [], duckWins: 0, duckling: false, bowlsWins: 0, trophy: false, bowlsMember: false, bowlsCompWeek: -1, bowlsCompWins: 0, bake: 0, bakeQuest: {cooked:[],quality:{},practices:0,entries:0}, show: {entered:false,pet:null,practice:0,practiceDay:0,divisions:{},claimed:[]}, school: { lessonDay: {}, stamps: {}, skills: {} } },
     recipes: [],       // recipes learnt beyond the starting ones (data/cooking.js)
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, plants: {}, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
-    settings: { sound: true, dayLength: 1, paused: false },
+    settings: { sound: true, dayLength: 1, paused: false, karaokeMic: false },   // karaokeMic: sing into the mic (ui/karaoke.js) instead of tapping
     seenIntro: false,
     story: freshStory(),   // the chapters (systems/story.js)
   };
@@ -94,6 +100,7 @@ function sanitise(raw) {
   if (raw.pets && typeof raw.pets === 'object') for (const id of Object.keys(raw.pets)) if (PET_BY_ID[id]) Object.assign(petRecord(d, id), raw.pets[id]);
   if (raw.inventory) for (const [k, n] of Object.entries(raw.inventory)) if (ITEMS[k] && n > 0) d.inventory[k] = Math.min(99, n | 0);
   if (raw.forage && typeof raw.forage === 'object') d.forage = raw.forage;
+  if (Array.isArray(raw.houseFinds)) d.houseFinds = [...new Set(raw.houseFinds.filter(x => typeof x === 'string' && x.length < 40))];
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
   if (raw.beaten && typeof raw.beaten === 'object') d.beaten = raw.beaten;
   if (raw.visits && typeof raw.visits === 'object') for (const [z, n] of Object.entries(raw.visits)) if (ZONES[z] && Number.isFinite(n)) d.visits[z] = Math.max(0, n | 0);
@@ -114,6 +121,11 @@ function sanitise(raw) {
   if (raw.spell && typeof raw.spell === 'object') d.spell = { id: String(raw.spell.id), day: +raw.spell.day || 0 };
   if (raw.council && typeof raw.council === 'object') d.council = { given: raw.council.given || {}, passed: Array.isArray(raw.council.passed) ? raw.council.passed : [], lost: raw.council.lost || {}, silly: Array.isArray(raw.council.silly) ? raw.council.silly : [], won: raw.council.won && typeof raw.council.won === 'object' ? raw.council.won : {}, known: Array.isArray(raw.council.known) ? raw.council.known : [], metDay: raw.council.metDay };
   if (typeof raw.wallPaint === 'string') d.wallPaint = raw.wallPaint;
+  if (raw.fishing && typeof raw.fishing === 'object') {
+    const fi = raw.fishing, counts = o => Object.fromEntries(Object.entries(o && typeof o === 'object' ? o : {}).filter(([, n]) => Number.isFinite(n) && n > 0));
+    d.fishing = { day: +fi.day || 0, caught: counts(fi.caught), log: counts(fi.log), best: counts(fi.best), member: !!fi.member, compWeek: Number.isFinite(fi.compWeek) ? fi.compWeek : -1, compWins: Math.max(0, +fi.compWins || 0) };
+  }
+  if (Array.isArray(raw.shelf)) d.shelf = raw.shelf.filter(id => typeof id === 'string' && ITEMS[id]?.trophy).slice(0, 12);
   if (raw.side && typeof raw.side === 'object') {
     Object.assign(d.side, raw.side, { scouted: Array.isArray(raw.side.scouted) ? raw.side.scouted : [] });
     const bq=raw.side.bakeQuest||{}, sh=raw.side.show||{};
@@ -125,13 +137,14 @@ function sanitise(raw) {
   }
   if(raw.playerSkills&&typeof raw.playerSkills==='object') for(const [hero,skills] of Object.entries(raw.playerSkills)){
     if(!skills||typeof skills!=='object')continue;d.playerSkills[hero]={};
-    for(const key of ['cooking','crafting','handling','combat','gathering'])d.playerSkills[hero][key]=Math.max(0,Math.min(3600,Number(skills[key])||0));
+    for(const key of ['cooking','crafting','handling','combat','gathering','fishing'])d.playerSkills[hero][key]=Math.max(0,Math.min(3600,Number(skills[key])||0));
   }
   if (Array.isArray(raw.recipes)) d.recipes = raw.recipes.filter(k => typeof k === 'string');
   if (raw.requests && typeof raw.requests === 'object') d.requests = { day: raw.requests.day | 0, done: Array.isArray(raw.requests.done) ? raw.requests.done : [] };
   if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); if (!raw.furniture.plants) delete d.furniture.plants; sanitisePlants(d.furniture); }
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
+  d.settings.karaokeMic = d.settings.karaokeMic === true;
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
   d.startGiven = !!raw.startGiven;
   if (Array.isArray(raw.party)) d.party = raw.party.filter(id => d.pets[id]?.found && d.pets[id].hp !== 0).slice(0, MAX_TEAM);

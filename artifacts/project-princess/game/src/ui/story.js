@@ -1,7 +1,7 @@
 import { syncTodo,readTodo,tutorialNotes } from '../systems/todo.js';
 import { RECIPES as COOK_RECIPES } from '../data/cooking.js';
 import { showObjectives, showUnlocked } from '../systems/show-progress.js';
-// Story screens: the Story app on the Pawphone, chapter title cards, the
+// Story screens: the To Do app on the Pawphone, chapter title cards, the
 // West is Best News reports (with the election vote bar), and the party
 // mini-games. Words are in data/story.js.
 import { h } from './dom.js';
@@ -28,11 +28,14 @@ export function openStoryApp(panel, close) {
   if (todoTab === 'todo' || todoTab === 'done') {
     for (const t of tutorialNotes()) body.push(todoNote(t.title, [{ text:t.text, done:t.done }]));
     if (!n) body.push(todoNote('Find Princess', [initialObjective()]));
-    else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
+    else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time. Cr Bentleigh is mayor, and council motions are harder to pass.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
     else if (s.done[n]) body.push(h('div', { class: 'note', 'data-done': '1' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
     else {
       const steps = objectives(n);
-      body.push(todoNote(GOALS[n], [steps.find(step => !step.done) || steps[steps.length - 1]].filter(Boolean)));
+      const note = todoNote(GOALS[n], [steps.find(step => !step.done) || steps[steps.length - 1]].filter(Boolean));
+      // The party button sits right under the "Throw the party!" job.
+      if (partyReady()) note.append(h('div', { class: 'center' }, h('button', { class: 'wood-btn', onclick: () => { close(); bus.emit('story:party'); } }, 'Throw the party!')));
+      body.push(note);
     }
     // Council: the motion on the board, and what you know the undecided want.
     const open = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id));
@@ -57,7 +60,6 @@ export function openStoryApp(panel, close) {
       ];
       body.push(todoNote('The Great Coburg Bake Off: beat Meghan Hopper', [bakeSteps.find(step => !step.done) || bakeSteps[bakeSteps.length - 1]]));}
 
-    if (partyReady()) body.push(h('div', { class: 'center' }, h('button', { class: 'wood-btn', onclick: () => { close(); bus.emit('story:party'); } }, 'Throw the party!')));
     const past = Object.keys(s.done).map(Number).filter(k => k < n || (k === n && n > 4));
     if (past.length) body.push(h('div', { class: 'note', 'data-done': '1' }, h('h4', {}, 'Story chapters'), ...past.map(k => h('p', { class: 'todo-item done' }, h('span', { class: 'todo-box' }, '✓'), GOALS[k]))));
     // Finished jobs live on their own tab, so the list only shows what is left.
@@ -310,7 +312,7 @@ export function openParty(panel, close, { guests, done, only = null, score: scor
   const finish = () => {
     const go = h('button', { class: 'wood-btn' }, 'See how it went');
     go.onclick = close; action = close;
-    area.replaceChildren(h('div', { class: 'note center' }, h('h4', {}, 'What a night!'), h('p', {}, `Party score: ${score} out of 11.`), h('p', { class: 'small' }, score >= 8 ? 'People will be talking about this one for years.' : score >= 4 ? 'A solid party. Nobody fell in the pool. Well, one person.' : 'Chaotic, but everyone had fun. Mostly the twins.')), h('div', { class: 'center' }, go));
+    area.replaceChildren(h('div', { class: 'note center' }, h('h4', {}, 'What a night!'), h('p', {}, `Party score: ${score}.`), h('p', { class: 'small' }, score >= 8 ? 'People will be talking about this one for years.' : score >= 4 ? 'A solid party. Nobody fell in the pool. Well, one person.' : 'Hmm. A few guests left early, and the twins ate most of the cake. Paddy looks a bit worried about the vote.')), h('div', { class: 'center' }, go));
     go.focus();
   };
 

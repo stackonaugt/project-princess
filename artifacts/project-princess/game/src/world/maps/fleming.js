@@ -15,6 +15,19 @@ export function buildFleming() {
   // The oval: mown lawn with a gravel ring path round it
   b.ellipse(21, 16, 16, 11, 'u');
   b.ellipse(21, 16, 15, 10, 'L');
+  // The ring is one tile wide, so where it steps diagonally the gravel only
+  // touched at the corners and read as broken bits of path. Fill the outer
+  // corner of every diagonal step so the path is one continuous line.
+  for (let pass = 0; pass < 2; pass++) for (let y = 4; y <= 28; y++) for (let x = 4; x <= 38; x++) {
+    if (b.get(x, y) !== 'u') continue;
+    for (const [dx, dy] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+      if (b.get(x + dx, y + dy) !== 'u' || b.get(x + dx, y) === 'u' || b.get(x, y + dy) === 'u') continue;
+      const a = [x + dx, y], c = [x, y + dy];
+      const out = ([px, py]) => ((px - 21) / 16) ** 2 + ((py - 16) / 11) ** 2;
+      const [fx, fy] = out(a) >= out(c) ? a : c;
+      b.set(fx, fy, 'u');
+    }
+  }
   b.fill(18, 14, 7, 1, 'g');                         // the cricket pitch
   b.sign(21, 27, ['Fleming Park.', 'Cricket in summer, footy in winter, dogs all year round. The oval is not the off leash area. The cricket is firm on this.']);
 
@@ -32,8 +45,8 @@ export function buildFleming() {
 
   // The Vivian Adams Pavilion, on the oval's east side
   b.put('pavilion', 38, 13);
-  b.put('bench', 37, 16); b.put('bench', 43, 16);
-  b.sign(37, 17, ['The Vivian Adams Pavilion.', 'Home of the local cricket and footy. Inside: pies, a urn, and forty years of premiership photos.']);
+  b.put('bench', 38, 16); b.put('bench', 43, 16);   // off the ring path
+  b.sign(38, 17, ['The Vivian Adams Pavilion.', 'Home of the local cricket and footy. Inside: pies, a urn, and forty years of premiership photos.']);
 
   // The dog off leash area, down the bottom end, fenced and full of dogs
   b.fill(8, 24, 14, 5, 'L');

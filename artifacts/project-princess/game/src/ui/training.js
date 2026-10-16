@@ -1,6 +1,7 @@
 import { h } from './dom.js';
 import { petActionFrames, heroFrames, heroIcon } from './images.js';
-import { ACTIVITIES, TrainingSession, lessonPlan } from '../systems/training.js';
+import { ACTIVITIES, TrainingSession, lessonPlan, difficulty } from '../systems/training.js';
+import { propSrc, toyArt, DISTRACTIONS } from './training-props.js';
 import { actionFrameAt } from '../data/animation-layouts.js';
 
 export function openTraining(panel, close, opts) {
@@ -26,7 +27,8 @@ export function openTraining(panel, close, opts) {
   function explain() {
     instructions.textContent = `${title(activity)}. ${ACTIVITIES[activity].help}`;
     status.textContent = `${plan.detail} ${opts.practice ? 'Extra practice today; no additional XP.' : 'Choose one of today’s three activities.'}`;
-    tally.textContent = `Day ${opts.day}. ${title(activity)} stage ${plan.level(activity)+1}.`;
+    const lv = plan.level(activity);
+    tally.textContent = `Day ${opts.day}. ${title(activity)}: ${difficulty(lv).name} (level ${lv+1} of 5).${lv ? ` ${opts.name} is getting good at this, so it gets harder.` : ''}`;
     chooser.children && [...chooser.children].forEach((button,i)=>button.setAttribute('aria-pressed',plan.choices[i]===activity));
   }
   function act(box=null) {
@@ -42,9 +44,9 @@ export function openTraining(panel, close, opts) {
   function render() {
     if (!session) return;
     if (status.textContent!==session.status) status.textContent=session.status;
-    tally.textContent=`Run ${session.round}/3. Clean runs: ${session.score}. ${session.complete ? 'Practice complete.' : ''}`;
+    tally.textContent=`${session.diff.name}. Run ${session.round}/3. Clean runs: ${session.score}. ${session.complete ? 'Practice complete.' : ''}`;
     action.textContent=session.complete?'Finish':session.label;
-    action.disabled=session.phase==='feedback' || (activity==='scent'&&session.clock<1500);
+    action.disabled=session.phase==='feedback' || (activity==='scent'&&session.clock<session.diff.peek);
     retry.hidden=session.complete || session.phase==='feedback';
     pet.style.left=`${session.petX}%`;
     pet.style.transform=`translateX(-50%) translateY(${session.petY}px) scaleX(${session.flip?-1:1}) ${activity==='settle'&&session.stage==='calm'?'scaleY(.8)':''}`;
@@ -61,16 +63,16 @@ export function openTraining(panel, close, opts) {
     hero.classList.toggle('training-person-walking',!!session.heroMoving);
     const decorations=[];
     if (activity==='lead') decorations.push(h('div',{class:'training-lead',style:{left:`${session.heroX}%`,width:`${Math.max(0,session.petX-session.heroX)}%`}}));
-    if (activity==='agility') for (const hurdle of session.hurdles) decorations.push(h('div',{class:'training-hurdle',style:{left:`${hurdle}%`,height:opts.id==='poppy'?'22px':'32px'}},h('span',{},'Jump')));
+    if (activity==='agility') for (const hurdle of session.hurdles) decorations.push(h('div',{class:'training-hurdle',style:{left:`${hurdle}%`,height:opts.id==='poppy'?'22px':'32px'}}));
     if (activity==='fetch') {
-      decorations.push(h('div',{class:'training-target',style:{left:`${session.target}%`}},'Aim here'));
-      decorations.push(h('span',{class:'training-toy',style:{left:`${session.stage==='play'?session.aim:session.stage==='return'?session.petX:session.ball}%`}},plan.toy==='feather'?'Feather':'Toy'));
+      decorations.push(h('div',{class:'training-target',style:{left:`${session.target}%`}}));
+      decorations.push(h('img',{class:'pix training-toy',src:propSrc(toyArt(plan.toy)),alt:plan.toy,style:{left:`${session.stage==='play'?session.aim:session.stage==='return'?session.petX:session.ball}%`}}));
     }
     if (activity==='scent') for (let i=0;i<session.boxCount;i++) {
-      decorations.push(h('div',{class:`training-box ${session.openBoxes.includes(i)?'open':''}`,style:{left:`${20+i*(60/(session.boxCount-1))}%`}},session.clock<1500&&i===session.box?'Toy':session.openBoxes.includes(i)?'Empty':String(i+1)));
-      if (boxes.children[i]) { boxes.children[i].disabled=session.clock<1500||session.openBoxes.includes(i)||session.phase!=='playing'||session.stage!=='play';boxes.children[i].setAttribute('aria-pressed',i===session.focus); }
+      decorations.push(h('div',{class:`training-box ${session.openBoxes.includes(i)?'open':''}`,style:{left:`${20+i*(60/(session.boxCount-1))}%`}},session.clock<session.diff.peek&&i===session.box?h('img',{class:'pix training-box-toy',src:propSrc(toyArt(plan.toy)),alt:plan.toy}):session.openBoxes.includes(i)?'':String(i+1)));
+      if (boxes.children[i]) { boxes.children[i].disabled=session.clock<session.diff.peek||session.openBoxes.includes(i)||session.phase!=='playing'||session.stage!=='play';boxes.children[i].setAttribute('aria-pressed',i===session.focus); }
     }
-    if (activity==='recall'&&session.stage==='play') decorations.push(h('span',{class:'training-distraction',style:{left:'78%'}},['Bird','Sniff spot','Rolling toy'][(opts.day+session.round)%3]));
+    if (activity==='recall'&&session.stage==='play') { const kind=DISTRACTIONS[(opts.day+session.round)%3]; decorations.push(h('img',{class:'pix training-distraction',src:propSrc(kind),alt:{bird:'A magpie',sniff:'A sniff spot',ball:'A rolling ball'}[kind],style:{left:'78%'}})); }
     props.replaceChildren(...decorations);
     meter.hidden=!['settle','lead'].includes(activity);
     meter.value=activity==='settle'?(session.calm||0):Math.max(0,Math.min(1,1-Math.abs((session.gap||8)-8)/18));

@@ -49,6 +49,15 @@ const STAGE_INFO = {
   finish: { name: "Finishing", label: "Present the cake", instruction: "Pick a topping that suits this bake, then trace the piping pattern carefully with your finger or mouse." },
 };
 export const BAKE_STAGES = ['mix', 'oven', 'finish'].map(k => ({ activity: k, ...STAGE_INFO[k] }));
+// A dodgy bake (BAKES[id].dodgy: the Chapter 2 fish pie) plays the same rounds
+// with the goals turned inside out: every round scores how BADLY it went.
+const DODGY_INFO = {
+  mix: { name: "Mixing", label: "Ruin the batter", instruction: "The worse the better. Ignore the lines: slosh in far too much or far too little, in any old order, and stir like you mean it." },
+  oven: { name: "Baking", label: "Take out of oven", instruction: "Do it badly. Crank the dial, forget about it, or pull it out raw. A golden, even bake is the last thing you want." },
+  finish: { name: "Finishing", label: "Present the pie", instruction: "Pick the topping that suits it least, then pipe anywhere except the dotted pattern." },
+};
+// How dodgy (in stars, out of 3) the pie must be before it is fit for Cr Bentleigh.
+export const DODGY_MIN = 1.5;
 
 // Piping patterns, as strokes of points on the cake top (0 to 1 each way).
 const circle = (cx, cy, r, n = 16, turns = 1, grow = 0) => Array.from({ length: n * turns + 1 }, (_, i) => {
@@ -118,6 +127,7 @@ export class BakingSession {
   get kind() { return this.stages[Math.min(this.stage, this.stages.length - 1)]; }
   get current() {
     const info = STAGE_INFO[this.kind];
+    if (this.spec.dodgy) return { ...info, ...DODGY_INFO[this.kind] };
     if (this.kind === 'mix' && this.spec.drink) return { ...info, name: 'Sweetening', label: 'Pour it out', instruction: 'Watch the lines, then add the sugar and the cold water to them, and stir until the sugar dissolves.' };
     if (!this.competition) return info;
     const extra = {
@@ -251,6 +261,11 @@ export class BakingSession {
   }
   ovenCue() {
     const s = this.st;
+    if (this.spec.dodgy) {
+      if (s.brown > 0.85) return "Charred and smoking. Beautiful.";
+      if (s.brown > 0.45 && s.brown < 0.8 && s.rise > 0.6) return "Uh oh. It is starting to look nice.";
+      return "Grey, wobbly and fishy. Keep it up.";
+    }
     if (s.brown > 0.85) return "Dark and bitter. Out, now.";
     if (s.brown > 0.55 && s.rise > 0.85) return "Golden and tall. Ready.";
     if (s.temp > this.spec.oven.heat + 0.15) return "The crust is racing ahead.";
@@ -280,6 +295,10 @@ export class BakingSession {
   }
   // ---- scoring (each 0 to 100)
   stageQuality() {
+    const q = this.rawQuality();
+    return this.spec.dodgy && this.kind !== 'juice' ? 100 - q : q;
+  }
+  rawQuality() {
     const s = this.st, k = this.kind;
     if (k === 'juice') return this.juiceQuality();
     if (k === 'mix') {
@@ -329,7 +348,9 @@ export class BakingSession {
     const extra = this.kind === 'finish' ? { topping: this.st.topping, ink: this.st.ink.slice() } : this.kind === 'oven' ? { rise: this.st.rise, brown: this.st.brown, sunk: this.st.sunk } : {};
     this.results.push({ name: d.name, kind: this.kind, clean, quality: q, ...extra });
     this.quality = Math.round(this.results.reduce((a, r) => a + r.quality, 0) / this.results.length);
-    this.feedback = clean ? `${d.name}: beautifully done.` : `${d.name}: room for improvement. The bake is still usable.`;
+    this.feedback = this.spec.dodgy
+      ? (clean ? `${d.name}: revolting. Well done.` : `${d.name}: worryingly decent. Be worse.`)
+      : clean ? `${d.name}: beautifully done.` : `${d.name}: room for improvement. The bake is still usable.`;
     this.stage++;
     this.complete = this.stage >= this.stages.length;
     if (this.complete) this.stars = this.starRating();
@@ -350,6 +371,7 @@ export class BakingSession {
       quality: this.quality,
       stars: this.stars,
       recipe: this.recipeId,
+      dodgy: !!this.spec.dodgy,
       complete: this.complete,
       stage: this.stage,
       results: this.results.map((r) => ({ ...r })),

@@ -24,8 +24,13 @@ export const SKILLS = {
   },
   gathering: {
     name: "Farming",
-    source: "Harvest crops, forage and catch fish.",
+    source: "Harvest crops and forage.",
     perk: "Every three levels gives one extra crop on harvest.",
+  },
+  fishing: {
+    name: "Fishing",
+    source: "Land fish. Rare ones teach you the most, and even the ones that get away teach you a little.",
+    perk: "Each level makes fish fight a little less. Bazza sells the carbon rod at level 3 and the Pro rod at level 5.",
   },
 };
 export const threshold = (level) => 40 * level * (level - 1);
