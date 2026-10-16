@@ -81,11 +81,11 @@ lines.4.1 = If you find a golf ball, it's mine. Even if it isn't. Especially if 
 lines.5.1 = I might duck up to the Edinburgh Castle for one. Just the one. Okay, two.
 hints.salami = There is a stripy menace in the bluestone lane behind the terraces. Watch your ankles.
 hints.spooky = Night shift staff say there is a black bunny in the park that turns see-through. I think they need more sleep.
-giftLine = Here, have a pear. Fresh. Not THAT pear. A new one. Different pear.
+giftLine = Here, have a pear. Fresh. Not THAT pear. A new one. Different pear. A good pear. Promise.
 
 [PEOPLE.jordan]  # Jordan
-role = Plays bass in a band. Busks outside the op shop
-lines.1.1 = Bass is the most important instrument. Nobody notices it until it stops. Like public transport.
+role = Plays guitar in a band. Busks outside the op shop
+lines.1.1 = Guitair is the most important instrument. Nobody notices it until it stops. Like public transport.
 lines.2.1 = This next song is called "No Fault Evictions Are Still Somebody's Fault". Thank you, thank you.
 lines.3.1 = I know four chords and I use all of them. Every song is about the 19 tram.
 lines.4.1 = Spare change? No? Then spare a compliment. Thank you, that one was lovely.
@@ -140,7 +140,7 @@ helpsInBattle = Chris chucks a handful of compost. Rich, warm, and devastating.
 
 [PEOPLE.nathan]  # Nathan
 role = Runs the lake loop with Rusty, his whippet
-lines.1.1 = Cannot stop! Lap twelve! Rusty is on lap forty. Whippets.
+lines.1.1 = Cannot stop! Lap twelve! Rusty is on lap forty. 
 lines.2.1 = This loop is exactly one point eight kilometres. Rusty does it in about ninety seconds. Then shivers.
 lines.3.1 = Rusty shakes like a leaf when it is cold. Or warm. Or Tuesday. He is a whippet. It is his whole personality.
 hints.poppy = There is a frenchie by the picnic tables who keeps trying to race Rusty. She has never won. She has never stopped trying.
@@ -202,26 +202,26 @@ battle.lose.1 = She phased out. You were punching air. Come back after dark, may
 
 [PEOPLE.mem]  # Mem
 role = Hope St. Biologist. PhD on muscle loss in bone recovery
-lines.1.1 = Yes, sunglasses in winter. Melbourne could produce sun at any moment. I like to be ready.
-lines.2.1 = Corni and I live just here. Our apartment is small but the rent is enormous, so it evens out.
+lines.1.1 = Sunglasses in winter? I saw yes. Melbourne could produce sun at any moment. I like to be ready.
+lines.2.1 = Corni and I live just here. Did you forget, again?
 lines.3.1 = My PhD is on muscle wastage while broken bones heal. Turns out lying in a cast is very bad for your quads.
 lines.4.1 = Corni and I run the creek trail most mornings. I think about muscle loss. He thinks about Guinness.
 lines.5.1 = Third year of the PhD. My supervisor says I am nearly done. My supervisor has said that for a year.
 lines.6.1 = Just did 12k along the Merri Creek before breakfast. Corni did 5 and then found a bakery. We each have our strengths.
 lines.7.1 = Just got back from Bangkok! Pad kra pao for breakfast every day. Now everything in Brunswick tastes a little shy.
-lines.8.1 = My brother Jules is doing really well, by the way. New job, new flat, new haircut. He seems happy. It's nice.
+lines.8.1 = My brother Jules is doing really well, by the way. He seems happy. It's nice.
 hints.salami = The tabby on Donald St? That is Rose's. Rose will want a battle. Rose always wants a battle.
-heartScenes.2.1 = Mem: "My lab mice have tiny casts on their legs. We give them little treadmills after. They are very brave."
-heartScenes.4.1 = Mem shows you a muscle fibre under the microscope. It looks like spaghetti. "That is a mouse's whole recovery," she says, proudly.
-heartScenes.6.1 = Mem: "Corni and I are running the Merri Creek trail on Sunday. Come. He will cry at the end. He always cries at the end."
+heartScenes.2.1 = My lab mice have tiny casts on their legs. We give them little treadmills after. They are very brave.
+heartScenes.4.1 = *Mem shows you a muscle fibre under the microscope. It looks like spaghetti.* "That is a mouse's whole recovery," she says, proudly.
+heartScenes.6.1 = Corni and I are running the Merri Creek trail on Sunday. Come.
 helpsInBattle = Mem calmly explains how fast the foe's muscles will waste if it keeps sitting around. It panics.
 
 [PEOPLE.corni]  # Corni
 role = Hope St. German expat. Guinness enthusiast
 lines.1.1 = Guten Tag! You want a Guinness? It is always a good time for a Guinness. Except before the run. After the run.
 lines.2.1 = Mem and I go up to the Edinburgh Castle most nights. Seven o'clock. One Guinness. Then another. Then home.
-lines.3.1 = Mem and I run along the Merri Creek. She talks about mouse muscles. I look for the pub at the end.
-lines.4.1 = In Germany the trams have timetables you can trust. Here the 19 is more of a suggestion. I love it anyway.
+lines.3.1 = Do you like Brutalismus 3000? 
+lines.4.1 = In Germany the trams have timetables you can trust. Here the 19 is more of a suggestion. 
 hints.spooky = Last night after the Edinburgh Castle I saw a black bunny near the bakery. Then it vanished. Maybe it was the Guinness. Maybe not.
 giftLine = Here, take a Guinness. Not for the pets! For you, or a friend. Prost!
 heartScenes.2.1 = Corni: "In Germany the beer is good and the trains are on time. Here the beer is fine and the trains are a mood."
@@ -232,15 +232,15 @@ helpsInBattle = Corni hurls a can of Guinness. "PROST!" It hits the foe and foam
 
 [PEOPLE.sinead]  # Sinead
 role = Poppy's human. Social worker. Unit 1, 835 Plenty Rd
-lines.1.1 = Welcome to the units! Mind the driveway. Poppy has claimed it, and also the bins, and also you.
+lines.1.1 = Welcome to Reservour! Mind the driveway. Poppy has claimed it. She's also claimed the bins, and also you.
 lines.2.1 = Poppy has two speeds: asleep and absolutely flat out. There is nothing in between. There never will be.
 lines.3.1 = Seb says Plenty Rd is too loud. I say it is just Reservoir saying hello. Six lanes of hello.
-lines.4.1 = Social work is hard some days. Then I come home and Poppy headbutts my shins and I am fine again.
+lines.4.1 = Social work is hard some days. Then I come home and Poppy licks my shins and I am fine again.
 lines.5.1 = *puff* Mango Ice. Do not judge me. I have had a week. Housing waitlists are twelve years long, did you know that?
 hints.poppy = Poppy will bonk into you at full speed. That is how she says hi. Throw her a tennis ball and you are mates for life.
 giftLine = Take a tennis ball. We have forty. Poppy loses one a day and finds two.
-heartScenes.2.1 = Sinead: "Social work is mostly paperwork and phone calls. And then one day a family gets housed and it is all worth it."
-heartScenes.4.1 = Sinead sits with you on the unit steps, vaping something called Mango Ice. "Do not tell my mum. Or my clients. Or Seb."
+heartScenes.2.1 = Sinead: "Social work is mostly paperwork and phone calls. And then one day a patient gets housed and it is all worth it."
+heartScenes.4.1 = Sinead sits with you on the unit steps, vaping something called Mango Ice. "Do not tell my mum. Or my clients. Or my boss."
 heartScenes.6.1 = Sinead: "You're basically on the lease now. Poppy has decided. I have filed the paperwork. In my head."
 helpsInBattle = Sinead blows a massive mango vape cloud. The foe cannot see a thing.
 battle.challenge.1 = Hi! Poppy loves a play-fight. Like, LOVES one. Are you sure?
@@ -389,7 +389,7 @@ role = Mayor of Hobsons Bay. Helen's husband, the twins' dad
 lines.1.1 = Council is mostly meetings about meetings. And then, every so often, we fix a footpath. Glorious.
 lines.2.1 = The robes are ceremonial. I am told they are also "a lot". I am told this by everyone.
 lines.3.1 = People think being mayor is about power. It's mostly about bins. Bins, parking and the dog park.
-byHero.helen.1.1 = Hey love. Have you eaten? Trish has been texting me. She thinks you haven't eaten.
+byHero.helen.1.1 = Hey Helen. A school for pets? Well, I will support you whatever you do.
 byHero.helen.2.1 = If Lesley rings the house, I'm in a meeting. I'm always in a meeting.
 byHero.helen.3.1 = Long day. Lesley yelled about the bike lane for forty minutes. Then about the font on the agenda.
 byHero.hadrian.1.1 = Hey buddy! Did you run here? Of course you ran here. You always run.
@@ -407,8 +407,8 @@ advice.types = In a battle, pick moves that suit the foe. Water beats fire, park
 advice.rest = Pets get their energy back when you come home. Or have a nap. Naps are underrated. I am a mayor and I know this.
 advice.shed = Have you looked in the shed out the back? The tools are all there. Grab timber, cloth, cord and bolts from Bunnings and build the pets a course in the yard.
 helpsInBattle = Paddy sweeps in, robes flapping. "As mayor, I declare this play-fight in our favour."
-leaving.1 = Paddy grabs his keys and the robes in a dry-cleaning bag.
-leaving.2 = Paddy: "Off to council. Big day of arguing about bins. Love you!"
+leaving.1 = *Paddy grabs his keys and the robes in a dry-cleaning bag.*
+leaving.2 = Off to council. Big day of arguing about bins. Love you!
 
 [PEOPLE.lesley]  # Cr Lesley Bentleigh
 role = Councillor. Opposes everything Paddy does. Loudly
@@ -437,7 +437,7 @@ lines.3.1 = If the motion helps actual residents, I'm in. If it's about the font
 
 [PEOPLE.ramon]  # Tito Ramon
 role = Karaoke king of Lohse St Reserve. Dad of Migs and Bea
-lines.1.1 = Kumusta, neighbour! You sing? Everybody sings. Come, the mic is warm!
+lines.1.1 = Hey neighbour! You sing? Everybody sings. Come, the mic is warm!
 lines.2.1 = My wife says I sing like Martin Nievera. My kids say I sing like a car alarm. Both are true.
 lines.3.1 = Every Sunday at Tita Baby's house we sing until the neighbours join in. Here, the magpies join in.
 
@@ -480,13 +480,13 @@ helpsInBattle = Deanna plants a tree right in front of the foe. It is very confu
 
 [PEOPLE.shannon]  # Shannon
 role = Bookseller at Brunswick Bound, Sydney Rd. Knows a fact about everything
-lines.1.1 = Fun fact: Australia was one of the first places in the world where women could vote AND stand for parliament. 1902. South Australia even earlier.
+lines.1.1 = Welcome to Brunswick Bound! Classics up the back, new releases on the tables, picture books at toddler height.
 lines.2.1 = Fun fact: compulsory voting means about 90 per cent of us vote. In the US it's more like two thirds. And their elections are on a Tuesday. A Tuesday!
 lines.3.1 = Fun fact: the US Senate filibuster record is over 24 hours. Strom Thurmond, 1957, against civil rights. He had a bucket. Don't ask about the bucket.
 lines.4.1 = Fun fact: the Australian ballot, the secret one, was invented in Victoria in 1856. The Americans literally call it "the Australian ballot". You're welcome, world.
 lines.5.1 = Fun fact: our upper house uses preferences, so a senator can get in on two per cent of the primary vote. Ask Rose about it. Actually, don't. She'll tell you for an hour.
 lines.6.1 = Fun fact: in 1975 the Governor-General sacked the Prime Minister. Nobody has ever really calmed down about it. Least of all my dad.
-lines.7.1 = Welcome to Brunswick Bound! Classics up the back, new releases on the tables, picture books at toddler height.
+lines.7.1 = Fun fact: Australia was one of the first places in the world where women could vote AND stand for parliament. 1902. South Australia even earlier.
 lines.8.1 = Buying a present? Monkey Grip for a Melbourne person. Cloudstreet for a crier. Fourth Wing for anyone who likes dragons.
 
 [PEOPLE.hadrian]  # Hadrian
@@ -744,7 +744,7 @@ role = Runs the Edinburgh Castle bottle shop. Betty's partner. Knows his beer
 lines.1.1 = VB? No. Put it down. Try this: a hazy pale from a garage in Thornbury. Three people brew it. Two of them are twins.
 lines.2.1 = This week it's sours. A raspberry gose from Ballarat. It tastes like a picnic that got a bit wild.
 lines.3.1 = Wine people are coming round to orange wine. Beer people are coming round to anything with a cartoon on the can.
-lines.4.1 = Mountain Goat? Classic. But have you tried their small batch? No. Nobody has. That's the point.
+lines.4.1 = Mountain Goat? Nah. But have you tried this small batch? No. Nobody has. That's the point.
 lines.5.1 = Betty sends me to work with leftovers every day. The whole of Sydney Rd knows when it's lasagne Monday.
 heartScenes.2.1 = Ward: "I used to run a pet shop, you know. I still miss the animals. That's why I say hello to everyone's dog. Every single one."
 heartScenes.4.1 = Ward slips you a can with a hand-drawn label. "Coburg nano-brewery. Only forty cans exist. Thirty-nine now."
@@ -984,7 +984,7 @@ battle.again.1 = "We are retired, mate. She is on the couch."
 role = Lives on Holmes St with Adam and Chloe
 lines.1.1 = Chloe is a kelpie. Which means she has three jobs and we have given her none of them.
 lines.2.1 = She gets two walks and a park run a day and she is still the most awake thing in the house.
-lines.3.1 = Fleming Park, down the bottom end, off the lead. That is her whole personality.
+lines.3.1 = I have been watching everyone dance. I think I have nearly everyone's down to a tee.
 lines.4.1 = She sits on a chair at the pub. On the chair. Nobody taught her that.
 hints.chloe = Chloe is right there. Beat Adam first, though. He has been talking about this battle all week.
 giftLine = Here, take one of hers. We have about forty.
@@ -1062,7 +1062,7 @@ helpsInBattle = Nonna Concetta storms out with a wooden spoon, yelling in Italia
 
 [PEOPLE.abbysaunt]  # Abby's Aunt
 role = Abby's aunt. A psychologist with an office nearby
-lines.1.1 = If you ever need someone to talk to, my office is just round the corner. Second floor, the door with the plant.
+lines.1.1 = If you ever need someone to talk to, my office is just round the corner. Behind 199 Nicholson Street, next to the little old nonna.
 lines.2.1 = Twins, a mayor husband and a house full of pets? You are doing really well. It is okay if it does not feel like it.
 lines.3.1 = Abby says you are lovely. Abby is a good judge. She gets that from me.
 giftLine = Honey from the Merri Creek hives. Very good in tea. Very good for a hard day.
@@ -1263,11 +1263,13 @@ battle.again.1 = A rematch? I love a second round. And a third. And a recount.
 [PEOPLE.alison]  # Alison
 role = Lives on Murray Rd, Preston. Standing out the front, being an idiot
 lines.1.1 = Oh hey. I'm just standing here. Out the front. Like a normal person. Don't look at me.
-lines.2.1 = Toastie. Same one. Sun-dried tomato and cheese. Every single day. Why would I change? It is perfect.
-lines.3.1 = These are my boob pillows. They are two very thin pillows. I don't know why I call them that. I just do.
-lines.4.1 = Did you know slugs have about twenty-seven thousand teeth? I think about it all the time. ALL the time.
-heartScenes.3.1 = Alison makes you the toastie. The same one. It is, annoyingly, perfect. "Told you."
-heartScenes.6.1 = Alison: "Okay I'll be honest. I'm not an idiot. I'm a genius doing an idiot impression." She immediately walks into the gate.
+lines.2.1 = Toastie. Same one. Every single day. Why would I change? It is perfect.
+lines.3.1 = These are my boob pillows. They are two very thin pillows. 
+lines.4.1 = Did you guys hide my Animorphs books.... again?
+lines.5.1 = Now that you mention it, water from my kettle has been tasting very tomatoey... 
+lines.6.1 = Dad's started running a fishing competition at the Coburg lakes. Something to do with scouts, apparently. 
+heartScenes.3.1 = Alison: "If you ever need help moving furniture I can borrow my parents van."
+heartScenes.6.1 = Alison: "Would you like to come over for pasta? Yes, I am microwaving it. There's nothing wrong with that!"
 helpsInBattle = Alison wanders over, stands directly in front of the foe and just stares. It is deeply unsettling. It works.
 battle.challenge.1 = Oh it's you. Wanna fight? I've been standing here for ages. I'm warmed up.
 battle.challenge.2 = I've got my toastie, my boob pillows, and a secret weapon. Me.
@@ -1324,9 +1326,9 @@ battle.again.1 = The guard sighs. "Again? Fine. One trolley. That's all you're g
 
 [PEOPLE.markteapot]  # Mark Teapot
 role = Networker. Has a card for everything
-lines.1.1 = Mark Teapot. Let's grab a coffee sometime. Not now. Sometime. I'll get my people to call your people.
+lines.1.1 = Helen! Let's grab a coffee sometime. Please?
 lines.2.1 = I'm in stakeholder relations. Relations with stakeholders. It's a lot of lanyards.
-battle.challenge.1 = Mark Teapot: "Helen! Mark Teapot. We met at a thing. You won't remember. Here's my card. And another one."
+battle.challenge.1 = Mark Teapot: "Helen! Mark Teapot. Remember? From the ALP? Here's my card. And another one."
 battle.challenge.2 = Mark Teapot: "So, Paddy. Mayor Paddy. Any chance he could pop me in front of a couple of ministers? Just a quick intro. Twenty minutes, tops."
 battle.challenge.3 = Helen: "No. Absolutely not."
 battle.challenge.4 = Mark Teapot goes very red. "Right. RIGHT. You'll regret that. I know people. Small people. Watch this."
@@ -1342,7 +1344,7 @@ battle.again.1 = Mark Teapot: "Helen! Circling back. Touching base. Any movement
 role = Comedian. Has a show this Saturday, and the Saturday after that
 lines.1.1 = Amy: "My show's on Saturday. Tickets are cheap. Cheaper if you bring a friend. Free if you bring four."
 lines.2.1 = Amy: "My new bit is about couches. Nobody laughs at the couch bit. The couch bit is the best bit."
-battle.challenge.1 = Amy: "Hi Helen! Will you come to my comedy show this Saturday? I really need the numbers."
+battle.challenge.1 = Amy: "Hi Helen! Will you come to my comedy show this Saturday? I really need the numbers. Like really, really."
 battle.challenge.2 = Amy: "Oh, you're busy? We'll see about that!"
 battle.ask = Battle Amy?
 battle.yes = Let's see
@@ -1786,7 +1788,7 @@ text = Plenty Rd, Preston: a sage green pub, a convenience store and the 86 tram
 text = Bunnings Warehouse. Aisles of everything, and a garden centre out the back.
 
 [PLACES.cozzo]
-text = The Franco Cozzo showroom. Megalo couches as far as the eye can see.
+text = The Franco Cozzo showroom. Couches as far as the eye can see.
 
 [PLACES.anaconda]
 text = Anaconda: tents, kayaks and a whole wall of fishing rods.
@@ -1810,7 +1812,7 @@ text = The Exhibition Building, a fountain and possums in every tree.
 text = Terraces back to back, the 96 tram and the corner where Seb grew up.
 
 [PLACES.swanston]
-text = The State Library, really big, and a lawn full of people eating lunch.
+text = The State Library and a lawn full of people eating lunch.
 
 [PLACES.reading]
 text = A domed hall of desks and green lamps. Shhh.
@@ -1877,8 +1879,8 @@ text = Alison's block on St Georges Rd, the 11 tram and a very empty block of la
 
 [CHAPTERS]
 1.title = Helen's Pet Training School
-1.intro.1 = Helen has lost her job as an educator. That is also why the twins are home from daycare. All day. Every day.
-1.intro.2 = But Helen is undeterred. If she can't teach toddlers, she will teach pets. With a little help from two very small assistants.
+1.intro.1 = Helen has lost her job as an educator and now twins are home from daycare. All day. Every day.
+1.intro.2 = But Helen is undeterred. If she can't teach toddlers, she will teach pets. 
 1.intro.3 = Helen's Pet Training School needs students. Round up six of your friends' pets, then train them up.
 1.done.1 = Six pets enrolled, three trained up, and one of them has even evolved. Show-off.
 1.done.2 = Helen's Pet Training School is officially open for business! The first lesson is "sit". The second is "please stop eating the curriculum".
@@ -1891,15 +1893,15 @@ text = Alison's block on St Georges Rd, the 11 tram and a very empty block of la
 2.failed.2 = Cr Lesley Bentleigh is the new Mayor of Hobsons Bay. Paddy is plain old Cr McPherson again.
 2.failed.3 = Council motions will be twice as hard to pass from now on. Bentleigh controls the agenda. And the biscuits.
 3.title = Boys Go Wild!
-3.intro.1 = Nanna Trish and Pop Gordon have caught gastro. Both of them. At the same time. Helen has gone to Woods St to look after them.
-3.intro.2 = That leaves the twins. Paddy is technically in charge. Paddy is on a council Zoom.
-3.intro.3 = The boys have a plan. The plan is pranks.
-3.done.1 = Helen is home. She has had eleven texts from her friends, and nine of them just say "YOUR SONS".
-3.done.2 = "I leave you two alone for ONE day..." She is trying very hard not to laugh. She is failing.
+3.intro.1 = Nanna Trish and Pop Gordon have both caught gastro. Helen has gone to Woods St to look after them.
+3.intro.2 = That leaves the twins. Paddy is technically in charge. Technically
+3.intro.3 = The boys have a plan. The plan is to prank.
+3.done.1 = Helen is home. She has had eleven texts from her friends, and nine of them just say "YOUR SONS!!!".
+3.done.2 = "I leave you two alone for ONE day..." She is trying hard not to laugh. 
 4.title = Election Season
 4.intro.1 = The Hobsons Bay council election is coming, and it's anyone's game.
-4.intro.2 = Helen and the twins have an idea: throw the biggest party Laverton has ever seen. The September Babies Bash.
-4.intro.3 = Finish the house, stock up on drinks and decorations, and invite everyone you know. The more friends turn up, the better Paddy's campaign goes.
+4.intro.2 = Helen and the twins have an idea: throw the biggest party Laverton has ever seen. A September Babies Bash.
+4.intro.3 = Finish the house, stock up on drinks and decorations, and invite everyone you know. The more friends turn up, the better Paddy's campaign will go.
 
 [GOALS]
 1 = Start Helen's Pet School
@@ -1921,7 +1923,7 @@ more = Continued on page 3: Is your cavoodle secretly a Greens voter?
 2 = "Hmmm... I know! I'll start a pet school! I should start by getting all my friends' pets to enrol."
 3 = "Let's see... who is there... Princess, of course. Where is she?"
 4 = "She's got out AGAIN!"
-5 = Helen grabs her shoes and runs out the door.
+5 = Helen, go find Princess!
 
 [CH1_ENROLLED]
 1 = "Six students! The school is officially full of fur."
@@ -2134,7 +2136,7 @@ maybe.2 = "I'll try! No promises." (Get to know them better first.)
 [PARTY_STORIES]
 corni.1 = "Did I ever tell you about the time I ran the Merri Creek trail in the wrong direction for nine kilometres? Mem waited at the finish with a Guinness. True love."
 mem.1 = "So one of my lab mice broke her leg on purpose, I swear. She just wanted the extra attention. And honestly? Same."
-rose.1 = "Senate estimates went until 11pm and a senator asked me what a fax machine was. I said, a printer that phones people. He wrote that down."
+rose.1 = "Senate estimates went until 11pm and a senator asked me what a fax machine was. I said, a printer that phones people. She wrote that down."
 slinks.1 = "I once did a wine tour in the Yarra Valley and came home with eleven bottles and no memory of buying any of them. No regrets. Some regrets."
 tim.1 = "Picture this: Rome, 2019, a train strike. I joined the picket line. In Italian. I do not speak Italian. They gave me a sandwich."
 nicholas.1 = "In my dancing days I did a whole show with a sprained ankle. Nobody noticed. Then I fell off the stage at the curtain call. Everybody noticed."
