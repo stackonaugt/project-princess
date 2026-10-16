@@ -1387,6 +1387,19 @@ export class WorldScene extends Phaser.Scene {
       sfx.found();
       await ui.say(['The fairy taps your nose with a wand. "For your fairy friends. Princess will look lovely in it."', 'You got: Fairy collar. Put it on a fairy type pet from your Bag.'], opts);
     }
+    // Ardi at Laverton Station: a durian the first time you meet, a snapper the next time (another day).
+    const presents = PEOPLE[npc.id]?.presents;
+    if (presents) {
+      const got = state.data.flags.presents ||= {};
+      const p = got[npc.id] ||= { n: 0, day: -1 };
+      if (p.n < presents.length && p.day !== day) {
+        const [item, line] = presents[p.n];
+        p.n++; p.day = day;
+        state.addItem(item); sfx.pickup();
+        ui.toast(`+1 ${ITEMS[item].name}`, itemIcon(item, 32));
+        await ui.say([line, `You got: ${ITEMS[item].name}.`], opts);
+      }
+    }
     if (info.gift && state.data.npcDay[npc.id] !== day) {
       // A list of gifts takes turns, one a day (Betty's cooking).
       const gift = Array.isArray(info.gift) ? info.gift[day % info.gift.length] : info.gift;

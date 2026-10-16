@@ -134,6 +134,11 @@ export let PEOPLE = {
     hints: {
       princess: 'Looking for animals? Try Allen St. There is a poodle there who thinks she runs Laverton. Honestly, she might.',
     },
+    // Ardi's two presents: the first time you meet him, then the next time (on another day).
+    presents: [
+      ['durian', 'Ardi: "Hi neighbour! Welcome to Laverton. Here, a durian. King of fruit! Do not open it on the train."'],
+      ['snapper', 'Ardi: "Hi neighbour, how are you? I went fishing off Altona pier this morning. Too many snapper. Take one!"'],
+    ],
   },
   jack: {
     role: 'Jack McPherson. Paddy\'s cousin. Waiting for the Werribee line',

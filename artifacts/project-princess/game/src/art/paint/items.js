@@ -22,6 +22,9 @@ export const ITEM_ART = {
   croissant: { pal: { a: '#d8923a', b: '#f0c070', k: '#8a5a2e', w: '#f4efe0' }, rows: [
     '............', '............', '....kkkk....', '..kkbaabkk..', '.kbaakkaabk.', 'kbak.ww.kabk',
     'kak.wwww.kak', 'kk........kk', '.k........k.', '............', '............', '............'] },
+  durian: { pal: { a: '#a8b040', b: '#d0d870', k: '#5a6018', s: '#4a3a1e' }, rows: [
+    '.....ss.....', '.....s......', '...kkkkkk...', '..kakbkakk..', '.kabkakbak..', 'kkakbkakbkk.',
+    '.kbkakbkak..', 'kkakbkakbkk.', '.kabkakbak..', '..kakbkakk..', '...kkkkkk...', '............'] },
   lemon: { pal: { a: '#f5d63a', b: '#fff3a0', k: '#b8961e', g: '#3f8a3e' }, rows: [
     '............', '.......gg...', '......gg....', '....kkkk....', '..kaaaaak...', '.kabbaaaak..',
     'kaabaaaaaak.', 'kaaaaaaaaak.', '.kaaaaaaak..', '..kkaaakk...', '....kkk.....', '............'] },

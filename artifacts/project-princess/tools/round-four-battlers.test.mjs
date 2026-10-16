@@ -46,3 +46,17 @@ test('each new battler has words, foes, moves and art', async () => {
     }
   }
 });
+
+test('Marty sharts, and Ardi has a durian then a snapper for you', async () => {
+  const { PET_MOVES } = await mod('src/data/moves.js');
+  const { PET_BY_ID } = await mod('src/data/pets.js');
+  const { ITEMS } = await mod('src/data/items.js');
+  const { ITEM_ART } = await mod('src/art/paint/items.js');
+  const { PEOPLE } = await mod('src/data/dialogue.js');
+  assert.equal(MOVES.shart.name, 'Shart');
+  assert.ok(PET_MOVES.marty.includes('shart') && !PET_MOVES.marty.includes('smellpoo'));
+  assert.ok(PET_BY_ID.marty.evolution.moves.includes('shart'));
+  assert.deepEqual(PEOPLE.ardi.presents.map(([id]) => id), ['durian', 'snapper']);
+  for (const id of ['durian', 'snapper']) assert.ok(ITEMS[id] && ITEM_ART[id], id);
+  assert.ok(ITEMS.snapper.fish);
+});

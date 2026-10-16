@@ -64,6 +64,7 @@ export const FISHING_ITEMS = {
   bass:        { name: 'Australian bass', sell: 50, fish: true, desc: 'Fights like it has somewhere to be. Needs a carbon rod to land.' },
   ghostcarp:   { name: 'Ghost carp', sell: 90, fish: true, desc: 'Pale gold and huge. Kostas says it is a creek legend. Only a Pro rod holds it.' },
   murraycod:   { name: 'Murray cod', sell: 120, fish: true, desc: 'The big one. Older than your house and grumpier. Only a Pro rod holds it.' },
+  snapper:     { name: 'Snapper', sell: 35, fish: true, desc: 'A pink snapper from the bay. Ardi caught it off Altona pier and insists you have it.' },
   oldboot:     { name: 'Old boot', sell: 1, junk: true, desc: 'Size 11. Full of pond water. Someone, somewhere, is limping.' },
   soggymyki:   { name: 'Soggy myki', sell: 1, junk: true, desc: 'Somebody\'s myki. Still has $1.20 on it. Still will not touch on.' },
   // The comp's prizes.
@@ -180,6 +181,7 @@ export const FISHING_ITEM_ART = {
   bass: { pal: { a: '#7a8a7a', b: '#c8d0c0', k: '#2a3a2a', e: '#c8443a' }, rows: FISH_ROWS },
   ghostcarp: { pal: { a: '#f0e8c8', b: '#fff8e0', s: '#e8a040', k: '#8a7a50', e: '#1e1e1e' }, rows: BIG_ROWS },
   murraycod: { pal: { a: '#5a7a3a', b: '#a8c078', s: '#2a3a1a', k: '#1e2a10', e: '#f4efe0' }, rows: BIG_ROWS },
+  snapper: { pal: { a: '#e8707a', b: '#f8b8b8', s: '#5ab0e8', k: '#8a2a3a', e: '#1e1e1e' }, rows: SPOT_ROWS },
   soggymyki: { pal: { a: '#1e1e22', b: '#8ac83a', k: '#0a0a0a', w: '#f4f4f0', u: '#7ab0d8' }, rows: [
     '............', '............', '.kkkkkkkkkk.', '.kaaaaaaaak.', '.kabbbbaaak.', '.kaaaaaaaak.',
     '.kaaaaaawwk.', '.kaaaaaaaak.', '.kkkkkkkkkk.', '..u...u.....', '.....u......', '............'] },

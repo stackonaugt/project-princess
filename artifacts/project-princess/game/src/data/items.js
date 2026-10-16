@@ -25,6 +25,7 @@ export let ITEMS = {
   cheese:    { name: 'Cheese stick', price: 4,       desc: 'Individually wrapped. Very fancy.' },
   snag:      { name: 'Sausage in bread', price: 5,   desc: 'From the hardware barn sausage sizzle. Onions on the bottom, as is correct.' },
   croissant: { name: 'Almond croissant', price: 7,   desc: 'From a Sydney Rd cafe. Costs about as much as a small car.' },
+  durian:    { name: 'Durian', sell: 12,           desc: 'The king of fruit. From Ardi at Laverton Station. The whole bag smells of it now.' },
   lemon:     { name: 'Lemon', price: 2,     desc: 'Every Reservoir backyard has a lemon tree. Coles sells them anyway.' },
   tennis:    { name: 'Tennis ball', price: 4,        desc: 'Slightly damp. Nobody knows why.' },
   ribbon:    { name: 'Pink ribbon', price: 8,        desc: 'Perfect for a pom-pom.' },
