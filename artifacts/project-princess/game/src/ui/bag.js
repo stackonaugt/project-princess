@@ -9,7 +9,7 @@ import { UPGRADES } from '../data/upgrades.js';
 import { EQUIPMENT_SLOTS } from '../data/fishing.js';
 import { bestRod, fishingLevel } from '../systems/angler.js';
 import { form } from '../systems/forms.js';
-import { givePhoneTreat, isHealingTreat } from '../systems/pet-care.js';
+import { givePhoneTreat, phoneTreatPets, isHealingTreat } from '../systems/pet-care.js';
 import { petFighter } from '../systems/battle.js';
 import { sfx } from '../systems/sfx.js';
 
@@ -41,8 +41,8 @@ export function openBag(panel, close) {
         h('p', {}, ITEMS[selected].desc),
         careMessage ? h('p', { role: 'status', class: 'small' }, careMessage) : null,
         isHealingTreat(selected) && state.foundCount() ? h('div', { style: { maxHeight: '160px', overflowY: 'auto' } },
-          h('p', { class: 'small' }, 'Give this treat to restore energy:'),
-          ...state.foundIds().map(id => {
+          h('p', { class: 'small' }, phoneTreatPets().length ? 'Give this treat to someone on your team:' : 'Treats are for the pets on your team. Pick a team at the front door.'),
+          ...phoneTreatPets().map(id => {
             const f = petFighter(id), full = f.hp >= f.maxHp;
             return h('button', { class: 'wood-btn small gear-pet', disabled: full, onclick: () => {
               const result = givePhoneTreat(id, selected); careMessage = result.reason;

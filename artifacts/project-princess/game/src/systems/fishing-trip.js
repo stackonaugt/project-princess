@@ -8,8 +8,9 @@ import { ITEMS } from '../data/items.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FISH, DAILY_FISH, COMP, ROSS, rodFor } from '../data/fishing.js';
 import { itemIcon } from '../ui/images.js';
+import { PEOPLE } from '../data/dialogue.js';
 import {
-  bestRod, rodTier, currentEase, fishingLevel, caughtHere, fishedOut, rollFish, recordCatch, recordLost,
+  bestRod, rodTier, rodLock, currentEase, fishingLevel, caughtHere, fishedOut, rollFish, recordCatch, recordLost,
   compOpen, compDay, compHours, compWeek, isMember, rareFish, joinComp, startComp, compResults, awardComp,
 } from './angler.js';
 
@@ -46,6 +47,20 @@ export async function goFishing(world) {
 
 // ------------------------------------------------------------ Ross and the comp
 // The talk menu options Ross adds (WorldScene.talkToNpc).
+// Bazza's fishing tips: what you need next, else a general tip (one a day each).
+export const bazzaChoices = id => id === 'bazza' ? [{ label: 'Fishing tips', value: 'bazzaTip' }] : [];
+export function bazzaTip() {
+  const t = PEOPLE.bazza.tips, f = state.data.fishing || {};
+  if (!bestRod()) return t.rod;
+  if (state.count('bait') < 1) return t.bait;
+  if (!state.hasUpgrade('rod3') && !rodLock('rod3')) return t.rod3;
+  if (!state.hasUpgrade('rod2') && !state.hasUpgrade('rod3') && !rodLock('rod2')) return t.rod2;
+  if (!f.member) return t.ross;
+  const n = (f.tips || 0) % t.general.length;
+  f.tips = (f.tips || 0) + 1;
+  return t.general[n];
+}
+
 export function rossChoices(id) {
   if (id !== 'ross') return [];
   if (!isMember()) return [{ label: ROSS.ask, value: 'rossAsk' }, ...(rareFish().length ? [{ label: ROSS.show, value: 'rossShow' }] : [])];

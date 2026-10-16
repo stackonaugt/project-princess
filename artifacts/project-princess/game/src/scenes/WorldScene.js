@@ -35,7 +35,7 @@ const GATES = {
 };
 
 // People you can't invite to the party (Chapter 4).
-const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer'];
+const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer', 'hadrian', 'aleksy'];
 
 // What you can catch where: [item, weight, junk?]. Every cast uses bait, which halves the junk.
 // Where there are ducks to feed (with stale bread), and how many old-bloke
@@ -71,7 +71,8 @@ import { startHallEvent, judgeHallEvent } from '../systems/hall-events.js';
 import { recordHallScorecard } from '../systems/show-scorecards.js';
 import { startWorldSparring } from '../systems/world-sparring.js';
 import { enterBakeOff, bakeStation, bakeNpc, saveBakeAttempt, paintBakeOff } from '../systems/bake-event.js';
-import { goFishing, rossChoices, rossAction } from '../systems/fishing-trip.js';
+import { goFishing, rossChoices, rossAction, bazzaChoices, bazzaTip } from '../systems/fishing-trip.js';
+import { bestRod } from '../systems/angler.js';
 import { showPresentation } from '../systems/show-presentation.js';
 import { shelfVariant } from '../data/trophies.js';
 import { trophyShelf } from '../systems/trophy-shelf.js';
@@ -873,12 +874,15 @@ export class WorldScene extends Phaser.Scene {
   }
   // Facing water: feed the ducks (with bread, where there are ducks) or fish.
   async waterAction() {
-    const ducks = DUCK_ZONES.includes(this.regionId) && state.count('bread') > 0;
-    if (!ducks) return this.goFishing();
-    if (this.emilioWaiting()) return this.emilio();
-    if (!state.hasUpgrade('rod')) return this.feedDucks();
-    const c = await ui.say({ text: 'Ducks paddle over, eyeing your bag.', choices: [{ label: 'Feed the ducks', value: 'ducks' }, { label: 'Go fishing', value: 'fish' }, { label: 'Not now', value: null }] }, { cancelValue: null });
-    if (c === 'ducks') return this.feedDucks();
+    // Where there are ducks you always get the choice (a line says what you need).
+    if (!DUCK_ZONES.includes(this.regionId)) return this.goFishing();
+    const bread = state.count('bread') > 0;
+    if (bread && this.emilioWaiting()) return this.emilio();
+    const c = await ui.say({ text: bread ? 'Ducks paddle over, eyeing your bag.' : 'Ducks paddle about. The water looks fishy too.', choices: [
+      { label: 'Feed the ducks', value: 'ducks', note: bread ? `${state.count('bread')} bread` : 'needs stale bread' },
+      { label: 'Go fishing', value: 'fish', note: bestRod() ? `${state.count('bait')} bait` : 'needs a rod' },
+      { label: 'Not now', value: null }] }, { cancelValue: null });
+    if (c === 'ducks') return bread ? this.feedDucks() : ui.say(['You have no stale bread. Wheelie bins turn some up, and James at Reservoir Station sells it.']);
     if (c === 'fish') return this.goFishing();
   }
 
@@ -973,7 +977,8 @@ export class WorldScene extends Phaser.Scene {
 
     // Chat, or give a treat (once a day): your choice.
     for (let first = true; ; first = false) {
-      const canTreat = rec.giftedDay !== day && state.treatItems().length;
+      // Treats are for your team (and pets you haven't befriended yet, to win them round).
+      const canTreat = rec.giftedDay !== day && state.treatItems().length && (!rec.found || state.inParty(d.id));
       let act = 'chat';
       if (canTreat || !first || rec.found) {
         act = await ui.say({
@@ -1224,6 +1229,7 @@ export class WorldScene extends Phaser.Scene {
       choices.push(...bowlsClubChoices(npc.id, state.data));   // the treasurer: join the club, the Wednesday championship
       if (npc.id === 'chris' && this.streetPartyOpen()) choices.push({ label: 'Throw a street party', value: 'party' });
       if(npc.id==='betty') choices.push({label:'Practise a competition bake',value:'bakepractice'});
+      choices.push(...bazzaChoices(npc.id));   // Bazza's fishing tips
       choices.push(...rossChoices(npc.id));   // Ross Millward's fishing comp (systems/fishing-trip.js)
       if (npc.id === 'betty' && weekday(day) === BAKE_OFF.day) choices.push({ label: 'Enter the bake-off', value: 'bakeoff' });
       if (COUNCILLORS.includes(npc.id) && npc.id !== 'paddy') choices.push({ label: 'Ask about the next vote', value: 'vote' }, { label: 'Ask them to back Paddy', value: 'support' });
@@ -1248,6 +1254,7 @@ export class WorldScene extends Phaser.Scene {
       if (act === 'party') await this.streetParty(npc, opts);
       if(act==='bakepractice') await this.cook(true);
       if (String(act).startsWith('ross')) await rossAction(this, act, opts);
+      if (act === 'bazzaTip') await ui.say([`Bazza: "${bazzaTip()}"`], opts);
       if (act === 'bakeoff') { await this.bakeOff(npc, opts); if (this.leaving) break; }
       if (act === 'vote' || act === 'support') await this.askCouncillor(npc, act, opts);
       if (act === 'cleanCampaign') await this.cleanCampaign(opts);

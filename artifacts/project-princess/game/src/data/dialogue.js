@@ -841,6 +841,24 @@ export let PEOPLE = {
       ['Buying a present? Monkey Grip for a Melbourne person. Cloudstreet for a crier. Fourth Wing for anyone who likes dragons.'],
     ],
   },
+  hadrian: {
+    role: 'One of the twins. Has never once walked when he could run',
+    lines: [
+      ['Hadrian runs a lap of the room, bonks gently into the cot, and does it again.'],
+      ['Hadrian holds up a block. "Twain!" It is a train. Obviously.'],
+      ['Hadrian points at the window. "Doggy!" There is no dog. He is very sure.'],
+      ['Hadrian hands you a soggy rusk. It is a gift. You must accept it.'],
+    ],
+  },
+  aleksy: {
+    role: 'The other twin. Will find a snack anywhere',
+    lines: [
+      ['Aleksy is under the cot. He has found a sultana. Nobody knows how long it was there.'],
+      ['Aleksy pats your pocket. "Snack?" He knows. He always knows.'],
+      ['Aleksy is reading a picture book upside down, very seriously.'],
+      ['Aleksy gives you a big hug, then checks your hands for biscuits.'],
+    ],
+  },
   bazza: {
     role: 'Runs the Anaconda in Preston. Fishing nut',
     lines: [
@@ -849,6 +867,23 @@ export let PEOPLE = {
       ['Bait helps. Worms. The fish don\'t care about your feelings, they care about worms.'],
       ['Eels have been in Melbourne creeks longer than Melbourne has. Show some respect.'],
     ],
+    // "Fishing tips" in his talk menu: the first one that fits you, else one of the general ones.
+    tips: {
+      rod: 'First things first: a rod. Then face the water at a lake or creek and press A. Simple as.',
+      bait: 'No bait, no fish. One tub per cast, caught or not. Stock up, they are cheap as chips.',
+      rod2: 'You are fishing well enough for the carbon rod now. The big trout snap the cheap ones.',
+      rod3: 'Level five? Mate. The Pro rod is yours if you want it. Murray cod country.',
+      ross: 'Land a brown trout or a bass and show Ross Millward at Coburg Lake. He runs a comp on Sundays.',
+      general: [
+        'When the fish bolts out of the green, tap to pull it back. Tap like mad and the line snaps.',
+        'Keep it in the zone and keep pulling. The landing bar only fills while it sits in the green.',
+        'Each spot gives up about four fish a day. Then it is fished out. Try another creek.',
+        'Edwardes Lake for redfin, Edgars Creek for yabbies, Coburg Lake for trout. Kororoit Creek for boots.',
+        'Every fish you land makes you a better angler. Bigger fish, more practice.',
+        'Spiro on Kororoit Creek Rd pays half again for fish. James only pays half what they cost.',
+        'A fish too big for your rod will bite, then snap the line. Better rod, better fish.',
+      ],
+    },
   },
   sam: {
     role: 'Runs Plenty Road Convenience, Preston. Smokes, American confectionary, vapes',

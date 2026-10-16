@@ -26,7 +26,7 @@ export const FRIENDS = {
     assist: { heal: 0.45 },
   },
   gordon: {
-    loves: ['byzbook', 'olive', 'hangingrock'], likes: ['seedling', 'pumpkin', 'tomato', 'coopers'], dislikes: ['hahn'],
+    loves: ['byzbook', 'olive', 'hangingrock'], likes: ['seedling', 'pumpkin', 'tomato', 'coopers', 'paperback'], dislikes: ['hahn'],
     rewards: { 4: { item: 'seedling', n: 2 }, 6: { item: 'olive', n: 1 } },
     assist: { foeAtk: 2 },
   },

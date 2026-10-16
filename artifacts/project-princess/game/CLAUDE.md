@@ -61,13 +61,21 @@
   Homemade presents (birdhouse, planter box, wine rack, tote bag, cushion, toy
   tram) carry `lovedBy`/`likedBy`, merged into tastes in data/friends.js.
 - **House finds** (`data/house-finds.js`, `systems/house-finds.js`): seven
-  once-per-save presents in the house and yard, each under a pulsing gold star
-  (`HOUSE_FINDS`: zone, tile, item, lines; taken ids in `state.data.houseFinds`).
+  once-per-save presents in the house and yard, each floating and bobbing over
+  its spot (`HOUSE_FINDS`: zone, tile, item, lines; taken ids in `state.data.houseFinds`).
   New presents (rose cutting, teacup, wattle, Paddy's IOU to Jack, socket set)
-  carry `lovedBy`/`likedBy`. A To Do note ("Look around the house") nudges new
+  carry `lovedBy`/`likedBy`. Trish and Gordon only *like* the finds: their
+  favourites stay for requests later. A To Do note ("Look around the house") nudges new
   players. Gordon is Marty's trainer, so like any unbeaten trainer he only
   takes gifts after the gentle Marty match; Trish takes them straight away.
   Checks: `tools/house-finds.test.mjs`.
+- Treats go only to pets on the team (and unbefriended pets you are winning
+  round); the Bag lists the team (`phoneTreatPets` in systems/pet-care.js,
+  plus Marty during his phone-care lesson). The Petdex shows the team at the top.
+- The twins are NPCs `hadrian`/`aleksy` in their room at home whenever you are
+  not playing as them (`ROUTINES` in data/routines.js, place `room`).
+- At water in a duck zone you always get Feed the ducks / Go fishing / Not now.
+  Bazza has a Fishing tips option (`PEOPLE.bazza.tips`, `bazzaTip()`).
 - Type matchups (`state.data.matchups`) record every type tried; the move menu
   shows Strong or Weak only after a matchup is tried (`knownEffect`), a toast
   says when the Petdex learns one, and the Petdex has a Matchups tab.
