@@ -5,6 +5,7 @@ export default String.raw`
 # Search with Ctrl+F (or Cmd+F). Change the text after " = " and save (commit) the file.
 # Leave the part before " = " and the [headings] alone: they say where each line goes.
 # Lists count from 1. Type \n for a line break inside one piece of text.
+# To add a line, copy the last one and give it the next number (lines.6.1 after lines.5.1).
 # Australian spelling, no em dashes, keep lines short (under about 140 characters).
 
 [PEOPLE.trish]  # Trish
