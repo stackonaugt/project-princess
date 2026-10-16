@@ -1,11 +1,13 @@
-# Current battle backgrounds
+# Battle background templates
 
-These are editable PNG starting points inspired by the game's current built-in battle scenes.
-Copy a file up one folder into assets/sprites/backgrounds/ to activate it, for example copy laverton.png to ../laverton.png.
-The templates folder is ignored by the game, so these originals remain safe to edit from.
+The game ignores this folder, so everything here is safe to edit. The full guide is `../README.md`.
 
-Files: laverton.png (suburban houses), brunswick.png (brick warehouses), reservoir.png (park and lake), plus matching -night.png versions. All are 320 x 180 PNGs.
-Edit with Procreate, Aseprite, Piskel or another image editor; keep the full canvas and save the result as a PNG in the parent folder.
+- Desktop starters (320 x 180): `laverton.png`, `brunswick.png`, `reservoir.png` and their `-night` versions.
+- Phone starters (192 x 320): `laverton-phone.png`, `brunswick-phone.png`, `reservoir-phone.png` and their `-night-phone` versions.
+- `guide-desktop-big.png`, `guide-phone-big.png`: labelled pictures of where the pets stand, where the name boxes go and what may be cut off.
+- `guide-desktop.png`, `guide-phone.png`: the same markings as a see-through layer at drawing size. Hide it before you export.
+- `exhibition.png`: the dog show ring (512 x 320, desktop shape).
 
-The game places both fighters over the image. The left lower pad is your pet's starting place; the upper-right pad is the opponent's.
-The artwork is a starter copy. Repaint it however you like.
+To use a starter, copy it up one folder into `backgrounds/`, repaint it and keep the name.
+
+`node tools/export-battle-backgrounds.mjs` redraws the guides and any missing starters. It never replaces a starter that is already here unless you add `--force`, which redraws them all (losing any edits).

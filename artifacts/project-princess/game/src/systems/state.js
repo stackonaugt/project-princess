@@ -55,6 +55,7 @@ function fresh() {
     spell: null,       // today's protection spell from the milk bar: { id, day }
     inventory: {},     // item id -> count
     forage: {},        // region -> { day, taken: [index...] }
+    houseFinds: [],    // house and yard find spots already picked up, once per save (data/house-finds.js)
     npcDay: {},        // npc id -> last day they gave a gift
     // Fishing (data/fishing.js, systems/fishing-trip.js): fish landed per spot today
     // (day, caught: zone -> n), a log of every catch (fish id -> n), the biggest
@@ -70,7 +71,7 @@ function fresh() {
     requests: { day: 0, done: [] },                 // today's requests board (data/requests.js): ids fulfilled today
     furniture: { ...DEFAULT_FURNITURE, plants: {}, owned: Object.values(DEFAULT_FURNITURE) },    // what's in the house (Franco Cozzo, data/furniture.js)
     stats: { steps: 0, gifts: 0, chats: 0, treats: 0 },
-    settings: { sound: true, dayLength: 1, paused: false },
+    settings: { sound: true, dayLength: 1, paused: false, karaokeMic: false },   // karaokeMic: sing into the mic (ui/karaoke.js) instead of tapping
     seenIntro: false,
     story: freshStory(),   // the chapters (systems/story.js)
   };
@@ -99,6 +100,7 @@ function sanitise(raw) {
   if (raw.pets && typeof raw.pets === 'object') for (const id of Object.keys(raw.pets)) if (PET_BY_ID[id]) Object.assign(petRecord(d, id), raw.pets[id]);
   if (raw.inventory) for (const [k, n] of Object.entries(raw.inventory)) if (ITEMS[k] && n > 0) d.inventory[k] = Math.min(99, n | 0);
   if (raw.forage && typeof raw.forage === 'object') d.forage = raw.forage;
+  if (Array.isArray(raw.houseFinds)) d.houseFinds = [...new Set(raw.houseFinds.filter(x => typeof x === 'string' && x.length < 40))];
   if (raw.npcDay && typeof raw.npcDay === 'object') d.npcDay = raw.npcDay;
   if (raw.beaten && typeof raw.beaten === 'object') d.beaten = raw.beaten;
   if (raw.visits && typeof raw.visits === 'object') for (const [z, n] of Object.entries(raw.visits)) if (ZONES[z] && Number.isFinite(n)) d.visits[z] = Math.max(0, n | 0);
@@ -142,6 +144,7 @@ function sanitise(raw) {
   if (raw.furniture && typeof raw.furniture === 'object') { Object.assign(d.furniture, raw.furniture); if (!Array.isArray(d.furniture.owned)) d.furniture.owned = []; for (const id of Object.values(DEFAULT_FURNITURE)) if (!d.furniture.owned.includes(id)) d.furniture.owned.push(id); if (!raw.furniture.plants) delete d.furniture.plants; sanitisePlants(d.furniture); }
   if (raw.stats) Object.assign(d.stats, raw.stats);
   if (raw.settings) Object.assign(d.settings, raw.settings);
+  d.settings.karaokeMic = d.settings.karaokeMic === true;
   if (['helen', 'hadrian', 'aleksy'].includes(raw.hero)) d.hero = raw.hero;
   d.startGiven = !!raw.startGiven;
   if (Array.isArray(raw.party)) d.party = raw.party.filter(id => d.pets[id]?.found && d.pets[id].hp !== 0).slice(0, MAX_TEAM);

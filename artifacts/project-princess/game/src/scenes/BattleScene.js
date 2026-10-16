@@ -28,11 +28,7 @@ import { createBattleEffectTextures, playBattleAnimation } from '../systems/batt
 import { moveAnimations } from '../data/move-animations.js';
 import { playEvolution } from '../systems/evolution-fx.js';
 import * as R from '../systems/battle.js';
-
-// Where the fighters stand on a supplied battle background, as fractions of
-// the image (the 320x180 templates: pad centres at (90, 152) and (224, 108),
-// feet one unit below). Draw new art with ground under these spots.
-const BG_ANCHORS = { mine: { x: 90 / 320, y: 156 / 180 }, foe: { x: 224 / 320, y: 112 / 180 } };
+import { backgroundKeys, fitBackdrop, isPhoneField, templateFor } from '../systems/battle-backdrop.js';
 
 const hex = c => parseInt(c.slice(1), 16);
 const MAX_TEAM = 3;
@@ -65,6 +61,8 @@ export class BattleScene extends Phaser.Scene {
     this.makeFx();
     this.bg = this.add.graphics().setDepth(0);
     this.backgroundArt = this.add.image(0, 0, '__WHITE').setOrigin(0).setDepth(1).setVisible(false);
+    // Stretched edge pixels that fill any gap round art shrunk to keep both pads on screen.
+    this.backgroundEdges = ['l', 'r', 't', 'tl', 'tr'].map(() => this.add.image(0, 0, '__WHITE').setOrigin(0).setDepth(0.5).setVisible(false));
     this.foes = this.trainer ? R.trainerTeam(this.opts.trainer).map(([id, lv]) => R.foeFighter(id, lv)) : [R.foeFighter(this.opts.wild.id, this.opts.wild.level)];
     this.team = (this.opts.exhibitionPet?[this.opts.exhibitionPet]:R.readyTeam()).map(R.petFighter);
     this.foe = this.foes[0];
@@ -159,34 +157,46 @@ export class BattleScene extends Phaser.Scene {
   }
 
   // Which supplied battle background PNG (if any) this battle uses: a
-  // location-specific one wins over suburb art, then the shared default.
-  // Optional night variants retain the artist's colours without a tint.
-  backgroundKey() {
+  // location-specific one wins over suburb art, then the shared default. A
+  // portrait field prefers <name>-phone.png, a landscape one <name>.png, and
+  // each falls back to the other shape. Night versions keep the artist's
+  // colours without a tint. Rules in systems/battle-backdrop.js.
+  backgroundKey(W, field) {
     const night = isNight(state.data.minutes);
-    const names = (this.opts.exhibition ? ['exhibition'] : [this.opts.region, this.opts.suburb, 'default']).filter(Boolean);
-    const keys = names.flatMap(name => night ? [`battlebg-${name}-night`, `battlebg-${name}`] : [`battlebg-${name}`]);
+    const names = this.opts.exhibition ? ['exhibition'] : [this.opts.region, this.opts.suburb, 'default'];
+    const keys = backgroundKeys(names, { night, phone: isPhoneField(W, field) });
     return keys.find(key => custom.has(key) && this.textures.exists(key)) || null;
   }
   // Cover the field with the art (cropped, never squashed), bottom aligned,
-  // and stand the fighters where the art's ground is. Backgrounds follow the
-  // template layout (BG_ANCHORS): your pet on the lower-left pad, the foe on
-  // the upper-right one. A narrow phone can't show both pads, so the crop
-  // slides to keep them in view and the fighters are kept on screen, still at
-  // the art's ground height.
+  // and stand the fighters exactly on the art's pads (the template anchors
+  // for that shape). Fighters are sized to the art, so they fit the pads on
+  // any screen. See fitBackdrop for when the art shrinks instead of cropping.
   fitBackground(W, field) {
-    const key = this.backgroundKey();
+    const key = this.backgroundKey(W, field);
     this.bgFit = null;
     if (!key) return;
     const src = this.textures.get(key).getSourceImage();
-    const k = Math.max(W / src.width, field / src.height), dw = src.width * k, dh = src.height * k;
-    const mid = (BG_ANCHORS.mine.x + BG_ANCHORS.foe.x) / 2 * dw;
-    const left = Math.round(Math.min(0, Math.max(W - dw, W / 2 - mid))), top = field - dh;
-    this.bgFit = { key, left, top, dw, dh };
-    const u = this.unit, at = a => ({ x: left + a.x * dw, y: top + a.y * dh });
-    const mine = at(BG_ANCHORS.mine), foe = at(BG_ANCHORS.foe);
-    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
-    this.minePos = { x: Math.round(clamp(mine.x, 9 * u, W * 0.42)), y: Math.round(clamp(mine.y, field * 0.55, field - 2 * u)) };
-    this.foePos = { x: Math.round(clamp(foe.x, W * 0.58, W - 9 * u)), y: Math.round(clamp(foe.y, field * 0.3, this.minePos.y - 8 * u)) };
+    const fit = fitBackdrop({ W, field, iw: src.width, ih: src.height, template: templateFor(key) });
+    this.bgFit = { key, iw: src.width, ih: src.height, ...fit };
+    this.unit = fit.unit;
+    this.minePos = fit.mine;
+    this.foePos = fit.foe;
+  }
+  // Fill any gap left round shrunk art by stretching its outermost pixels.
+  drawBgEdges(W) {
+    const fit = this.bgFit, [l, r, t, tl, tr] = this.backgroundEdges;
+    for (const e of this.backgroundEdges) e.setVisible(false);
+    if (!fit || fit.covers) return;
+    const tex = this.textures.get(fit.key), { iw, ih } = fit;
+    // Adding a frame to a one-frame texture makes it the default, so the art itself is always drawn with '__BASE'.
+    const frame = (name, x, y, w, h) => { if (!tex.has(name)) tex.add(name, 0, x, y, w, h); return name; };
+    const show = (img, name, x, y, w, h) => { if (w > 0 && h > 0) img.setTexture(fit.key, name).setPosition(x, y).setDisplaySize(w, h).setVisible(true); };
+    const right = fit.left + fit.dw, top = Math.max(0, fit.top);
+    show(l, frame('__edge-l', 0, 0, 1, ih), 0, fit.top, fit.left, fit.dh);
+    show(r, frame('__edge-r', iw - 1, 0, 1, ih), right, fit.top, W - right, fit.dh);
+    show(t, frame('__edge-t', 0, 0, iw, 1), fit.left, 0, fit.dw, top);
+    show(tl, frame('__edge-tl', 0, 0, 1, 1), 0, 0, fit.left, top);
+    show(tr, frame('__edge-tr', iw - 1, 0, 1, 1), right, 0, W - right, top);
   }
 
   drawBg(W, H) {
@@ -195,9 +205,11 @@ export class BattleScene extends Phaser.Scene {
     g.clear();
     const fit = this.bgFit;
     this.backgroundArt.setVisible(Boolean(fit));
+    if (!fit) for (const e of this.backgroundEdges) e.setVisible(false);
     if (fit) {
       // Cover, not squash (see fitBackground): the art keeps its shape.
-      this.backgroundArt.setTexture(fit.key).setOrigin(0, 0).setPosition(fit.left, fit.top).setDisplaySize(fit.dw, fit.dh);
+      this.backgroundArt.setTexture(fit.key, '__BASE').setOrigin(0, 0).setPosition(fit.left, fit.top).setDisplaySize(fit.dw, fit.dh);
+      this.drawBgEdges(W);
       return;
     }
     if (this.opts.exhibition) {

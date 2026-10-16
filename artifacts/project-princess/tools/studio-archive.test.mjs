@@ -103,6 +103,7 @@ test('real runtime and old save round-trips preserve owned history, schedules, f
   const root = await mkdtemp(path.join(tmpdir(), 'princess-archive-'));
   try {
     await cp(fileURLToPath(new URL('../game/src', import.meta.url)), path.join(root, 'src'), { recursive: true });
+    await cp(fileURLToPath(new URL('../game/words.js', import.meta.url)), path.join(root, 'words.js'));   // the words file overrides.js reads
     await writeFile(path.join(root, 'package.json'), '{"type":"module"}');
     const history = { found: true, points: 123, day: 4, date: '2025-01-02', level: 8, xp: 21,
       hp: 17, evolved: false, gear: null, reactions: { bread: 'love' }, chats: 9 };

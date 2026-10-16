@@ -2,6 +2,7 @@
 import { NORTH_ITEM_ART } from './north.js';
 import { FISHING_ITEM_ART } from '../../data/fishing.js';
 import { SH_ITEM_ART } from './summerhill.js';
+import { HOUSE_ITEM_ART } from '../../data/house-finds.js';
 
 export const ITEM_ART = {
   chicken: { pal: { a: '#c8823a', b: '#e8b060', w: '#f4efe0', k: '#5e3a1a' }, rows: [
@@ -248,4 +249,5 @@ export const GEAR_ART = {
     'kawakaakawak', 'kak..kk..kak', 'kk........kk', '............', '............', '............'] },
 };
 Object.assign(ITEM_ART, NORTH_ITEM_ART);   // Coburg and Preston items
+Object.assign(ITEM_ART, HOUSE_ITEM_ART);   // house and yard finds (data/house-finds.js)
 Object.assign(ITEM_ART, FISHING_ITEM_ART);   // new fish, rods, the fishing cup (data/fishing.js)

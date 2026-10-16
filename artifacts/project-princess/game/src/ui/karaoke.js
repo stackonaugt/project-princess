@@ -6,6 +6,7 @@ import { h } from './dom.js';
 import { state } from '../systems/state.js';
 import { sfx } from '../systems/sfx.js';
 import { heroIcon } from './images.js';
+import { judgeAt, scoreOf, onsetDetector, noiseFloor, thresholdFor, openMic, micAvailable, MIC, MIC_WHY } from '../systems/karaoke-mic.js';
 
 let songs = null;
 export const loadSongs = () => songs ? Promise.resolve(songs) : fetch('assets/karaoke/songs.json').then(r => r.json()).then(s => (songs = s));
@@ -40,8 +41,10 @@ export function songWindow(lines) {
 const pace = song => { const w = song.lines.reduce((n, [, t]) => n + t.split(/\s+/).length, 0), d = song.lines.at(-1)[0] - song.lines[0][0] || 1; return w / d; };
 
 export function openKaraoke(panel, close, { done, intro }) {
-  let action = null, audio = null, raf = 0, result = null;
-  const stop = () => { cancelAnimationFrame(raf); if (audio) { audio.pause(); audio.src = ''; audio = null; } };
+  let action = null, audio = null, raf = 0, result = null, mic = null, primed = null;
+  // Always let go of the mic: song over, Stop, Close or the modal shut.
+  const dropMic = () => { mic?.stop(); mic = null; };
+  const stop = () => { cancelAnimationFrame(raf); dropMic(); if (audio) { audio.pause(); audio.src = ''; audio = null; } if (primed) { primed.pause(); primed.src = ''; primed = null; } };
   const head = title => h('div', { class: 'm-head' }, h('h2', {}, title), h('button', { class: 'wood-btn small', onclick: close }, 'Close'));
 
   const pick = () => {
@@ -56,40 +59,90 @@ export function openKaraoke(panel, close, { done, intro }) {
   };
 
   const level = song => {
-    const btns = LEVELS.map(lv => h('button', { class: 'wood-btn party-answer kara-song', onclick: () => { sfx.select(); sing(song, lv); } }, h('b', {}, lv.name), h('small', {}, ` ${lv.desc}`)));
+    const btns = LEVELS.map(lv => h('button', { class: 'wood-btn party-answer kara-song', onclick: () => { sfx.select(); mode(song, lv); } }, h('b', {}, lv.name), h('small', {}, ` ${lv.desc}`)));
     panel.replaceChildren(head(song.title), h('div', { class: 'm-scroll' },
       h('div', { class: 'note' }, h('p', {}, 'How brave are we feeling?')), ...btns.map(b => h('div', { class: 'center' }, b))));
     btns[0]?.focus();
   };
 
-  const sing = (song, lv) => {
-    const win = songWindow(song.lines), lines = win.lines, cuesAt = beats(lines, lv), hit = cuesAt.map(() => null), PERFECT = lv.perfect, GOOD = lv.good;
+  // Sing into the mic or tap along. Tap is the default and the fallback; the
+  // last choice is remembered (settings.karaokeMic, also in Settings).
+  const mode = (song, lv) => {
+    const s = state.data.settings, why = micAvailable();
+    const tapBtn = h('button', { class: 'wood-btn party-answer kara-song', onclick: () => { sfx.select(); s.karaokeMic = false; state.save(); sing(song, lv); } }, h('b', {}, 'Tap along'), h('small', {}, ' Press Sing! on the beat.'));
+    const micBtn = h('button', { class: 'wood-btn party-answer kara-song kara-micpick', onclick: () => { sfx.select(); s.karaokeMic = true; state.save(); withMic(song, lv); } }, h('b', {}, 'Sing with the mic'), h('small', {}, ' Make a noise on every beat. Any words will do.'));
+    panel.replaceChildren(head(song.title), h('div', { class: 'm-scroll' },
+      h('div', { class: 'note' }, h('p', {}, 'Real singing or finger singing?'),
+        h('p', { class: 'small' }, why === 'insecure' ? 'The mic needs a secure (https) page, so tapping is safest here.' : 'Headphones help: then the mic only hears you, not the music.')),
+      h('div', { class: 'center' }, tapBtn), h('div', { class: 'center' }, micBtn)));
+    (s.karaokeMic ? micBtn : tapBtn).focus();
+  };
+
+  // Called from the tap on "Sing with the mic", so the AudioContext and the
+  // song both start inside the gesture (iOS Safari will not allow it later).
+  const withMic = (song, lv) => {
+    const win = songWindow(song.lines);
+    primed = new Audio(`assets/karaoke/${song.id}.mp3`);
+    primed.muted = true; primed.play().then(() => primed?.pause()).catch(() => {});
+    const msg = h('p', {}, 'Asking for the mic...');
+    panel.replaceChildren(head(song.title), h('div', { class: 'm-scroll' }, h('div', { class: 'note center' }, msg)));
+    openMic().then(m => {
+      if (!primed) { m.stop(); return; }   // closed while asking
+      mic = m; const a = primed; primed = null; sing(song, lv, a, win);
+    }, err => {
+      if (!primed) return;
+      stop(); state.data.settings.karaokeMic = false; state.save();
+      const tap = h('button', { class: 'wood-btn', onclick: () => { sfx.select(); sing(song, lv); } }, 'Tap along instead');
+      panel.replaceChildren(head(song.title), h('div', { class: 'm-scroll' }, h('div', { class: 'note center' },
+        h('p', {}, MIC_WHY[err?.reason] || MIC_WHY.failed),
+        h('p', { class: 'small' }, err?.reason === 'denied' ? 'To sing for real later, allow the mic for this page in your browser settings.' : 'Tito Ramon: "No mic? We clap then!"')),
+        h('div', { class: 'center' }, tap)));
+      action = () => tap.click(); tap.focus();
+    });
+  };
+
+  const sing = (song, lv, given = null, givenWin = null) => {
+    const win = givenWin || songWindow(song.lines), lines = win.lines, cuesAt = beats(lines, lv), hit = cuesAt.map(() => null), GOOD = lv.good;
+    const voice = !!mic, calib = [];   // mic mode: a quiet second, then listen
+    let det = null;
     let perfect = 0, good = 0, shown = -1;
     const stage = h('div', { class: 'kara-stage' }, h('img', { class: 'pix kara-singer', src: heroIcon(state.data.hero), alt: '' }), h('div', { class: 'kara-notes' }));
     const prev = h('p', { class: 'kara-line prev' }), cur = h('p', { class: 'kara-line cur' + (lv.every ? ' words' : '') }), next = h('p', { class: 'kara-line next' });
     const lane = h('div', { class: 'kara-lane' }, h('div', { class: 'kara-now' })), feedback = h('p', { class: 'kara-fb center' }, 'Get ready...');
     const scoreEl = h('p', { class: 'small center meta' });
-    const btn = h('button', { class: 'wood-btn kara-btn', tabindex: '-1', onpointerdown: e => { e.preventDefault(); press(); } }, 'Sing!');
+    const btn = h('button', { class: 'wood-btn kara-btn', tabindex: '-1', onpointerdown: e => { e.preventDefault(); if (voice) resume(); else press(); } }, voice ? 'Start the music' : 'Sing!');
+    const meterFill = h('i'), meterMark = h('b'), meter = h('div', { class: 'kara-meter', role: 'meter', 'aria-label': 'Your voice' }, meterFill, meterMark);
+    if (voice) btn.style.display = 'none';
+    const resume = () => { if (audio?.paused && !audio.ended) audio.play().then(() => { btn.style.display = 'none'; }).catch(() => {}); };
     const stopBtn = h('button', { class: 'wood-btn small', onclick: () => finish(hit, cuesAt.length) }, 'Stop');
     const cues = cuesAt.map(() => { const c = h('div', { class: 'kara-cue' + (lv.every ? ' word' : '') }); lane.append(c); return c; });
     const notesBox = stage.querySelector('.kara-notes');
-    const score = () => { scoreEl.textContent = `${lv.name} · Perfect ${perfect} · Good ${good} · Beats ${cuesAt.length}`; };
-    const press = () => {
+    const score = () => { scoreEl.textContent = `${lv.name}${voice ? ' · Mic' : ''} · Perfect ${perfect} · Good ${good} · Beats ${cuesAt.length}`; };
+    const press = (at = null) => {
       if (!audio) return;
-      const t = audio.currentTime;
-      let best = -1, bd = 9;
-      cuesAt.forEach(({ t: at }, i) => { const d = Math.abs(t - at); if (hit[i] === null && d < bd) { bd = d; best = i; } });
-      if (best < 0 || bd > GOOD) { feedback.textContent = 'Too early!'; feedback.className = 'kara-fb center miss'; sfx.bump(); return; }
-      hit[best] = bd <= PERFECT ? 'perfect' : 'good';
+      const t = at ?? audio.currentTime, j = judgeAt(cuesAt, hit, t, lv);
+      if (!j) { if (at === null) { feedback.textContent = 'Too early!'; feedback.className = 'kara-fb center miss'; sfx.bump(); } return; }
+      const best = j.index; hit[best] = j.grade;
       if (hit[best] === 'perfect') perfect++; else good++;
       cues[best].classList.add(hit[best]);
       feedback.textContent = hit[best] === 'perfect' ? 'PERFECT!' : 'Good!'; feedback.className = `kara-fb center ${hit[best]}`;
       const n = h('span', {}, ['♪', '♫', '♬'][best % 3]); n.style.left = `${20 + Math.random() * 60}%`; notesBox.append(n); setTimeout(() => n.remove(), 1400);
       score();
     };
+    const listen = t => {   // one mic frame: calibrate, then count sung words
+      const x = mic?.level() ?? 0;
+      if (!det) {
+        if (t < win.start + MIC.CALIBRATE || !calib.length) { calib.push(x); if (!audio.paused) feedback.textContent = 'Stay quiet a sec...'; }
+        else { det = onsetDetector(thresholdFor(noiseFloor(calib))); feedback.textContent = 'Sing on the dots!'; }
+      } else if (det.push(t, x)) press(t - MIC.LAG);
+      const thr = det?.threshold ?? thresholdFor(noiseFloor(calib));   // square root so quiet voices still show; the mark is the threshold
+      meterFill.style.width = `${Math.min(1, Math.sqrt(x / (thr * 4))) * 100}%`; meterMark.style.left = '50%';
+      meter.classList.toggle('loud', x >= thr);
+    };
     const tick = () => {
       if (!audio) return;
       const t = audio.currentTime;
+      if (voice) listen(t);
       let i = -1; while (i + 1 < lines.length && lines[i + 1][0] <= t + 0.05) i++;
       if (i !== shown) {
         shown = i; prev.textContent = lines[i - 1]?.[1] || ''; next.textContent = lines[i + 1]?.[1] || '';
@@ -102,20 +155,21 @@ export function openKaraoke(panel, close, { done, intro }) {
       const a = lines[i]?.[0] ?? 0, b = lines[i + 1]?.[0] ?? a + 4;
       cur.style.setProperty('--fill', `${Math.max(0, Math.min(1, (t - a) / Math.max(0.5, b - a))) * 100}%`);
       const span = lv.every ? 2.5 : 4;   // seconds of lane on screen
-      cues.forEach((c, k) => { const x = (cuesAt[k].t - t) / span; c.style.left = `${15 + x * 85}%`; c.style.display = x < -0.2 || x > 1.05 ? 'none' : ''; if (hit[k] === null && t - cuesAt[k].t > GOOD) { hit[k] = 'miss'; c.classList.add('miss'); } });
+      cues.forEach((c, k) => { const x = (cuesAt[k].t - t) / span; c.style.left = `${15 + x * 85}%`; c.style.display = x < -0.2 || x > 1.05 ? 'none' : ''; if (hit[k] === null && t - (voice ? MIC.LAG : 0) - cuesAt[k].t > GOOD) { hit[k] = 'miss'; c.classList.add('miss'); } });
       if (t >= win.end - 1.2 && audio.volume > 0) audio.volume = Math.max(0, audio.volume - 0.03);   // fade out
       if (audio.ended || t >= win.end) return finish(hit, cuesAt.length);
       raf = requestAnimationFrame(tick);
     };
     panel.replaceChildren(h('div', { class: 'm-head' }, h('h2', {}, song.title), stopBtn),
-      h('div', { class: 'm-scroll kara' }, stage, prev, cur, next, lane, feedback, h('div', { class: 'center' }, btn), scoreEl));
+      h('div', { class: 'm-scroll kara' }, stage, prev, cur, next, lane, voice ? meter : null, feedback, h('div', { class: 'center' }, btn), scoreEl));
     score();
-    audio = new Audio(`assets/karaoke/${song.id}.mp3`);
+    audio = given || new Audio(`assets/karaoke/${song.id}.mp3`);
+    audio.muted = false;
     audio.volume = state.data.settings.sound ? 0.8 : 0;
     audio.currentTime = win.start;
     audio.addEventListener('loadedmetadata', () => { if (audio && audio.currentTime < win.start - 0.5) audio.currentTime = win.start; }, { once: true });
-    audio.play().catch(() => { feedback.textContent = 'Tap Sing! to start the music.'; });
-    action = press;
+    audio.play().catch(() => { feedback.textContent = voice ? 'Tap to start the music.' : 'Tap Sing! to start the music.'; if (voice) btn.style.display = ''; });
+    action = voice ? resume : () => press();
     tick();
   };
 
@@ -124,9 +178,7 @@ export function openKaraoke(panel, close, { done, intro }) {
     cancelAnimationFrame(raf);
     hit.forEach((v, i) => { if (v === null) hit[i] = 'miss'; });
     const t = audio.currentTime; stop();
-    const els = hit.filter(x => x === 'perfect').length * 2 + hit.filter(x => x === 'good').length;
-    const pct = total ? Math.round(els / (total * 2) * 100) : 0;
-    const stars = pct >= 80 ? 3 : pct >= 50 ? 2 : pct >= 20 ? 1 : 0;
+    const { pct, stars } = scoreOf(hit, total);
     result = { pct, stars, seconds: t };
     (stars >= 2 ? sfx.found : sfx.blip)();
     const go = h('button', { class: 'wood-btn', onclick: close }, 'Hand back the mic');

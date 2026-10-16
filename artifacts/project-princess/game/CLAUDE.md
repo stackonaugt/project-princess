@@ -60,6 +60,14 @@
   `MATERIAL_ALTS` (data/crafting.js) lets new stock stand in, scrap used first.
   Homemade presents (birdhouse, planter box, wine rack, tote bag, cushion, toy
   tram) carry `lovedBy`/`likedBy`, merged into tastes in data/friends.js.
+- **House finds** (`data/house-finds.js`, `systems/house-finds.js`): seven
+  once-per-save presents in the house and yard, each under a pulsing gold star
+  (`HOUSE_FINDS`: zone, tile, item, lines; taken ids in `state.data.houseFinds`).
+  New presents (rose cutting, teacup, wattle, Paddy's IOU to Jack, socket set)
+  carry `lovedBy`/`likedBy`. A To Do note ("Look around the house") nudges new
+  players. Gordon is Marty's trainer, so like any unbeaten trainer he only
+  takes gifts after the gentle Marty match; Trish takes them straight away.
+  Checks: `tools/house-finds.test.mjs`.
 - Type matchups (`state.data.matchups`) record every type tried; the move menu
   shows Strong or Weak only after a matchup is tried (`knownEffect`), a toast
   says when the Petdex learns one, and the Petdex has a Matchups tab.
@@ -139,9 +147,16 @@
   Mitchell St is at x12-16 now, so its `south` entry is 14,23). A solid entry
   falls back to the nearest open tile; Settings > Unstick me
   (`game:unstick`, `WorldScene.unstick`) hops to an open tile with a way out.
-- Battle backgrounds: fighters stand on the art's pads (`BG_ANCHORS` in
-  BattleScene, the template layout); the crop slides to keep both in view and
-  a narrow phone keeps them on screen at the art's ground height.
+- Battle backgrounds come in two shapes (`src/systems/battle-backdrop.js`,
+  `BG_TEMPLATES`): desktop `<name>.png` 320x180 and phone `<name>-phone.png`
+  192x320 (night: `-night`, `-night-phone`). A portrait field (`isPhoneField`)
+  prefers the phone file, then falls back to the other shape. `fitBackdrop`
+  covers the field bottom aligned, puts the feet exactly on the template
+  anchors and sizes the fighters to the art (`unit` from `pet`); if covering
+  would push a pad off screen it shrinks the art and BattleScene stretches the
+  edge pixels into the gap. No art: the drawn scenery is unchanged. Guides and
+  starters: `tools/export-battle-backgrounds.mjs` (keeps existing starters
+  unless `--force`); tests in `tools/backgrounds.test.mjs`.
 - Yard: the trampoline's Studio spot (overrides.json) is now 8,3, off the veggie
   beds; the toolbox and saw horse sit by the junk pile (28,8 / 27,9).
   Council noticeboard faces use `npcHead()` (top square of the sprite).
@@ -155,6 +170,14 @@
   rescues a party). A loss makes Bentleigh mayor (`ELECTION_LOST`). The Throw
   the party button sits under its To Do job. Karaoke and the party's karaoke
   play about a minute (`songWindow`, `SONG_SECONDS` in ui/karaoke.js).
+- **Karaoke mic mode**: before each song (park and party) pick Tap along or
+  Sing with the mic; the choice is `settings.karaokeMic` (also a Settings
+  toggle). Mic mode (`systems/karaoke-mic.js`) asks for the mic from the tap,
+  calibrates a quiet second in the song's intro, then counts word onsets
+  (rise over the threshold, or dip-and-rise) judged by the same `judgeAt` and
+  `scoreOf` as taps, so rewards are unchanged. Any failure (denied, no mic,
+  http on a LAN IP) falls back to tapping and turns the setting off. Mic tracks
+  stop on finish, Stop and Close. Tests: `tools/karaoke-mic.test.mjs`.
 - Pet school classes (`CLASS_LEVELS`, `difficulty()` in systems/training.js):
   six clean runs per class, five classes. Each makes the lesson harder and the
   pet quicker; from Advanced the pet no longer waits at a hurdle. Toys, the
@@ -176,6 +199,13 @@
 - **Event pop-ups** (`data/events.js` registry, `systems/event-prompts.js`):
   council, bake off, dog show, bowls comp and fishing comp offer Go now / Not
   now once per event per day, only once `known(data)`. Add more with `registerEvent`.
+- **The words file** `game/words.js` holds every line of dialogue and story
+  text (PEOPLE, PET_TEXT, PLACES and the story.js tables, `WORD_TABLES` in
+  `src/authoring/words-file.js`) as `key = text` under `[TABLE.id]` headings,
+  so the owner can search and edit it on GitHub. `authoredValue()` applies it
+  last, so it wins over the data files and Studio text. Edit wording there, not
+  in the data files. After adding new text in code run `node game/tools/words.mjs`
+  (it keeps edits); `tools/words.test.mjs` fails while it is out of date.
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.

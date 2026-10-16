@@ -172,6 +172,8 @@ export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift 
 Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston
 import { CRAFT_ITEMS } from './crafting.js';
 Object.assign(ITEMS,CRAFT_ITEMS);
+import { HOUSE_ITEMS } from './house-finds.js';
+Object.assign(ITEMS, HOUSE_ITEMS);   // things found around the house and yard (data/house-finds.js)
 import { FISHING_ITEMS } from './fishing.js';
 Object.assign(ITEMS, FISHING_ITEMS);   // fish, junk and the fishing comp's prizes (data/fishing.js)
 Object.assign(ITEMS, {

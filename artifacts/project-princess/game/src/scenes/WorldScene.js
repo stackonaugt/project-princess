@@ -2,6 +2,7 @@ import { addTutorial,completeTutorial } from '../systems/todo.js';
 import { grassIcon } from '../ui/images.js';
 import { paintYardCourse,startYardCourse,yardTier } from '../systems/yard-course.js';
 import { beginMartyCare, martyApproach } from '../systems/pet-care.js';
+import { buildHouseFinds, takeHouseFind } from '../systems/house-finds.js';
 import { CRAFT_RECIPES } from '../data/crafting.js';
 import { craft,craftReason,materialCount,materialName } from '../systems/crafting.js';
 import { COMPETITORS,SHOW_DOGS,DIVISIONS,SHOW_DAY,showOpen } from '../data/dog-show.js';
@@ -125,6 +126,7 @@ export class WorldScene extends Phaser.Scene {
     this.buildDecor();
     this.buildExitMarkers();
     this.buildForage();
+    this.houseFinds = buildHouseFinds(this);   // once-per-save presents around the house (data/house-finds.js)
     this.buildPlots();
     this.yardCourse = this.regionId === 'yard' ? paintYardCourse(this) : null;
     paintBakeOff(this);
@@ -698,6 +700,7 @@ export class WorldScene extends Phaser.Scene {
       ...this.npcs.filter(n => !n.gone).map(n => ({ kind: 'npc', ref: n, x: n.x, y: n.y - 4, r: n.spot.counter ? 30 : 16 })),   // shopkeepers reach across the counter
       ...this.crowd.candidates(),
       ...this.forage,
+      ...(this.houseFinds || []),
       ...this.interactables,
     ];
   }
@@ -776,6 +779,7 @@ export class WorldScene extends Phaser.Scene {
     if (['bakeprep', 'bakeoven', 'bakedecor', 'bakejudge'].includes(t.kind)) return bakeStation(this, t.kind);
     if (t.kind === 'npc') return this.talkToNpc(t.ref);
     if (t.kind === 'item') return this.pickUp(t);
+    if (t.kind === 'housefind') return takeHouseFind(this, t);
     if (t.kind === 'travel') return this.travel();
     if (t.kind === 'tram') return this.tram();
     if (t.kind === 'seat') return this.sitDown(t);
@@ -1169,6 +1173,25 @@ export class WorldScene extends Phaser.Scene {
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
     if(npc.id.startsWith('show'))return this.showCompetitor(npc,opts);
+    // Before the Marty match, Trish and Gordon still take a present (the house finds are for them).
+    if ((npc.id === 'trish' || npc.id === 'gordon') && !state.isFound('marty')) {
+      const f0 = state.friend(npc.id), gifts = state.bagItems().filter(id => !ITEMS[id].story && !ITEMS[id].deco);
+      // Only once you carry a real present (not just pet treats), so the Marty intro is unchanged for everyone else.
+      if (f0.giftedDay !== day && gifts.some(id => ITEMS[id].gift || ITEMS[id].drink || ITEMS[id].book)) {
+        const pick = await ui.say({ text: `${info.name} waves you over.`, choices: [
+          { label: 'Give a gift', value: 'gift' }, { label: 'Meet Marty', value: 'marty' }, { label: 'Just saying hi', value: null }] }, { ...opts, cancelValue: null });
+        if (!pick) return;
+        if (pick === 'gift') {
+          if (!f0.met) { f0.met = true; bus.emit('friends:changed'); }
+          const choice = await ui.say({
+            text: `Give ${info.name} a gift?`,
+            choices: [...gifts.map(id => ({ label: ITEMS[id].name, value: id, icon: itemIcon(id, 32), note: `×${state.count(id)}` })), { label: 'Not today', value: null }],
+          }, { ...opts, cancelValue: null });
+          if (choice) await this.giveFriendGift(npc, choice, opts);
+          return;
+        }
+      }
+    }
     if (npc.id === 'trish' && !state.isFound('marty')) {
       const gordon = this.npcs.find(n => n.id === 'gordon' && !n.gone);
       if (gordon) return this.challenge(gordon, TRAINERS.gordon, { name: 'Trish and Gordon', portrait: npcIcon('trish') });
