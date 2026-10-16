@@ -6,11 +6,14 @@ import { TRAINERS } from '../game/src/data/enemies.js';
 import { BakingSession, DECO_TIME } from '../game/src/systems/baking.js';
 import { listSprites } from '../game/tools/build-manifest.mjs';
 import { keyForPath } from '../game/src/art/textures.js';
+import { readdirSync } from 'node:fs';
 
 test('supplied enemy and battle background PNGs reach the sprite manifest', () => {
   const files = listSprites();
   assert.ok(files.some(f => f.startsWith('enemies/')), 'enemies/ must be listed');
-  assert.ok(files.includes('backgrounds/laverton.png'), 'backgrounds/ must be listed');
+  // Every supplied battle background is listed (the owner swaps these in and out).
+  const bgs = readdirSync(new URL('../game/assets/sprites/backgrounds/', import.meta.url)).filter(f => f.endsWith('.png'));
+  for (const f of bgs) assert.ok(files.includes(`backgrounds/${f}`), `backgrounds/${f} must be listed`);
   assert.ok(!files.some(f => f.includes('templates/')), 'templates stay out of the manifest');
   assert.equal(keyForPath('enemies/boy.png'), 'foe-boy');
   assert.equal(keyForPath('backgrounds/laverton.png'), 'battlebg-laverton');

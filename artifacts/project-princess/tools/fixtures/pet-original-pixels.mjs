@@ -4,7 +4,7 @@ export const PET_ORIGINAL_PIXELS = {
   'pets/chloe.png': [32, 'aee8a07e31b6f3e142981eb2ba5dac26d42e71739aefdaa354a7d961731d2e6a'],
   'pets/emilio.png': [32, '492c88b8242e751fb7984bb9b4867875b30db339bbfcd09a01b8d7018e0cb21d'],
   'pets/poppy-evolution.png': [32, '4933663b518198601489dd5458fcc90384efe1a6371b3308b66667e0c3319fb1'],
-  'pets/poppy.png': [32, 'b597270c6d2443463aa1a79502ef5d759edcfffeae3cd95d17a4b30ed3df81aa'],
+  'pets/poppy.png': [32, '86c88094cad0fd8469f388855de38a5bdcf5d27b9bdf5a7129661f90a34e7481'],   // the owner's redrawn Poppy (2026-10)
   'pets/princess-evolution.png': [48, '3c7f35d0443074b57223030205fb16c5efe2c4ce89093bcf5f041c309d4f1cf9'],
   'pets/princess.png': [48, 'daf626e50f9a748841f720d61361a0509b08765f09a8cea00129117f789353ec'],
   'pets/rusty.png': [32, '307634b371d0d9a1ef5dbc9de62fac2f88b8fccda7654b40d76786b8797d9301'],
