@@ -67,6 +67,8 @@ import { LocalRouter, AutoWalk } from '../world/navigation.js';
 import { state } from '../systems/state.js';
 import { binManReady, trainingStarted } from '../systems/progression-gates.js';
 import { levelOf, CLASS_LEVELS } from '../systems/training.js';
+import { specialFor, LESSON_TITLES, LESSON_HELP } from '../systems/school-lessons.js';
+import { runSchoolLesson } from '../systems/school-runner.js';
 import { startHallEvent, judgeHallEvent } from '../systems/hall-events.js';
 import { recordHallScorecard } from '../systems/show-scorecards.js';
 import { startWorldSparring } from '../systems/world-sparring.js';
@@ -138,7 +140,7 @@ export class WorldScene extends Phaser.Scene {
     this.arrivedAt = this.time.now;
     this.navigation = new AutoWalk(new LocalRouter(this.map, T), this.player, text => ui.toast(text));
     this.player.setCollideWorldBounds(true);
-    this.physics.add.collider(this.player, this.layer);
+    this.layerCollider = this.physics.add.collider(this.player, this.layer);
     // Chapter 3: both boys are out together, the other one tags along.
     this.sibling = null;
     if (this.twinsTogether()) this.sibling = new Sibling(this, spawn.x + 10, spawn.y + 2, state.data.hero === 'hadrian' ? 'aleksy' : 'hadrian');
@@ -1026,12 +1028,30 @@ export class WorldScene extends Phaser.Scene {
     addTutorial('school', 'Pet school practice', 'Choose a lesson, guide your pet with movement and cues, and aim for clean runs. Successful daily lessons award pet XP and handling XP; extra same-day practice stays available.');
     const practice = school.lessonDay[id] === day;
     if (practice && !await ui.say({ text: `${form(id).name} has earned today’s lesson reward. Have another practice without extra XP?`, choices: [{label:'Practise again',value:true},{label:'Later',value:false}] }, opts)) return;
-    const hero = state.data.hero || 'helen';
-    const result = await ui.training({ id, name: form(id).name, behaviour: pet.data_.behaviour, species: pet.data_.species, day, hero, heroName: HEROES[hero]?.name || 'Helen', skills: school.skills?.[id] || {}, practice });
+    const hero = state.data.hero || 'helen', skills = school.skills?.[id] || {};
+    // Two lessons in the world (lead the course, and one built on the pet's
+    // personality: systems/school-lessons.js), plus Find the toy on a board.
+    const special = specialFor(id, pet.data_.behaviour);
+    const classOf = drill => CLASS_LEVELS[levelOf(skills, drill)];
+    const pick = await ui.say({ text: `Which lesson for ${form(id).name}?`, choices: [
+      { label: LESSON_TITLES.course, value: 'course', note: classOf('course') },
+      { label: LESSON_TITLES[special], value: 'special', note: classOf('special') },
+      { label: 'Find the toy', value: 'scent', note: classOf('scent') },
+      { label: 'Not now', value: null }] }, { ...opts, cancelValue: null });
+    if (!pick) return;
+    let result;
+    if (pick === 'scent') result = await ui.training({ id, name: form(id).name, behaviour: pet.data_.behaviour, species: pet.data_.species, day, hero, heroName: HEROES[hero]?.name || 'Helen', skills, practice, activity: 'scent' });
+    else {
+      const kind = pick === 'course' ? 'course' : special;
+      await ui.say([LESSON_HELP[kind].replace(/NAME/g, form(id).name)], opts);
+      const run = await runSchoolLesson(this, { pet: id, kind, level: levelOf(skills, pick) });
+      if (run?.noRoom) return ui.say([`Not enough room for a lesson here. Try the backyard, or a big open bit of a park.`], opts);
+      result = run && { ...run, drill: pick, title: LESSON_TITLES[kind] };
+    }
     if (!result) return;
     state.data.flags.trainingStarted = true;
     if (result.score > 0) completeTutorial('school');
-    if (practice) return ui.say([`${form(id).name} finished another ${result.title.toLowerCase()} practice. Come back tomorrow for a new daily reward and lesson choices.`],opts);
+    if (practice) return ui.say([`${form(id).name} finished another ${result.title.toLowerCase()} practice. Come back tomorrow for another lesson reward.`],opts);
     school.lessonDay[id] = day;
     const xp = Math.round(trainingXp(result.score)*(state.count('trainingvest')?1.1:1));
     awardSkill('handling',10+result.score*15);
@@ -1046,7 +1066,7 @@ export class WorldScene extends Phaser.Scene {
     if (promoted.length) sfx.found();
     state.addPoints(id, 2 + result.score * 2);
     this.save();
-    await ui.say([`${form(id).name} practised ${result.title.toLowerCase()}: ${result.score}/3 clean runs and ${xp} training XP.`, ...promoted, `Gold stars: ${school.stamps[id] || 0}. Extra practice is always available; tomorrow brings new lesson choices.`], opts);
+    await ui.say([`${form(id).name} practised ${result.title.toLowerCase()}: ${result.score}/3 and ${xp} training XP.`, ...promoted, `Gold stars: ${school.stamps[id] || 0}. Extra practice is always free; the XP comes once a day.`], opts);
     if (canEvolve(id)) await this.evolveInWorld(pet);
   }
 
@@ -1636,7 +1656,7 @@ export class WorldScene extends Phaser.Scene {
 
   // Tall grass: a chance of something jumping out each new tile you step on.
   checkEncounter() {
-    if (this.region.home || this.inBattle) return;
+    if (this.region.home || this.inBattle || ui.activity) return;   // no ambushes mid-lesson or mid-ring
     const tx = Math.floor(this.player.x / T), ty = Math.floor((this.player.y - 2) / T), key = tx + ',' + ty;
     if (key === this.lastTile) return;
     this.lastTile = key;

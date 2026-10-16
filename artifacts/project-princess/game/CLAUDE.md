@@ -186,6 +186,20 @@
   `scoreOf` as taps, so rewards are unchanged. Any failure (denied, no mic,
   http on a LAN IP) falls back to tapping and turns the setting off. Mic tracks
   stop on finish, Stop and Close. Tests: `tools/karaoke-mic.test.mjs`.
+- **Pet school lessons** (Seb found the meter games dull): the School lesson menu
+  offers Lead the course, the pet's own special lesson and Find the toy (the
+  board game). The first two run in the world wherever there is room
+  (`findLessonArea`, a few pot plants are fine, no water or exits), with no
+  buttons: you move, the pet responds. Rules in `systems/school-lessons.js`
+  (pure, tested in `tools/school-lessons.test.mjs`), drawing and input in
+  `systems/school-runner.js`. Course: the pet follows your path, hurdles need a
+  run-up (running), the weave needs a zigzag, the tunnel is solid so you wait
+  at the far end. Specials (`SPECIALS`): lookaway (Stanley, Ziggy: comes only
+  while you stand still with your back turned), charge (Poppy, Rusty: charges
+  when you stop; flags and bins), herd (Chloe, Girlie, Marty: chooks into the
+  pen), seek (Spooky, Salami, Princess, Emilio: watch for the rustling bush).
+  Class levels use the same skill points (`course`, `special`, `scent`). The
+  old meter drills stay in training.js but are no longer offered.
 - Pet school classes (`CLASS_LEVELS`, `difficulty()` in systems/training.js):
   six clean runs per class, five classes. Each makes the lesson harder and the
   pet quicker; from Advanced the pet no longer waits at a hurdle. Toys, the
