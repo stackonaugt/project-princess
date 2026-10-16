@@ -10,7 +10,7 @@ import { TILE as T } from '../config.js';
 const found = () => state.data.houseFinds || (state.data.houseFinds = []);
 export const houseFindsLeft = (zone = null) => HOUSE_FINDS.filter(f => (!zone || f.zone === zone) && !found().includes(f.id));
 
-// A 7x7 four-point star, gold with a white heart and a dark rim so it shows on pale furniture.
+// A 7x7 four-point star (fallback for a find with no item icon).
 const STAR = ['...k...', '..kyk..', '.kywyk.', 'kywwwyk', '.kywyk.', '..kyk..', '...k...'];
 function starTexture(scene) {
   const key = 'fx-housefind';
@@ -28,10 +28,13 @@ export function buildHouseFinds(scene) {
     addTutorial(HOUSE_FIND_NUDGE.id, HOUSE_FIND_NUDGE.title, HOUSE_FIND_NUDGE.text);
   return left.map(f => {
     const x = (f.x + 0.5) * T, y = (f.y + 0.5) * T, top = (f.y + 1) * T + 2;   // above the furniture it sits on (depth = footprint bottom)
-    // A little gold twinkle that pulses over the spot.
-    const star = scene.add.image(x, y - 6, starTexture(scene)).setDepth(top).setScale(1.4).setAlpha(0.3);
-    scene.tweens.add({ targets: star, alpha: 1, scale: 2, duration: 700, yoyo: true, repeat: -1, repeatDelay: 500, ease: 'Sine.easeInOut', delay: (f.x * 7 + f.y * 13) % 700 });
-    const sprites = [star];
+    // The thing itself, floating and bobbing over its shadow (a twinkle if it has no icon).
+    const key = scene.textures.exists(`item-${f.item}`) ? `item-${f.item}` : starTexture(scene);
+    const shadow = scene.add.ellipse(x, y + 4, 10, 4, 0x000000, 0.25).setDepth(top - 1);
+    const thing = scene.add.image(x, y - 6, key).setDepth(top);
+    scene.tweens.add({ targets: thing, y: y - 10, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: (f.x * 7 + f.y * 13) % 900 });
+    scene.tweens.add({ targets: shadow, scaleX: 0.7, alpha: 0.15, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: (f.x * 7 + f.y * 13) % 900 });
+    const sprites = [thing, shadow];
     return { kind: 'housefind', find: f, x, y: y - 2, r: 18, sprites, bubble: 'fx-bubble-alert' };
   });
 }

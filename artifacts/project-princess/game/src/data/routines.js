@@ -88,6 +88,10 @@ ROUTINES.shannon = d => (d.minutes >= 9 * 60 && d.minutes < 20 * 60 ? 'shop' : n
 // Tim and Nicholas walk Stanley round Edwardes Lake every evening.
 ROUTINES.tim = ROUTINES.nicholas = d => (d.minutes >= 17 * 60 + 30 && d.minutes < 19 * 60 ? 'lake' : 'glasgow');
 
+// The twins: in their room at home, except the one you are playing as (and
+// both, while they are out together in Chapter 3).
+for (const id of ['hadrian', 'aleksy']) ROUTINES[id] = d => (d.hero === id || (ch(d, 3) && d.hero !== 'helen') ? null : 'room');
+
 // Is this person at this place right now? People without a routine always are.
 export function isAt(id, place, d) {
   if (!place) return true;

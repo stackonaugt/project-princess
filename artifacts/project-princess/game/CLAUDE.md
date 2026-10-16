@@ -61,13 +61,21 @@
   Homemade presents (birdhouse, planter box, wine rack, tote bag, cushion, toy
   tram) carry `lovedBy`/`likedBy`, merged into tastes in data/friends.js.
 - **House finds** (`data/house-finds.js`, `systems/house-finds.js`): seven
-  once-per-save presents in the house and yard, each under a pulsing gold star
-  (`HOUSE_FINDS`: zone, tile, item, lines; taken ids in `state.data.houseFinds`).
+  once-per-save presents in the house and yard, each floating and bobbing over
+  its spot (`HOUSE_FINDS`: zone, tile, item, lines; taken ids in `state.data.houseFinds`).
   New presents (rose cutting, teacup, wattle, Paddy's IOU to Jack, socket set)
-  carry `lovedBy`/`likedBy`. A To Do note ("Look around the house") nudges new
+  carry `lovedBy`/`likedBy`. Trish and Gordon only *like* the finds: their
+  favourites stay for requests later. A To Do note ("Look around the house") nudges new
   players. Gordon is Marty's trainer, so like any unbeaten trainer he only
   takes gifts after the gentle Marty match; Trish takes them straight away.
   Checks: `tools/house-finds.test.mjs`.
+- Treats go only to pets on the team (and unbefriended pets you are winning
+  round); the Bag lists the team (`phoneTreatPets` in systems/pet-care.js,
+  plus Marty during his phone-care lesson). The Petdex shows the team at the top.
+- The twins are NPCs `hadrian`/`aleksy` in their room at home whenever you are
+  not playing as them (`ROUTINES` in data/routines.js, place `room`).
+- At water in a duck zone you always get Feed the ducks / Go fishing / Not now.
+  Bazza has a Fishing tips option (`PEOPLE.bazza.tips`, `bazzaTip()`).
 - Type matchups (`state.data.matchups`) record every type tried; the move menu
   shows Strong or Weak only after a matchup is tried (`knownEffect`), a toast
   says when the Petdex learns one, and the Petdex has a Matchups tab.
@@ -178,6 +186,20 @@
   `scoreOf` as taps, so rewards are unchanged. Any failure (denied, no mic,
   http on a LAN IP) falls back to tapping and turns the setting off. Mic tracks
   stop on finish, Stop and Close. Tests: `tools/karaoke-mic.test.mjs`.
+- **Pet school lessons** (Seb found the meter games dull): the School lesson menu
+  offers Lead the course, the pet's own special lesson and Find the toy (the
+  board game). The first two run in the world wherever there is room
+  (`findLessonArea`, a few pot plants are fine, no water or exits), with no
+  buttons: you move, the pet responds. Rules in `systems/school-lessons.js`
+  (pure, tested in `tools/school-lessons.test.mjs`), drawing and input in
+  `systems/school-runner.js`. Course: the pet follows your path, hurdles need a
+  run-up (running), the weave needs a zigzag, the tunnel is solid so you wait
+  at the far end. Specials (`SPECIALS`): lookaway (Stanley, Ziggy: comes only
+  while you stand still with your back turned), charge (Poppy, Rusty: charges
+  when you stop; flags and bins), herd (Chloe, Girlie, Marty: chooks into the
+  pen), seek (Spooky, Salami, Princess, Emilio: watch for the rustling bush).
+  Class levels use the same skill points (`course`, `special`, `scent`). The
+  old meter drills stay in training.js but are no longer offered.
 - Pet school classes (`CLASS_LEVELS`, `difficulty()` in systems/training.js):
   six clean runs per class, five classes. Each makes the lesson harder and the
   pet quicker; from Advanced the pet no longer waits at a hurdle. Toys, the

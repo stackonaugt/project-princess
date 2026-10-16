@@ -61,8 +61,11 @@ test('every find is loved or liked by someone the player meets early', () => {
     const who = EARLY.filter(p => friendInfo(p).loves.includes(f.item) || friendInfo(p).likes.includes(f.item));
     assert.ok(who.length, `${f.item} suits someone early`);
   }
-  // Gordon and Trish each have at least one find they love.
-  for (const p of ['gordon', 'trish']) assert.ok(HOUSE_FINDS.some(f => friendInfo(p).loves.includes(f.item)), `${p} has a find they love`);
+  // Gordon and Trish each like a find, but none is a favourite (those stay for requests).
+  for (const p of ['gordon', 'trish']) {
+    assert.ok(HOUSE_FINDS.some(f => friendInfo(p).likes.includes(f.item)), `${p} has a find they like`);
+    assert.ok(!HOUSE_FINDS.some(f => friendInfo(p).loves.includes(f.item)), `no find is ${p}'s favourite`);
+  }
 });
 
 test('spots are reachable and do not wall anything off (default and upgraded house)', () => {
@@ -79,7 +82,7 @@ test('each spot is found once per save and survives a reload', async () => {
   state.data.houseFinds = []; state.data.inventory = {};
   const tw = { add() {}, killTweensOf() {} };
   const sprite = () => { const s = { setDepth: () => s, setScale: () => s, setAlpha: () => s, setTint: () => s, setAngle: () => s, destroy() {} }; return s; };
-  const scene = { regionId: 'yard', add: { image: sprite }, tweens: tw, textures: { exists: () => true } };
+  const scene = { regionId: 'yard', add: { image: sprite, ellipse: sprite }, tweens: tw, textures: { exists: () => true } };
   const spots = buildHouseFinds(scene);
   assert.equal(spots.length, HOUSE_FINDS.filter(f => f.zone === 'yard').length);
   scene.houseFinds = spots;

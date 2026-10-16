@@ -5,6 +5,7 @@ export default String.raw`
 # Search with Ctrl+F (or Cmd+F). Change the text after " = " and save (commit) the file.
 # Leave the part before " = " and the [headings] alone: they say where each line goes.
 # Lists count from 1. Type \n for a line break inside one piece of text.
+# To add a line, copy the last one and give it the next number (lines.6.1 after lines.5.1).
 # Australian spelling, no em dashes, keep lines short (under about 140 characters).
 
 [PEOPLE.trish]  # Trish
@@ -488,12 +489,38 @@ lines.6.1 = Fun fact: in 1975 the Governor-General sacked the Prime Minister. No
 lines.7.1 = Welcome to Brunswick Bound! Classics up the back, new releases on the tables, picture books at toddler height.
 lines.8.1 = Buying a present? Monkey Grip for a Melbourne person. Cloudstreet for a crier. Fourth Wing for anyone who likes dragons.
 
+[PEOPLE.hadrian]  # Hadrian
+role = One of the twins. Has never once walked when he could run
+lines.1.1 = Hadrian runs a lap of the room, bonks gently into the cot, and does it again.
+lines.2.1 = Hadrian holds up a block. "Twain!" It is a train. Obviously.
+lines.3.1 = Hadrian points at the window. "Doggy!" There is no dog. He is very sure.
+lines.4.1 = Hadrian hands you a soggy rusk. It is a gift. You must accept it.
+
+[PEOPLE.aleksy]  # Aleksy
+role = The other twin. Will find a snack anywhere
+lines.1.1 = Aleksy is under the cot. He has found a sultana. Nobody knows how long it was there.
+lines.2.1 = Aleksy pats your pocket. "Snack?" He knows. He always knows.
+lines.3.1 = Aleksy is reading a picture book upside down, very seriously.
+lines.4.1 = Aleksy gives you a big hug, then checks your hands for biscuits.
+
 [PEOPLE.bazza]  # Bazza
 role = Runs the Anaconda in Preston. Fishing nut
 lines.1.1 = G'day! Hike, bike, camp, fish, kayak. Mostly fish, if you ask me.
 lines.2.1 = Get yourself a rod. Edwardes Lake has redfin. Edgars Creek has yabbies. Kororoit Creek has... a lot of old boots.
 lines.3.1 = Bait helps. Worms. The fish don't care about your feelings, they care about worms.
 lines.4.1 = Eels have been in Melbourne creeks longer than Melbourne has. Show some respect.
+tips.rod = First things first: a rod. Then face the water at a lake or creek and press A. Simple as.
+tips.bait = No bait, no fish. One tub per cast, caught or not. Stock up, they are cheap as chips.
+tips.rod2 = You are fishing well enough for the carbon rod now. The big trout snap the cheap ones.
+tips.rod3 = Level five? Mate. The Pro rod is yours if you want it. Murray cod country.
+tips.ross = Land a brown trout or a bass and show Ross Millward at Coburg Lake. He runs a comp on Sundays.
+tips.general.1 = When the fish bolts out of the green, tap to pull it back. Tap like mad and the line snaps.
+tips.general.2 = Keep it in the zone and keep pulling. The landing bar only fills while it sits in the green.
+tips.general.3 = Each spot gives up about four fish a day. Then it is fished out. Try another creek.
+tips.general.4 = Edwardes Lake for redfin, Edgars Creek for yabbies, Coburg Lake for trout. Kororoit Creek for boots.
+tips.general.5 = Every fish you land makes you a better angler. Bigger fish, more practice.
+tips.general.6 = Spiro on Kororoit Creek Rd pays half again for fish. James only pays half what they cost.
+tips.general.7 = A fish too big for your rod will bite, then snap the line. Better rod, better fish.
 
 [PEOPLE.sam]  # Sam
 role = Runs Plenty Road Convenience, Preston. Smokes, American confectionary, vapes

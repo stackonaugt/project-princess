@@ -43,7 +43,8 @@ export function parseWords(text) {
   return out;
 }
 
-// Copy-on-write: replace the text at each path (only where text already is).
+// Copy-on-write: replace the text at each path (only where text already is),
+// or add it at the end of a list.
 export function applyWords(value, entries) {
   if (!entries?.length) return value;
   const root = Array.isArray(value) ? [...value] : { ...value };
@@ -51,13 +52,18 @@ export function applyWords(value, entries) {
     // In a list the file counts from 1; keys of a table stay as written.
     const at = (n, k) => Array.isArray(n) && /^\d+$/.test(k) ? Number(k) - 1 : k;
     let node = root, ok = true;
+    // The next number after the end of a list adds a new entry (a new chat
+    // line, or another sentence in one); numbers further on are ignored.
+    const adds = (n, k) => Array.isArray(n) && k === n.length && n.every(v => typeof v !== 'object' || Array.isArray(v));
     for (let i = 0; i < path.length - 1; i++) {
-      const k = at(node, path[i]), next = node?.[k];
+      const k = at(node, path[i]);
+      let next = node?.[k];
+      if (next === undefined && adds(node, k) && /^\d+$/.test(path[i + 1]) && (!node.length || Array.isArray(node[0]))) next = [];
       if (!next || typeof next !== 'object') { ok = false; break; }
       node = node[k] = Array.isArray(next) ? [...next] : { ...next };
     }
     const last = at(node, path[path.length - 1]);
-    if (ok && isWords(node?.[last])) node[last] = text;
+    if (ok && (isWords(node?.[last]) || (adds(node, last) && node.every(v => typeof v === 'string')))) node[last] = text;
   }
   return root;
 }
@@ -69,6 +75,7 @@ export function writeWords(tables, names = {}) {
     '# Search with Ctrl+F (or Cmd+F). Change the text after " = " and save (commit) the file.',
     '# Leave the part before " = " and the [headings] alone: they say where each line goes.',
     '# Lists count from 1. Type \\n for a line break inside one piece of text.',
+    '# To add a line, copy the last one and give it the next number (lines.6.1 after lines.5.1).',
     '# Australian spelling, no em dashes, keep lines short (under about 140 characters).',
     '',
   ];

@@ -135,7 +135,11 @@ export function openShop(panel, close, shopId = 'petshop') {
       }),
       h('button', { class: 'wood-btn small', onclick: () => { plantFor = null; sfx.select(); render(); } }, 'Not now'));
   };
+  let shownTab = null;
   const render = () => {
+    // Buying re-draws the list: keep it where it was so you can buy lots.
+    const same = shownTab === tabFor[shopId], scroll = same ? panel.querySelector('.m-scroll')?.scrollTop || 0 : 0, outer = same ? panel.scrollTop : 0;
+    shownTab = tabFor[shopId];
     const tab = tabFor[shopId], rows = tab === 'sell' || tab === 'fish' ? rowsForRest(tab) : rowsFor(tab);
     panel.replaceChildren(...[
       h('div', { class: 'm-head' }, h('h2', {}, shop.name), h('button', { class: 'wood-btn small', onclick: close }, 'Done')),
@@ -165,6 +169,9 @@ export function openShop(panel, close, shopId = 'petshop') {
           r.owned ? h('span', { class: 'meta' }, r.ownedLabel || 'Done ✓') : r.locked ? h('span', { class: 'meta' }, `🔒 ${r.locked}`)
             : h('button', { class: 'wood-btn small', disabled: !r.sell && !r.free && state.data.money < r.price, onclick: r.act }, r.btnLabel || (r.sell ? `Sell $${r.price}` : `$${r.price}`)))),
         msg)].filter(Boolean));
+    const list = panel.querySelector('.m-scroll');
+    if (list) list.scrollTop = scroll;
+    panel.scrollTop = outer;
   };
   render();
 }

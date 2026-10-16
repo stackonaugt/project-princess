@@ -60,7 +60,7 @@ function renderList(panel, close) {
     h('div', { class: 'dex-sum' },
       h('div', { class: 'bar' }, h('span', { style: { width: pct + '%' } })),
       h('p', {}, found === total ? `All ${total} pets found. Absolute legend.` : `${found} of ${total} pets found · ${totalHearts} hearts earned`)),
-    tabs, h('div', { class: 'm-scroll' }, tab === 'matchups' ? matchupsNote() : grid));
+    teamStrip(panel, close), tabs, h('div', { class: 'm-scroll' }, tab === 'matchups' ? matchupsNote() : grid));
 }
 
 // Every strong and weak matchup you have tried in battle, by attacking type.
@@ -77,6 +77,19 @@ function matchupsNote() {
   }).filter(Boolean);
   return h('div', {}, h('p', { class: 'small center' }, 'Matchups you have found in battle. Try a move on a new type to learn more.'),
     ...(rows.length ? rows : [h('p', { class: 'center' }, 'Nothing yet. A move that is super effective (or barely tickles) gets written down here.')]));
+}
+
+// Your team: the (up to) three pets out with you, with their energy.
+function teamStrip(panel, close) {
+  const slots = [0, 1, 2].map(i => {
+    const id = state.data.party[i], p = id && PETS.find(q => q.id === id);
+    if (!p) return h('div', { class: 'team-slot empty' }, h('span', { class: 'meta' }, 'Empty'));
+    const f = petFighter(id);
+    return h('button', { class: 'team-slot', onclick: () => { sfx.select(); renderDetail(panel, close, p); } },
+      h('img', { class: 'pix', src: petIcon(id, 32), alt: '', width: 32, height: 32 }),
+      h('b', {}, form(id).name), h('small', {}, `Lv ${petLevel(id)} · ${f.hp}/${f.maxHp}`));
+  });
+  return h('div', { class: 'dex-team' }, h('p', { class: 'small' }, 'Your team'), h('div', { class: 'team-slots' }, ...slots));
 }
 
 function renderDetail(panel, close, p) {

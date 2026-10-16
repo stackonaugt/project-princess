@@ -28,3 +28,13 @@ test('escaping round-trips awkward characters', () => {
     assert.equal(back, s);
   }
 });
+
+test('a new line with the next number is added; gaps and new keys are ignored', () => {
+  const people = { ardi: { lines: [['One.'], ['Two.']], hints: ['A hint.'], heart: { 2: 'Hi.' } } };
+  const add = `[PEOPLE.ardi]\nlines.3.1 = Three.\nlines.3.2 = Three again.\nlines.2.2 = Two again.\nlines.9.1 = Too far.\nhints.2 = Another hint.\nheart.4 = Not a key yet.\nlines.1.1.1 = Too deep.`;
+  const out = applyWords(people, parseWords(add).PEOPLE).ardi;
+  assert.deepEqual(out.lines, [['One.'], ['Two.', 'Two again.'], ['Three.', 'Three again.']]);
+  assert.deepEqual(out.hints, ['A hint.', 'Another hint.']);
+  assert.deepEqual(out.heart, { 2: 'Hi.' });
+  assert.deepEqual(people.ardi.lines, [['One.'], ['Two.']], 'source tables are not mutated');
+});

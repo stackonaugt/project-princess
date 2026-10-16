@@ -122,6 +122,10 @@ export function buildHome() {
   b.put('petbed', 4, 6, { v: 'purple' });
   b.put('petbed', 13, 15, { v: 'green' });   // Rusty's, by the heater
 
+  // The twins play in their room when you are not playing as them (routines.js).
+  b.npc('hadrian', 3, 5, { face: 'down', at: 'room' });
+  b.npc('aleksy', 1, 5, { face: 'right', at: 'room' });
+
   // Paddy: heading out the door on weekday mornings, on the couch in the evenings (routines.js)
   b.npc('paddy', 15, 7, { face: 'down', at: 'leaving', leave: true, speed: 40, path: [[15, 9], [16, 10], [16, 16], [16, 17]] });
   b.npc('paddy', 18, 13, { face: 'left', at: 'home' });

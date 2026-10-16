@@ -8,6 +8,7 @@
 import { SHOW_NPCS } from './dog-show.js';
 import { BAKE_NPCS } from './bake-event.js';
 import { PEOPLE } from './dialogue.js';
+import { HEROES } from './heroes.js';
 import { EAST_NPCS } from './east.js';
 import { NORTH_NPCS } from './north.js';
 import { BATTLER_NPCS } from './battlers.js';
@@ -125,6 +126,9 @@ export let NPCS = {
   },
   // Hobsons Bay City Council (the civic centre in Altona). Near-names for the
   // real councillors. Paddy is the mayor, Helen's husband and the twins' dad.
+  // The twins, at home in their room whenever you are not playing as them (routines.js).
+  hadrian: { name: 'Hadrian', look: HEROES.hadrian.look },
+  aleksy: { name: 'Aleksy', look: HEROES.aleksy.look },
   paddy: {
     name: 'Paddy', look: { hair: '#4a3020', hairStyle: 'wavyshort', skin: '#f0c4a4', shirt: '#e8ecd8', collar: true, blazer: '#141416', blazerTrim: '#d8b440', pants: '#141416', shoes: '#1a1a1a', beard: '#3a2618' },
   },

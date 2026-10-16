@@ -13,8 +13,12 @@ export function treatReaction(id, item) {
   const pet = PET_BY_ID[id];
   return pet.loves.includes(item) ? 'love' : pet.likes.includes(item) ? 'like' : pet.dislikes.includes(item) ? 'dislike' : 'neutral';
 }
+// Treats are for the team out with you (and Marty while the phone-care lesson waits).
+export const canPhoneTreat = id => state.inParty(id) || (id === 'marty' && !!state.data.flags.martyCare);
+export const phoneTreatPets = () => [...state.data.party, ...(state.data.flags.martyCare && state.isFound('marty') && !state.inParty('marty') ? ['marty'] : [])];
 export function givePhoneTreat(id, item) {
   if (!PET_BY_ID[id] || !state.isFound(id) || !isHealingTreat(item) || state.count(item) < 1) return { ok: false, reason: 'Choose a food treat and a pet you have befriended.' };
+  if (!canPhoneTreat(id)) return { ok: false, reason: `${PET_BY_ID[id].name} is not on your team. Treats are for the pets out with you.` };
   const f = petFighter(id);
   if (f.hp >= f.maxHp) return { ok: false, reason: `${f.name} already has full energy. Keep the treat for later.` };
   const reaction = treatReaction(id, item), rec = state.pet(id);

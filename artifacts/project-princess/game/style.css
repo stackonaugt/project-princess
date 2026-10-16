@@ -172,6 +172,13 @@ body.touch.talking #joyZone { pointer-events: none; }
 /* Petdex */
 .dex-sum { padding: 0 14px 6px; }
 .dex-sum p { margin: 4px 0 0; font-size: 15px; }
+.dex-team { padding: 0 14px 6px; }
+.dex-team > p { margin: 0 0 4px; }
+.team-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.team-slot { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 64px; padding: 6px 4px; font: inherit; color: var(--ink); background: var(--parch-light); border: 2px solid var(--parch-dark); border-radius: 8px; cursor: pointer; overflow-wrap: anywhere; text-align: center; }
+.team-slot.empty { justify-content: center; cursor: default; opacity: .7; }
+.team-slot b { font-size: 14px; line-height: 1.1; }
+.team-slot small { font-size: 12px; }
 .bar { height: 10px; background: var(--parch-dark); border-radius: 6px; overflow: hidden; border: 2px solid var(--wood); }
 .bar span { display: block; height: 100%; background: linear-gradient(#f08aa0, var(--heart)); }
 .tabs { display: flex; gap: 4px; padding: 6px 14px 8px; overflow-x: auto; }
@@ -369,7 +376,7 @@ body.touch .bt-btn { min-height: 52px; }
 .app-story { --parch: #ffffff; --parch-light: #ffffff; --parch-dark: #dcdce4; --wood: #3a7ad8; --wood-dark: #2a58a8; --wood-light: #8ab4f0; --ink: #1e1e24; }
 .app-dex { --parch: #d83a3a; --parch-light: #ffffff; --parch-dark: #8a1a1a; --wood: #3a3a44; --wood-dark: #1e1e24; --wood-light: #6a6e78; --ink: #1e1e24; }
 .app-dex .m-scroll { background-color: #fff; background-image: linear-gradient(#cfe6f7 1px, transparent 1px), linear-gradient(90deg, #cfe6f7 1px, transparent 1px); background-size: 12px 12px; border-top: 4px solid #8a1a1a; }
-.app-dex .m-head h2, .app-dex .dex-sum p { color: #fff; }
+.app-dex .m-head h2, .app-dex .dex-sum p, .app-dex .dex-team > p { color: #fff; }
 .app-dex .card, .app-dex .note { border-radius: 2px; box-shadow: 3px 3px 0 #8a1a1a; }
 .app-bag { --parch: #2a68c8; --parch-light: #e8f0fc; --parch-dark: #8ab0e8; --wood: #f5c83a; --wood-dark: #c89a1a; --wood-light: #fae08a; --ink: #12224a; }
 .app-bag .m-head h2 { color: #fff; }
