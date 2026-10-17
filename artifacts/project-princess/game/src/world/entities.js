@@ -376,9 +376,12 @@ export class Pet extends Actor {
 export class Npc extends Actor {
   constructor(scene, id, info, spot) {
     const pos = toWorld(spot.x, spot.y);
-    const tex = custom.has(`npc-${id}`) ? `npc-${id}` : `npc-${id}-down`;
+    // A playable hero standing about as a townsperson (the twins in their room)
+    // wears the owner's player art for that hero, unless they have npc art.
+    const hero = !custom.has(`npc-${id}`) && HEROES[id] && ['down', 'up', 'left'].some(d => custom.has(`player-${id}-${d}`)) ? id : null;
+    const tex = hero ? playerTexture(hero, 'down')[0] : custom.has(`npc-${id}`) ? `npc-${id}` : `npc-${id}-down`;
     super(scene, pos.x, pos.y, tex, 32);
-    this.id = id; this.info = info; this.spot = spot;
+    this.id = id; this.info = info; this.spot = spot; this.hero = hero;
     this.customArt = custom.has(`npc-${id}`);
     this.fitBody(10, 6);
     this.body.setImmovable(true);
@@ -404,6 +407,11 @@ export class Npc extends Actor {
   setDir(dir) {
     this.dir = dir;
     if (this.customArt) { this.setFlipX(dir === 'left'); return; }
+    if (this.hero) {
+      const [key, flip] = playerTexture(this.hero, dir);
+      if (this.texture.key !== key) { this.setTexture(key, this.scene.textures.get(key).has(0) ? 0 : undefined); this.applyScale(); }
+      this.setFlipX(flip); return;
+    }
     const tex = dir === 'right' ? `npc-${this.id}-left` : `npc-${this.id}-${dir}`;
     if (this.texture.key !== tex) this.setTexture(tex, 0);
     this.setFlipX(dir === 'right');

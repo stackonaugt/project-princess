@@ -73,7 +73,9 @@
   round); the Bag lists the team (`phoneTreatPets` in systems/pet-care.js,
   plus Marty during his phone-care lesson). The Petdex shows the team at the top.
 - The twins are NPCs `hadrian`/`aleksy` in their room at home whenever you are
-  not playing as them (`ROUTINES` in data/routines.js, place `room`).
+  not playing as them (`ROUTINES` in data/routines.js, place `room`). An NPC
+  whose id is a hero wears that hero's player art (`player-<id>-<dir>.png`)
+  unless it has its own `npcs/<id>.png`.
 - At water in a duck zone you always get Feed the ducks / Go fishing / Not now.
   Bazza has a Fishing tips option (`PEOPLE.bazza.tips`, `bazzaTip()`).
 - Type matchups (`state.data.matchups`) record every type tried; the move menu
@@ -86,8 +88,11 @@
   a whirlwind round her legs), Ziggy is **Ziggy Iggy** (the owner's cousin
   Iggy, a baby, rides on his back). Their `-evolved.png` sheets are reference
   art made from the base sheets. Emilio does not evolve.
-- A line written as `Name: "..."` shows that person's name and portrait
-  (`speakerOf` in `ui/ui.js`). The dog show judges on Sundays 9 to 5
+- **Dialogue style** (Seb, 2026-10-17): the person you are talking to just
+  says the words (no name, no quote marks: the box shows them). Someone else
+  cutting in is written `Name: "..."` and the box switches to their name and
+  portrait (`speakerOf` in `ui/ui.js`). Actions and narration go in
+  `*asterisks*` and show in italics; a line that is all action has no speaker. The dog show judges on Sundays 9 to 5
   (`SHOW_DAY`); the practice ring is open every day. Plenty Road Convenience
   never closes (`ALWAYS`). Agility cues get a tick or a cross over the dog.
 - Mini-game difficulty: the hall oven drifts on two waves, finishing has a

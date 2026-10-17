@@ -141,9 +141,9 @@ export let PEOPLE = {
     ],
   },
   jack: {
-    role: 'Jack McPherson. Paddy\'s cousin. Waiting for the Werribee line',
+    role: 'Jack McPherson. Paddy\'s brother. Waiting for the Werribee line',
     lines: [
-      ['G\'day! You\'re with Paddy, aren\'t you? My cousin. Tell him he still owes me twenty bucks from the footy tipping.'],
+      ['Tell my big brother Paddy he still owes me twenty bucks from the footy tipping.'],
       [
         'See that green myki machine? Tap on there and you can go to any station you\'ve been to before. Saves the legs.',
       ],
@@ -151,6 +151,11 @@ export let PEOPLE = {
       ['Train is delayed. Again. I have read the whole timetable twice for fun.'],
       ['Replacement buses this weekend. Replacement buses every weekend. I have made friends with the bus driver.'],
     ],
+    byHero: {
+      helen: [['Helen! G\'day, sis. Still putting up with my big brother? You\'re a saint.']],
+      hadrian: [['Hey, trouble! It\'s Uncle Jack. Where\'s your mum? Does your dad know you\'re out?']],
+      aleksy: [['Hey, trouble! It\'s Uncle Jack. Where\'s your mum? Does your dad know you\'re out?']],
+    },
   },
   pearman: {
     role: 'Sydney Rd regular. Golf tragic. North Melbourne for life',

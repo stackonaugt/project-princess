@@ -378,11 +378,14 @@ export const fineFor = (id, t) => t.fine ?? (HOSTILE.has(id) ? t.money || 0 : 0)
 
 // The Premier holds the way into the city (gate: 'bencarroll' on those exits).
 // Hardest fight in the game, and he taxes you $200 if you lose or give up.
+// For now the robot is built to be all but unbeatable (Seb, 2026-10-17), which
+// keeps the city shut until that content is ready. `noScale` keeps the levels
+// as written. Lower the robot's stats and the levels to open it up.
 ENEMIES.staffer = { name: 'Media Staffer', tall: true, faces: 'left', type: ['psychic', 'street'], stats: { hp: 70, attack: 66, defence: 62, speed: 80, special: 84 }, moves: ['talkingpoints', 'background', 'questiononnotice'] };
 ENEMIES.juniormp = { name: 'Junior MP', tall: true, faces: 'left', type: ['old', 'plastic'], stats: { hp: 78, attack: 76, defence: 72, speed: 60, special: 70 }, moves: ['dorothy', 'toetheline', 'talkingpoints'] };
-ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'psychic'], stats: { hp: 96, attack: 88, defence: 90, speed: 74, special: 96 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
+ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'psychic'], stats: { hp: 320, attack: 210, defence: 240, speed: 200, special: 230 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
 TRAINERS.bencarroll = {
-  name: 'Premier Ben Carroll', team: [['staffer', 18], ['juniormp', 19], ['robocarroll', 21]], money: 120, fine: 200,
+  name: 'Premier Ben Carroll', team: [['staffer', 28], ['juniormp', 29], ['robocarroll', 30]], money: 120, fine: 200, noScale: true,
   intro: 'The Premier straightens his tie. "Let\'s keep this brief. I have a ribbon to cut at 3."', sendOut: 'He sends out {f}.',
 };
 
