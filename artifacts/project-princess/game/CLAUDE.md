@@ -228,6 +228,17 @@
   last, so it wins over the data files and Studio text. Edit wording there, not
   in the data files. After adding new text in code run `node game/tools/words.mjs`
   (it keeps edits); `tools/words.test.mjs` fails while it is out of date.
+- **Name**: players see **PetPals: Princess Edition** (page title, manifest,
+  title screen, welcome and end lines, credits). Project Princess stays the
+  working title for the repo, folders, files and docs. The title screen
+  (`ui/title.js`) is drawn like an old Game Boy title: pale pink, the chunky
+  PetPals logo, Helen and Princess, PRESS START, then a white menu box with a
+  ▶ cursor for the save slots. The interface palette is pinks and purples:
+  the `--wood*` variables are purples and `--parch*` pinks (names kept), and
+  `--accent` replaced the old gold.
+- Pet sheets the owner supplied with fewer than 11 frames were extended from
+  their own frames (theirs stay first, pixel for pixel; `tools/fixtures/
+  pet-original-pixels.mjs` hashes them). Re-hash when new art is uploaded.
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.

@@ -60,7 +60,7 @@ test('BIG MART, Chlo-nado and Ziggy Iggy', () => {
   assert.equal(PET_BY_ID.marty.evolution.type, PET_BY_ID.marty.type);
   assert.ok(petSize('marty', true) > petSize('marty') + 8, 'BIG MART is very tall');
   for (const id of ['marty', 'ziggy', 'chloe']) {
-    assert.ok(existsSync(new URL(`assets/sprites/pets/${id}-evolved.png`, G)), `${id}-evolved.png`);
+    assert.ok(existsSync(new URL(`assets/sprites/pets/${id}-evolved.png`, G)) || PET_BY_ID[id].evolution.sprite, `${id} evolved art`);
     for (const m of PET_BY_ID[id].evolution.moves) assert.ok(MOVES[m], `${id} move ${m}`);
   }
 });

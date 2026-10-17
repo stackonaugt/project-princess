@@ -16,7 +16,7 @@ export function openMenu(panel, close) {
 
   const row = (label, ...right) => h('div', { class: 'set-row' }, h('span', {}, label), ...right);
   const mail = (kind, line) => h('div', { class: 'set-mail' },
-    h('a', { class: 'wood-btn', href: `mailto:sebastian@horey.com.au?subject=${encodeURIComponent(`${kind.toUpperCase()}: Project Princess`)}`, target: '_blank', rel: 'noopener' }, kind === 'Bug report' ? 'Report Bug' : 'Feature Request'),
+    h('a', { class: 'wood-btn', href: `mailto:sebastian@horey.com.au?subject=${encodeURIComponent(`${kind.toUpperCase()}: PetPals: Princess Edition`)}`, target: '_blank', rel: 'noopener' }, kind === 'Bug report' ? 'Report Bug' : 'Feature Request'),
     h('p', { class: 'small' }, line));
   const twins = d.story?.chapter === 3 && !d.story.done?.[3] && d.hero !== 'helen', free = !!d.story?.done?.[4];
   const found = state.foundCount(), friends = Object.values(d.friends).filter(f => f.met).length;
@@ -69,7 +69,7 @@ export function openMenu(panel, close) {
         mail('Bug report', 'Send Seb an email, preferably with a screenshot, and describe the bug.'),
         mail('Feature request', 'Send Seb an email with your idea. Big or small.')),
       msg,
-      h('p', { class: 'small center credits' }, 'Project Princess. The pets belong to their humans. Made with Phaser.')));
+      h('p', { class: 'small center credits' }, 'PetPals: Princess Edition. The pets belong to their humans. Made with Phaser.')));
 }
 
 // How to play: a second screen of sections that open and close.
