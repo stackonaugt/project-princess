@@ -102,12 +102,12 @@ test('the move menu only shows Strong or Weak once a matchup is tried', () => {
   assert.equal(knownEffect('water', ['fire', 'rock']), null, 'dual types need both tried');
 });
 
-test('Steely and Muddy', () => {
+test('Steely and Muddie', () => {
   const rusty = PET_BY_ID.rusty.evolution, girlie = PET_BY_ID.girlie.evolution;
-  assert.equal(rusty.name, 'Steely'); assert.equal(rusty.type, 'steel');
+  assert.equal(rusty.name, 'Steely'); assert.deepEqual(rusty.type, ['speed', 'steel']);
   assert.ok(rusty.moves.includes('dangerpaws') && rusty.moves.includes('sharpen'));
   assert.ok(MOVES.sharpen.effect.selfAtk > 0);
-  assert.equal(girlie.name, 'Muddy'); assert.deepEqual(girlie.type, ['dirt', 'water']);
+  assert.equal(girlie.name, 'Muddie'); assert.deepEqual(girlie.type, ['dirt', 'water']);
   assert.ok(TYPES.dirt && effectiveness('water', 'dirt') === 2);
   for (const m of girlie.moves) assert.ok(MOVES[m], m);
   assert.equal(PET_BY_ID.emilio.evolution, undefined);
@@ -119,4 +119,17 @@ test('Plenty Road Convenience never closes; the dog show judges on Sundays', () 
   assert.equal(showOpen(0, 10 * 60, weekday), true);
   assert.equal(showOpen(1, 10 * 60, weekday), false);
   assert.equal(showOpen(0, 18 * 60, weekday), false);
+});
+
+test('every type in the chart, pets, foes and moves is a real type', async () => {
+  const { TYPES, typeList } = await import('../game/src/data/types.js');
+  const { PETS } = await import('../game/src/data/pets.js');
+  const { ENEMIES } = await import('../game/src/data/enemies.js');
+  const { MOVES } = await import('../game/src/data/moves.js');
+  for (const [id, t] of Object.entries(TYPES)) for (const x of [...t.strong, ...t.resist]) assert.ok(TYPES[x], `${id} lists ${x}`);
+  for (const p of PETS) for (const t of [...typeList(p.type), ...(p.evolution ? typeList(p.evolution.type) : [])]) assert.ok(TYPES[t], `${p.id} ${t}`);
+  for (const [id, e] of Object.entries(ENEMIES)) for (const t of typeList(e.type)) assert.ok(TYPES[t], `${id} ${t}`);
+  for (const [id, m] of Object.entries(MOVES)) assert.ok(TYPES[m.type], `move ${id} ${m.type}`);
+  assert.equal(TYPES.leather.name, 'Tough');
+  assert.ok(TYPES.water.strong.includes('steel'), 'water rusts steel');
 });

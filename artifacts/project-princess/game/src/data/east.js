@@ -328,17 +328,17 @@ export function spellPrice(id, day) {
 // ------------------------------------------------------------ battles
 export const EAST_MOVES = {
   soggy:        { name: 'Soggy Bottom', type: 'smelly', power: 45, anim: 'stink', text: '{u} has been in the bag since breakfast. {t} gets the full soggy.' },
-  beetroot:     { name: 'Beetroot Stain', type: 'park', power: 0, effect: { foeDef: 1 }, anim: 'gust', text: 'A slice of beetroot slides out of {u} and stains {t} for life.' },
+  beetroot:     { name: 'Beetroot Stain', type: 'food', power: 0, effect: { foeDef: 1 }, anim: 'gust', text: 'A slice of beetroot slides out of {u} and stains {t} for life.' },
   clingwrap:    { name: 'Cling Wrap', type: 'plastic', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} wraps itself back up tight. Fresh as.' },
   mysterylolly: { name: 'Mystery Lolly', type: 'fairy', power: 50, anim: 'beam', text: '{u} flings a lolly at {t}. Nobody knows what flavour it was. Not even {t}.' },
   sugarrush:    { name: 'Sugar Rush', type: 'caffeine', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} has had too many red frogs. Way too many.' },
   chewytoffee:  { name: 'Chewy Toffee', type: 'plastic', power: 40, effect: { foeAtk: 1 }, anim: 'bite', text: '{u} glues {t}\'s jaws together with a toffee.' },
-  buzz:         { name: 'Big Buzz', type: 'psychic', power: 45, anim: 'shout', text: '{u} buzzes in a colour {t} has never seen before.' },
-  sting:        { name: 'Sting', type: 'park', power: 50, anim: 'lunge', text: '{u} stings {t}. Everything goes a bit paisley.' },
+  buzz:         { name: 'Big Buzz', type: 'bug', power: 45, anim: 'shout', text: '{u} buzzes in a colour {t} has never seen before.' },
+  sting:        { name: 'Sting', type: 'bug', power: 50, anim: 'lunge', text: '{u} stings {t}. Everything goes a bit paisley.' },
   kaleidoscope: { name: 'Kaleidoscope', type: 'psychic', power: 0, effect: { foeDef: 1 }, anim: 'beam', text: '{u} spins and {t} sees seventeen bees. Seventeen.' },
   whereparty:   { name: 'Where Is The Party', type: 'psychic', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} asks {t} where the September Babies party is. {t} does not know. Nobody knows.' },
   happybday:    { name: 'Happy Birthday', type: 'fairy', power: 45, anim: 'shout', text: '{u} sings Happy Birthday at {t}. Badly. And loudly.' },
-  partypie:     { name: 'Party Pie', type: 'old', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} finds a party pie in its pocket. Still warm, somehow.' },
+  partypie:     { name: 'Party Pie', type: 'food', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} finds a party pie in its pocket. Still warm, somehow.' },
   craneswing:   { name: 'Swinging Load', type: 'steel', power: 55, anim: 'lunge', text: '{u} swings a pallet of bricks right at {t}.' },
   concrete:     { name: 'Concrete Pour', type: 'rock', power: 45, effect: { foeAtk: 1 }, anim: 'dig', text: '{u} pours a slab over {t}\'s feet. Another eight storeys coming.' },
   reversing:    { name: 'Beep Beep Beep', type: 'steel', power: 0, effect: { selfDef: 1 }, anim: 'shout', text: '{u} beeps for a very long time. Nobody can think.' },
@@ -350,12 +350,12 @@ export const EAST_MOVES = {
 export const EAST_ENEMIES = {
   sandwich: {
     faces: 'front',
-    name: 'Milk Bar Sandwich', type: ['old', 'smelly'], stats: { hp: 66, attack: 58, defence: 60, speed: 35, special: 50 },
+    name: 'Milk Bar Sandwich', type: ['food', 'smelly'], stats: { hp: 66, attack: 58, defence: 60, speed: 35, special: 50 },
     moves: ['soggy', 'beetroot', 'clingwrap'], drop: ['cheese', 0.3],
   },
   surprisecandy: {
     faces: 'front',
-    name: 'Surprise Candy', type: ['fairy', 'plastic'], stats: { hp: 58, attack: 50, defence: 55, speed: 70, special: 66 },
+    name: 'Surprise Candy', type: ['food', 'fairy'], stats: { hp: 58, attack: 50, defence: 55, speed: 70, special: 66 },
     moves: ['mysterylolly', 'sugarrush', 'chewytoffee'],
   },
   pint: {
@@ -364,7 +364,7 @@ export const EAST_ENEMIES = {
     moves: ['hiccup', 'slosh', 'beergoggles', 'silverpillow'],
   },
   psychbee: {
-    name: 'Psychedelic Bee', type: ['psychic', 'park'], stats: { hp: 50, attack: 58, defence: 44, speed: 78, special: 62 },
+    name: 'Psychedelic Bee', type: ['bug', 'psychic'], stats: { hp: 50, attack: 58, defence: 44, speed: 78, special: 62 },
     moves: ['buzz', 'sting', 'kaleidoscope'], drop: ['honey', 0.2],
   },
   partyguest: {

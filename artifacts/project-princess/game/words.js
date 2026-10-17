@@ -1663,7 +1663,7 @@ lines.9.1 = Girlie flops down with her head on your feet and sighs a huge, happy
 night.1 = Girlie is curled up in a black heap. You can only find her by the snoring.
 rain.1 = Girlie is delighted by the rain. She has found a puddle. She is in the puddle.
 asleep.1 = Girlie is asleep, paws paddling. She is swimming in her dreams.
-evolvedBio = Girlie found the biggest puddle in Carlton Gardens and never really came out. Muddy is half lab, half wetland, and wants a cuddle.
+evolvedBio = Girlie found the biggest puddle in Carlton Gardens and never really came out. Muddie is half lab, half wetland, and wants a cuddle.
 
 [PET_TEXT.rusty]
 bio = A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.
