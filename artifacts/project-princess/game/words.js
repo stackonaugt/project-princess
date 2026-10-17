@@ -253,18 +253,18 @@ battle.win.2 = Poppy can come stay at your place. She will eat anything. Hide th
 battle.lose.1 = Ooh, sorry! She does not know her own strength. She does not know much, honestly. We love her.
 
 [PEOPLE.tim]  # Tim
-role = Stanley's human. Union organiser. Loves Rome and trains
-lines.1.1 = Stanley is a gentleman and a scholar. Mostly a scholar of cheese.
-lines.2.1 = You want Stanley to like you? Do not chase him. Let him come to you. He is like a cat in a schnauzer costume.
+role = Stanley's human. Union organiser. Loves Ancient Rome and trains
+lines.1.1 = The Ancient Roman's believed that dogs were inhabited by the spirits of ancient scholars. Do you think Stanley has a ghost in him?
+lines.2.1 = You want Stanley to like you? Do not chase him. Let him come to you. 
 lines.3.1 = I could beat you in a battle. Stanley could beat you in a battle. Stanley could beat me in a battle, honestly.
 lines.4.1 = I organise for the union. If you are not in one, join one. That is the speech. I have a longer version.
-lines.5.1 = Rome has trams, you know. Old orange ones. I rode every line. Nicholas waited in a cafe and did not regret it.
+lines.5.1 = Imagine this. Me, you, the crew. Unlimited fresh beers. All you can eat meats. 
 lines.6.1 = The Mernda line on the skyrail is beautiful. I will hear no criticism. Look at those concrete columns.
 hints.stanley = Stanley walks away from strangers. It is not personal. Bring him something fancy, then give him time. He comes around.
 giftLine = Have a cheese stick. We buy them by the crate. Stanley has standards.
-heartScenes.2.1 = Tim: "Union organiser. Today I signed up a whole call centre. Tomorrow, the world. Or at least the car park."
-heartScenes.4.1 = Tim shows you his photos of Rome. Two hundred of the Forum. Forty of trains. "The Roma Termini platforms, look at them."
-heartScenes.6.1 = Tim: "Nicholas and I talked. You're invited to Stanley's birthday. There is a cake. He will not eat it. There will be a toast to solidarity."
+heartScenes.2.1 = Tim: "You know what would solve this crisis in the union movement? One big union. There's actually not many problems that one big union wouldn't solve."
+heartScenes.4.1 = Tim: "There's a ghost at Reservoir station. I saw it one night. Incredibly powerful.
+heartScenes.6.1 = Tim: "Nicholas and I talked. You're invited to Stanley's birthday. There is a cake. He will not eat it. I'll even get out the hibachi."
 helpsInBattle = Tim calls a snap stop-work meeting. The foe downs tools.
 battle.challenge.1 = You want to befriend Stanley? He only likes smart animals. Let's see if your team qualifies.
 battle.ask = Play-fight Stanley?
