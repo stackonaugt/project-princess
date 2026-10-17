@@ -161,14 +161,14 @@ lines.1.2 = You will have to get past me first. Friendly battle
 lines.2.1 = I spend all this money on toys for Salami but her favourite toy is still blue string.
 lines.3.1 = Interest rates went up. so did my mortgage payments. Salami has not contributed a single cent. She does contribute vibes.
 lines.4.1 = I work for the senator. I read legislation all day, then I come home and read novels all night.
-lines.5.1 = Estimayed was chaos this week. Then I got home and Salami had knocked my rice cooker off the shelf. Same energy.
+lines.5.1 = Estimates was chaos this week. Then I got home and Salami had knocked my rice cooker off the shelf. Same energy.
 hints.salami = Salami is around the flats somewhere, judging people. Bring a sardine and some patience. Then come and battle me for her heart.
 giftLine = Here, a sardine. For Salami, not for you. I can see you eyeing it.
-heartScenes.2.1 = Rose: "Long week in the Senate office. Three inquiries, two media releases, one consituent who emails in all caps."
+heartScenes.2.1 = Rose: "Long week in the electorate office. Three inquiries, two media releases, one consituent who emails in all caps."
 heartScenes.2.2 = "Salami does not care about any of it. That is why I love her."
 heartScenes.4.1 = Rose lends you a novel with her notes in the margins. "Bring it back. The notes are the best part."
 heartScenes.6.1 = Rose: "Let's watch a movie. have you seen Till Death Do Us Part?"
-helpsInBattle = Rose drafts the foe a strongly worded letter. It reads it and wilts.
+helpsInBattle = Rose pours them a really (really) stiff drink. They're really (really) feeling it.
 battle.challenge.1 = Oh, you want to be friends with Salami? Ha. Salami decides who her friends are.
 battle.challenge.2 = Show her you can handle her. Have a little play-fight.
 battle.ask = Play-fight Salami?
@@ -176,7 +176,7 @@ battle.yes = Let's go
 battle.no = Maybe later
 battle.win.1 = Wow. She actually likes you. That never happens.
 battle.win.2 = Salami will come and visit your place on Allen St. Feed her well. She keeps score.
-battle.lose.1 = Ha! Told you. She has a vicious strike. Come back when your pets have had their Weet-Bix.
+battle.lose.1 = Ha! Told you. She has a vicious strike. Come back when your pets have had their breakfast.
 
 [PEOPLE.slinks]  # Slinks
 role = Spooky's human. Public servant. Loves a wine
