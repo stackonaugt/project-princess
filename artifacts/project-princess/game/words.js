@@ -65,12 +65,15 @@ presents.1.2 = Ardi: "Hi neighbour! Welcome to Laverton. Here, a durian. King of
 presents.2.2 = Ardi: "Hi neighbour, how are you? I went fishing off Altona pier this morning. Too many snapper. Take one!"
 
 [PEOPLE.jack]  # Jack McPherson
-role = Jack McPherson. Paddy's cousin. Waiting for the Werribee line
-lines.1.1 = G'day! You're with Paddy, aren't you? My cousin. Tell him he still owes me twenty bucks from the footy tipping.
+role = Jack McPherson. Paddy's brother. Waiting for the Werribee line
+lines.1.1 = Tell my little brother Paddy he still owes me twenty bucks from the footy tipping.
 lines.2.1 = See that green myki machine? Tap on there and you can go to any station you've been to before. Saves the legs.
 lines.3.1 = How's Paddy going as Mayor? Still wearing the big gold chain to the shops? Tell him I said hi. And to get a haircut.
 lines.4.1 = Train is delayed. Again. I have read the whole timetable twice for fun.
 lines.5.1 = Replacement buses this weekend. Replacement buses every weekend. I have made friends with the bus driver.
+byHero.helen.1.1 = Helen! G'day, sis. Still putting up with my little brother? You're a saint.
+byHero.hadrian.1.1 = Hey, trouble! It's Uncle Jack. Where's your mum? Does your dad know you're out?
+byHero.aleksy.1.1 = Hey, trouble! It's Uncle Jack. Where's your mum? Does your dad know you're out?
 
 [PEOPLE.pearman]  # Pearman
 role = Sydney Rd regular. Golf tragic. North Melbourne for life

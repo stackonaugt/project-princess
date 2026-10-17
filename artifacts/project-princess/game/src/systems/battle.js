@@ -120,7 +120,7 @@ export function scaleWild(encounter, power = teamPower()) {
 // Once-only story fights (Julie's tutorial) stay exactly as written.
 export function scaleTrainer(id, team, power = teamPower()) {
   const t = TRAINERS[id];
-  if (!t || t.once || power == null) return team;
+  if (!t || t.once || t.noScale || power == null) return team;
   const fair = scaledLevel(power) + 1, beaten = !!state.data.beaten[id];
   return team.map(([foe, level]) => [foe, clampLevel(beaten ? Math.max(level, fair) : Math.min(level, fair + SCALING.maxAbove + 1))]);
 }
