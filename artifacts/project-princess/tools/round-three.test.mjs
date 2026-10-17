@@ -56,8 +56,9 @@ test('BIG MART, Chlo-nado and Ziggy Iggy', () => {
   assert.equal(PET_BY_ID.marty.evolution.name, 'BIG MART');
   assert.equal(PET_BY_ID.ziggy.evolution.name, 'Ziggy Iggy');
   assert.equal(PET_BY_ID.chloe.evolution.name, 'Chlo-nado');
-  assert.deepEqual(PET_BY_ID.chloe.evolution.type, PET_BY_ID.chloe.type, 'Chlo-nado keeps her type');
-  assert.equal(PET_BY_ID.marty.evolution.type, PET_BY_ID.marty.type);
+  assert.deepEqual(PET_BY_ID.chloe.evolution.type, ['electric', 'speed']);
+  assert.deepEqual(PET_BY_ID.marty.evolution.type, ['smelly', 'leather']);
+  assert.deepEqual(PET_BY_ID.ziggy.evolution.type, ['fairy', 'speed']);
   assert.ok(petSize('marty', true) > petSize('marty') + 8, 'BIG MART is very tall');
   for (const id of ['marty', 'ziggy', 'chloe']) {
     assert.ok(existsSync(new URL(`assets/sprites/pets/${id}-evolved.png`, G)) || PET_BY_ID[id].evolution.sprite, `${id} evolved art`);

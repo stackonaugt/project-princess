@@ -5,15 +5,15 @@ export const PET_ORIGINAL_PIXELS = {
   'pets/chloe.png': [176, 16, '59be4372eda4d07cccf5388240e07e5e3b50e7daf1c57ab3448617fff32ff270'],
   'pets/emilio.png': [32, 16, '8c58b007c7e34497f5fb52934208dd9ebfb6dc99602c45333a95c2febae2283e'],
   'pets/girlie.png': [176, 16, '9469a7c1911ffa09632fad8eb960544f64de6f755c55ac3661813a2dc5631a4c'],
-  'pets/marty.png': [176, 16, '3267291418d02745bb0de2bbe326e8170326d8d25de00238649ce89f31bae0b8'],
+  'pets/marty.png': [352, 32, '9cfb36e6a491dd6c16f4a96297b5902396206fb8fdfeea83ed0cd859f000cea0'],   // Seb's art (2026-10-17), frames built from his drawing
   'pets/poppy-evolved.png': [32, 16, '4933663b518198601489dd5458fcc90384efe1a6371b3308b66667e0c3319fb1'],
   'pets/poppy.png': [176, 16, 'fae1ad2e9f8a84889c6f4ada240a395ba04e638bb9e9edc00a29a84e5ae75f59'],
   'pets/princess-evolved.png': [48, 16, '05bfd68e544783978165dbe82c32965805cad8c431386154ec3a039eafaaec34'],
-  'pets/princess.png': [32, 32, '6e0962d40596051990aa49130dcf2b175936400b951ddf40559a1e4b9957d638'],   // Seb's 32px Princess (2026-10-17)
+  'pets/princess.png': [429, 39, '27fae66264975884decad2fa8d754ba91c36a80d62eefa5bfffe2c9b6b5a740c'],   // Seb's art (2026-10-17), frames built from his drawing
   'pets/rusty-evolved.png': [32, 16, '53131da2a8d25db863aa4bc028724416f622ac1e0e9715ccc32bc084d182363f'],
   'pets/rusty.png': [32, 16, 'd44a574f6479d5ecd8c03f7d67f501ed6b8fab1618f8fe0e455bebeae126077f'],
   'pets/salami-evolved.png': [32, 16, 'f22240f7916408de7eda529de785eb3294b69c5c1449e53ca4c7c76a6a9a7ce2'],
-  'pets/salami.png': [2816, 1408, 'b05e37abb67e4b47e3300c26a6dac5f0b48d4afdcbe9e2cf8d2122c8559e410d'],
+  'pets/salami.png': [385, 35, '811a4f464720a7387ece35a127049b0670a2b8236de51ac651381cbf010d5851'],   // Seb's art (2026-10-17), frames built from his drawing
   'pets/spooky-evolved.png': [32, 16, 'bfb88632e6632040bb205cff09d25ff83d41623615410cd81717107f8eea517e'],
   'pets/spooky.png': [32, 16, '0427573e62011150e30a0dbf89da6b61886d624c5b91085259aac57cd1b0fe4d'],
   'pets/stanley.png': [32, 16, 'f46b24ec616020698a8d912587d847c971b410fd9969ee7f08c431fb48437e56'],

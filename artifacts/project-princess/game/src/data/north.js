@@ -443,9 +443,9 @@ export const NORTH_MOVES = {
   existential: { name: 'Existential Crisis', type: 'psychic', power: 60, anim: 'beam', text: '{u} asks {t} what any of it means, really. {t} has no answer.' },
   touchon:      { name: 'Touch On', type: 'plastic', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u} touches on. Beep. It feels validated.' },
   insufficient: { name: 'Insufficient Funds', type: 'psychic', power: 55, anim: 'beam', text: '{u} flashes INSUFFICIENT FUNDS at {t}. Devastating.' },
-  cardnotread:  { name: 'Card Not Read', type: 'steel', power: 0, effect: { evade: true }, anim: 'fade', text: '"Card not read. Please try again." {u} cannot be reached.' },
+  cardnotread:  { name: 'Card Not Read', type: 'electric', power: 0, effect: { evade: true }, anim: 'fade', text: '"Card not read. Please try again." {u} cannot be reached.' },
   fine:         { name: 'On-the-Spot Fine', type: 'old', power: 65, anim: 'beam', text: '{u} issues {t} with a fine. Two hundred and something dollars. Ouch.' },
-  wingbeat:     { name: 'Wing Beat', type: 'park', power: 55, anim: 'gust', text: '{u} beats its huge black wings at {t}.' },
+  wingbeat:     { name: 'Wing Beat', type: 'bird', power: 55, anim: 'gust', text: '{u} beats its huge black wings at {t}.' },
   luxury:       { name: 'Luxury Living', type: 'psychic', power: 45, effect: { foeDef: 1 }, anim: 'beam', text: '{u} promises "luxury living from $899k". {t} suddenly feels very poor.' },
   wonkywheel:   { name: 'Wonky Wheel', type: 'steel', power: 0, effect: { evade: true }, anim: 'fade', text: '{u}\'s wonky wheel sends it veering off sideways. Nobody can predict it.' },
   // Meghan's cat Whitlam, battling from his pram
@@ -479,11 +479,11 @@ export const NORTH_ENEMIES = {
     moves: ['touchon', 'insufficient', 'flutter'], faces: 'front',
   },
   reader: {
-    name: 'Myki Reader', type: 'steel', stats: { hp: 62, attack: 60, defence: 66, speed: 40, special: 55 },
+    name: 'Myki Reader', type: ['electric', 'steel'], stats: { hp: 62, attack: 60, defence: 66, speed: 40, special: 55 },
     moves: ['cardnotread', 'fine', 'beep'], faces: 'front',
   },
   swan: {
-    name: 'Black Swan', type: ['water', 'park'], stats: { hp: 58, attack: 64, defence: 50, speed: 60, special: 50 },
+    name: 'Black Swan', type: ['water', 'bird'], stats: { hp: 58, attack: 64, defence: 50, speed: 60, special: 50 },
     moves: ['hiss', 'splash', 'wingbeat'], drop: ['feather', 0.25],
   },
   render: {
@@ -499,7 +499,7 @@ export const NORTH_ENEMIES = {
     moves: ['doorknock', 'pramram', 'cathiss', 'preselect'], faces: 'front',
   },
   toastie: {
-    name: 'The Same Toastie', type: 'fire', stats: { hp: 55, attack: 60, defence: 50, speed: 55, special: 66 },
+    name: 'The Same Toastie', type: ['food', 'fire'], stats: { hp: 55, attack: 60, defence: 50, speed: 55, special: 66 },
     moves: ['sundried', 'autismattack', 'cheesymelt'], faces: 'front',
   },
   boobpillows: {

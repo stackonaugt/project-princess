@@ -38,7 +38,7 @@ export const ENEMIES = {
     moves: ['growlwild', 'tug', 'bite'], drop: ['tennis', 0.3],
   },
   rat: {
-    name: 'Big Rat', type: 'smelly', stats: { hp: 45, attack: 55, defence: 45, speed: 70, special: 50 },
+    name: 'Big Rat', type: ['smelly', 'dark'], stats: { hp: 45, attack: 55, defence: 45, speed: 70, special: 50 },
     moves: ['gnaw', 'plague', 'hide'], drop: ['cheese', 0.3],
   },
   boy: {
@@ -55,19 +55,19 @@ export const ENEMIES = {
     moves: ['sigh', 'briefcase', 'complain', 'flatwhite'], held: 'flat white', drop: ['croissant', 0.35],
   },
   ibis: {
-    name: 'Bin Chicken', type: 'smelly', stats: { hp: 50, attack: 60, defence: 45, speed: 60, special: 50 },
+    name: 'Bin Chicken', type: ['bird', 'smelly'], stats: { hp: 50, attack: 60, defence: 45, speed: 60, special: 50 },
     moves: ['binlid', 'plague', 'jab'], drop: ['chicken', 0.3],
   },
   scooter: {
-    name: 'E-scooter', type: 'steel', stats: { hp: 50, attack: 65, defence: 60, speed: 85, special: 30 },
+    name: 'E-scooter', type: ['electric', 'steel'], stats: { hp: 50, attack: 65, defence: 60, speed: 85, special: 30 },
     moves: ['scoot2', 'beep', 'rolldown'],
   },
   duck: {
-    name: 'Rogue Duck', type: 'water', stats: { hp: 45, attack: 60, defence: 45, speed: 65, special: 55 },
+    name: 'Rogue Duck', type: ['water', 'bird'], stats: { hp: 45, attack: 60, defence: 45, speed: 65, special: 55 },
     moves: ['quack', 'jab', 'splash'], drop: ['croissant', 0.3],
   },
   magpie: {
-    name: 'Swooping Magpie', type: ['park', 'old'], stats: { hp: 45, attack: 70, defence: 40, speed: 85, special: 50 },
+    name: 'Swooping Magpie', type: ['bird', 'park'], stats: { hp: 45, attack: 70, defence: 40, speed: 85, special: 50 },
     moves: ['swoop', 'jab', 'warble'], drop: ['feather', 0.5],
   },
   recycling: {
@@ -105,7 +105,7 @@ export const ENEMIES = {
   },
   sourdough: {
     faces: 'front',
-    name: 'Sourdough Mother', type: 'smelly', stats: { hp: 62, attack: 55, defence: 60, speed: 35, special: 50 },
+    name: 'Sourdough Mother', type: ['food', 'smelly'], stats: { hp: 62, attack: 55, defence: 60, speed: 35, special: 50 },
     moves: ['starter', 'prove', 'crust'],
   },
   recordplayer: {
@@ -125,7 +125,7 @@ export const ENEMIES = {
   },
   // ---- Carlton and the city
   pigeon: {
-    name: 'City Pigeon', type: 'street', stats: { hp: 50, attack: 55, defence: 50, speed: 70, special: 55 },
+    name: 'City Pigeon', type: ['bird', 'street'], stats: { hp: 50, attack: 55, defence: 50, speed: 70, special: 55 },
     moves: ['jab', 'coo', 'flutter'], drop: ['croissant', 0.25],
   },
   tourist: {
@@ -134,7 +134,7 @@ export const ENEMIES = {
   },
   ticketgate: {
     faces: 'front',
-    name: 'Ticket Gate', type: 'steel', stats: { hp: 60, attack: 60, defence: 68, speed: 40, special: 50 },
+    name: 'Ticket Gate', type: ['electric', 'steel'], stats: { hp: 60, attack: 60, defence: 68, speed: 40, special: 50 },
     moves: ['gateslam', 'beep', 'invalidcard'],
   },
   finenotice: {
@@ -144,12 +144,12 @@ export const ENEMIES = {
   },
   meatball: {
     faces: 'front',
-    name: 'Angry Meatball', type: 'fire', stats: { hp: 56, attack: 64, defence: 54, speed: 50, special: 50 },
+    name: 'Angry Meatball', type: ['food', 'fire'], stats: { hp: 56, attack: 64, defence: 54, speed: 50, special: 50 },
     moves: ['napoletana', 'meatroll', 'mangia'],
   },
   garlicbread: {
     faces: 'front',
-    name: 'Free Garlic Bread', type: 'smelly', stats: { hp: 58, attack: 52, defence: 56, speed: 50, special: 60 },
+    name: 'Free Garlic Bread', type: ['food', 'smelly'], stats: { hp: 58, attack: 52, defence: 56, speed: 50, special: 60 },
     moves: ['garlicbreath', 'extrabutter', 'crust'],
   },
   spraycan: {
@@ -164,7 +164,7 @@ export const ENEMIES = {
     moves: ['splash', 'hosedown', 'puddle', 'sprinkle'],
   },
   possum: {
-    name: 'Brushtail Possum', type: 'park', stats: { hp: 55, attack: 62, defence: 48, speed: 72, special: 45 },
+    name: 'Brushtail Possum', type: ['dark', 'park'], stats: { hp: 55, attack: 62, defence: 48, speed: 72, special: 45 },
     moves: ['scurry', 'gumnut', 'hissp', 'rosebush'], drop: ['tomato', 0.3],
   },
   bulldog: {
@@ -320,7 +320,7 @@ export const TRAINERS = {
     
   },
   sinead: {
-    name: 'Sinead', prize: 'poppy', team: [['pet:poppy', 12]],
+    name: 'Sinead', prize: 'poppy', team: [['pet:poppy', 11]],
     
   },
   nathan: {
@@ -381,9 +381,9 @@ export const fineFor = (id, t) => t.fine ?? (HOSTILE.has(id) ? t.money || 0 : 0)
 // For now the robot is built to be all but unbeatable (Seb, 2026-10-17), which
 // keeps the city shut until that content is ready. `noScale` keeps the levels
 // as written. Lower the robot's stats and the levels to open it up.
-ENEMIES.staffer = { name: 'Media Staffer', tall: true, faces: 'left', type: ['psychic', 'street'], stats: { hp: 70, attack: 66, defence: 62, speed: 80, special: 84 }, moves: ['talkingpoints', 'background', 'questiononnotice'] };
-ENEMIES.juniormp = { name: 'Junior MP', tall: true, faces: 'left', type: ['old', 'plastic'], stats: { hp: 78, attack: 76, defence: 72, speed: 60, special: 70 }, moves: ['dorothy', 'toetheline', 'talkingpoints'] };
-ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'psychic'], stats: { hp: 320, attack: 210, defence: 240, speed: 200, special: 230 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
+ENEMIES.staffer = { name: 'Media Staffer', tall: true, faces: 'left', type: ['hack', 'street'], stats: { hp: 70, attack: 66, defence: 62, speed: 80, special: 84 }, moves: ['talkingpoints', 'background', 'questiononnotice'] };
+ENEMIES.juniormp = { name: 'Junior MP', tall: true, faces: 'left', type: ['hack', 'old'], stats: { hp: 78, attack: 76, defence: 72, speed: 60, special: 70 }, moves: ['dorothy', 'toetheline', 'talkingpoints'] };
+ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'hack'], stats: { hp: 320, attack: 210, defence: 240, speed: 200, special: 230 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
 TRAINERS.bencarroll = {
   name: 'Premier Ben Carroll', team: [['staffer', 28], ['juniormp', 29], ['robocarroll', 30]], money: 120, fine: 200, noScale: true,
   intro: 'The Premier straightens his tie. "Let\'s keep this brief. I have a ribbon to cut at 3."', sendOut: 'He sends out {f}.',

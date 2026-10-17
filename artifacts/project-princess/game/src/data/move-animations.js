@@ -19,15 +19,15 @@ export const SIGNATURE_ANIMATIONS = Object.freeze({
   stretch: 'stretch',                   // Spooky
   staredown: 'stare',                   // Stanley (and Centurionely)
   fetch: 'fetch', fountaindive: 'splash', puppyeyes: 'puppyeyes', benchsnack: 'snack', // Girlie
-  puddlejump: 'splash', shakeoff: 'shake', dirtnap: 'nap',  // Muddy
+  puddlejump: 'splash', shakeoff: 'shake', dirtnap: 'nap',  // Muddie
   shakeleaf: 'shake', runaway: ['zoomies', 'fade'],        // Rusty
   turbozoom: 'zoomies', sharpen: 'sharpen',                // Steely
   herd: 'herd', kelpiestare: 'stare', pubnap: 'nap',       // Chloe
-  twister: 'zoomies',                   // Chlo-nado
+  twister: 'zoomies', staticzoomies: 'zoomies', // Chlo-nado
   zoomcat: 'zoomies',                   // Ziggy
   breadcrumbs: 'snack',                 // Emilio
   gordonfood: 'snack',                  // Marty
-  royalrest: 'nap',                     // Queencess
+  royalrest: 'nap',                     // Flame Queen
   cured: 'nap',                         // Sopressa
 });
 
