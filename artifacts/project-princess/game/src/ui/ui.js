@@ -209,10 +209,15 @@ export const ui = {
     if (d.i >= d.queue.length) return this.endDialog();
     const line = d.queue[d.i];
     d.line = line; d.shown = 0; d.choices = null; d.choice = 0;
-    $('dName').textContent = line.name || '';
-    $('dName').hidden = !line.name;
+    // *Actions and narration* show in italics; a line that is all action
+    // has no speaker.
+    d.segs = String(line.text).split(/\*([^*]+)\*/).map((t, i) => ({ t, em: i % 2 === 1 })).filter(x => x.t);
+    d.plain = d.segs.map(x => x.t).join('');
+    const told = d.segs.length > 0 && d.segs.every(x => x.em || !x.t.trim());
+    $('dName').textContent = told ? '' : line.name || '';
+    $('dName').hidden = told || !line.name;
     const img = $('dPortrait');
-    img.hidden = !line.portrait;
+    img.hidden = told || !line.portrait;
     if (line.portrait) img.querySelector('img').src = line.portrait;
     $('dChoices').replaceChildren();
     $('dialog').classList.remove('has-choices', 'done');
@@ -223,10 +228,11 @@ export const ui = {
   },
   typeTick() {
     const d = this.dialog; if (!d) return;
-    const text = d.line.text, n = Math.min(text.length, Math.floor((performance.now() - this.typeStart) / 1000 * TYPE_SPEED));
+    const text = d.plain, n = Math.min(text.length, Math.floor((performance.now() - this.typeStart) / 1000 * TYPE_SPEED));
     if (n > d.shown && n % 3 === 0) sfx.blip();
     d.shown = n;
-    $('dText').textContent = text.slice(0, n);
+    let left = n;
+    $('dText').replaceChildren(...d.segs.map(x => { const t = x.t.slice(0, Math.max(0, left)); left -= x.t.length; return x.em ? h('em', {}, t) : document.createTextNode(t); }));
     if (n >= text.length) { clearInterval(this.typeTimer); this.showChoices(); }
   },
   showChoices() {
@@ -254,7 +260,7 @@ export const ui = {
   },
   advance() {
     const d = this.dialog; if (!d) return;
-    if (d.shown < d.line.text.length) { this.typeStart = -1e9; this.typeTick(); return; }
+    if (d.shown < d.plain.length) { this.typeStart = -1e9; this.typeTick(); return; }
     if (d.choices) return this.pick(d.choice);
     this.nextLine();
   },

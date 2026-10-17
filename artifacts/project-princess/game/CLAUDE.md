@@ -88,8 +88,11 @@
   a whirlwind round her legs), Ziggy is **Ziggy Iggy** (the owner's cousin
   Iggy, a baby, rides on his back). Their `-evolved.png` sheets are reference
   art made from the base sheets. Emilio does not evolve.
-- A line written as `Name: "..."` shows that person's name and portrait
-  (`speakerOf` in `ui/ui.js`). The dog show judges on Sundays 9 to 5
+- **Dialogue style** (Seb, 2026-10-17): the person you are talking to just
+  says the words (no name, no quote marks: the box shows them). Someone else
+  cutting in is written `Name: "..."` and the box switches to their name and
+  portrait (`speakerOf` in `ui/ui.js`). Actions and narration go in
+  `*asterisks*` and show in italics; a line that is all action has no speaker. The dog show judges on Sundays 9 to 5
   (`SHOW_DAY`); the practice ring is open every day. Plenty Road Convenience
   never closes (`ALWAYS`). Agility cues get a tick or a cross over the dog.
 - Mini-game difficulty: the hall oven drifts on two waves, finishing has a

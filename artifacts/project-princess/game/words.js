@@ -20,7 +20,7 @@ heartScenes.2.1 = Come in, come in. We made too much pierogi. We always make too
 heartScenes.2.2 = *You leave with a container. It is still warm.*
 heartScenes.4.1 = *Trish shows you a photo album. Helen at six, dressed as a poodle for Book Week.*
 heartScenes.4.2 = "She was always going to end up with Princess, wasn't she."
-heartScenes.6.1 = Trish: "You are family now, love. That means you get the good tupperware. The one with the lid."
+heartScenes.6.1 = You are family now, love. That means you get the good tupperware. The one with the lid.
 heartScenes.10.1 = Trish sits you down at the kitchen table at 72 Woods St. Gordon is sent out of the room.
 heartScenes.10.2 = "Right. There is one thing I have never told anyone. Not even Helen."
 helpsInBattle = Trish turns up with a pierogi. Everyone feels better.
@@ -34,7 +34,7 @@ lines.4.1 = Got a cutting from an old Greek lady in Yarraville. It is busting wi
 lines.5.1 = Watch the magpies round here in spring. They know your face. They hold grudges.
 lines.6.1 = Went for a drive today, splashed out on a “Maccabee” Rhododendron. The ghost tree Rhodie of Assam. Something special for Yuulong.
 hints.princess = The poodle? Over on Allen St. Do not let her size fool you. She once chased off a council truck.
-heartScenes.2.1 = Gordon: "Hadrian, Arthur and I made pumpkin scones and jam yesterday. Hadrian stared at the dough. Arthur did the washing up (he really got into it)."
+heartScenes.2.1 = Hadrian, Arthur and I made pumpkin scones and jam yesterday. Hadrian stared at the dough. Arthur did the washing up (he really got into it).
 heartScenes.4.1 = Gordon shows you a book of mosaics from Ravenna. "Byzantium. A thousand years. They put gold behind everything. Even the saints."
 heartScenes.4.2 = "Imagine a tram shelter done like that." You can, now.
 heartScenes.6.1 = Gordon gives you a cutting from the fig, wrapped in wet newspaper. "Plant it somewhere it can get big. Trees need room. So do people."
@@ -49,7 +49,7 @@ lines.4.1 = Seeds and garden gear? Olly is just inside. He knows where every hin
 hints.princess = Little white poodle on Allen St barks at my ute every morning. Fair dinkum security guard, that one.
 giftLine = Here, have a snag in bread. On the house. Do not tell Olly. He counts them.
 heartScenes.2.1 = Gaz lets you work the tongs for five minutes. Onions on the bottom. You are a natural.
-heartScenes.4.1 = Gaz: "Eleven years of sizzles. Paid for the club's defib. Saved a bloke's life last winter." He goes quiet. "Snag?"
+heartScenes.4.1 = Eleven years of sizzles. Paid for the club's defib. Saved a bloke's life last winter. *He goes quiet.* Snag?
 heartScenes.6.1 = Gaz gives you a Sizzle Crew apron. It is the highest honour in Laverton.
 helpsInBattle = Gaz lobs a snag in bread. Perfect spiral. Energy restored.
 
@@ -61,8 +61,8 @@ lines.3.1 = Hi neighbour! You hear a squeal when you brake, you come see me. Do 
 lines.4.1 = Everyone wants an EV now. Fine. Less oil on my hands. But who fixes the aircon? Still me.
 lines.5.1 = Back home in Surabaya my uncle fixed scooters on the footpath. Now I have a hoist. He thinks I am a king.
 hints.princess = Looking for animals? Try Allen St. There is a poodle there who thinks she runs Laverton. Honestly, she might.
-presents.1.2 = Ardi: "Hi neighbour! Welcome to Laverton. Here, a durian. King of fruit! Do not open it on the train."
-presents.2.2 = Ardi: "Hi neighbour, how are you? I went fishing off Altona pier this morning. Too many snapper. Take one!"
+presents.1.2 = Hi neighbour! Welcome to Laverton. Here, a durian. King of fruit! Do not open it on the train.
+presents.2.2 = Hi neighbour, how are you? I went fishing off Altona pier this morning. Too many snapper. Take one!
 
 [PEOPLE.jack]  # Jack McPherson
 role = Jack McPherson. Paddy's brother. Waiting for the Werribee line
@@ -108,7 +108,7 @@ lines.2.1 = Fifty years in this house. The lemon tree is older than my son and b
 lines.3.1 = That schnauzer next door, he is very clever. Like a little professor. He likes cheese, not lemons. Nobody likes my lemons except the bunny people.
 hints.stanley = The grey dog on the footpath? Stanley. He is a gentleman. Do not chase him, he hates that. Bring him something fancy to eat.
 giftLine = Take a lemon. Take two. The tree, she never stops.
-heartScenes.2.1 = Nonna Pina: "You grow your own basil now? Finally, someone listens."
+heartScenes.2.1 = You grow your own basil now? Finally, someone listens.
 heartScenes.4.1 = Nonna Pina teaches you her sugo. The secret is a whole Sunday.
 helpsInBattle = Nonna Pina feeds your pet a meatball. Mangia!
 
@@ -119,7 +119,7 @@ lines.2.1 = The new supermarket down the road has self-checkouts. I have a self 
 lines.3.1 = Everyone comes in for cheese sticks for that schnauzer. Very particular dog. He only likes the good brand.
 hints.stanley = Stanley comes past every afternoon to judge my window display. If you want him to like you, cheese. Trust me.
 giftLine = Here, a cheese stick. For the schnauzer. Or for you. I do not judge, unlike the schnauzer.
-heartScenes.2.1 = James: "This job gives me plenty of time to focus on my... hobbies."
+heartScenes.2.1 = This job gives me plenty of time to focus on my... hobbies.
 heartScenes.5.1 = James gives you a Golden Gaytime from the back freezer. "Don't tell the kids."
 helpsInBattle = James sends over a Paddle Pop. Your pet is revitalised.
 
@@ -132,9 +132,9 @@ lines.3.1 = Community gardens are the best kind of property: everyone shares it 
 lines.4.1 = Got stale bread? The ducks on the creek go mad for it. Feed them enough and, well. Ducks remember a friend. You might get something special.
 hints.poppy = There is a frenchie by the lake who keeps digging under my fence. She has never found anything. She will never stop.
 giftLine = Have a carrot from my plot. Bunnies go wild for them.
-heartScenes.2.1 = Chris: "The garden belongs to everyone who turns up. That's the whole idea."
+heartScenes.2.1 = The garden belongs to everyone who turns up. That's the whole idea.
 heartScenes.4.1 = Chris shows you the seed library. People leave seeds, take seeds. Nobody owns it.
-heartScenes.6.1 = Chris: "Working bee on Saturday. Bring the twins. Bring the dogs. Bring the ghost bunny."
+heartScenes.6.1 = Working bee on Saturday. Bring the twins. Bring the dogs. Bring the ghost bunny.
 heartScenes.10.1 = Chris looks around, then leans in. "Can I tell you a secret? The lake's secret."
 heartScenes.10.2 = "There's an old duck called Emilio. Older than the steam engine. Wears a little top hat. Nobody believes me."
 heartScenes.10.3 = "Get a fishing rod, and instead of bait, cast in a bit of stale bread. James sells it at the milk bar. Then wait."
@@ -167,10 +167,10 @@ lines.4.1 = I work for the senator. I read legislation all day, then I come home
 lines.5.1 = Estimates was chaos this week. Then I got home and Salami had knocked my rice cooker off the shelf. Same energy.
 hints.salami = Salami is around the flats somewhere, judging people. Bring a sardine and some patience. Then come and battle me for her heart.
 giftLine = Here, a sardine. For Salami, not for you. I can see you eyeing it.
-heartScenes.2.1 = Rose: "Long week in the electorate office. Three inquiries, two media releases, one consituent who emails in all caps."
+heartScenes.2.1 = Long week in the electorate office. Three inquiries, two media releases, one consituent who emails in all caps.
 heartScenes.2.2 = "Salami does not care about any of it. That is why I love her."
 heartScenes.4.1 = Rose lends you a novel with her notes in the margins. "Bring it back. The notes are the best part."
-heartScenes.6.1 = Rose: "Let's watch a movie. have you seen Till Death Do Us Part?"
+heartScenes.6.1 = Let's watch a movie. have you seen Till Death Do Us Part?
 helpsInBattle = Rose pours them a really (really) stiff drink. They're really (really) feeling it.
 battle.challenge.1 = Oh, you want to be friends with Salami? Ha. Salami decides who her friends are.
 battle.challenge.2 = Show her you can handle her. Have a little play-fight.
@@ -190,9 +190,9 @@ lines.4.1 = Synergy. Enterprise. Reverse Fufillment. SERF.
 lines.5.1 = A glass of red after work. Not a bottle. A glass. A large glass. Look, it was a long week.
 hints.spooky = Spooky goes see-through when she is shy. Come back after dark, when she is solid. And bring a carrot. She is not made of stone.
 giftLine = Here, a manoush from the Lebanese bakery up the road. Za'atar. I bought two. I always buy two.
-heartScenes.2.1 = Slinks: "Public service. Policy. I write briefs that ministers do not read. Then Spooky eats them"
+heartScenes.2.1 = Public service. Policy. I write briefs that ministers do not read. Then Spooky eats them
 heartScenes.4.1 = Slinks "Fourtet is coming in October. Missing that is not an option."
-heartScenes.6.1 = Slinks: "Spooky likes you. I like you. Time for a wine."
+heartScenes.6.1 = Spooky likes you. I like you. Time for a wine.
 helpsInBattle = Slinks swirls her wine and gives the foe a look. It reconsiders everything.
 battle.challenge.1 = Spooky? You can see her? Most people cannot.
 battle.challenge.2 = If you can catch her in a play-fight, she might just haunt your place instead.
@@ -227,10 +227,10 @@ lines.3.1 = Do you like Brutalismus 3000?
 lines.4.1 = In Germany the trams have timetables you can trust. Here the 19 is more of a suggestion. 
 hints.spooky = Last night after the Edinburgh Castle I saw a black bunny near the bakery. Then it vanished. Maybe it was the Guinness. Maybe not.
 giftLine = Here, take a Guinness. Not for the pets! For you, or a friend. Prost!
-heartScenes.2.1 = Corni: "In Germany the beer is good and the trains are on time. Here the beer is fine and the trains are a mood."
+heartScenes.2.1 = In Germany the beer is good and the trains are on time. Here the beer is fine and the trains are a mood.
 heartScenes.2.2 = "But here there is Mem. So I stay."
 heartScenes.4.1 = Corni pours you a Guinness and makes you wait. "Two minutes. It settles. You cannot rush a Guinness. Or a good friend."
-heartScenes.6.1 = Corni: "Mem and I run the Merri Creek trail on Sundays. You come next week. I will carry the Guinness for after. Prost!"
+heartScenes.6.1 = Mem and I run the Merri Creek trail on Sundays. You come next week. I will carry the Guinness for after. Prost!
 helpsInBattle = Corni hurls a can of Guinness. "PROST!" It hits the foe and foams everywhere.
 
 [PEOPLE.sinead]  # Sinead
@@ -242,9 +242,9 @@ lines.4.1 = Social work is hard some days. Then I come home and Poppy licks my s
 lines.5.1 = *puff* Mango Ice. Do not judge me. I have had a week. Housing waitlists are twelve years long, did you know that?
 hints.poppy = Poppy will bonk into you at full speed. That is how she says hi. Throw her a tennis ball and you are mates for life.
 giftLine = Take a tennis ball. We have forty. Poppy loses one a day and finds two.
-heartScenes.2.1 = Sinead: "Social work is mostly paperwork and phone calls. And then one day a patient gets housed and it is all worth it."
+heartScenes.2.1 = Social work is mostly paperwork and phone calls. And then one day a patient gets housed and it is all worth it.
 heartScenes.4.1 = Sinead sits with you on the unit steps, vaping something called Mango Ice. "Do not tell my mum. Or my clients. Or my boss."
-heartScenes.6.1 = Sinead: "You're basically on the lease now. Poppy has decided. I have filed the paperwork. In my head."
+heartScenes.6.1 = You're basically on the lease now. Poppy has decided. I have filed the paperwork. In my head.
 helpsInBattle = Sinead blows a massive mango vape cloud. The foe cannot see a thing.
 battle.challenge.1 = Hi! Poppy loves a play-fight. Like, LOVES one. Are you sure?
 battle.challenge.2 = She is basically a bowling ball with ears. Brace yourself.
@@ -265,9 +265,9 @@ lines.5.1 = Imagine this. Me, you, the crew. Unlimited fresh beers. All you can 
 lines.6.1 = The Mernda line on the skyrail is beautiful. I will hear no criticism. Look at those concrete columns.
 hints.stanley = Stanley walks away from strangers. It is not personal. Bring him something fancy, then give him time. He comes around.
 giftLine = Have a cheese stick. We buy them by the crate. Stanley has standards.
-heartScenes.2.1 = Tim: "You know what would solve this crisis in the union movement? One big union. There's actually not many problems that one big union wouldn't solve."
-heartScenes.4.1 = Tim: "There's a ghost at Reservoir station. I saw it one night. Incredibly powerful.
-heartScenes.6.1 = Tim: "Nicholas and I talked. You're invited to Stanley's birthday. There is a cake. He will not eat it. I'll even get out the hibachi."
+heartScenes.2.1 = You know what would solve this crisis in the union movement? One big union. There's actually not many problems that one big union wouldn't solve.
+heartScenes.4.1 = There's a ghost at Reservoir station. I saw it one night. Incredibly powerful.
+heartScenes.6.1 = Nicholas and I talked. You're invited to Stanley's birthday. There is a cake. He will not eat it. I'll even get out the hibachi.
 helpsInBattle = Tim calls a snap stop-work meeting. The foe downs tools.
 battle.challenge.1 = You want to befriend Stanley? He only likes smart animals. Let's see if your team qualifies.
 battle.ask = Play-fight Stanley?
@@ -285,9 +285,9 @@ lines.3.1 = The tartan is vintage. So is the house. So is Stanley, in schnauzer 
 lines.4.1 = Law school at night, union work by day. Contract law is just choreography with more commas.
 lines.5.1 = I used to dance. Contemporary, mostly. Now my only leap is over the puddle at the end of Glasgow Ave.
 hints.stanley = If Stanley walks off, keep at it. Three hearts and he stops ignoring you. Six and he comes to say hi. It is very moving.
-heartScenes.2.1 = Nicholas: "Law school by night, union office by day. I read contracts for fun now. Something has gone wrong with me."
+heartScenes.2.1 = Law school by night, union office by day. I read contracts for fun now. Something has gone wrong with me.
 heartScenes.4.1 = Nicholas shows you a video of himself dancing, years ago. Leaps. Actual leaps. "Do not tell Tim you have seen this. He cries."
-heartScenes.6.1 = Nicholas: "When I am admitted, my first case is Stanley versus the electric blanket. He wants custody."
+heartScenes.6.1 = When I am admitted, my first case is Stanley versus the electric blanket. He wants custody.
 helpsInBattle = Nicholas raises an objection. "Sustained!" says nobody, but the foe is rattled.
 
 [PEOPLE.binman]  # Bin Man
@@ -297,7 +297,7 @@ lines.2.1 = Bin night is Tuesday. The bins know. They get restless around 6pm.
 lines.3.1 = Somebody put a pizza box with cheese stuck on it in the yellow bin. Contamination. My recycling bin is devastated.
 lines.4.1 = Soft plastics do not go in the yellow bin! I will tell you that one for free, every single time.
 hints.princess = The poodle on Allen St barks at my truck every single week. She is a worthy rival. My bins respect her.
-heartScenes.3.1 = Bin Man: "Want to know a secret? I name every bin on my route. That one's Kevin."
+heartScenes.3.1 = Want to know a secret? I name every bin on my route. That one's Kevin.
 heartScenes.6.1 = Bin Man lets you ride in the truck for one street. You will never be the same.
 helpsInBattle = The Bin Man's truck reverses in, beeping. Everyone panics.
 battle.challenge.1 = Oi. You look like someone who puts soft plastics in the recycling.
@@ -312,18 +312,18 @@ battle.again.1 = Back for another bin-off? The bins have been training. Mostly b
 
 [PEOPLE.spiro]  # Spiro
 role = Runs the fish van on Kororoit Creek Rd
-lines.1.1 = Spiro: "Forty years frying fish. Flake, potato cakes, dim sims. The dim sims are not Greek. Nobody complains."
-lines.2.1 = Spiro: "You catch, I buy. Better than the milk bar pays, I promise you. James knows. James is jealous."
-lines.3.1 = Spiro: "Carp? Fine, fine, I take carp. I will not tell you what goes in the potato cakes."
-lines.4.1 = Spiro: "Kororoit Creek used to be full of rubbish. Now there are eels again. The volunteers did that. Respect."
-giftLine = Spiro: "Here, a sardine for the dog. Off the books."
+lines.1.1 = Forty years frying fish. Flake, potato cakes, dim sims. The dim sims are not Greek. Nobody complains.
+lines.2.1 = You catch, I buy. Better than the milk bar pays, I promise you. James knows. James is jealous.
+lines.3.1 = Carp? Fine, fine, I take carp. I will not tell you what goes in the potato cakes.
+lines.4.1 = Kororoit Creek used to be full of rubbish. Now there are eels again. The volunteers did that. Respect.
+giftLine = Here, a sardine for the dog. Off the books.
 
 [PEOPLE.julie]  # Julie Jana
 role = Door knocker extraordinaire
-lines.1.1 = Julie Jana: "Twenty-one weeks! Every door counts!"
-byHero.helen.1.1 = Julie Jana: "Hey Helen!!! You ready for some door knocking? We could really use your help! Only 21 weeks until the election, no time to lose!"
-byHero.hadrian.1.1 = Julie Jana: "Hey boys, where's your mumma? She's supposed to help me go door knocking."
-byHero.aleksy.1.1 = Julie Jana: "Hey boys, where's your mumma? She's supposed to help me go door knocking."
+lines.1.1 = Twenty-one weeks! Every door counts!
+byHero.helen.1.1 = Hey Helen!!! You ready for some door knocking? We could really use your help! Only 21 weeks until the election, no time to lose!
+byHero.hadrian.1.1 = Hey boys, where's your mumma? She's supposed to help me go door knocking.
+byHero.aleksy.1.1 = Hey boys, where's your mumma? She's supposed to help me go door knocking.
 battle.tutorial.1 = "Oh, is that Princess? Perfect. Let's warm up with a quick play-fight. Nobody gets hurt, promise."
 battle.tutorial.2 = "Here's how it works. Pick one of Princess's moves each turn. Hits lower the other side's energy bar."
 battle.tutorial.3 = "Every move has a type. The right type hits twice as hard, the wrong one half. Treats from your bag top her up."
@@ -339,7 +339,7 @@ role = Was into Brunswick before it was cool
 lines.1.1 = This street was better in 2011. Before the second oat milk place opened.
 lines.2.1 = I ferment my own hot sauce. And kombucha. And opinions.
 lines.3.1 = My record collection is organised autobiographically. Do not touch it.
-heartScenes.3.1 = Hipster: "Your basil is... actually good. Do not tell anyone I said that."
+heartScenes.3.1 = Your basil is... actually good. Do not tell anyone I said that.
 helpsInBattle = The Hipster explains the foe is "derivative". It is crushed.
 battle.challenge.1 = Oh. You battle? That is so mainstream.
 battle.challenge.2 = My team is quite underground. You probably have not heard of them.
@@ -382,9 +382,9 @@ lines.2.1 = Water your beds every day, mate. Or get a sprinkler, and let the spr
 lines.3.1 = The snag stand is out the front on Saturdays. Onions on the bottom. That is not up for debate.
 lines.4.1 = A hose that reaches every bed in a garden. Changed my life. Changed my marriage, honestly.
 giftLine = Take a seedling. We had a few left over. Give it to someone who'll love it.
-heartScenes.2.1 = Olly: "Twelve years at Bunnings. I know where every hinge in this warehouse lives. Every single one."
+heartScenes.2.1 = Twelve years at Bunnings. I know where every hinge in this warehouse lives. Every single one.
 heartScenes.4.1 = Olly gives you a red apron with your name on it. "Honorary team member. You still have to pay for things."
-heartScenes.6.1 = Olly: "Best thing about this job? Someone comes in for one screw and leaves with a veggie patch. Changes their life."
+heartScenes.6.1 = Best thing about this job? Someone comes in for one screw and leaves with a veggie patch. Changes their life.
 helpsInBattle = Olly turns up with the sausage sizzle tongs. One snag, perfectly cooked, onions on the bottom.
 
 [PEOPLE.paddy]  # Paddy
@@ -549,7 +549,7 @@ lines.2.1 = Two laps of the gardens every morning. Girlie does about six, mostly
 lines.3.1 = Carlton has changed so much. The trams are the same, though. The 96 still rattles up Nicholson St like it owns the place.
 lines.4.1 = Like the glasses? Pink. Life is too short for beige frames.
 hints.girlie = Girlie is mine, love. If you want her on your team, you will have to win her fair and square. She will not mind. She likes everyone.
-heartScenes.3.1 = Dell: "Girlie came from the lost dogs home. Skinny, nervous little thing. Look at her now. Built like a coffee table."
+heartScenes.3.1 = Girlie came from the lost dogs home. Skinny, nervous little thing. Look at her now. Built like a coffee table.
 heartScenes.6.1 = Dell squeezes your arm. "You look after her, won't you. She thinks she's a lap dog. Let her."
 helpsInBattle = Dell strides over, pink glasses flashing. "Oi! Play nicely!" Everyone, including the foe, sits.
 battle.challenge.1 = You want Girlie on your team? Ha! You will have to get past her first. Good luck. She is mostly tongue.
@@ -568,7 +568,7 @@ lines.3.1 = My nonna made gelato in a bucket of ice and salt in 1956. I have a m
 lines.4.1 = Lygon St rent has gone up again. Every scoop is now four percent landlord.
 giftLine = Here, a cup of the dog gelato. Tell your pets it is from Gina.
 heartScenes.3.1 = Gina hands you a tiny spoon of something new. "Fig and honey. You are the first to try it. Tell me the truth."
-heartScenes.6.1 = Gina: "When I opened, the bank said a girl cannot run a shop on Lygon St. Thirty years. I keep their letter on the fridge."
+heartScenes.6.1 = When I opened, the bank said a girl cannot run a shop on Lygon St. Thirty years. I keep their letter on the fridge.
 helpsInBattle = Gina sprints out of the gelateria with a cup of something cold. "Mangia! Then fight!"
 
 [PEOPLE.spruiker]  # Tony
@@ -606,14 +606,14 @@ role = Melbourne Uni student. Arts and law. Tired
 lines.1.1 = I have three essays due and I am at a gelateria. This is called balance.
 lines.2.1 = My rent is more than my Youth Allowance. So I work at a cafe. To afford the cafe.
 lines.3.1 = Did you know the Exhibition Building is where the first federal parliament sat? I learnt that for an exam. Then forgot. Then remembered.
-heartScenes.3.1 = Mia: "I joined the student union to get free sausages. Now I am on the rent campaign. The sausages were a trap. A good trap."
+heartScenes.3.1 = I joined the student union to get free sausages. Now I am on the rent campaign. The sausages were a trap. A good trap.
 
 [PEOPLE.ana]  # Ana
 role = Volunteers at Melbourne Museum
 lines.1.1 = Welcome! The dinosaurs are on the left, Phar Lap is in the middle, and the forest gallery is through the glass.
 lines.2.1 = People ask if Phar Lap is real. Yes. People ask if he is happy. He is a horse in a glass box. He is at peace.
 lines.3.1 = Kids love the bugs. Adults pretend not to. Then they spend an hour at the bugs.
-heartScenes.3.1 = Ana: "I taught science for forty years. Now I volunteer. Same job, no marking, and the dinosaurs never talk back."
+heartScenes.3.1 = I taught science for forty years. Now I volunteer. Same job, no marking, and the dinosaurs never talk back.
 helpsInBattle = Ana arrives with a museum fact so interesting the foe stops to listen.
 
 [PEOPLE.jun]  # Jun
@@ -634,7 +634,7 @@ role = Plays giant chess at the State Library. Every day
 lines.1.1 = Pawn to e4. I always open pawn to e4. Have done since 1983. People know it now. They still lose.
 lines.2.1 = The trick with giant chess is your back. Lift with your legs. The king weighs four kilos.
 lines.3.1 = Some bloke beat me in 2004. I think about it every day. He never came back.
-heartScenes.4.1 = Chess Kev: "Thirty years a fitter at the railway workshops. Then they shut it.
+heartScenes.4.1 = Thirty years a fitter at the railway workshops. Then they shut it.
 heartScenes.4.2 = So now I play chess. Still moving heavy things around."
 helpsInBattle = Chess Kev appears, studies the board, and quietly moves your pet out of danger. "Check."
 
@@ -650,7 +650,7 @@ lines.1.1 = Welcome to the reading room. Membership is free. Wifi is free. Talki
 lines.2.1 = People think libraries are quiet. Libraries are where you go to find out everything. That is very loud, actually.
 lines.3.1 = Ned Kelly's armour is upstairs. He came in for the reading room once. Kidding. Shhh.
 giftLine = A book from the discard trolley. It deserves a second life. So do we all.
-heartScenes.3.1 = Margaret: "When they wanted to cut our hours, we organised. Petitions, rallies, the lot. Librarians are terrifying when we have a cause."
+heartScenes.3.1 = When they wanted to cut our hours, we organised. Petitions, rallies, the lot. Librarians are terrifying when we have a cause.
 heartScenes.6.1 = Margaret slips a bookmark into your hand. It reads: "Knowledge is power. Libraries are free. Draw your own conclusions."
 helpsInBattle = Margaret appears from nowhere. "SHHH." The foe is so startled it forgets what it was doing.
 
@@ -688,7 +688,7 @@ role = Runs a coffee cart on Degraves St
 lines.1.1 = Long black? Magic? Batch brew? Tell me how you feel and I will tell you what you are drinking.
 lines.2.1 = A magic is a double ristretto with steamed milk in a small glass. Melbourne invented it. Nobody else knows. Keep it that way.
 lines.3.1 = Twelve coffee places on this one laneway. We all buy beans from the same roaster. Please do not tell the tourists.
-heartScenes.3.1 = Remy: "I was a chef for ten years. Fifteen hour days, cash in hand. The cart is small, but I am the boss. And I get Sundays."
+heartScenes.3.1 = I was a chef for ten years. Fifteen hour days, cash in hand. The cart is small, but I am the boss. And I get Sundays.
 helpsInBattle = Remy hands your pet a babyccino. Marshmallow and everything. It gets its second wind.
 
 [PEOPLE.spray]  # Spray
@@ -723,7 +723,7 @@ lines.1.1 = Hot jam donuts! Careful, the jam is the temperature of the sun. Ever
 lines.2.1 = This van has been here since 1950. Dad ran it, then me. Same recipe. Same van. New tyres, once.
 lines.3.1 = Five for ten dollars. Or one for you and four for the walk home. There will be none left by the tram.
 giftLine = A hot jam donut for the road. Blow on it. Seriously, blow on it.
-heartScenes.4.1 = Dot: "People ask for the recipe. It is flour, sugar, jam and seventy years of standing in a van. The last bit is hard to buy."
+heartScenes.4.1 = People ask for the recipe. It is flour, sugar, jam and seventy years of standing in a van. The last bit is hard to buy.
 helpsInBattle = Dot leans out of the van and lobs a hot jam donut. Your pet catches it. The foe gets the jam.
 
 [PEOPLE.yianni]  # Yianni
@@ -732,7 +732,7 @@ lines.1.1 = Try the feta. Try the olives. Try the dolmades. Trying is free. Buyi
 lines.2.1 = Sixty cheeses in this cabinet. My wife can name them all with her eyes closed. I can name forty. On a good day.
 lines.3.1 = Saturday mornings, the queue goes past the meat hall. People wait an hour for my taramasalata. I would too.
 giftLine = Some cheese, for the pets. Not the good cheese. The good cheese is for people.
-heartScenes.3.1 = Yianni: "My father came from Kalamata with one suitcase and a jar of olives. The jar did not survive the trip. The business did."
+heartScenes.3.1 = My father came from Kalamata with one suitcase and a jar of olives. The jar did not survive the trip. The business did.
 helpsInBattle = Yianni throws an olive with deadly accuracy. Pit and all.
 
 [PEOPLE.carmel]  # Carmel
@@ -749,9 +749,9 @@ lines.2.1 = This week it's sours. A raspberry gose from Ballarat. It tastes like
 lines.3.1 = Wine people are coming round to orange wine. Beer people are coming round to anything with a cartoon on the can.
 lines.4.1 = Mountain Goat? Nah. But have you tried this small batch? No. Nobody has. That's the point.
 lines.5.1 = Betty sends me to work with leftovers every day. The whole of Sydney Rd knows when it's lasagne Monday.
-heartScenes.2.1 = Ward: "I used to run a pet shop, you know. I still miss the animals. That's why I say hello to everyone's dog. Every single one."
+heartScenes.2.1 = I used to run a pet shop, you know. I still miss the animals. That's why I say hello to everyone's dog. Every single one.
 heartScenes.4.1 = Ward slips you a can with a hand-drawn label. "Coburg nano-brewery. Only forty cans exist. Thirty-nine now."
-heartScenes.6.1 = Ward: "Betty and I have been together nineteen years. She cooks, I bring the beer. It's a good system."
+heartScenes.6.1 = Betty and I have been together nineteen years. She cooks, I bring the beer. It's a good system.
 helpsInBattle = Ward rolls a keg out the side door. It thunders past the foe, who dives out of the way.
 
 [PEOPLE.romey]  # Romey
@@ -762,9 +762,9 @@ lines.3.1 = My dad's got a farm out near Ballarat. Sheep, two dogs, one very rud
 lines.4.1 = My boyfriend Bryan works at the Ballarat Courier. Last week he put his work shirts in with the bleach. Half his wardrobe is now "vintage". He wore it to work.
 lines.5.1 = Bryan got in trouble at the Courier again. He ran a photo of a prize-winning pumpkin. Upside down. On the front page.
 lines.6.1 = Gear makes a real difference in a play-fight. A good lead keeps them steady. A bow tie makes them clever.
-heartScenes.2.1 = Romey: "Dad says you can tell a lot about a person by how their dog looks at them. Yours look at you like you're the sun."
-heartScenes.4.1 = Romey: "Bryan tried to make me dinner. He set off the smoke alarm, then the neighbour's, then the one at the servo. Three alarms. A personal best."
-heartScenes.6.1 = Romey: "If I ever get my own place out at Dad's, there'll be room for every animal nobody wants. You'll visit. That's an order."
+heartScenes.2.1 = Dad says you can tell a lot about a person by how their dog looks at them. Yours look at you like you're the sun.
+heartScenes.4.1 = Bryan tried to make me dinner. He set off the smoke alarm, then the neighbour's, then the one at the servo. Three alarms. A personal best.
+heartScenes.6.1 = If I ever get my own place out at Dad's, there'll be room for every animal nobody wants. You'll visit. That's an order.
 helpsInBattle = Romey slides over a free sample from the counter jar. "Shh."
 
 [PEOPLE.sharma]  # Mr Sharma
@@ -853,7 +853,7 @@ lines.2.1 = Moreland became Merri-bek in 2022. I have been changing the stamps e
 lines.3.1 = Toddler storytime is Tuesdays. It is less "story" and more "time". Lovely, though.
 lines.4.1 = Rose from Brunswick has eleven books out. Overdue. I have a file on her. It is a very fond file.
 giftLine = From the discard trolley. It is twenty cents in the sale, but for you, free. Libraries are like that.
-heartScenes.3.1 = Deb: "A library is the only place you can just be, without buying anything. Fight for them."
+heartScenes.3.1 = A library is the only place you can just be, without buying anything. Fight for them.
 heartScenes.6.1 = Deb gives you an old Coburg Library date stamp. It says 1994. It still works.
 helpsInBattle = Deb says "SHHH" so firmly that the foe sits down and is quiet.
 
@@ -862,7 +862,7 @@ role = Pharmacist at Summerhill Discount Chemist
 lines.1.1 = Hello! Scripts at the back, sunscreen at the front, and please stop asking me about the vapes.
 lines.2.1 = Slip, slop, slap, seek, slide. I will quiz you on the way out.
 lines.3.1 = Everyone wants to show me a rash. I have seen every rash in Reservoir. I am never surprised.
-heartScenes.4.1 = Mei: "I studied for five years and now I mostly explain that you cannot take Panadol with Nurofen. You can. I explain it a lot."
+heartScenes.4.1 = I studied for five years and now I mostly explain that you cannot take Panadol with Nurofen. You can. I explain it a lot.
 helpsInBattle = Mei runs out with a tube of something medicated and patches your pet up. Pharmacist's orders.
 
 [PEOPLE.kostas]  # Kostas
@@ -891,7 +891,7 @@ lines.2.1 = Vanilla slice. Some people call it a snot block. Those people are no
 lines.3.1 = I start baking at three. By ten the tradies have eaten everything. By two the nonnas want a discount.
 lines.4.1 = My banh mi is not on the menu. Ask nicely. Very nicely.
 giftLine = Thuy hands you a warm sausage roll wrapped in a paper bag. "Left over. Do not tell the tradies."
-heartScenes.4.1 = Thuy: "Hot bread shops kept my whole family going when we arrived. Now I keep the whole of Plenty Rd going. Fair trade."
+heartScenes.4.1 = Hot bread shops kept my whole family going when we arrived. Now I keep the whole of Plenty Rd going. Fair trade.
 helpsInBattle = Thuy lobs a warm finger bun over. Your pet eats it mid-fight and feels much better.
 
 [PEOPLE.raj]  # Raj
@@ -899,7 +899,7 @@ role = Runs the $2 shop. Most things are not two dollars
 lines.1.1 = Welcome! Everything is two dollars! Except that. And that. And that one. Those are five.
 lines.2.1 = Phone cables, fake flowers, a lava lamp, a rubber chicken. Christmas lights, all year round.
 lines.3.1 = People laugh at the $2 shop. Then their kid has a party at four o'clock and suddenly I am a hero.
-heartScenes.3.1 = Raj: "Rent here went up again. I said to the landlord, what am I, a $5 shop now? He did not laugh."
+heartScenes.3.1 = Rent here went up again. I said to the landlord, what am I, a $5 shop now? He did not laugh.
 
 [PEOPLE.lyn]  # Lyn
 role = Runs the Lincraft stall in the middle of Summerhill. Has opinions about glitter
@@ -907,7 +907,7 @@ lines.1.1 = Welcome to Lincraft! Yarn, googly eyes, felt, paint. If you can stic
 lines.2.1 = Glitter is not a craft supply. Glitter is a lifestyle. You will be finding it in 2040.
 lines.3.1 = Painting the house? I mix any colour you like. As long as you like one of six.
 lines.4.1 = Twins, shopping on their own? Your dad knows? Well. Googly eyes never hurt anyone. Much.
-heartScenes.3.1 = Lyn: "I knitted the jumper on the big gum at the Botha Ave roundabout. Don't tell the council. Well. Tell Paddy."
+heartScenes.3.1 = I knitted the jumper on the big gum at the Botha Ave roundabout. Don't tell the council. Well. Tell Paddy.
 
 [PEOPLE.shaz]  # Shaz
 role = Hairdresser at Curl Up & Dye. Heard every secret in Reservoir
@@ -918,7 +918,7 @@ lines.4.1 = Those twins need a haircut. Do not tell Helen I said so.
 byHero.helen.1.1 = Helen, love. Your roots. We need to talk about your roots. Book in. I will do you a deal.
 byHero.hadrian.1.1 = Look at that hair! Like a little Beatle. Sit still and I will give you a lolly.
 byHero.aleksy.1.1 = Hello gorgeous! No, you cannot play with the scissors. You can play with the spray bottle.
-heartScenes.3.1 = Shaz: "My mum had this shop before me. Same chairs. Same dryers. The name was her joke. She was very funny."
+heartScenes.3.1 = My mum had this shop before me. Same chairs. Same dryers. The name was her joke. She was very funny.
 heartScenes.6.1 = Shaz leans in. "Between you and me, Kostas has a crush on Connie. Thirty years. Never said a word. Men."
 helpsInBattle = Shaz blasts the foe with a can of hairspray. Big hair, big fumes, big retreat.
 
@@ -927,7 +927,7 @@ role = Mall walker. Six laps before the shops open, every day
 lines.1.1 = Keep up, darling! Six laps before nine. Doctor says it is good for the heart. Shaz says it is good for gossip.
 lines.2.1 = Forty years I have lived in Reservoir. I have seen this centre change its tiles four times.
 lines.3.1 = The young ones go to the gym. Why pay? The centre has air conditioning and a bakery at the finish line.
-heartScenes.4.1 = Connie: "My husband and I walked these laps for twenty years. Now I walk them for both of us. Faster, too. He was slow."
+heartScenes.4.1 = My husband and I walked these laps for twenty years. Now I walk them for both of us. Faster, too. He was slow.
 helpsInBattle = Connie power walks straight through the fight. The foe is knocked flat by her elbows.
 
 [PEOPLE.bill]  # Bill
@@ -935,7 +935,7 @@ role = Food court regular. Same table, same dim sum, since forever
 lines.1.1 = Pull up a chair. Not that one, that one wobbles. I have been meaning to tell someone about it since 1996.
 lines.2.1 = Four dim sims, steamed, soy sauce. Every day. The doctor says I should vary my diet. I sometimes have them fried.
 lines.3.1 = I worked forty years at the tannery on Plenty Rd. Union man. We won the 38 hour week, you know. You are welcome.
-heartScenes.3.1 = Bill: "When the plant shut, the union got us our entitlements. Every cent. Remember that when someone says unions are old hat."
+heartScenes.3.1 = When the plant shut, the union got us our entitlements. Every cent. Remember that when someone says unions are old hat.
 helpsInBattle = Bill bangs his table and calls a stop work meeting. The foe is so confused it stops working.
 
 [PEOPLE.trev]  # Trev
@@ -943,7 +943,7 @@ role = Trolley collector. The car park is his kingdom
 lines.1.1 = Every trolley in this car park has a name. That one is Wonky. That one is Also Wonky.
 lines.2.1 = I once found a trolley in Edwardes Lake. Nobody knows how it got there. The ducks know.
 lines.3.1 = Twelve trolleys in a line, round the corner, up the ramp. People clap sometimes. I pretend not to notice.
-heartScenes.3.1 = Trev: "Casual for nine years. Finally got made permanent last month. The union rep sorted it. Bought the whole crew a pie."
+heartScenes.3.1 = Casual for nine years. Finally got made permanent last month. The union rep sorted it. Bought the whole crew a pie.
 helpsInBattle = Trev sends a line of twelve trolleys rumbling across the car park. The foe is bowled over.
 battle.challenge.1 = Oi! You've got that look. The look of someone who leaves trolleys in the disabled bay.
 battle.challenge.2 = My trolleys want a word.
@@ -972,7 +972,7 @@ hints.salami = A tabby comes up the driveway most afternoons, sits on my doormat
 giftLine = I picked these up this morning. Take one before I eat all four.
 heartScenes.2.1 = Adam makes you a coffee on the machine he saved up for. "It is the only thing in the flat worth anything." It is genuinely great coffee.
 heartScenes.4.1 = Adam shows you the courtyard out the back. One lemon tree, two chairs, a string of lights. "Small, but it is mine."
-heartScenes.6.1 = Adam: "You can get the 96 straight into the city from the front door, you know." He says it like he is handing you a gift. He sort of is.
+heartScenes.6.1 = You can get the 96 straight into the city from the front door, you know. *He says it like he is handing you a gift. He sort of is.*
 helpsInBattle = Adam leans out his front window and yells encouragement. It helps more than you would think.
 battle.challenge.1 = Adam looks at your team, then at Chloe, then back at you.
 battle.challenge.2 = "Alright. If you can get past us, she is yours to take out. She will come back. She always comes back."
@@ -992,7 +992,7 @@ lines.4.1 = She sits on a chair at the pub. On the chair. Nobody taught her that
 hints.chloe = Chloe is right there. Beat Adam first, though. He has been talking about this battle all week.
 giftLine = Here, take one of hers. We have about forty.
 heartScenes.3.1 = Chelsea shows you a photo of Chloe the day they got her: all ears, no idea. "She has not changed much, honestly."
-heartScenes.5.1 = Chelsea: "She chose us, really. Sat down in the yard and would not leave." Chloe, hearing her name, does one enormous lap of the driveway.
+heartScenes.5.1 = She chose us, really. Sat down in the yard and would not leave. *Chloe, hearing her name, does one enormous lap of the driveway.*
 helpsInBattle = Chelsea whistles. Whatever Chloe is doing, it stops, and so does the foe.
 
 [PEOPLE.sorceress]  # The Sorceress
@@ -1049,7 +1049,7 @@ lines.2.1 = Thirty years of carpentry and the only thing I cannot fix is the ren
 lines.3.1 = Saw your front door, by the way. Hinge is going. Not today. But it is going.
 giftLine = Snag from the job site barbie. Still warm. Mostly.
 heartScenes.3.1 = James measures your doorway twice, out of habit. "Cut once," he says, and winks. You do not know what it means, but you feel safer.
-heartScenes.6.1 = James: "Seriously. Wild party, doors off, bring them round. No charge for mates." He shakes your hand. It is like shaking a fence post.
+heartScenes.6.1 = Seriously. Wild party, doors off, bring them round. No charge for mates. *He shakes your hand. It is like shaking a fence post.*
 helpsInBattle = James jogs over with a cordless drill. The foe takes one look and decides to be somewhere else.
 
 [PEOPLE.concetta]  # Nonna Concetta
@@ -1070,7 +1070,7 @@ lines.2.1 = Twins, a mayor husband and a house full of pets? You are doing reall
 lines.3.1 = Abby says you are lovely. Abby is a good judge. She gets that from me.
 giftLine = Honey from the Merri Creek hives. Very good in tea. Very good for a hard day.
 heartScenes.3.1 = Abby's aunt asks how you are, and then waits for a real answer. You give her one. She just listens. It helps more than you expected.
-heartScenes.6.1 = Abby's aunt: "Remember to look after yourself too. Not just the pets." You promise. You mostly mean it.
+heartScenes.6.1 = Remember to look after yourself too. Not just the pets. *You promise. You mostly mean it.*
 helpsInBattle = Abby's aunt says something calm and kind. Your pet takes a deep breath and gets back up.
 
 [PEOPLE.treasurer]  # Maureen the Treasurer
@@ -1080,7 +1080,7 @@ lines.2.1 = Crazy Jeff says I am terrifying. I keep accurate books. Some people 
 lines.3.1 = Club championship is every Wednesday, ten till four. Members only. The tomato seeds are the real prize, between you and me.
 lines.4.1 = Thirty one years of minutes. Not one missing. The bowls I leave to the boys.
 heartScenes.3.1 = Maureen shows you the ledger from 1987. Next to "hailstorm" someone has written "never again" in very neat handwriting. It was her.
-heartScenes.6.1 = Maureen: "You pay on time and you never argue with the umpire. You would make a lovely treasurer one day." High praise.
+heartScenes.6.1 = You pay on time and you never argue with the umpire. You would make a lovely treasurer one day. *High praise.*
 helpsInBattle = Maureen reads out the club rules, very slowly. The foe loses the will to keep going.
 
 [PEOPLE.michael]  # Michael
@@ -1089,7 +1089,7 @@ lines.1.1 = Hey. You would not have any codeine on you? No? Yeah. Fair enough.
 lines.2.1 = Have you seen Nathan lately? Or Rose? I have not heard from either of them in ages.
 lines.3.1 = Tell Rose I said hi if you see her. And Nathan. Tell Nathan too.
 heartScenes.3.1 = You tell Michael that Rose is over on Donald St and Nathan runs Rusty round the athletics track. He looks really relieved. "I will text them. I will actually text them."
-heartScenes.6.1 = Michael: "Rose messaged me back. We are getting a coffee." He pulls his hood down for the first time. "Thanks for that."
+heartScenes.6.1 = Rose messaged me back. We are getting a coffee. *He pulls his hood down for the first time.* Thanks for that.
 helpsInBattle = Michael wanders over, hood up, and stands next to your pet. Just being there. It counts.
 
 [PEOPLE.hakan]  # Hakan
@@ -1101,7 +1101,7 @@ lines.4.1 = Brunswick people come up here and say "it's so authentic". It is jus
 hints.salami = A tabby from Donald St sits outside my back door every morning. She knows exactly when the cheese pide comes out.
 giftLine = Here, still warm. Do not tell me you are full. Nobody is full of pide.
 heartScenes.2.1 = Hakan shows you how to fold a pide into a boat. Yours looks like a shoe. "It is a very good shoe," he says.
-heartScenes.5.1 = Hakan: "You come every week now. You are a regular. Regulars get the corner bit." He hands you three.
+heartScenes.5.1 = You come every week now. You are a regular. Regulars get the corner bit. *He hands you three.*
 helpsInBattle = Hakan jogs over with a hot tray. Your pet smells pide and finds a second wind.
 
 [PEOPLE.layla]  # Layla
@@ -1118,7 +1118,7 @@ lines.2.1 = Ned Kelly's remains ended up buried here. They dug him up again in 2
 lines.3.1 = The walls are bluestone, quarried by prisoners. Half of Melbourne's gutters are prison labour. Think about that next time it rains.
 lines.4.1 = People say the watchtower is haunted. I say it's possums. Very angry, very historical possums.
 hints.spooky = There's a bunny in Brunswick that vanishes through walls. I've seen it. I've seen a lot of things. That bunny is in my top five.
-heartScenes.3.1 = Merv: "My dad was a guard here. Never spoke about it. I give the tours so somebody does."
+heartScenes.3.1 = My dad was a guard here. Never spoke about it. I give the tours so somebody does.
 heartScenes.6.1 = Merv takes you up the watchtower. You can see all the way to the city. And every possum on Bell St.
 helpsInBattle = Merv tells the foe a very long story about 1880s prison reform. It loses the will to fight.
 battle.challenge.1 = Fancy the night tour? Fair warning. The possums in this wall have been here longer than the apartments.
@@ -1138,7 +1138,7 @@ lines.2.1 = E-scooters on the bike path. Every day. I ring my bell. They do not 
 lines.3.1 = The Upfield line runs every twenty minutes. If it runs. I am faster. I am always faster.
 lines.4.1 = They put the trains up on a skyrail here. Now the level crossings are gone and I have nothing to be angry at. Except scooters.
 hints.salami = There's a tabby on Donald St in Brunswick who sits in the middle of the lane like she owns it. She probably does.
-heartScenes.4.1 = Tash: "I ride for the climate. And for the cafe at the end. Mostly the cafe."
+heartScenes.4.1 = I ride for the climate. And for the cafe at the end. Mostly the cafe.
 helpsInBattle = Tash rings her bell and blasts past. The foe spins around twice.
 battle.challenge.1 = You look like someone who walks three abreast on a shared path.
 battle.challenge.2 = Let's settle this. Lycra versus whatever you've got.
@@ -1157,7 +1157,7 @@ lines.2.1 = Thirty-two years at this counter. My father before me. Before that, 
 lines.3.1 = They want to put eighteen storeys of apartments on the market. Where will I put my olives? On the balcony?
 lines.4.1 = Ask your nonna where she buys her fetta. She will say here. If she says somewhere else, she is lying to protect me.
 heartScenes.3.1 = Stavros cuts you a slice of something. You do not know what it is. It is the best thing you have eaten all year.
-heartScenes.5.1 = Stavros: "You are family now. Family pays the same price. But family gets extra olives."
+heartScenes.5.1 = You are family now. Family pays the same price. But family gets extra olives.
 helpsInBattle = Stavros leans over the counter with a toothpick of fetta. Your pet is restored. Your pet is in love.
 
 [PEOPLE.linh]  # Linh
@@ -1185,7 +1185,7 @@ lines.3.1 = They want a "reimagined market". You cannot reimagine a market. A ma
 lines.4.1 = The beret? Paris, 1974. It has outlived two Holdens and three prime ministers. It will outlive the developers.
 lines.5.1 = Organise, don't agonise. I got that off a badge in 1982. Still good advice.
 hints.stanley = A little grey schnauzer comes through on Saturdays with his two dads from Glasgow Ave. Inspects every stall. Very thorough.
-heartScenes.2.1 = Greco: "Every single stallholder here signed. Every one. That is solidarity. Now you sign too. Use the good pen."
+heartScenes.2.1 = Every single stallholder here signed. Every one. That is solidarity. Now you sign too. Use the good pen.
 heartScenes.5.1 = Greco pins a SAVE PRESTON MARKET badge on you and straightens it twice. "There. Now you look like someone who goes to meetings."
 helpsInBattle = Greco arrives with forty stallholders and a megaphone. The foe is outnumbered, and underdressed.
 battle.challenge.1 = You look like you might be from the developer.
@@ -1203,7 +1203,7 @@ lines.1.1 = Everything here had a first life. This is its second act. Some of th
 lines.2.1 = Someone donated a whole box of model trains. Your friend Tim from Reservoir? He bought half. He'll be back for the rest.
 lines.3.1 = No, the price is the price. Yes, even for the Brunswick people. Especially for the Brunswick people.
 lines.4.1 = Every Saturday a young person says "this is vintage". It's a cardigan. I wore it in 1987.
-heartScenes.3.1 = Nell: "We give the takings to the food bank. Rents are what they are. People are hungry in Preston. Real people."
+heartScenes.3.1 = We give the takings to the food bank. Rents are what they are. People are hungry in Preston. Real people.
 helpsInBattle = Nell throws a handknitted cardigan over your pet. Cosy, warm and a little itchy.
 
 [PEOPLE.inspector]  # Myki Inspector
@@ -1238,7 +1238,7 @@ lines.3.1 = Monday, lasagne. Tuesday, a roast. Wednesday, banana bread. I cook w
 lines.4.1 = Pastry takes patience. Cold butter, cold hands. Scones, you can rush. Nobody can tell.
 lines.5.1 = Everybody on Moreland Rd knows when I am cooking. They walk slower past the gate. I see them.
 giftLine = Here, take this, it's still warm. No, you are not full. Nobody leaves my house hungry. Not even the front gate.
-heartScenes.3.1 = Betty: "My recipe book is just a shoebox of cards from everyone on this street. Nonna's lasagne. The quiche from next door. Mine is the banana bread."
+heartScenes.3.1 = My recipe book is just a shoebox of cards from everyone on this street. Nonna's lasagne. The quiche from next door. Mine is the banana bread.
 heartScenes.5.1 = Betty puts the kettle on and brings out the good teapot. "Three cups. You stay for all three. That is the rule of this house."
 heartScenes.7.1 = Betty presses a takeaway container into your hands. "For your mum and dad. Tell them it is from Betty. They will know."
 heartScenes.8.1 = Betty pulls a card out of the shoebox, the oldest one, soft as cloth. "My Victoria sponge. I don't give this to just anyone."
@@ -1250,8 +1250,8 @@ lines.1.1 = Hi! Meghan Hopper. You might know me from the ballot paper. Every ba
 lines.2.1 = This is Whitlam. He prefers the pram. Walking is for cats without ambition.
 lines.3.1 = Door knocking is just meeting your neighbours with a clipboard. I love it. My knees do not.
 lines.4.1 = The bake-off? Oh, I just throw something together. It's nothing. It's a nine layer torte, but it's nothing.
-heartScenes.3.1 = Meghan: "Between us, I don't even like winning the bake-off. I like Betty's face when I win the bake-off."
-heartScenes.6.1 = Meghan: "If I ever get preselected, I'm putting Whitlam on the how-to-vote card. He polls very well with the over sixties."
+heartScenes.3.1 = Between us, I don't even like winning the bake-off. I like Betty's face when I win the bake-off.
+heartScenes.6.1 = If I ever get preselected, I'm putting Whitlam on the how-to-vote card. He polls very well with the over sixties.
 helpsInBattle = Meghan wheels the pram straight at the foe. Whitlam hisses from under the blanket.
 battle.challenge.1 = Oh, a challenge? I never back down from a contest. Ask anyone. Ask the electoral commission.
 battle.challenge.2 = Whitlam! Out of the pram! Well, half out.
@@ -1271,8 +1271,8 @@ lines.3.1 = These are my boob pillows. They are two very thin pillows.
 lines.4.1 = Did you guys hide my Animorphs books.... again?
 lines.5.1 = Now that you mention it, water from my kettle has been tasting very tomatoey... 
 lines.6.1 = Dad's started running a fishing competition at the Coburg lakes. Something to do with scouts, apparently. 
-heartScenes.3.1 = Alison: "If you ever need help moving furniture I can borrow my parents van."
-heartScenes.6.1 = Alison: "Would you like to come over for pasta? Yes, I am microwaving it. There's nothing wrong with that!"
+heartScenes.3.1 = If you ever need help moving furniture I can borrow my parents van.
+heartScenes.6.1 = Would you like to come over for pasta? Yes, I am microwaving it. There's nothing wrong with that!
 helpsInBattle = Alison wanders over, stands directly in front of the foe and just stares. It is deeply unsettling. It works.
 battle.challenge.1 = Oh it's you. Wanna fight? I've been standing here for ages. I'm warmed up.
 battle.challenge.2 = I've got my toastie, my boob pillows, and a secret weapon. Me.
@@ -1293,9 +1293,9 @@ battle.challenge.1 = Kos skids to a stop, unclips one shoe and points at you.
 battle.challenge.2 = "Helen! You're in my target demographic. Got time for a short survey? It's forty minutes."
 battle.ask = Take the survey (battle Kos)?
 battle.no = Hang up
-battle.win.1 = Kos: "Interesting. Very interesting. I'll tell head office it was within the margin of error."
-battle.lose.1 = Kos: "Exactly as the polling predicted." He clips back in and rides off.
-battle.again.1 = Kos: "Follow-up survey! Just as long. Possibly longer."
+battle.win.1 = Interesting. Very interesting. I'll tell head office it was within the margin of error.
+battle.lose.1 = Exactly as the polling predicted. *He clips back in and rides off.*
+battle.again.1 = Follow-up survey! Just as long. Possibly longer.
 
 [PEOPLE.lambros]  # Lambros
 role = Deputy Mayor of Merri-bek. Always outside the town hall, always on the phone
@@ -1307,10 +1307,10 @@ battle.challenge.2 = "Helen! The Mayor of Hobsons Bay's wife, on my turf? I move
 battle.ask = Battle Lambros?
 battle.yes = Motion carried
 battle.no = Move to adjourn
-battle.win.1 = Lambros: "Point of order! No? Fine. Fine. The motion is lost."
+battle.win.1 = Point of order! No? Fine. Fine. The motion is lost.
 battle.win.2 = He shakes your hand for a photo nobody is taking.
-battle.lose.1 = Lambros: "Carried unanimously. Well. By me."
-battle.again.1 = Lambros: "I move to rescind the last result. Shall we?"
+battle.lose.1 = Carried unanimously. Well. By me.
+battle.again.1 = I move to rescind the last result. Shall we?
 
 [PEOPLE.guard]  # Security Guard
 role = Summerhill security. Watching the car park. Mostly watching his phone
@@ -1331,31 +1331,31 @@ battle.again.1 = The guard sighs. "Again? Fine. One trolley. That's all you're g
 role = Networker. Has a card for everything
 lines.1.1 = Helen! Let's grab a coffee sometime. Please?
 lines.2.1 = I'm in stakeholder relations. Relations with stakeholders. It's a lot of lanyards.
-battle.challenge.1 = Mark Teapot: "Helen! Mark Teapot. Remember? From the ALP? Here's my card. And another one."
-battle.challenge.2 = Mark Teapot: "So, Paddy. Mayor Paddy. Any chance he could pop me in front of a couple of ministers? Just a quick intro. Twenty minutes, tops."
+battle.challenge.1 = Helen! Mark Teapot. Remember? From the ALP? Here's my card. And another one.
+battle.challenge.2 = So, Paddy. Mayor Paddy. Any chance he could pop me in front of a couple of ministers? Just a quick intro. Twenty minutes, tops.
 battle.challenge.3 = Helen: "No. Absolutely not."
 battle.challenge.4 = Mark Teapot goes very red. "Right. RIGHT. You'll regret that. I know people. Small people. Watch this."
 battle.ask = Battle Mark Teapot?
 battle.yes = Bring it
 battle.no = Back away slowly
 battle.intro = Mark Teapot snaps his fingers. "Get out here!"
-battle.win.1 = Mark Teapot: "This isn't over. I'm putting it in my LinkedIn."
-battle.lose.1 = Mark Teapot: "Think about that intro, Helen. Just a coffee. Ministers drink coffee."
-battle.again.1 = Mark Teapot: "Helen! Circling back. Touching base. Any movement on those ministers? No? Then we fight."
+battle.win.1 = This isn't over. I'm putting it in my LinkedIn.
+battle.lose.1 = Think about that intro, Helen. Just a coffee. Ministers drink coffee.
+battle.again.1 = Helen! Circling back. Touching base. Any movement on those ministers? No? Then we fight.
 
 [PEOPLE.amy]  # Amy
 role = Comedian. Has a show this Saturday, and the Saturday after that
-lines.1.1 = Amy: "My show's on Saturday. Tickets are cheap. Cheaper if you bring a friend. Free if you bring four."
-lines.2.1 = Amy: "My new bit is about couches. Nobody laughs at the couch bit. The couch bit is the best bit."
-battle.challenge.1 = Amy: "Hi Helen! Will you come to my comedy show this Saturday? I really need the numbers. Like really, really."
-battle.challenge.2 = Amy: "Oh, you're busy? We'll see about that!"
+lines.1.1 = My show's on Saturday. Tickets are cheap. Cheaper if you bring a friend. Free if you bring four.
+lines.2.1 = My new bit is about couches. Nobody laughs at the couch bit. The couch bit is the best bit.
+battle.challenge.1 = Hi Helen! Will you come to my comedy show this Saturday? I really need the numbers. Like really, really.
+battle.challenge.2 = Oh, you're busy? We'll see about that!
 battle.ask = Battle Amy?
 battle.yes = Let's see
 battle.no = Honestly busy
-battle.win.1 = Amy: "Okay. Okay! That's new material. Thanks, Helen."
-battle.win.2 = Amy: "Saturday, 8pm. I'll save you a seat. I'll save you all the seats."
-battle.lose.1 = Amy: "See? You're not busy. You're coming Saturday."
-battle.again.1 = Amy: "Another show, another Saturday, another empty room. Let's go!"
+battle.win.1 = Okay. Okay! That's new material. Thanks, Helen.
+battle.win.2 = Saturday, 8pm. I'll save you a seat. I'll save you all the seats.
+battle.lose.1 = See? You're not busy. You're coming Saturday.
+battle.again.1 = Another show, another Saturday, another empty room. Let's go!
 
 [PEOPLE.parking]  # Parking Officer Pam
 role = Hobsons Bay parking officer. Has never once let anyone off
@@ -1365,21 +1365,21 @@ battle.challenge.1 = Pam clicks her ticket machine. "Two minutes over, Helen. Ma
 battle.ask = Contest the fine (battle Pam)?
 battle.yes = Contest it
 battle.no = Pay up later
-battle.win.1 = Pam: "Fine. FINE. Warning only. Don't tell anyone."
+battle.win.1 = Fine. FINE. Warning only. Don't tell anyone.
 battle.lose.1 = Pam tucks a ticket under your pet's collar. It's a warning. Probably.
-battle.again.1 = Pam: "Back again? I've got a whole new book of tickets."
+battle.again.1 = Back again? I've got a whole new book of tickets.
 
 [PEOPLE.doggies]  # Doggies Dave
 role = Western Bulldogs supporter since 1954. Still talks about 2016 most days
 lines.1.1 = 2016, mate. Premiers. I cried for a week. I'm still crying a bit now.
 lines.2.1 = Footscray, born and bred. The Barkly St pho is the best in Melbourne. Don't @ me.
-battle.challenge.1 = Dave: "Oi! You barrack for anyone? Doesn't matter. Let's have a kick. Well. A fight."
+battle.challenge.1 = Oi! You barrack for anyone? Doesn't matter. Let's have a kick. Well. A fight.
 battle.ask = Battle Doggies Dave?
 battle.yes = Bounce it
 battle.no = Not today
-battle.win.1 = Dave: "Good game, good game. Like the 2016 Grand Final, except we lost."
-battle.lose.1 = Dave: "Get around ya! Doggies!"
-battle.again.1 = Dave: "Rematch! Second half! Come on!"
+battle.win.1 = Good game, good game. Like the 2016 Grand Final, except we lost.
+battle.lose.1 = Get around ya! Doggies!
+battle.again.1 = Rematch! Second half! Come on!
 
 [PEOPLE.vlinegreg]  # Geelong Greg
 role = Commutes from Geelong. The train is always running late, and so is he
@@ -1390,22 +1390,22 @@ battle.challenge.2 = "Twenty-minute delay. Signal fault at Little River. Right. 
 battle.ask = Battle Geelong Greg?
 battle.yes = All aboard
 battle.no = Mind the gap
-battle.win.1 = Greg: "Beaten AND late. Classic Tuesday."
-battle.lose.1 = Greg: "Ha! First thing that's gone my way all week."
-battle.again.1 = Greg: "Another delay. Another battle. This is my life now."
+battle.win.1 = Beaten AND late. Classic Tuesday.
+battle.lose.1 = Ha! First thing that's gone my way all week.
+battle.again.1 = Another delay. Another battle. This is my life now.
 
 [PEOPLE.rosa]  # Rosa
 role = Runs a fruit shop on Barkly St. Every price is a bargain. Every one
-lines.1.1 = Rosa: "Mangoes, five for ten! Ten for five! I don't know, I'm very tired."
-lines.2.1 = Rosa: "Durian is the king of fruit. People complain about the smell. People complain about everything."
-battle.challenge.1 = Rosa: "You! You squeezed my avocados. Don't lie. I saw."
-battle.challenge.2 = Rosa: "You squeeze, you pay. Or you battle."
+lines.1.1 = Mangoes, five for ten! Ten for five! I don't know, I'm very tired.
+lines.2.1 = Durian is the king of fruit. People complain about the smell. People complain about everything.
+battle.challenge.1 = You! You squeezed my avocados. Don't lie. I saw.
+battle.challenge.2 = You squeeze, you pay. Or you battle.
 battle.ask = Battle Rosa?
 battle.yes = Fair enough
 battle.no = I'll pay
-battle.win.1 = Rosa: "Okay, okay. Take an avocado. It's ripe. You've made sure of that."
-battle.lose.1 = Rosa: "Ha! Never squeeze in Footscray."
-battle.again.1 = Rosa: "Fresh battle! Just in today!"
+battle.win.1 = Okay, okay. Take an avocado. It's ripe. You've made sure of that.
+battle.lose.1 = Ha! Never squeeze in Footscray.
+battle.again.1 = Fresh battle! Just in today!
 
 [PEOPLE.hiviskev]  # Hi-Vis Kev
 role = Level crossing removal crew. Has removed eleven crossings and one eyebrow
@@ -1416,127 +1416,127 @@ battle.challenge.2 = "Sorry mate, path's closed. Works till 2031. Or you could f
 battle.ask = Battle Hi-Vis Kev?
 battle.yes = Fight through
 battle.no = Take the detour
-battle.win.1 = Kev: "Fair play. Path's open. Mind the witches hats."
-battle.lose.1 = Kev: "Detour's that way. Follow the arrows. All forty of them."
-battle.again.1 = Kev: "New stage of works! Same delays!"
+battle.win.1 = Fair play. Path's open. Mind the witches hats.
+battle.lose.1 = Detour's that way. Follow the arrows. All forty of them.
+battle.again.1 = New stage of works! Same delays!
 
 [PEOPLE.opal]  # Op Shop Opal
 role = Op shop regular. Knows the price of every fondue set in Brunswick
-lines.1.1 = Opal: "Darling, this cardigan was four dollars. It's Italian. It's from 1974. It smells of 1974."
-lines.2.1 = Opal: "Never buy new. Everything you need is already in a Vinnies somewhere."
+lines.1.1 = Darling, this cardigan was four dollars. It's Italian. It's from 1974. It smells of 1974.
+lines.2.1 = Never buy new. Everything you need is already in a Vinnies somewhere.
 battle.challenge.1 = Opal clutches a fondue set to her chest.
-battle.challenge.2 = Opal: "You were eyeing this off. I saw you. It's mine, darling, and I will fight for it."
+battle.challenge.2 = You were eyeing this off. I saw you. It's mine, darling, and I will fight for it.
 battle.ask = Battle Op Shop Opal?
 battle.yes = Fondue or die
 battle.no = It's all yours
-battle.win.1 = Opal: "Fine. Fine! There's another one in the Salvos. There always is."
-battle.lose.1 = Opal: "Back to the racks with you, darling."
-battle.again.1 = Opal: "New stock day! Rematch!"
+battle.win.1 = Fine. Fine! There's another one in the Salvos. There always is.
+battle.lose.1 = Back to the racks with you, darling.
+battle.again.1 = New stock day! Rematch!
 
 [PEOPLE.lachlan]  # Landlord Lachlan
 role = Owns three units on Hope St. Lives in none of them
-lines.1.1 = Lachlan: "Just doing an inspection. A routine one. Every week. Routinely."
-lines.2.1 = Lachlan: "Mould? That's character. That's a feature. I've put it in the listing."
-battle.challenge.1 = Lachlan: "Right, the market review is in. Rent's going up. Twenty percent."
-battle.challenge.2 = Lachlan: "Don't like it? I've got forty people at the open for inspection who would."
+lines.1.1 = Just doing an inspection. A routine one. Every week. Routinely.
+lines.2.1 = Mould? That's character. That's a feature. I've put it in the listing.
+battle.challenge.1 = Right, the market review is in. Rent's going up. Twenty percent.
+battle.challenge.2 = Don't like it? I've got forty people at the open for inspection who would.
 battle.ask = Battle Landlord Lachlan?
 battle.yes = Rent strike
 battle.no = Not today
-battle.win.1 = Lachlan: "Okay. Ten percent. Fine. Five. Don't tell the tenants union."
-battle.lose.1 = Lachlan: "Lovely. Your new lease is in the post."
-battle.again.1 = Lachlan: "New financial year, new rent review!"
+battle.win.1 = Okay. Ten percent. Fine. Five. Don't tell the tenants union.
+battle.lose.1 = Lovely. Your new lease is in the post.
+battle.again.1 = New financial year, new rent review!
 
 [PEOPLE.cass]  # Cyclist Cass
 role = Rides Sydney Rd every day. Has strong opinions about bike lanes
-lines.1.1 = Cass: "Sydney Rd needs a separated bike lane. I will say this until I die. Which may be soon, on Sydney Rd."
-lines.2.1 = Cass: "Doored three times this year. I've started naming the doors."
+lines.1.1 = Sydney Rd needs a separated bike lane. I will say this until I die. Which may be soon, on Sydney Rd.
+lines.2.1 = Doored three times this year. I've started naming the doors.
 battle.challenge.1 = Cass skids up onto the footpath.
-battle.challenge.2 = Cass: "You! You stepped in the bike lane! The painted one! Which is basically just a suggestion."
+battle.challenge.2 = You! You stepped in the bike lane! The painted one! Which is basically just a suggestion.
 battle.ask = Battle Cyclist Cass?
 battle.yes = Ding ding
 battle.no = Look both ways
-battle.win.1 = Cass: "Fine. Fair. Just, please. Check your mirrors."
-battle.lose.1 = Cass: "Ding ding! On your right!"
-battle.again.1 = Cass: "Critical mass rematch!"
+battle.win.1 = Fine. Fair. Just, please. Check your mirrors.
+battle.lose.1 = Ding ding! On your right!
+battle.again.1 = Critical mass rematch!
 
 [PEOPLE.terry]  # Trainspotter Terry
 role = Trainspotter. Has photographed every train on the Mernda line. Twice
-lines.1.1 = Terry: "That one's a X'Trapolis 100. Set 47. She's running four minutes early. Unheard of."
-lines.2.1 = Terry: "The skyrail's lovely. You can see the trains from underneath now. A whole new angle."
+lines.1.1 = That one's a X'Trapolis 100. Set 47. She's running four minutes early. Unheard of.
+lines.2.1 = The skyrail's lovely. You can see the trains from underneath now. A whole new angle.
 battle.challenge.1 = Terry lowers his camera.
-battle.challenge.2 = Terry: "You stood in my shot. The 8:42 express. It only comes once a day."
-battle.challenge.3 = Terry: "There's only one way to settle this."
+battle.challenge.2 = You stood in my shot. The 8:42 express. It only comes once a day.
+battle.challenge.3 = There's only one way to settle this.
 battle.ask = Battle Trainspotter Terry?
 battle.yes = All aboard
 battle.no = Sorry, Terry
-battle.win.1 = Terry: "Remarkable. I'll write this down. I write everything down."
-battle.lose.1 = Terry: "Next train in eleven minutes. Don't stand in the shot."
-battle.again.1 = Terry: "A rematch! Like the 8:42. Except this happens more than once."
+battle.win.1 = Remarkable. I'll write this down. I write everything down.
+battle.lose.1 = Next train in eleven minutes. Don't stand in the shot.
+battle.again.1 = A rematch! Like the 8:42. Except this happens more than once.
 
 [PEOPLE.yvonne]  # Yarn Bomber Yvonne
 role = Yarn bombs the Botha Ave gum. Has knitted a jumper for a stobie pole
-lines.1.1 = Yvonne: "Knit one, purl one, cover the whole tree. That's my motto."
-lines.2.1 = Yvonne: "The council took my last one down. Now the possums have nowhere to stay warm."
+lines.1.1 = Knit one, purl one, cover the whole tree. That's my motto.
+lines.2.1 = The council took my last one down. Now the possums have nowhere to stay warm.
 battle.challenge.1 = Yvonne puts down her needles.
-battle.challenge.2 = Yvonne: "Are you from the council? You look like you're from the council. Show me your lanyard."
+battle.challenge.2 = Are you from the council? You look like you're from the council. Show me your lanyard.
 battle.ask = Battle Yarn Bomber Yvonne?
 battle.yes = Cast on
 battle.no = Not council
-battle.win.1 = Yvonne: "Oh, you're all right. Here, have a tea cosy. I have forty."
-battle.lose.1 = Yvonne: "Tell the council the gum stays knitted."
-battle.again.1 = Yvonne: "I've finished a new piece. Want to see? It's a battle."
+battle.win.1 = Oh, you're all right. Here, have a tea cosy. I have forty.
+battle.lose.1 = Tell the council the gum stays knitted.
+battle.again.1 = I've finished a new piece. Want to see? It's a battle.
 
 [PEOPLE.brad]  # Burnout Brad
 role = Lives for a burnout on Plenty Rd. His mum wants him home for tea
-lines.1.1 = Brad: "She's a VE Commodore, mate. V8. Six hundred horsepower. Well. Two hundred. Good ones."
-lines.2.1 = Brad: "The tyre shop knows me by name. They're very nice. I spend a lot there."
+lines.1.1 = She's a VE Commodore, mate. V8. Six hundred horsepower. Well. Two hundred. Good ones.
+lines.2.1 = The tyre shop knows me by name. They're very nice. I spend a lot there.
 battle.challenge.1 = Brad revs the Commodore. A bit of smoke comes out. Some of it is meant to.
-battle.challenge.2 = Brad: "Race ya. Well, fight ya. Racing's illegal."
+battle.challenge.2 = Race ya. Well, fight ya. Racing's illegal.
 battle.ask = Battle Burnout Brad?
 battle.yes = Rev it
 battle.no = Not my thing
-battle.win.1 = Brad: "Yeah, fair. Mum's calling anyway. It's rissoles."
+battle.win.1 = Yeah, fair. Mum's calling anyway. It's rissoles.
 battle.lose.1 = Brad does a small, legal donut in the car park.
-battle.again.1 = Brad: "New tyres! Rematch!"
+battle.again.1 = New tyres! Rematch!
 
 [PEOPLE.zara]  # Zara
 role = Uni student, third year of a two-year degree
-lines.1.1 = Zara: "I have an essay due at midnight. It's 3pm. I've written my name."
-lines.2.1 = Zara: "Instant noodles are a food group if you're brave."
+lines.1.1 = I have an essay due at midnight. It's 3pm. I've written my name.
+lines.2.1 = Instant noodles are a food group if you're brave.
 battle.challenge.1 = Zara slams her laptop shut.
-battle.challenge.2 = Zara: "I'm procrastinating. You're perfect. Battle me."
+battle.challenge.2 = I'm procrastinating. You're perfect. Battle me.
 battle.ask = Battle Zara?
 battle.yes = Study break
 battle.no = Do your essay
-battle.win.1 = Zara: "Okay. Okay! Essay. Right now. After one video."
-battle.lose.1 = Zara: "Better than the essay. Everything is better than the essay."
-battle.again.1 = Zara: "Another extension! Another battle!"
+battle.win.1 = Okay. Okay! Essay. Right now. After one video.
+battle.lose.1 = Better than the essay. Everything is better than the essay.
+battle.again.1 = Another extension! Another battle!
 
 [PEOPLE.ponsonby]  # Professor Ponsonby
 role = Professor of something. Walks to the uni the long way, through his own thoughts
-lines.1.1 = Ponsonby: "Ah. You'll want to read my monograph. Four hundred pages. On footnotes."
-lines.2.1 = Ponsonby: "Carlton was terribly bohemian in my day. Now it's terribly expensive. Also bohemian."
+lines.1.1 = Ah. You'll want to read my monograph. Four hundred pages. On footnotes.
+lines.2.1 = Carlton was terribly bohemian in my day. Now it's terribly expensive. Also bohemian.
 battle.challenge.1 = Professor Ponsonby peers at you over his glasses.
-battle.challenge.2 = Ponsonby: "Hm. A challenger. Your argument is unreferenced. Let us test it."
+battle.challenge.2 = Hm. A challenger. Your argument is unreferenced. Let us test it.
 battle.ask = Battle Professor Ponsonby?
 battle.yes = Defend thesis
 battle.no = Office hours
-battle.win.1 = Ponsonby: "Fascinating. A distinction. I don't give those out."
-battle.lose.1 = Ponsonby: "See me after class."
-battle.again.1 = Ponsonby: "A second paper! I have notes."
+battle.win.1 = Fascinating. A distinction. I don't give those out.
+battle.lose.1 = See me after class.
+battle.again.1 = A second paper! I have notes.
 
 [PEOPLE.tayla]  # PT Tayla
 role = Runs a 6am bootcamp in Carlton Gardens. Also a 6pm one. Also a noon one
-lines.1.1 = Tayla: "Morning! Twenty burpees. No? Ten. No? A brisk walk. Wonderful."
-lines.2.1 = Tayla: "The Exhibition Building steps are free leg day. Free!"
+lines.1.1 = Morning! Twenty burpees. No? Ten. No? A brisk walk. Wonderful.
+lines.2.1 = The Exhibition Building steps are free leg day. Free!
 battle.challenge.1 = Tayla blows a whistle right at you.
-battle.challenge.2 = Tayla: "You're standing still! In my park! Drop and give me a battle!"
+battle.challenge.2 = You're standing still! In my park! Drop and give me a battle!
 battle.ask = Battle PT Tayla?
 battle.yes = Let's go
 battle.no = Rest day
-battle.win.1 = Tayla: "YES! Love that energy! Hydrate!"
-battle.lose.1 = Tayla: "Good effort! Now a cool-down lap. Of the whole gardens."
-battle.again.1 = Tayla: "Round two! Feel the burn!"
+battle.win.1 = YES! Love that energy! Hydrate!
+battle.lose.1 = Good effort! Now a cool-down lap. Of the whole gardens.
+battle.again.1 = Round two! Feel the burn!
 
 [PEOPLE.ross]  # Ross Millward
 role = Scout leader, 1st Coburg Scouts. Runs the Coburg Lake Fishing Comp
