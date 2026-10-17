@@ -33,9 +33,9 @@ export let PETS = [
     loves: ['ribbon', 'chicken', 'strawberry'], likes: ['cheese', 'croissant', 'chilli'], dislikes: ['lemon', 'tennis', 'zucchini'],
     stats: { hp: 66, attack: 84, defence: 52, speed: 80, special: 100 },
     evolution: {
-      name: 'Queencess', species: 'Royal toy poodle', type: 'fairy', level: 14, hearts: 5, sprite: 'poodle',
+      name: 'Flame Queen', species: 'Royal toy poodle (on fire)', type: 'fire', level: 14, hearts: 5, sprite: 'poodle',
       pal: { a: '#fff7ed', b: '#e0d6cb', w: '#ffffff', c: '#866443', p: '#a079b8', n: '#5a3028', e: '#2a1a10' },
-      bio: 'Princess has become Queencess. A tiny crown, an enormous sense of authority, and the same beloved poodle beneath it.',
+      bio: 'Princess has become the Flame Queen. A tiny crown, an enormous sense of authority, and the same beloved poodle beneath it.',
       stats: { hp: 82, attack: 98, defence: 62, speed: 92, special: 116 },
       moves: ['crownclaw', 'queensdecree', 'royalrest', 'royalwave'],
     },
@@ -49,14 +49,14 @@ export let PETS = [
     loves: ['redfin', 'sardine', 'feather'], likes: ['snag', 'chicken', 'cheese', 'tomato'], dislikes: ['carrot', 'lemon', 'basil'],
     stats: { hp: 60, attack: 88, defence: 50, speed: 85, special: 60 },
     evolution: {
-      name: 'Sopressa', species: 'Tabby cat (aged, like a fine salami)', type: ['street', 'old'], level: 15, hearts: 5, sprite: 'sopressa',
+      name: 'Sopressa', species: 'Tabby cat (aged, like a fine salami)', type: ['food', 'fire'], level: 15, hearts: 5, sprite: 'sopressa',
       pal: { a: '#7a5e3c', s: '#3a2a18', c: '#c8a070', w: '#e8d8b8', g: '#c8c8c0', f: '#4a5a3a', e: '#8ab83a', p: '#d89a9a' },
       stats: { hp: 78, attack: 104, defence: 68, speed: 80, special: 78 },
-      moves: ['agedclaws', 'grumble', 'cured', 'backinmyday'],
+      moves: ['sliced', 'hotsopressa', 'cured', 'agedclaws'],
     },
   },
   {
-    id: 'spooky', name: 'Spooky', species: 'Bunny', type: 'ghost', sprite: 'bunny',
+    id: 'spooky', name: 'Spooky', species: 'Bunny', type: 'dark', sprite: 'bunny',
     pal: { a: '#2e2836', b: '#1c1622', w: '#4a405a', e: '#9fe8ff', p: '#9a78b0' },
     owner: 'Slinks', region: 'brunswick', zone: 'sydney', home: [10, 13], range: 2.5,
     homeSpot: { zone: 'home', x: 4, y: 6 },
@@ -64,7 +64,7 @@ export let PETS = [
     loves: ['carrot', 'lemon', 'basil'], likes: ['feather', 'croissant', 'strawberry', 'zucchini'], dislikes: ['snag', 'chicken', 'chilli'],
     stats: { hp: 50, attack: 55, defence: 60, speed: 95, special: 90 },
     evolution: {
-      name: 'Ghost', species: 'Large white bunny', type: 'ghost', level: 15, hearts: 5, sprite: 'bunny',
+      name: 'Ghost', species: 'Large white bunny', type: ['dark', 'ghost'], level: 15, hearts: 5, sprite: 'bunny',
       pal: { a: '#ffffff', b: '#dce9ed', w: '#f4ffff', e: '#68c6dd', p: '#d7adc9', g: '#9fe8ff', x: '#e8f8ff' },
       bio: 'Spooky becomes Ghost, a large white bunny with gentle blue eyes. She can step through shadows, vanish, and send spectral waves through the room.',
       stats: { hp: 88, attack: 72, defence: 80, speed: 98, special: 112 },
@@ -80,7 +80,7 @@ export let PETS = [
     loves: ['tennis', 'snag', 'pumpkin', 'potato'], likes: ['chicken', 'cheese', 'croissant', 'sardine', 'carrot', 'lemon', 'zucchini', 'tomato', 'strawberry'], dislikes: [],
     stats: { hp: 85, attack: 80, defence: 80, speed: 50, special: 20 },
     evolution: {
-      name: 'Floppy', species: 'French bulldog (squeaky)', type: ['plastic', 'rock'], level: 16, hearts: 5, sprite: 'floppy',
+      name: 'Floppy', species: 'French bulldog (squeaky)', type: 'plastic', level: 16, hearts: 5, sprite: 'floppy',
       pal: { a: '#6a5ab0', b: '#483a88', w: '#f0ece4', g: '#b0a8e0', p: '#f07ab0', e: '#1a1010', n: '#1a1010', l: '#8a7ad0', h: '#ffffff', k: '#9a9aa4' },
       stats: { hp: 105, attack: 98, defence: 110, speed: 52, special: 35 },
       moves: ['flopslam', 'squeak', 'bubblewrap', 'chew'],
@@ -95,7 +95,7 @@ export let PETS = [
     loves: ['chicken', 'redfin', 'cheese'], likes: ['snag', 'sardine', 'tennis', 'carrot'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 66, attack: 78, defence: 50, speed: 115, special: 48 },
     evolution: {
-      name: 'Steely', species: 'Whippet (forged steel)', type: 'steel', level: 16, hearts: 5, sprite: 'evenrustier',
+      name: 'Steely', species: 'Whippet (forged steel)', type: ['speed', 'steel'], level: 16, hearts: 5, sprite: 'evenrustier',
       pal: { a: '#9aa2ac', b: '#6a727c', k: '#b8642a', w: '#e8eef4', r: '#4a4e56', o: '#c87a3a', e: '#e83a2a', n: '#1a1010' },
       stats: { hp: 86, attack: 108, defence: 82, speed: 130, special: 56 },
       moves: ['dangerpaws', 'sharpen', 'turbozoom', 'oilchange'],
@@ -117,7 +117,7 @@ export let PETS = [
     },
   },
   {
-    id: 'girlie', name: 'Girlie', species: 'Black labrador', type: ['water', 'park'], sprite: 'lab',
+    id: 'girlie', name: 'Girlie', species: 'Black labrador', type: 'park', sprite: 'lab',
     pal: { a: '#26252a', b: '#141418', l: '#3a3940', e: '#6a4a2a', n: '#0a0a0a', p: '#e8708a' },
     owner: 'Dell', region: 'carlton', zone: 'gardens', home: [12, 23], range: 3,
     homeSpot: { zone: 'yard', x: 23, y: 9 },
@@ -126,7 +126,7 @@ export let PETS = [
     stats: { hp: 82, attack: 76, defence: 66, speed: 62, special: 55 },
     evolution: {
       // Art: assets/sprites/pets/girlie-evolved.png (Girlie's sheet, splattered with mud).
-      name: 'Muddy', species: 'Black labrador (mostly mud)', type: ['dirt', 'water'], level: 16, hearts: 5, sprite: 'lab',
+      name: 'Muddie', species: 'Black labrador (mostly mud)', type: ['dirt', 'water'], level: 16, hearts: 5, sprite: 'lab',
       pal: { a: '#4a3624', b: '#2e2216', l: '#6e5232' },
       stats: { hp: 106, attack: 96, defence: 88, speed: 64, special: 70 },
       moves: ['muddypaws', 'puddlejump', 'shakeoff', 'dirtnap'],
@@ -142,10 +142,10 @@ export let PETS = [
     loves: ['prosciutto', 'chicken', 'tennis'], likes: ['cheese', 'snag', 'sardine', 'egg'], dislikes: ['lemon', 'basil', 'kombucha'],
     stats: { hp: 68, attack: 82, defence: 58, speed: 104, special: 60 },
     evolution: {
-      name: 'Chlo-nado', species: 'Kelpie (whirlwind)', type: ['park', 'speed'], level: 16, hearts: 5, sprite: 'kelpie',
+      name: 'Chlo-nado', species: 'Kelpie (whirlwind)', type: ['electric', 'speed'], level: 16, hearts: 5, sprite: 'kelpie',
       pal: { a: '#1e1a1c', t: '#b87a3a', w: '#e8dcc8', e: '#c8a040', n: '#1a1010' },
       stats: { hp: 86, attack: 100, defence: 72, speed: 124, special: 72 },
-      moves: ['twister', 'herd', 'kelpiestare', 'heelnip'],
+      moves: ['twister', 'herd', 'kelpiestare', 'staticzoomies'],
       bio: 'Chloe herds so fast she has become weather. Chlo-nado rounds up the whole of Holmes St in one lap, then sits on her bar stool.',
     },
   },
@@ -160,10 +160,10 @@ export let PETS = [
     loves: ['sardine', 'chicken', 'cheese'], likes: ['redfin', 'prosciutto', 'snag'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 58, attack: 74, defence: 52, speed: 120, special: 64 },
     evolution: {
-      name: 'Ziggy Iggy', species: 'Black and white cat (with baby)', type: ['speed', 'street'], level: 16, hearts: 5, sprite: 'kitten',
+      name: 'Ziggy Iggy', species: 'Black and white cat (with baby)', type: ['fairy', 'speed'], level: 16, hearts: 5, sprite: 'kitten',
       pal: { a: '#1a1a1e', w: '#f4f4f0', e: '#c8e040', n: '#1a1010' },
       stats: { hp: 76, attack: 90, defence: 68, speed: 128, special: 80 },
-      moves: ['piggyback', 'zoomcat', 'scratch', 'babygiggle'],
+      moves: ['piggyback', 'zoomcat', 'cuteaggression', 'babygiggle'],
       bio: 'Ziggy has picked up a passenger: little Iggy rides on his back everywhere. Ziggy pretends to mind. He does not mind.',
     },
   },
@@ -185,10 +185,10 @@ export let PETS = [
     loves: ['chicken', 'cheese', 'snag', 'durian'], likes: ['egg', 'sardine', 'tennis'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 72, attack: 64, defence: 58, speed: 52, special: 60 },
     evolution: {
-      name: 'BIG MART', species: 'Cavoodle (very, very tall)', type: 'smelly', level: 14, hearts: 5, sprite: 'cavoodle',
+      name: 'BIG MART', species: 'Cavoodle (very, very tall)', type: ['smelly', 'leather'], level: 14, hearts: 5, sprite: 'cavoodle',
       pal: { a: '#655c52', b: '#403d3b', c: '#8d867d', e: '#171616', n: '#24201d', h: '#cf7335' },
       stats: { hp: 96, attack: 84, defence: 76, speed: 54, special: 70 },
-      moves: ['towerover', 'shart', 'bite', 'gordonfood'],
+      moves: ['towerover', 'shart', 'bigcuddle', 'gordonfood'],
       bio: 'Same Marty. Same curls, same harness, same smell. Just enormous. He can see into the neighbours\' kitchens now, and he does.',
     },
     bio: 'Trish and Gordon’s brown-grey cavoodle. Soft curls, orange harness, spectacularly questionable perfume.',

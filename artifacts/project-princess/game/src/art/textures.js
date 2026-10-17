@@ -144,7 +144,7 @@ export function buildTextures(scene, customEntities = AUTHORING.custom) {
       const ef = PET_FRAMES[e.sprite] || frames, epal = { ...BASE_PALETTE, ...pet.pal, ...e.pal };
       stripTexture(scene, `pet-${pet.id}-evolved`, 16, 16, ef.length, (p, i) => {
         p.sprite(ef[i], epal, 0, 0);
-        if (pet.id === 'princess' && e.name === 'Queencess') {
+        if (pet.id === 'princess') {
           p.r('#a66c25', 9, 3, 6, 1); p.r('#edc35b', 9, 1, 1, 3);
           p.r('#edc35b', 11, 0, 2, 4); p.r('#edc35b', 14, 1, 1, 3);
           p.r('#a079b8', 11, 2, 2, 1);

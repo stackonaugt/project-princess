@@ -21,7 +21,7 @@ import { TUNING } from '../data/tuning.js';
 export const START_LEVEL = { marty: 5, princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14 };
 export const MAX_LEVEL = 30;
 // Moves of these types use the special stat instead of attack.
-const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy']);
+const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy', 'hack', 'electric']);
 
 export const petLevel = id => state.pet(id).level || START_LEVEL[id] || 5;
 export const xpToNext = lv => Math.round(BALANCE.xpBase + lv * lv * BALANCE.xpCurve);

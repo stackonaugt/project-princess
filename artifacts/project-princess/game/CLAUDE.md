@@ -81,11 +81,11 @@
 - Type matchups (`state.data.matchups`) record every type tried; the move menu
   shows Strong or Weak only after a matchup is tried (`knownEffect`), a toast
   says when the Petdex learns one, and the Petdex has a Matchups tab.
-- Evolutions: Rusty is **Steely** (steel; Danger Paws, Sharpen), Girlie is
-  **Muddy** (dirt/water; `girlie-evolved.png` is Girlie's sheet splattered
+- Evolutions: Rusty is **Steely** (speed/steel; Danger Paws, Sharpen), Girlie is
+  **Muddie** (dirt/water; `girlie-evolved.png` is Girlie's sheet splattered
   with mud), the new **Dirt** type. Marty is **BIG MART** (same art, very
-  tall: `EVOLVED_SIZES` in pet-sizes.js), Chloe is **Chlo-nado** (same type,
-  a whirlwind round her legs), Ziggy is **Ziggy Iggy** (the owner's cousin
+  tall: `EVOLVED_SIZES` in pet-sizes.js; stinky/tough), Chloe is **Chlo-nado** (electric/speed,
+  a whirlwind round her legs), Ziggy is **Ziggy Iggy** (fairy/speed; the owner's cousin
   Iggy, a baby, rides on his back). Their `-evolved.png` sheets are reference
   art made from the base sheets. Emilio does not evolve.
 - **Dialogue style** (Seb, 2026-10-17): the person you are talking to just
@@ -260,7 +260,7 @@ Brunswick East is a full suburb, reached east off Donald St. Five outdoor zones 
 
 **The route.** The world is one walkable chain, laid out from the owner's marked-up map. Laverton is a loop: Allen St (left to Laverton Station, down to the west end of Woods St), Woods St (east end up into the top of Lohse St Reserve), Lohse (Maher Rd down to the station, east to the council). Then the council (`civic`, suburb Altona, between) and down to the three in-between city zones (`altona` Kororoit Creek Rd with Bunnings, `footscray` Barkly St with Franco Cozzo, `flemington` Racecourse Rd) that represent the long walk, Brunswick Station (Dawson St east to Sydney Rd), Hope St, Sydney Rd (on to Albion St, which goes down to Donald St), Donald St (east into Brunswick East: Holmes St, Fleming Park, the bowls club, Lygon St and back up Nicholson St, a loop; Brunswick East's Lygon St carries on east into Carlton's Lygon St and its Nicholson St south into Carlton's), Bell St, Coburg (`coburg`: north up Sydney Rd to Coburg's shops, station and lake, which loop; south down Lygon St to Moreland Rd; north-east up a lane to Preston Market), Plenty Rd, Preston (`preston`: north up High St to Preston Station, which loops through the market and back to Bell St; the market's west side leads to Murray Rd), Loddon Ave (our unit on Plenty Rd), the Edwardes Lake zones, Glasgow Ave, Reservoir Station. Brunswick Station's south lane leads down to Lygon St, Carlton, which runs west to Carlton Gardens and east to Brunswick East's Lygon St; the gardens' north path goes up past Murchison Square to Nicholson St, which runs north to Brunswick East and south to Bourke St at Spring St; Bourke St's trams turn down to Swanston St, which runs east to Flinders St, and the laneways join the two (a loop). The train skips the in-between zones (their suburbs have `between: true` and no station). Loops: Laverton above, Sydney Rd and Albion St up to Bell St, Coburg's Sydney Rd, station and lake, Bell St, Preston Market, Preston Station and Plenty Rd, and the skyrail path joining Reservoir Station to the athletics track. Albion St's west end (Brunswick West) is a locked hook for later.
 
-**Battles.** Pokémon-style play-fights with 17 types (pets can have two). Wild things jump out of tall grass; pet owners and other trainers battle you when you talk to them. You win each pet (except Princess, who is free) by beating their owner. Pets level up, and evolve when level and friendship are both high enough (Princess into Flamcess, Poppy into Floppy). Battles pay a little money, spent at the shops (pet shop, Bunnings, the milk bar, the bottle shop, Brunswick Bound, Anaconda, Franco Cozzo, Plenty Road Convenience).
+**Battles.** Pokémon-style play-fights with 24 types (pets can have two). Wild things jump out of tall grass; pet owners and other trainers battle you when you talk to them. You win each pet (except Princess, who is free) by beating their owner. Pets level up, and evolve when level and friendship are both high enough (Princess into Flamcess, Poppy into Floppy). Battles pay a little money, spent at the shops (pet shop, Bunnings, the milk bar, the bottle shop, Brunswick Bound, Anaconda, Franco Cozzo, Plenty Road Convenience).
 
 **Who you play.** You are Helen (`src/data/heroes.js`). In chapter 3 you play the twins, Hadrian and Aleksy, together: the other twin follows you (`Sibling` in entities.js, `twinsTogether()`) and Settings > Swap twins swaps them. Chapter 4 goes back to Helen. After the chapter 4 party (free play, `canPickHero()`) anyone can be picked in Settings. Each has a perk (`talkBonus`, `runBoost`, `forageBonus`) and starting treats (given once, `setHero`). Saved as `state.data.hero`.
 
@@ -324,7 +324,7 @@ src/
     pets.js           The pets: stats, behaviours, favourite treats, dialogue by heart level
     npcs.js           Townsfolk: lines, hints about unfound pets, daily gifts
     items.js          Treats, crops, presents (gift), drinks (drink), fertiliser (farm); isTreat()
-    types.js          The 17 battle types, matchup chart (strong/resist), effectiveness()
+    types.js          The 24 battle types, matchup chart (strong/resist), effectiveness()
     moves.js          Every battle move (type, power, effect, animation, text) and PET_MOVES
     enemies.js        Wild things, the Bin Man's bins, ENCOUNTERS per suburb, TRAINERS (owners and others)
     gear.js           Pet shop gear (leads, collars...) and their battle bonuses
@@ -473,12 +473,12 @@ Four chapters, words in `src/data/story.js`, state in `state.data.story` (see `s
 Roughly in the order they build on each other. The groundwork noted for each already exists.
 
 ### Done: types, battles, wild encounters
-- 16 types (Speed is the newest, for Rusty; Rock, Fairy, Fire, Street, Ghost, Psychic, Smelly, Old, Plastic, Steel, Leather, plus Water, Park, Caffeine and Booze). Rock was nerfed (no longer strong against Fire, and Water and Park beat it; Poppy's defence 80) and Sinead now battles with Poppy alone. New wild things: Flat White, Goon Bag (Brunswick), Rogue Sprinkler, Brushtail Possum (Reservoir); the duck is Water, the magpie Park/Old, the ristretto Caffeine.
+- 24 types since 2026-10-17: the owner added Electric, Bug, Bird, Hack (a political hack), Dark, Food and Solidarity (nobody has it yet; meant for Bongo), renamed Leather to Tough (id still `leather`, like `smelly` shows as Stinky), and balanced Steel (Water rusts it, only five types bounce off it) and Fairy (shrugs off Ghost, Street, Old and Dark). Birds, bins, trams, politicians, possums and food foes were retyped to match. Earlier: 16 types (Speed was added for Rusty; Rock, Fairy, Fire, Street, Ghost, Psychic, Smelly, Old, Plastic, Steel, Leather, plus Water, Park, Caffeine and Booze). Rock was nerfed (no longer strong against Fire, and Water and Park beat it; Poppy's defence 80) and Sinead now battles with Poppy alone. New wild things: Flat White, Goon Bag (Brunswick), Rogue Sprinkler, Brushtail Possum (Reservoir); the duck is Water, the magpie Park/Old, the ristretto Caffeine.
 - each pet's four moves as the owner asked, Laverton/Brunswick/Reservoir wild things, the Bin Man, and owner battles to win pets. See **Battles** above.
 - Ideas still open: a Rat King of Sydney Rd boss in the laneways, a Boom Gate boss at a level crossing, the Myki Inspector as a wandering mini-boss, a Hoon in a Commodore on Aviation Rd at night, magpies only swooping in spring, battle music.
 
 ### Done: evolutions and the story
-- Every original pet evolves: Flamcess (fire), Floppy (plastic/rock), Sopressa (street/old), Ghost (ghost/psychic, evolved Spooky), Centurionely (Stanley as a Roman centurion, steel), Steely (Rusty in forged steel, steel), Muddy (Girlie, dirt/water).
+- Every original pet evolves (the owner's list, 2026-10-17): Flame Queen (Princess, fire), Sopressa (food/fire), Ghost (evolved Spooky, dark/ghost; Spooky is dark), Floppy (plastic), Steely (speed/steel), Centurionely (steel), Muddie (Girlie, dirt/water; Girlie is park only), Chlo-nado (electric/speed), Ziggy Iggy (fairy/speed), BIG MART (stinky/tough).
 - The four story chapters (see **The story** above).
 
 ### More economy

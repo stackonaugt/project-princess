@@ -256,8 +256,8 @@ export const SH_MOVES = {
   wonkywheel: { name: 'Wonky Wheel', type: 'steel', power: 50, anim: 'lunge', text: '{u} veers sideways on its wonky wheel and clips {t}.' },
   coinlock:   { name: 'Coin Lock', type: 'steel', power: 0, effect: { selfDef: 1 }, anim: 'shout', text: '{u} locks its coin slot. It will take two dollars to move it now.' },
   chipsteal:  { name: 'Chip Steal', type: 'street', power: 45, effect: { drain: 0.5 }, anim: 'claw', text: '{u} snatches a chip right off {t}\'s nose.' },
-  squawk:     { name: 'MINE MINE', type: 'park', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} screams MINE MINE MINE until {t} backs off.' },
-  divebomb:   { name: 'Dive Bomb', type: 'park', power: 55, anim: 'lunge', text: '{u} dives out of the sky at {t}!' },
+  squawk:     { name: 'MINE MINE', type: 'bird', power: 0, effect: { foeAtk: 1 }, anim: 'shout', text: '{u} screams MINE MINE MINE until {t} backs off.' },
+  divebomb:   { name: 'Dive Bomb', type: 'bird', power: 55, anim: 'lunge', text: '{u} dives out of the sky at {t}!' },
 };
 
 export const SH_ENEMIES = {
@@ -267,7 +267,7 @@ export const SH_ENEMIES = {
     moves: ['wonkywheel', 'runover', 'coinlock'],
   },
   seagull: {
-    name: 'Car Park Seagull', type: ['park', 'street'], stats: { hp: 48, attack: 58, defence: 42, speed: 85, special: 45 },
+    name: 'Car Park Seagull', type: ['bird', 'street'], stats: { hp: 48, attack: 58, defence: 42, speed: 85, special: 45 },
     moves: ['chipsteal', 'squawk', 'divebomb'], drop: ['fingerbun', 0.25],
   },
 };

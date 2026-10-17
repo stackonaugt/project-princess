@@ -180,10 +180,10 @@ export const BATTLER_FOE_TEXT = {
 
 // ------------------------------------------------------------ moves
 export const BATTLER_MOVES = {
-  pushpoll: { name: 'Push Poll', type: 'psychic', power: 50, effect: { foeDef: 1 }, anim: 'beam', text: '{u} asks {t}: "Would you still like your pet if it lied about everything?"' },
-  marginoferror: { name: 'Margin of Error', type: 'psychic', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} is plus or minus three percent. Hard to hit.' },
+  pushpoll: { name: 'Push Poll', type: 'hack', power: 50, effect: { foeDef: 1 }, anim: 'beam', text: '{u} asks {t}: "Would you still like your pet if it lied about everything?"' },
+  marginoferror: { name: 'Margin of Error', type: 'hack', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} is plus or minus three percent. Hard to hit.' },
   focusgroup: { name: 'Focus Group', type: 'psychic', power: 55, anim: 'shout', text: 'Eight people in a room tell {t} what they think of it. It hurts.' },
-  humblebrag: { name: 'Humblebrag', type: 'psychic', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u}: "So humbled to have been asked to be this amazing." Its attack rose.' },
+  humblebrag: { name: 'Humblebrag', type: 'hack', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '{u}: "So humbled to have been asked to be this amazing." Its attack rose.' },
   replyall: { name: 'Reply Guy', type: 'plastic', power: 50, anim: 'beam', text: '{u} replies to every one of {t}\'s comments. With a link.' },
   seemore: { name: '...See More', type: 'plastic', power: 45, effect: { foeAtk: 1 }, anim: 'gust', text: '{t} taps See More. There is so much more.' },
   redtape: { name: 'Red Tape', type: 'old', power: 40, effect: { foeAtk: 1 }, anim: 'gust', text: '{u} wraps {t} in red tape. Further information is required.' },
@@ -191,12 +191,12 @@ export const BATTLER_MOVES = {
   ribboncut: { name: 'Ribbon Cutting', type: 'steel', power: 60, anim: 'claw', text: '{u} declares {t} officially open.' },
   photoop: { name: 'Photo Op', type: 'fairy', power: 0, effect: { selfAtk: 1, selfDef: 1 }, anim: 'heal', text: '{u} poses with a big cheque. Its attack and defence rose.' },
   scorecard: { name: 'Score: 62', type: 'psychic', power: 50, anim: 'beam', text: 'The machine gives {t} a score of 62. Devastating.' },
-  feedback: { name: 'Feedback', type: 'steel', power: 45, effect: { foeDef: 1 }, anim: 'shout', text: 'The microphone squeals right in {t}\'s ear.' },
+  feedback: { name: 'Feedback', type: 'electric', power: 45, effect: { foeDef: 1 }, anim: 'shout', text: 'The microphone squeals right in {t}\'s ear.' },
   myway: { name: 'I Did It My Way', type: 'old', power: 60, anim: 'shout', text: '{u} belts it out. Regrets? It has had a few. But then again, too few to mention.' },
   finalcurtain: { name: 'The Final Curtain', type: 'old', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: 'And now, the end is near. {u} takes a long, slow bow and feels better.' },
   keychange: { name: 'Key Change', type: 'fairy', power: 0, effect: { charge: true }, anim: 'heal', text: '{u} goes up a key. The next bit is going to be huge.' },
   bignote: { name: 'The Big Note', type: 'fairy', power: 65, anim: 'shout', text: '{u} hits the big note. Windows rattle across Laverton.' },
-  networking: { name: 'Networking', type: 'psychic', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'shout', text: '{u} gives {t} a business card, then another one. {t} feels drained.' },
+  networking: { name: 'Networking', type: 'hack', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'shout', text: '{u} gives {t} a business card, then another one. {t} feels drained.' },
   ribbonsnip: { name: 'Tiny Ribbon', type: 'steel', power: 40, anim: 'claw', text: '{u} cuts a very small ribbon on {t}.' },
   saggy: { name: 'Saggy Cushion', type: 'leather', power: 0, effect: { foeDef: 1 }, anim: 'hop', text: '{t} sinks into the middle seat and cannot get back up.' },
   loosethread: { name: 'Loose Thread', type: 'leather', power: 45, anim: 'claw', text: '{t} pulls a loose thread. The whole arm comes off. It hits {t}.' },
@@ -217,21 +217,21 @@ export const BATTLER_MOVES = {
 
 // ------------------------------------------------------------ foes
 export const BATTLER_ENEMIES = {
-  polling: { name: 'Polling', type: 'psychic', stats: { hp: 58, attack: 44, defence: 56, speed: 60, special: 72 }, moves: ['pushpoll', 'marginoferror', 'focusgroup'], faces: 'front' },
-  fbpost: { name: 'Arrogant Facebook Post', type: ['psychic', 'plastic'], stats: { hp: 62, attack: 50, defence: 52, speed: 58, special: 74 }, moves: ['humblebrag', 'replyall', 'seemore'], faces: 'front', float: true },
+  polling: { name: 'Polling', type: 'hack', stats: { hp: 58, attack: 44, defence: 56, speed: 60, special: 72 }, moves: ['pushpoll', 'marginoferror', 'focusgroup'], faces: 'front' },
+  fbpost: { name: 'Arrogant Facebook Post', type: ['hack', 'plastic'], stats: { hp: 62, attack: 50, defence: 52, speed: 58, special: 74 }, moves: ['humblebrag', 'replyall', 'seemore'], faces: 'front', float: true },
   permit: { name: 'Planning Permit', type: ['old', 'plastic'], stats: { hp: 64, attack: 50, defence: 66, speed: 40, special: 66 }, moves: ['redtape', 'objection'], faces: 'front' },
   scissors: { name: 'Giant Novelty Scissors', type: 'steel', stats: { hp: 62, attack: 70, defence: 62, speed: 54, special: 50 }, moves: ['ribboncut', 'photoop'], faces: 'front' },
-  videoke: { name: 'Videoke Machine', type: ['steel', 'psychic'], stats: { hp: 58, attack: 48, defence: 58, speed: 44, special: 62 }, moves: ['scorecard', 'feedback'], faces: 'front' },
+  videoke: { name: 'Videoke Machine', type: ['electric', 'psychic'], stats: { hp: 58, attack: 48, defence: 58, speed: 44, special: 62 }, moves: ['scorecard', 'feedback'], faces: 'front' },
   myway: { name: 'My Way', type: 'old', stats: { hp: 60, attack: 54, defence: 54, speed: 46, special: 64 }, moves: ['myway', 'finalcurtain'], faces: 'front', float: true },
   powerballad: { name: 'Power Ballad', type: 'fairy', stats: { hp: 58, attack: 50, defence: 50, speed: 56, special: 70 }, moves: ['keychange', 'bignote'], faces: 'front', float: true },
-  pointcookmp: { name: 'The Member for Point Cook', type: ['psychic', 'old'], stats: { hp: 56, attack: 54, defence: 52, speed: 70, special: 66 }, moves: ['talkingpoints', 'networking', 'ribbonsnip'], faces: 'left' },
+  pointcookmp: { name: 'The Member for Point Cook', type: ['hack', 'old'], stats: { hp: 56, attack: 54, defence: 52, speed: 70, special: 66 }, moves: ['talkingpoints', 'networking', 'ribbonsnip'], faces: 'left' },
   couch: { name: 'Poorly Upholstered Couch', type: ['leather', 'old'], stats: { hp: 66, attack: 46, defence: 66, speed: 30, special: 40 }, moves: ['saggy', 'loosethread', 'cushionflop'], faces: 'front' },
   austin: { name: 'Austin', tall: true, faces: 'left', type: 'psychic', stats: { hp: 60, attack: 46, defence: 56, speed: 52, special: 70 }, moves: ['bragging', 'talkingup', 'boredom'] },
   nala: { name: 'Nala', type: ['leather', 'park'], stats: { hp: 64, attack: 62, defence: 54, speed: 64, special: 44 }, moves: ['kongchase', 'tongueout', 'twofactor'] },
   ticket: { name: 'Parking Ticket', type: 'plastic', stats: { hp: 48, attack: 48, defence: 44, speed: 62, special: 50 }, moves: ['ticketed', 'appeal'], faces: 'front', float: true },
   clamp: { name: 'Wheel Clamp', type: 'steel', stats: { hp: 58, attack: 60, defence: 66, speed: 30, special: 30 }, moves: ['clampdown', 'appeal'], faces: 'front' },
   footyrecord: { name: 'Footy Record', type: 'street', stats: { hp: 52, attack: 56, defence: 46, speed: 58, special: 40 }, moves: ['barrack', 'speccy'], faces: 'front' },
-  halftimepie: { name: 'Half-time Pie', type: 'fire', stats: { hp: 56, attack: 58, defence: 50, speed: 44, special: 50 }, moves: ['molten', 'barrack'], faces: 'front' },
+  halftimepie: { name: 'Half-time Pie', type: ['food', 'fire'], stats: { hp: 56, attack: 58, defence: 50, speed: 44, special: 50 }, moves: ['molten', 'barrack'], faces: 'front' },
 };
 
 export const BATTLER_TRAINERS = {
@@ -480,9 +480,9 @@ const R4_FOE_TEXT = {
 const R4_MOVES = {
   latetrain: { name: 'Running Late', type: 'old', power: 0, effect: { foeAtk: 1 }, anim: 'fade', text: '{u} is delayed. {t} gets bored waiting.' },
   allstops: { name: 'All Stations', type: 'steel', power: 55, anim: 'lunge', text: '{u} stops at every single station, right into {t}.' },
-  kingfruit: { name: 'King of Fruit', type: 'smelly', power: 55, anim: 'stink', text: 'The smell of {u} rolls over {t}. It is not a nice smell.' },
+  kingfruit: { name: 'King of Fruit', type: 'food', power: 55, anim: 'stink', text: 'The smell of {u} rolls over {t}. It is not a nice smell.' },
   spiky: { name: 'Spiky Husk', type: 'park', power: 45, effect: { foeDef: 1 }, anim: 'claw', text: '{u} rolls onto {t}. Spikes!' },
-  dingding: { name: 'Ding Ding Ding', type: 'steel', power: 50, anim: 'shout', text: 'The bells ring and ring at {t}. Ding ding ding ding.' },
+  dingding: { name: 'Ding Ding Ding', type: 'electric', power: 50, anim: 'shout', text: 'The bells ring and ring at {t}. Ding ding ding ding.' },
   boomdown: { name: 'Boom Down', type: 'steel', power: 60, anim: 'lunge', text: 'The boom comes down on {t}.' },
   expectdelays: { name: 'Expect Delays', type: 'plastic', power: 0, effect: { foeAtk: 1, foeDef: 1 }, anim: 'shout', text: '{t} is held up by works. For months.' },
   detour: { name: 'Detour', type: 'plastic', power: 0, effect: { evade: true }, anim: 'fade', text: '{u} sends {t} the long way round.' },
@@ -495,7 +495,7 @@ const R4_MOVES = {
   dooring: { name: 'Dooring', type: 'steel', power: 60, anim: 'lunge', text: '{u} swings open right into {t}. Nobody checked the mirror.' },
   sorrymate: { name: 'Sorry Mate', type: 'street', power: 0, effect: { selfAtk: 1 }, anim: 'shout', text: '"Sorry mate, didn\'t see ya." {u}\'s attack rose.' },
   express: { name: 'Express Service', type: 'speed', power: 60, anim: 'lunge', text: '{u} runs express straight past {t}. And through it.' },
-  skyrail: { name: 'Skyrail', type: 'steel', power: 0, effect: { selfDef: 1, selfAtk: 1 }, anim: 'heal', text: '{u} rises up onto the skyrail. Its attack and defence rose.' },
+  skyrail: { name: 'Skyrail', type: 'electric', power: 0, effect: { selfDef: 1, selfAtk: 1 }, anim: 'heal', text: '{u} rises up onto the skyrail. Its attack and defence rose.' },
   knit: { name: 'Knit One', type: 'leather', power: 45, anim: 'claw', text: '{u} knits {t} into a tea cosy.' },
   cosy: { name: 'Cosy Up', type: 'fairy', power: 0, effect: { heal: 0.3 }, anim: 'heal', text: '{u} wraps itself up warm and feels better.' },
   burnout: { name: 'Burnout', type: 'fire', power: 55, effect: { foeAtk: 1 }, anim: 'flame', text: '{u} spins its wheels. {t} is lost in the smoke.' },
@@ -512,8 +512,8 @@ const R4_MOVES = {
 
 const R4_ENEMIES = {
   replacementbus: { name: 'Replacement Bus', type: ['steel', 'old'], stats: { hp: 56, attack: 48, defence: 58, speed: 30, special: 40 }, moves: ['latetrain', 'allstops'], faces: 'left' },
-  durian: { name: 'Durian', type: ['smelly', 'park'], stats: { hp: 60, attack: 54, defence: 60, speed: 32, special: 50 }, moves: ['kingfruit', 'spiky'], faces: 'front' },
-  boomgate: { name: 'Boom Gate', type: 'steel', stats: { hp: 60, attack: 62, defence: 62, speed: 36, special: 44 }, moves: ['dingding', 'boomdown'], faces: 'front' },
+  durian: { name: 'Durian', type: ['food', 'smelly'], stats: { hp: 60, attack: 54, defence: 60, speed: 32, special: 50 }, moves: ['kingfruit', 'spiky'], faces: 'front' },
+  boomgate: { name: 'Boom Gate', type: ['electric', 'steel'], stats: { hp: 60, attack: 62, defence: 62, speed: 36, special: 44 }, moves: ['dingding', 'boomdown'], faces: 'front' },
   roadworks: { name: 'Expect Delays', type: 'plastic', stats: { hp: 54, attack: 46, defence: 56, speed: 50, special: 50 }, moves: ['expectdelays', 'detour'], faces: 'front' },
   fondueset: { name: 'Fondue Set', type: ['old', 'fire'], stats: { hp: 58, attack: 56, defence: 54, speed: 40, special: 56 }, moves: ['fondue', 'retro'], faces: 'front' },
   rentincrease: { name: 'Rent Increase', type: ['psychic', 'plastic'], stats: { hp: 58, attack: 46, defence: 52, speed: 54, special: 68 }, moves: ['rentup', 'bond'], faces: 'front', float: true },

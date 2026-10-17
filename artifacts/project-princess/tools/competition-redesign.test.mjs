@@ -88,7 +88,7 @@ test('workstation sessions remain serialisable and produce bounded quality', () 
 });
 test('new evolved forms retain stable identities and have valid moves and larger world proportions', () => {
   const princess = PETS.find(p => p.id === 'princess'), spooky = PETS.find(p => p.id === 'spooky');
-  assert.equal(princess.evolution.name, 'Queencess'); assert.equal(princess.evolution.type, 'fairy');
+  assert.equal(princess.evolution.name, 'Flame Queen'); assert.equal(princess.evolution.type, 'fire');
   assert.equal(spooky.evolution.name, 'Ghost'); assert.equal(spooky.evolution.species, 'Large white bunny');
   assert.ok(petSize('spooky', true) > petSize('spooky'));
   for (const pet of [princess, spooky]) for (const id of pet.evolution.moves) assert.ok(MOVES[id], id);
