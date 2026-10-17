@@ -9,7 +9,7 @@ export const PET_ORIGINAL_PIXELS = {
   'pets/poppy-evolved.png': [32, 16, '4933663b518198601489dd5458fcc90384efe1a6371b3308b66667e0c3319fb1'],
   'pets/poppy.png': [176, 16, 'fae1ad2e9f8a84889c6f4ada240a395ba04e638bb9e9edc00a29a84e5ae75f59'],
   'pets/princess-evolved.png': [48, 16, '05bfd68e544783978165dbe82c32965805cad8c431386154ec3a039eafaaec34'],
-  'pets/princess.png': [48, 16, '554826a052f3af6ef6772893670f242d4da116c29677d613d924e7c46b6000b7'],
+  'pets/princess.png': [32, 32, '6e0962d40596051990aa49130dcf2b175936400b951ddf40559a1e4b9957d638'],   // Seb's 32px Princess (2026-10-17)
   'pets/rusty-evolved.png': [32, 16, '53131da2a8d25db863aa4bc028724416f622ac1e0e9715ccc32bc084d182363f'],
   'pets/rusty.png': [32, 16, 'd44a574f6479d5ecd8c03f7d67f501ed6b8fab1618f8fe0e455bebeae126077f'],
   'pets/salami-evolved.png': [32, 16, 'f22240f7916408de7eda529de785eb3294b69c5c1449e53ca4c7c76a6a9a7ce2'],
