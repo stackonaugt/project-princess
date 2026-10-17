@@ -83,7 +83,9 @@ try {
 
   await page.goto(url, { waitUntil: 'networkidle' });
   await page.locator('#title .title-logo').waitFor({ state: 'visible' });
-  assert.equal(await page.locator('#title .title-logo').innerText(), 'Project Princess');
+  assert.equal(await page.locator('#title .title-logo').innerText(), 'PetPals');
+  assert.equal(await page.locator('#title .title-edition').innerText(), 'Princess Edition');
+  await page.locator('#title .title-start').click();
   assert.equal(await page.locator('#title .slot-main').count(), 3, 'All three save slots must appear');
   for (const button of await page.locator('#title .slot-main').all()) {
     assert.ok(await button.isVisible() && await button.isEnabled(), 'Save-slot button must be usable');
@@ -149,6 +151,7 @@ try {
     'Reload must resume the active save without losing progress');
   // The explicit title action clears tab-resume state and restores slot choice.
   await page.evaluate(() => window.__pp.bus.emit('game:title'));
+  await page.locator('#title .title-start').click();
   await page.locator('#title .slot-main').first().waitFor();
   assert.match(await page.locator('#title .slot-main').first().innerText(), /\$321/, 'Save slot must survive reload');
   await page.locator('#title .slot-main').first().click();

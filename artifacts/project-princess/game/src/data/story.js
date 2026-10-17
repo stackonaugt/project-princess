@@ -312,7 +312,7 @@ export let PARTY_END = [
 // The end of the story (for now).
 export let THE_END = [
   'That\'s it for now!',
-  'Thanks for playing Project Princess. You can keep playing: the pets, the garden, the council and the shops are all still here.',
+  'Thanks for playing PetPals: Princess Edition. You can keep playing: the pets, the garden, the council and the shops are all still here.',
   'More is planned if people want it: more pets, mini-games and a big Meredith finale. Tell Seb if you want more!',
 ];
 

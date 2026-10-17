@@ -2077,11 +2077,11 @@ export class WorldScene extends Phaser.Scene {
     }
     if (state.migrated) {
       state.migrated = false;
-      await ui.say(['Welcome back to Project Princess!', 'You have moved into a new place on Allen St, Laverton. Pets you have found will hang out here.', 'Before you head out the door, you can pick up to three of them to come along.']);
+      await ui.say(['Welcome back to PetPals: Princess Edition!', 'You have moved into a new place on Allen St, Laverton. Pets you have found will hang out here.', 'Before you head out the door, you can pick up to three of them to come along.']);
     }
     if (!state.data.seenIntro) {
       await ui.say([
-        `Welcome to Project Princess, ${HEROES[state.data.hero].name}!`,
+        `Welcome to PetPals: Princess Edition, ${HEROES[state.data.hero].name}!`,
         "Your friends' pets are scattered across Laverton, Brunswick and Reservoir.",
         controls.touchMode
           ? 'Drag on the left side of the screen to walk. Tap A to pet animals, talk to people or read signs. Tap things to walk to them.'

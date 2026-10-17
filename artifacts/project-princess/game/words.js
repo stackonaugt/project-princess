@@ -2190,6 +2190,6 @@ better = The party picks back up. Somebody turns the music up without being aske
 
 [THE_END]
 1 = That's it for now!
-2 = Thanks for playing Project Princess. You can keep playing: the pets, the garden, the council and the shops are all still here.
+2 = Thanks for playing PetPals: Princess Edition. You can keep playing: the pets, the garden, the council and the shops are all still here.
 3 = More is planned if people want it: more pets, mini-games and a big Meredith finale. Tell Seb if you want more!
 `;

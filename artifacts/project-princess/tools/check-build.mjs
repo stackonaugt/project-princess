@@ -42,7 +42,7 @@ assert.deepEqual(manifest.files, listSprites(), 'Manifest must reflect current s
 for (const name of manifest.files) assert.ok(readFileSync(join(output, 'assets/sprites', name)).length);
 
 const html = readFileSync(join(output, 'index.html'), 'utf8');
-assert.match(html, /<title>Project Princess<\/title>/);
+assert.match(html, /<title>PetPals: Princess Edition<\/title>/);
 assert.match(html, /src="lib\/phaser\.min\.js"/);
 const manifestURL = html.match(/rel="manifest" href="([^"]+)"/)?.[1];
 assert.ok(manifestURL, 'HTML must link the web manifest');
