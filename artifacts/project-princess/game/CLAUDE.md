@@ -73,7 +73,9 @@
   round); the Bag lists the team (`phoneTreatPets` in systems/pet-care.js,
   plus Marty during his phone-care lesson). The Petdex shows the team at the top.
 - The twins are NPCs `hadrian`/`aleksy` in their room at home whenever you are
-  not playing as them (`ROUTINES` in data/routines.js, place `room`).
+  not playing as them (`ROUTINES` in data/routines.js, place `room`). An NPC
+  whose id is a hero wears that hero's player art (`player-<id>-<dir>.png`)
+  unless it has its own `npcs/<id>.png`.
 - At water in a duck zone you always get Feed the ducks / Go fishing / Not now.
   Bazza has a Fishing tips option (`PEOPLE.bazza.tips`, `bazzaTip()`).
 - Type matchups (`state.data.matchups`) record every type tried; the move menu
