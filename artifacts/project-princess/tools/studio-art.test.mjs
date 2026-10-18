@@ -117,7 +117,7 @@ test('actual supplied files decode; missing, corrupt, wrong-kind and symlink fil
     for (const folder of ['pets', 'npcs', 'portraits']) await mkdir(path.join(root, folder));
     await copyFile(new URL('templates/pets/princess.png', source), path.join(root, 'pets/friend.png'));
     await copyFile(new URL('templates/npcs/trish.png', source), path.join(root, 'npcs/friend.png'));
-    await copyFile(new URL('portraits/salami.jpg', source), path.join(root, 'portraits/friend.jpg'));
+    await copyFile(new URL('portraits/stanley.jpg', source), path.join(root, 'portraits/friend.jpg'));
     await writeFile(path.join(root, 'pets/broken.png'), 'not an image');
     const bytes = await readFile(new URL('templates/pets/princess.png', source));
     await writeFile(path.join(root, 'pets/truncated.png'), bytes.subarray(0, 50));
@@ -151,9 +151,9 @@ test('production validation checks assigned art only and reports entity, slot an
     await copyFile(new URL('templates/pets/princess.png', source), path.join(spritesRoot, 'pets/friend.png'));
     await copyFile(new URL('templates/pets/princess.png', source), path.join(spritesRoot, 'pets/evolved.png'));
     await copyFile(new URL('templates/npcs/trish.png', source), path.join(spritesRoot, 'npcs/person.png'));
-    await copyFile(new URL('portraits/salami.jpg', source), path.join(spritesRoot, 'portraits/friend.jpg'));
+    await copyFile(new URL('portraits/stanley.jpg', source), path.join(spritesRoot, 'portraits/friend.jpg'));
     await copyFile(new URL('portraits/poppy.jpg', source), path.join(spritesRoot, 'portraits/evolved.jpg'));
-    await copyFile(new URL('portraits/salami.jpg', source), path.join(spritesRoot, 'portraits/person.jpg'));
+    await copyFile(new URL('portraits/stanley.jpg', source), path.join(spritesRoot, 'portraits/person.jpg'));
     await writeFile(path.join(spritesRoot, 'pets/unassigned-corrupt.png'), 'not an image');
 
     const authoringPath = path.join(authoringDirectory, 'overrides.json');
@@ -182,7 +182,7 @@ test('production validation checks assigned art only and reports entity, slot an
     await writeDocument({ pets: { friend: { art: { sprite: 'pets/corrupt.png' } } } });
     await assert.rejects(validateBuildArt(gameRoot), /friend sprite .*pets\/corrupt\.png/);
 
-    await copyFile(new URL('portraits/salami.jpg', source), path.join(spritesRoot, 'pets/wrong-format.png'));
+    await copyFile(new URL('portraits/stanley.jpg', source), path.join(spritesRoot, 'pets/wrong-format.png'));
     await writeDocument({ pets: { friend: { art: { sprite: 'pets/wrong-format.png' } } } });
     await assert.rejects(validateBuildArt(gameRoot), /friend sprite .*pets\/wrong-format\.png/);
 
