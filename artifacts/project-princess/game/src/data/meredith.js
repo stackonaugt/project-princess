@@ -236,7 +236,7 @@ export const MF_PETS = [
     pal: { a: '#2a2626', b: '#141212', c: '#3e3838', e: '#0a0a0a', n: '#141010', h: '#d8303a' },
     owner: 'Jess', region: 'meredith', zone: 'mftop', home: [21, 20], range: 1.2,
     homeSpot: { zone: 'yard', x: 16, y: 10 }, behaviour: 'wander',
-    loves: ['chicken', 'snag', 'cheese'], likes: ['egg', 'tennis', 'pie'], dislikes: ['lemon'],
+    loves: ['chicken', 'snag', 'cheese'], likes: ['egg', 'tennis', 'festpie'], dislikes: ['lemon'],
     stats: { hp: 66, attack: 62, defence: 54, speed: 74, special: 66 },
     bio: 'Jess\'s little black poodle cross, with a red heart on his collar. First through the portal, first back out. Slightly static.',
     clue: 'Jess brings him to Meredith. He comes back out of the portal before anyone else.',

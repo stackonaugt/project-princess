@@ -31,6 +31,7 @@ export const ANIMATION_LAYOUTS = {
   'pet-ziggy': petActions(),
   'pet-emilio': petActions(),
   'pet-marty': petActions(),
+  'pet-toby': petActions(),
   'pet-spooky-evolved': {
     minFrames: 11,
     idle: [0],
