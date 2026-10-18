@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { trainingStarted } from './progression-gates.js';
+import { trainingStarted, gateOpen } from './progression-gates.js';
 import { weekday } from '../data/routines.js';
 import { BAKE_OFF } from '../data/cooking.js';
 import { objectives } from './story.js';
@@ -38,7 +38,7 @@ export function exitRestriction(from, exit, scene) {
   if (scene?.party) return 'You cannot leave your own party.';
   if (from === 'allen' && !['home', 'yard'].includes(exit.to) && !state.isFound('princess')) return 'Find Princess before leaving Allen St.';
   if (from === 'allen' && exit.to === 'station' && !state.isFound('marty')) return 'Visit Woods St and befriend Marty before using the station shortcut.';
-  if (exit.gate && !state.data.beaten[exit.gate]) return 'This walking route is progression locked.';
+  if (exit.gate && !gateOpen(state.data, exit.gate)) return 'This walking route is progression locked.';
   if (scene?.shutShop(exit.to)) return 'The destination shop is closed right now.';
   return null;
 }

@@ -16,3 +16,9 @@ export function knowsMotion(data, id) {
     data.council?.known?.some(key => key.startsWith(`${id}:`)) ||
     Object.values(data.council?.given?.[id] || {}).some(n => n > 0));
 }
+
+// A gated exit (the Premier's police line) only stays open on the day you beat
+// its keeper: sleep, and it is shut again in the morning (Seb, 2026-10-18).
+export function gateOpen(data, id) {
+  return data.beaten?.[id] === data.day;
+}

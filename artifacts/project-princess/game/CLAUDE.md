@@ -250,6 +250,10 @@
   him. Flame Queen was nerfed (2026-10-18): Decree lowers attack by 1 only,
   Royal Rest heals 30%, Royal Blaze is 80 power, stats 76/90/58/88/104.
   `tools/balance.mjs` has a Premier section with a Decree-and-rest player.
+- The Premier's police line resets every day: a `gate` exit only opens on the
+  day you beat its keeper (`gateOpen`, WorldScene), and the myki and trams
+  won't take you past it either (`BEHIND_GATE`: Swanston St, the Reading
+  Room, the laneways and Flinders St). Sleep, and you have to beat him again.
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.
