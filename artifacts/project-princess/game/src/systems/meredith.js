@@ -95,10 +95,10 @@ export function mfClock(delta) {
 }
 
 // ------------------------------------------------------------ getting there
-// The day after the party, Jess texts. The charter bus waits on Allen St.
+// Jess texts and the charter bus waits on Allen St. Hidden until it's ready:
+// only the Cheats app's Send the Meredith bus sets flags.meredith.
 export async function mfInvite(world) {
-  const s = state.data.story;
-  if (s.chapter < 5 || !s.done[4] || s.done[4] >= state.data.day || stage()) return;
+  if (!state.data.flags.meredith || stage()) return;
   mf().stage = S.invited;
   invalidateMap('allen');
   world.save();
