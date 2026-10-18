@@ -262,18 +262,18 @@ export let PEOPLE = {
     helpsInBattle: 'Chris chucks a handful of compost. Rich, warm, and devastating.',
   },
   nathan: {
-    role: 'Runs the lake loop with Rusty, his whippet',
+    role: 'Runs the lake loop with Rusty, his Italian greyhound',
     lines: [
-      ['Cannot stop! Lap twelve! Rusty is on lap forty. Whippets.'],
+      ['Cannot stop! Lap twelve! Rusty is on lap forty. Italian greyhounds.'],
       ['This loop is exactly one point eight kilometres. Rusty does it in about ninety seconds. Then shivers.'],
-      ['Rusty shakes like a leaf when it is cold. Or warm. Or Tuesday. He is a whippet. It is his whole personality.'],
+      ['Rusty shakes like a leaf when it is cold. Or warm. Or Tuesday. He is an Italian greyhound. It is his whole personality.'],
     ],
     hints: {
       poppy: 'There is a frenchie by the picnic tables who keeps trying to race Rusty. She has never won. She has never stopped trying.',
-      rusty: 'Rusty? That brown blur is my whippet. Want him to run with your team? You will have to beat us first.',
+      rusty: 'Rusty? That brown blur is my Italian greyhound. Want him to run with your team? You will have to beat us first.',
     },
     battle: {
-      challenge: ['You want Rusty on your team? He is very fast. And very dramatic about it.', 'Race you. Well, play-fight you. Same thing for a whippet.'],
+      challenge: ['You want Rusty on your team? He is very fast. And very dramatic about it.', 'Race you. Well, play-fight you. Same thing for an Italian greyhound.'],
       ask: 'Play-fight Rusty?', yes: 'Ready, set, go', no: 'Let me catch my breath',
       win: ['He is shaking. That is happy shaking. Probably.', 'Rusty can come and stay at your place on Allen St. Keep the heater on. He feels the cold.'],
       lose: ['Zoom. He was gone before you blinked. Come back faster.'],
@@ -1470,13 +1470,13 @@ export let PET_TEXT = {
     evolvedBio: 'Girlie found the biggest puddle in Carlton Gardens and never really came out. Muddie is half lab, half wetland, and wants a cuddle.',
   },
   rusty: {
-    bio: 'A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.',
+    bio: 'A brown Italian greyhound. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.',
     clue: 'Something brown and very fast is doing laps of the athletics track. Its owner, Nathan, jogs behind it. Slowly.',
     funFact: 'Rusty can reach 60km/h, but prefers to spend most of the day under a blanket.',
     favouriteSpot: 'The warm patch of sun on the lounge room floor. Or under three blankets.',
     lines: {
       0: ['Rusty zooms past. Then back. Then past again. He did not stop to say hello.', 'Rusty is shivering. It is 24 degrees.'],
-      3: ['Rusty leans his whole skinny body against your legs. That is a whippet hug.'],
+      3: ['Rusty leans his whole skinny body against your legs. That is an Italian greyhound hug.'],
       6: ['Rusty does a lap of the court, then flops down next to you, exhausted and proud.'],
       9: ['Rusty curls up on your feet like a tiny brown deer. You cannot move. You will not move.'],
     },

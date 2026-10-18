@@ -20,7 +20,7 @@ export const SHOW_DOGS = {
   },
   cleo: {
     name: "Cleo",
-    breed: "Whippet",
+    breed: "Italian Greyhound",
     coat: "#c3a282",
     mark: "#eee4cf",
     size: 16,

@@ -285,7 +285,8 @@ export class HerdLesson extends Lesson {
     const a = this.area, L = this.level;
     this.timeLimit = 140; this.par = [70, 65, 60, 55, 50][L];
     const pw = 44, ph = 38;
-    this.pen = { x: a.x + a.w - pw - 8, y: a.y + a.h / 2 - ph / 2, w: pw, h: ph, gap: L >= 3 ? 16 : 20 };
+    // The pen sits hard against the edge, so nobody can get stuck behind it.
+    this.pen = { x: a.x + a.w - pw, y: a.y + a.h / 2 - ph / 2, w: pw, h: ph, gap: L >= 3 ? 16 : 20 };
     const p = this.pen, g0 = p.y + p.h / 2 - p.gap / 2, g1 = p.y + p.h / 2 + p.gap / 2, t = 4;
     this.solids.push({ x: p.x, y: p.y, w: p.w, h: t }, { x: p.x, y: p.y + p.h - t, w: p.w, h: t }, { x: p.x + p.w - t, y: p.y, w: t, h: p.h },
       { x: p.x, y: p.y, w: t, h: g0 - p.y }, { x: p.x, y: g1, w: t, h: p.y + p.h - g1 });
@@ -305,6 +306,15 @@ export class HerdLesson extends Lesson {
         const from = dp < 46 ? this.pet : handler, d = Math.max(1, dist(c, from));
         vx = (c.x - from.x) / d * 46 + Math.sin(this.elapsed * 7 + c.wob) * 10; vy = (c.y - from.y) / d * 46 + Math.cos(this.elapsed * 6 + c.wob) * 10;
       } else { vx = Math.sin(this.elapsed * 0.9 + c.wob) * 8; vy = Math.cos(this.elapsed * 0.7 + c.wob * 2) * 6; }
+      // Chooks shy away from the fence, so they slide along it instead of
+      // jamming in a corner, and there is always room for the dog behind them.
+      if (!c.penned) {
+        const m = 18, k = 4;
+        if (c.x < a.x + m) vx += (a.x + m - c.x) * k;
+        if (c.x > a.x + a.w - m) vx -= (c.x - (a.x + a.w - m)) * k;
+        if (c.y < a.y + m) vy += (a.y + m - c.y) * k;
+        if (c.y > a.y + a.h - m) vy -= (c.y - (a.y + a.h - m)) * k;
+      }
       let nx = c.x + vx * dt, ny = c.y + vy * dt;
       // The pen walls: only the gap lets a chook in, and nothing gets out.
       const inside = c.penned;
@@ -313,7 +323,8 @@ export class HerdLesson extends Lesson {
       if (!inside && !yIn(c.y) && yIn(ny) && xIn(nx)) ny = c.y;
       if (inside) { nx = Math.max(p.x + 6, Math.min(p.x + p.w - 6, nx)); ny = Math.max(p.y + 6, Math.min(p.y + p.h - 6, ny)); }
       c.moving = Math.hypot(nx - c.x, ny - c.y) > 0.3; if (Math.abs(nx - c.x) > 0.2) c.flip = nx < c.x;
-      c.x = Math.max(a.x + 4, Math.min(a.x + a.w - 4, nx)); c.y = Math.max(a.y + 4, Math.min(a.y + a.h - 4, ny));
+      const e = c.penned ? 4 : 11;   // the dog stops 6 from the edge, so it can always get round a chook
+      c.x = Math.max(a.x + e, Math.min(a.x + a.w - e, nx)); c.y = Math.max(a.y + e, Math.min(a.y + a.h - e, ny));
       if (!c.penned && this.inPen(c)) {
         c.penned = true; const left = this.chooks.filter(k => !k.penned).length;
         this.good(left ? `In the pen! ${left} to go.` : 'All the chooks are in. Gate shut!');
