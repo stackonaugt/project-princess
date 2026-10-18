@@ -21,6 +21,7 @@
 import { PET_TEXT } from './dialogue.js';
 import { authoredValue } from '../authoring/overrides.js';
 import { TUNING } from './tuning.js';
+import { MF_PETS } from './meredith.js';
 
 export let PETS = [
   {
@@ -197,6 +198,7 @@ export let PETS = [
     lines: { 0: ['Marty sniffs your shoes, then leans against your leg.', 'His orange harness is clean. The rest of him is debatable.'] },
     night: ['Marty is ready for a couch nap.'], rain: ['Wet cavoodle. The smell has somehow become stronger.'], asleep: ['Marty snores into his curls.'],
   },
+  ...MF_PETS,   // Toby, the Meredith festival starter (data/meredith.js)
 ];
 
 

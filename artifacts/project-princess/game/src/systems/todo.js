@@ -16,6 +16,8 @@ export function completeTutorial(id) {
 export function tutorialNotes() { return Object.values(journal().tutorials); }
 function questIds() {
   const n = state.data.story.chapter, ids = n > 0 && n < 5 ? objectives(n).filter(o => !o.done).map((o,i) => `chapter:${n}:${o.id || i}`) : state.isFound('princess') ? [] : ['find-princess'];
+  const fest = state.data.meredith?.stage;
+  if (fest && fest < 10) ids.push(`meredith:${fest}`);
   if (state.data.side.bake === 1) ids.push('side:betty-bake');
   if (showUnlocked() && !state.data.side.show?.claimed.includes('champion')) ids.push('side:dog-show');
   for (const t of tutorialNotes()) if (!t.done) ids.push(`tutorial:${t.id}`);

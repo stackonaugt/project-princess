@@ -61,6 +61,14 @@ import { buildBakeOff } from '../world/maps/bakeoff.js';
 import { buildMurray } from '../world/maps/murray.js';
 import { buildSummerhill } from '../world/maps/summerhill.js';
 import { buildSummerhillMall } from '../world/maps/summerhillmall.js';
+import { buildMfReception } from '../world/maps/mfreception.js';
+import { buildMfBush } from '../world/maps/mfbush.js';
+import { buildMfAmphi } from '../world/maps/mfamphi.js';
+import { buildMfTop } from '../world/maps/mftop.js';
+import { buildMfSunset } from '../world/maps/mfsunset.js';
+import { buildMfBlueGums } from '../world/maps/mfbluegums.js';
+import { buildMfPines } from '../world/maps/mfpines.js';
+import { FEST_GRASS } from '../world/maps/mfkit.js';
 
 // grass: base, alt, dark tuft, light tip
 const LAVERTON_GRASS = ['#a9bb5e', '#a0b257', '#879a45', '#c6d47e'];
@@ -92,8 +100,10 @@ export const SUBURBS = {
   // Off Brunswick to the south: Carlton (no station; walk from Brunswick or the city), then the CBD.
   carlton: { name: 'Carlton', tagline: 'Lygon St, gelato and the Exhibition Building.' },
   city: { name: 'Melbourne CBD', tagline: 'Trams, laneways and the clocks at Flinders St.', station: 'flinders', stationName: 'Flinders Street Station' },
+  // The Meredith Music Festival: reached only by the charter bus (data/meredith.js).
+  meredith: { name: 'Meredith', tagline: 'The Supernatural Amphitheatre. One stage, no dickheads.', festival: true },
 };
-export const SUBURB_ORDER = ['laverton', 'brunswick', 'brunswickeast', 'coburg', 'preston', 'reservoir', 'carlton'];
+export const SUBURB_ORDER = ['laverton', 'brunswick', 'brunswickeast', 'coburg', 'preston', 'reservoir', 'carlton', 'meredith'];
 
 // home: true marks your place, where pets you've found hang out.
 export const ZONES = {
@@ -158,6 +168,14 @@ export const ZONES = {
   bourke: { name: 'Bourke St', suburb: 'city', build: buildBourke, grass: MELB_GRASS },
   laneways: { name: 'Hosier Lane', suburb: 'city', build: buildLaneways, grass: CITY_GRASS },
   flinders: { name: 'Flinders Street Station', suburb: 'city', build: buildFlinders, grass: MELB_GRASS },
+  // The Meredith festival (after chapter 5, by charter bus). Last, so townsfolk keep their home zones.
+  mfreception: { name: 'Reception', suburb: 'meredith', build: buildMfReception, grass: FEST_GRASS },
+  mfbush: { name: 'Bush Camp', suburb: 'meredith', build: buildMfBush, grass: FEST_GRASS },
+  mfamphi: { name: 'The Amphitheatre', suburb: 'meredith', build: buildMfAmphi, grass: FEST_GRASS },
+  mftop: { name: 'Top Camp', suburb: 'meredith', build: buildMfTop, grass: FEST_GRASS },
+  mfsunset: { name: 'Sunset Strip', suburb: 'meredith', build: buildMfSunset, grass: FEST_GRASS },
+  mfbluegums: { name: 'Blue Gums', suburb: 'meredith', build: buildMfBlueGums, grass: FEST_GRASS },
+  mfpines: { name: 'South Pines', suburb: 'meredith', build: buildMfPines, grass: FEST_GRASS },
 };
 
 

@@ -26,6 +26,22 @@ export const CROWD = Array.from({ length: CROWD_COUNT }, (_, i) => {
   return { id: `crowd${i}`, look };
 });
 
+// Festival goers at Meredith (systems/meredith.js): bucket hats, glitter, boots
+// and blue costumes, mixed the same way.
+export const FEST_CROWD = Array.from({ length: 14 }, (_, i) => {
+  const r = rng(7300 + i * 41);
+  const pick = a => a[Math.floor(r() * a.length)];
+  const look = { skin: pick(SKIN), hair: pick(HAIR), hairStyle: pick(STYLE), shirt: pick([...SHIRT, '#f28bb0', '#f5e66b', '#3a7ad8']), pants: pick([...PANTS, '#f4efe0', '#3a8ac8']) };
+  if (look.hairStyle === 'cap') look.cap = pick(CAP);
+  if (r() < 0.35) look.hat = pick(['#e8d8a8', '#f28bb0', '#3fa38f', '#f5e66b', '#2a2a30']);
+  if (r() < 0.35) look.sunglasses = pick(['#1e1e24', '#e2508a', '#3a8ac8']);
+  if (r() < 0.2) look.shirtPattern = pick(['dots', 'leopard', 'plaid']), look.shirtAccent = pick(['#f5e66b', '#2a1a10', '#1e1e22']);
+  if (r() < 0.15) look.headband = pick(['#f28bb0', '#f5e66b', '#7be07b']);
+  if (r() < 0.12) look.beard = look.hair;
+  if (i === 13) Object.assign(look, { shirt: '#3a7ad8', pants: '#3a7ad8', hood: '#3a7ad8' });
+  return { id: `fest${i}`, look };
+});
+
 // What they say when you talk to them. One line, picked at random.
 export const CROWD_LINES = {
   street: [

@@ -17,6 +17,7 @@ export const WORD_TABLES = {
     'RECIPES', 'PRANKS', 'RSVP', 'TRIVIA', 'PARTY_STORIES', 'PARTY_MINGLE', 'PARTY_SLUMP', 'PADDY_PARTY',
     'PADDY_SPEECH', 'PARTY_END', 'ELECTION_LOST', 'THE_END',
   ],
+  'data/meredith.js': ['MF_TEXT'],
 };
 
 // Text, not an id: ids never have spaces or end in punctuation.

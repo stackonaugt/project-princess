@@ -18,7 +18,7 @@ import { BALANCE } from '../config.js';
 import { TUNING } from '../data/tuning.js';
 
 // The level each pet is at when you first befriend them.
-export const START_LEVEL = { marty: 5, princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14 };
+export const START_LEVEL = { marty: 5, princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14, toby: 10 };
 export const MAX_LEVEL = 50;   // was 30 until a player beat the Premier at the cap (Seb, 2026-10-18)
 // Moves of these types use the special stat instead of attack.
 const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy', 'hack', 'electric']);

@@ -6,6 +6,7 @@
 // { trainer: npcId }, plus suburb and done(result)). result.outcome is
 // 'win' | 'lose' | 'run' | 'forfeit'; result.kod lists pets that ran home.
 
+import { isMeredith } from '../data/meredith.js';
 import { TYPES } from '../data/types.js';
 import { petSize } from '../data/pet-sizes.js';
 import { MOVES } from '../data/moves.js';
@@ -733,7 +734,7 @@ export class BattleScene extends Phaser.Scene {
     if(!this.opts.exhibition) state.setParty(state.data.party.filter(id => id !== f.petId));
     spr.setFlipX(true);
     await Promise.all([
-      this.say(this.opts.exhibition?`${f.name} rests beside the ring. Your team returns after the match.`:`${f.name} has had enough and runs home to Allen St!`),
+      this.say(this.opts.exhibition?`${f.name} rests beside the ring. Your team returns after the match.`:`${f.name} has had enough and runs ${isMeredith(this.opts.region) ? 'back to the campsite' : 'home to Allen St'}!`),
       this.tw(spr, { x: -30 * this.unit, duration: 900, ease: 'Quad.easeIn' }),
       this.tw(spr, { y: spr.y - 3 * this.unit, duration: 110, yoyo: true, repeat: 3 }),
     ]);

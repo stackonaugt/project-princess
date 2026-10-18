@@ -51,6 +51,7 @@ export function openCheats(panel, close) {
           btn('Jump to Tuesday 6:30pm', () => { while (weekday(d.day) !== 'Tuesday') d.day++; d.minutes = MEETING[0]; done('Tuesday, 6:30pm. Council is meeting in the chamber.'); }),
           btn('Go to the council meeting', () => { while (weekday(d.day) !== 'Tuesday') d.day++; d.minutes = MEETING[0] + 1; go('chamber', { entry: 'door' }); }),
           btn('Go to the bake-off', () => { while (weekday(d.day) !== 'Saturday') d.day++; d.minutes = Math.max(d.minutes, 10 * 60); delete d.flags.bakeoffWeek; go('moreland', { entry: 'north' }); }),
+          btn('Send the Meredith bus', () => { d.flags.meredith = true; go('allen', { entry: 'house' }); }),
           btn('Go to the dog show', () => { while (weekday(d.day) !== SHOW_DAY.day) d.day++; d.minutes = SHOW_DAY.from + 60; d.flags.trainingStarted = true; go('exhibition', { entry: 'door' }); }))),
       h('div', { class: 'note' }, h('h4', {}, 'Stuff'),
         h('div', { class: 'row' },
