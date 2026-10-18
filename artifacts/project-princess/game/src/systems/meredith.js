@@ -8,8 +8,9 @@
 //   5 carrying  ...which turns the day into night
 //   6 night     Jess's pet portal demo at the campsite goes wrong
 //   7 hunt      find the scattered pets (wild play-fights, festival goers, the crowd, a dance off)
-//   8 sunrise   everyone is back: watch the sunrise at the Sunset Strip
-//   9 done      the Flame Queen rises (to be continued); the bus home waits at Reception
+//   8 sunrise   everyone is back: the Ice Kids' set curses the festival (m.cursed),
+//               then the sunrise at the Sunset Strip
+//   9 done      the Flame Queen rises: Princess, lost through the portal all night (to be continued)
 //  10 home
 //
 // Time runs MF_CLOCK.slow times slower here and holds at dusk or before dawn
@@ -21,7 +22,7 @@ import { bus } from '../bus.js';
 import { sfx } from './sfx.js';
 import { controls } from './controls.js';
 import { readyTeam, START_LEVEL } from './battle.js';
-import { form } from './forms.js';
+import { form, isEvolved, evolve } from './forms.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { TRAINERS } from '../data/enemies.js';
@@ -90,7 +91,9 @@ export function mfClock(delta) {
   m.minutes += delta / MF_CLOCK.slow;
   const day = !nightPhase();
   if (day && stage() < S.done && m.minutes > MF_CLOCK.dayHold) m.minutes = MF_CLOCK.dayHold;
-  if (!day && m.minutes > MF_CLOCK.nightHold) m.minutes = MF_CLOCK.nightHold;
+  // After the Ice Kids' set it is the small hours, waiting on the sunrise.
+  const hold = mf().cursed ? MF_CLOCK.dawn - 20 : MF_CLOCK.nightHold;
+  if (!day && m.minutes > hold) m.minutes = hold;
   if (stage() >= S.done && m.minutes > MF_CLOCK.dayHold) m.minutes = MF_CLOCK.dayHold;
 }
 
@@ -194,7 +197,8 @@ export async function mfEnter(world) {
     m.glimpsed = true; world.save();
     world.time.delayedCall(2500, () => glimpse(world));
   }
-  if (z === 'mfsunset' && m.stage === S.sunrise) return sunrise(world);
+  if (z === 'mfamphi' && m.stage === S.sunrise && !m.cursed) return iceKids(world);
+  if (z === 'mfsunset' && m.stage === S.sunrise && m.cursed) return sunrise(world);
   if (z === 'mfamphi' && hunting()) {
     const c = crowdPet();
     if (c && !m.crowdOffered) { m.crowdOffered = true; world.time.delayedCall(1200, () => !ui.blocking() && crowdSearch(world, c)); }
@@ -330,6 +334,8 @@ async function portal(world, opts) {
     m.scatter[id] = sc;
     state.pet(id).hp = null;
   }
+  // Princess is home with the twins, but the portal pulls her in too. Nobody finds her till dawn.
+  m.lostPrincess = state.isFound('princess');
   // Toby, tuned to the portal now.
   const levels = state.foundIds().filter(id => id !== 'toby').map(id => state.pet(id).level || START_LEVEL[id] || 5);
   const avg = levels.length ? Math.round(levels.reduce((a, b) => a + b, 0) / levels.length) : 10;
@@ -338,6 +344,7 @@ async function portal(world, opts) {
   toby.level = Math.max(toby.level || 0, Math.max(5, Math.min(40, avg - 2))); toby.hp = null;
   state.setParty(['toby']);
   m.stage = S.hunt;
+  if (m.lostPrincess) await ui.say(T_.princessPulled);
   await ui.say(T_.portalAfter, opts);
   ui.banner('New Petdex entry!', 'Toby');
   await ui.say([T_.tobyJoins]);
@@ -369,7 +376,54 @@ export async function recover(world, id) {
   if (left.length) return ui.toast(fmt(T_.huntHint, { n: left.length }));
   await ui.say(T_.allBack, { name: 'Jess', portrait: npcIcon('jess') });
   m.stage = S.sunrise; world.save();
+  world.mfRefresh?.();
+  if (world.regionId === 'mfamphi') return iceKids(world);
+  ui.toast(T_.iceHint);
+}
+
+// ------------------------------------------------------------ the Ice Kids close night one
+async function iceKids(world) {
+  if (world.iceBusy) return;
+  world.iceBusy = true;
+  const cam = world.cameras.main, m = mf(), sx = 30 * T, sy = 33 * T;
+  // Look down at the stage for the set, then back to Helen.
+  cam.stopFollow();
+  cam.pan(sx, 36 * T, 1400, 'Sine.easeInOut');
+  await new Promise(r => world.time.delayedCall(1500, r));
+  // The band walks on: drawn on the stage deck, in front of the stage art.
+  const band = ['mficesinger', 'mficeguitar'].map((id, i) => {
+    const key = world.textures.exists(`npc-${id}`) ? `npc-${id}` : `npc-${id}-down`;
+    const spr = world.add.sprite((27.5 + i * 5) * T, 36.1 * T, key, 0).setOrigin(0.5, 1).setDepth(38 * T + 2).setAlpha(0);
+    world.tweens.add({ targets: spr, alpha: 1, duration: 800 });
+    return spr;
+  });
+  await ui.say(T_.iceKids);
+  const glow = world.add.image(sx, sy, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setDepth(9550).setScale(6).setTint(0x7ad8ff).setAlpha(0);
+  world.tweens.add({ targets: glow, alpha: 0.9, duration: 900, yoyo: true, repeat: -1 });
+  cam.flash(400, 120, 200, 255);
+  await ui.say(T_.iceCurse.slice(0, 2));
+  cam.shake(1600, 0.01); sfx.encounter?.();
+  for (let i = 0; i < 10; i++) {
+    const s = world.add.image(sx + (i - 4.5) * 14, sy, 'fx-glow').setTint(0x1a0a22).setScale(1.4).setDepth(9560).setAlpha(0.95);
+    world.tweens.add({ targets: s, x: s.x + (i - 4.5) * 30, y: sy - 160 - (i % 3) * 40, alpha: 0, duration: 2200, delay: i * 140, onComplete: () => s.destroy() });
+  }
+  await new Promise(r => world.time.delayedCall(2000, r));
+  await ui.say(T_.iceCurse.slice(2));
+  cam.flash(600, 30, 0, 50);
+  m.cursed = true;
+  state.data.minutes = Math.max(state.data.minutes, 29 * 60);   // the set ran very late
+  ui.updateHud(world.regionId);
+  world.save();
+  glow.destroy();
+  world.tweens.add({ targets: band, alpha: 0, duration: 900, onComplete: () => band.forEach(b => b.destroy()) });
+  await ui.say(T_.iceAfter);
+  if (world.cameras?.main) {
+    cam.pan(world.player.x, world.player.y, 900, 'Sine.easeInOut');
+    await new Promise(r => world.time.delayedCall(950, r));
+    cam.startFollow(world.player, true, 0.2, 0.2);
+  }
   ui.toast(T_.sunriseHint);
+  world.iceBusy = false;
 }
 
 async function goerBattle(world, npc, pid, opts) {
@@ -545,11 +599,29 @@ async function sunrise(world) {
   await new Promise(r => world.time.delayedCall(3300, r));
   cam.flash(600, 255, 180, 80);
   await ui.say(T_.sunrise.slice(3));
+  const m = mf();
+  if (m.lostPrincess) {
+    // She floats down into Helen's arms: found, and evolved if she was not already.
+    const me = world.player;
+    world.tweens.add({ targets: queen, x: me.x, y: me.y - 24, displayHeight: 24, displayWidth: 24 * queen.width / queen.height, duration: 1600, ease: 'Sine.easeInOut' });
+    world.tweens.add({ targets: glow, x: me.x, y: me.y - 24, scale: 2, duration: 1600 });
+    await new Promise(r => world.time.delayedCall(1700, r));
+    await ui.say(T_.princessLands);
+    const was = isEvolved('princess');
+    evolve('princess');
+    if (!was) await ui.say(T_.princessEvolved);
+    m.lostPrincess = false;
+    if (!m.got.includes('princess')) m.got.push('princess');
+    state.setParty(['princess', ...d.party.filter(id => id !== 'princess')].slice(0, 3));
+    world.syncFollowers();
+    ui.toast(T_.princessTeam);
+  }
+  await ui.say(T_.goodnight);
   await ui.card({ kicker: 'Meredith, part 1', title: 'To be continued', lines: T_.sunriseCard, button: 'Keep playing' });
   queen.destroy(); glow.destroy();
   const news = state.newDay();
   mf().stage = S.done;
-  d.minutes = 6 * 60 + 30;
+  d.minutes = 12 * 60;
   world.save();
   ui.updateHud(world.regionId);
   if (news?.length) await ui.say(news);
@@ -573,7 +645,7 @@ export function mfObjective() {
     [S.invited]: 'Catch the charter bus on Allen St to Meredith (talk to the driver)',
     [S.arrived]: T_.wristbandHint, [S.wristband]: `${T_.campHint} Pitch your tent.`, [S.pitched]: T_.couchHint,
     [S.carrying]: T_.couchCarry, [S.night]: T_.portalHint, [S.hunt]: fmt(T_.huntHint, { n: left }),
-    [S.sunrise]: T_.sunriseHint, [S.done]: 'Take the charter bus home from Reception',
+    [S.sunrise]: m.cursed ? T_.sunriseHint : T_.iceHint, [S.done]: 'Take the charter bus home from Reception',
   }[s];
   return { text, done: false };
 }

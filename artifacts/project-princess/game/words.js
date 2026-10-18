@@ -1548,6 +1548,14 @@ lines.5.1 = Bazza at Anaconda sells a lovely carbon rod. He only sells it to peo
 heartScenes.3.1 = Ross ties you a perfect clinch knot, then unties it, then makes you do it. Twice. "Now you will never lose a fish to a knot."
 heartScenes.6.1 = Ross shows you a faded photo: him at twelve, holding a carp almost as big as him. "My first comp. Came last. Best day ever."
 
+[PEOPLE.mficesinger]  # Ice Kids Singer
+role = Ice Kids. On last
+lines.1.1 = *She stares straight through you without blinking.*
+
+[PEOPLE.mficeguitar]  # Ice Kids Guitarist
+role = Ice Kids. On last
+lines.1.1 = *He tunes a guitar that is somehow covered in frost.*
+
 [PEOPLE.jess]  # Jess
 role = Organiser at the UWU. Inventor of the pet portal (finally)
 lines.1.1 = Six years I have been talking about the pet portal. Six years! And tonight, it works.
@@ -2485,6 +2493,19 @@ allBack.1 = Jess: "That is everyone! Every single one! I am never building anyth
 allBack.2 = Seb: "You will build something again by Tuesday."
 allBack.3 = Jess: "I will build something again by Tuesday."
 allBack.4 = Charlotte: "Come on. Sunset Strip. The sun will be up soon. You have to watch it come up at Meredith."
+iceHint = Watch the Ice Kids close night one at the Amphitheatre.
+iceKids.1 = *The lanterns go out. The whole Amphitheatre goes quiet.*
+iceKids.2 = *Two figures walk onto the stage in a cold blue light. It is the Ice Kids.*
+iceKids.3 = Charlotte: "Oh no. I forgot they were on last."
+iceKids.4 = *The first chord is so cold your breath fogs. Frost creeps across the couches.*
+iceCurse.1 = Ice Kids Singer: "Meredith. You have had your fun. Now you get what you deserve."
+iceCurse.2 = *She sings one long, freezing note. The ground shakes. Shapes crawl up out of the speakers.*
+iceCurse.3 = *Dark shapes in bucket hats and cargo shorts pour off the stage and into the bush, shoving and yelling.*
+iceCurse.4 = Seb: "Oh no. Those are dickheads. Hundreds of them."
+iceAfter.1 = *The Ice Kids are gone. The stage is empty, and covered in ice.*
+iceAfter.2 = Gabe: "They have cursed the festival. The Dickheads will take over by tomorrow."
+iceAfter.3 = Jess: "We are doomed. Completely doomed."
+iceAfter.4 = Charlotte: "Then we are doomed at the Sunset Strip. The sun is about to come up. Come on."
 sunriseHint = Watch the sunrise with everyone at the Sunset Strip.
 sunrise.1 = *The whole crew sits on the hill at the Sunset Strip. The sky over the paddocks starts to glow orange.*
 sunrise.2 = Gabe: "Here it comes. Meredith sunrise. Best thing you will ever see."
@@ -2492,10 +2513,17 @@ sunrise.3 = *The glow gets brighter. And brighter. It is rising very fast for a 
 sunrise.4 = Mem: "That is not the sun."
 sunrise.5 = *Over the horizon rises an enormous, blazing, glowing poodle, wreathed in flame and wearing a crown.*
 sunrise.6 = Helen: "...Princess?"
+princessPulled.1 = *Far away, back in Laverton, a little pink flash goes into the purple light as well. Nobody notices.*
+princessLands.1 = *The Flame Queen floats down off the horizon and lands right in your arms, still glowing. It is Princess.*
+princessLands.2 = Jess: "The portal! It must have pulled her in from Melbourne with everyone else. She has been out past the paddocks all night."
+princessEvolved.1 = Helen: "She looks different. She must have evolved."
+princessTeam = Princess joins your team.
+goodnight.1 = Helen: "Well. At least I have my dog. Time to sleep. We can deal with these dickheads tomorrow."
 sunriseCard.1 = The Flame Queen rises over Meredith, blazing like a second sun.
 sunriseCard.2 = How did Princess get here? What is happening back in Melbourne?
 sunriseCard.3 = To be continued in part 2: the twins.
 afterSunrise.1 = For now, the bus home is waiting at Reception. Everyone is very, very tired.
+afterSunrise.2 = For now, the bus home is waiting at Reception.
 busHomeAsk = Take the charter bus home?
 busHome.1 = *Everyone piles onto the charter bus. Within five minutes, the whole bus is asleep.*
 busHome.2 = Your pets are back home on Allen St, safe and sound.

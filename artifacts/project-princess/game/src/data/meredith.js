@@ -33,7 +33,7 @@ export const isMeredith = id => MF_ZONES.includes(id);
 export const MF_STAGE = { invited: 1, arrived: 2, wristband: 3, pitched: 4, carrying: 5, night: 6, hunt: 7, sunrise: 8, done: 9, home: 10 };
 
 // The save (state.data.meredith): stage, where each pet landed, who is back.
-export const freshMeredith = () => ({ stage: 0, scatter: {}, got: [], partyBefore: null, heroBefore: null, nightSeen: false, glimpsed: false });
+export const freshMeredith = () => ({ stage: 0, scatter: {}, got: [], partyBefore: null, heroBefore: null, nightSeen: false, glimpsed: false, lostPrincess: false, cursed: false });
 
 // How many festival goers mill about, by day and by night.
 export const MF_BUSY = {
@@ -102,10 +102,15 @@ export const MF_NPCS = {
   mfglitter: { name: 'Glitter Gwen', look: { hair: '#b79cf0', hairStyle: 'pixie', skin: '#f6d8b8', shirt: '#e2508a', shirtPattern: 'dots', shirtAccent: '#f5e66b', pants: '#3a8ac8', shoes: '#f4f4f0', lips: '#c0505a' } },
   mfcouchking: { name: 'The Couch King', look: { hair: '#3a2416', hairStyle: 'short', skin: '#b07a4a', shirt: '#d87a2a', shirtPattern: 'leopard', shirtAccent: '#2a1a10', pants: '#2a2a30', shoes: '#1a1a1a', sunglasses: '#1e1e24', shades: 'rect', beret: '#1e1e22' } },
   mfshuffle: { name: 'Shuffles', look: { hair: '#141012', hairStyle: 'curly', skin: '#8a5a34', shirt: '#3fa38f', jersey: ['#3fa38f', '#f5e66b'], pants: '#2a2a30', shoes: '#f4f4f0', headband: '#f28bb0' } },
+  // The Ice Kids (from Seb's photo): they play last on night one and curse the festival.
+  mficesinger: { name: 'Ice Kids Singer', look: { hair: '#f0e8cc', hairStyle: 'long', skin: '#f6dccb', shirt: '#f2efe4', scarf: '#8e8e94', lips: '#c01e2a', pants: '#e8e4d8', shoes: '#1a1a1a' } },
+  mficeguitar: { name: 'Ice Kids Guitarist', look: { hair: '#3a9cb8', hairStyle: 'long', skin: '#f2d2bc', shirt: '#f6f6f2', collar: true, pants: '#1e1e22', shoes: '#1a1a1a' } },
   mfbluecrew: { name: 'The Blue Drink Crew', look: { hair: '#2a1a10', hairStyle: 'short', skin: '#f2c79a', shirt: '#3a7ad8', hood: '#3a7ad8', pants: '#3a7ad8', shoes: '#f4f4f0' } },
 };
 
 export const MF_PEOPLE = {
+  mficesinger: { role: 'Ice Kids. On last', lines: [['*She stares straight through you without blinking.*']] },
+  mficeguitar: { role: 'Ice Kids. On last', lines: [['*He tunes a guitar that is somehow covered in frost.*']] },
   jess: {
     role: 'Organiser at the UWU. Inventor of the pet portal (finally)',
     lines: [
@@ -466,7 +471,26 @@ export let MF_TEXT = {
     'Jess: "That is everyone! Every single one! I am never building anything ever again."',
     'Seb: "You will build something again by Tuesday."',
     'Jess: "I will build something again by Tuesday."',
-    'Charlotte: "Come on. Sunset Strip. The sun will be up soon. You have to watch it come up at Meredith."',
+    'Charlotte: "Come on, the Ice Kids are on last. Then Sunset Strip for the sunrise. You have to see the sun come up at Meredith."',
+  ],
+  iceHint: 'Watch the Ice Kids close night one at the Amphitheatre.',
+  iceKids: [
+    '*The lanterns go out. The whole Amphitheatre goes quiet.*',
+    '*Two figures walk onto the stage in a cold blue light. It is the Ice Kids.*',
+    'Charlotte: "Oh no. I forgot they were on last."',
+    '*The first chord is so cold your breath fogs. Frost creeps across the couches.*',
+  ],
+  iceCurse: [
+    'Ice Kids Singer: "Meredith. You have had your fun. Now you get what you deserve."',
+    '*She sings one long, freezing note. The ground shakes. Shapes crawl up out of the speakers.*',
+    '*Dark shapes in bucket hats and cargo shorts pour off the stage and into the bush, shoving and yelling.*',
+    'Seb: "Oh no. Those are dickheads. Hundreds of them."',
+  ],
+  iceAfter: [
+    '*The Ice Kids are gone. The stage is empty, and covered in ice.*',
+    'Gabe: "They have cursed the festival. The Dickheads will take over by tomorrow."',
+    'Jess: "We are doomed. Completely doomed."',
+    'Charlotte: "Then we are doomed at the Sunset Strip. The sun is about to come up. Come on."',
   ],
   sunriseHint: 'Watch the sunrise with everyone at the Sunset Strip.',
   sunrise: [
@@ -477,8 +501,16 @@ export let MF_TEXT = {
     '*Over the horizon rises an enormous, blazing, glowing poodle, wreathed in flame and wearing a crown.*',
     'Helen: "...Princess?"',
   ],
-  sunriseCard: ['The Flame Queen rises over Meredith, blazing like a second sun.', 'How did Princess get here? What is happening back in Melbourne?', 'To be continued in part 2: the twins.'],
-  afterSunrise: ['For now, the bus home is waiting at Reception. Everyone is very, very tired.'],
+  princessPulled: ['*Far away, back in Laverton, a little pink flash goes into the purple light as well. Nobody notices.*'],
+  princessLands: [
+    '*The Flame Queen floats down off the horizon and lands right in your arms, still glowing. It is Princess.*',
+    'Jess: "The portal! It must have pulled her in from Melbourne with everyone else. She has been out past the paddocks all night."',
+  ],
+  princessEvolved: ['Helen: "She looks different. She must have evolved."'],
+  princessTeam: 'Princess joins your team.',
+  goodnight: ['Helen: "Well. At least I have my dog. Time to sleep. We can deal with these dickheads tomorrow."'],
+  sunriseCard: ['The Ice Kids have cursed Meredith, and the Dickheads are coming.', 'But Princess is back. What is happening back in Melbourne?', 'To be continued in part 2: the twins.'],
+  afterSunrise: ['*You wake up in the tent around lunchtime with Princess curled up on your feet.*', 'For now, the bus home is waiting at Reception.'],
   busHomeAsk: 'Take the charter bus home?',
   busHome: ['*Everyone piles onto the charter bus. Within five minutes, the whole bus is asleep.*', 'Your pets are back home on Allen St, safe and sound.'],
   glimpse: ['*Something small and spiky trundles across the path in the dark, glowing faintly. Then it is gone.*', 'A festival goer: "Did you see that? The Meredith echidna! It is real!"'],
