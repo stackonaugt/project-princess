@@ -244,6 +244,16 @@
 - Pet sheets the owner supplied with fewer than 11 frames were extended from
   their own frames (theirs stay first, pixel for pixel; `tools/fixtures/
   pet-original-pixels.mjs` hashes them). Re-hash when new art is uploaded.
+- **Level cap 50** (`MAX_LEVEL`, systems/battle.js; it was 30). The Premier's
+  team is 46/48/50 and his robot's Reboot also clears its stat drops (move
+  effect `cleanse`), so stacking Queen's Decree and healing no longer beats
+  him. Flame Queen was nerfed (2026-10-18): Decree lowers attack by 1 only,
+  Royal Rest heals 30%, Royal Blaze is 80 power, stats 76/90/58/88/104.
+  `tools/balance.mjs` has a Premier section with a Decree-and-rest player.
+- The Premier's police line resets every day: a `gate` exit only opens on the
+  day you beat its keeper (`gateOpen`, WorldScene), and the myki and trams
+  won't take you past it either (`BEHIND_GATE`: Swanston St, the Reading
+  Room, the laneways and Flinders St). Sleep, and you have to beat him again.
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.

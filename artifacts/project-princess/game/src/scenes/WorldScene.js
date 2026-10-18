@@ -33,6 +33,9 @@ import { story, inChapter, chapterFinished, spillDeadline, objectives, attendees
 const GATES = {
   bencarroll: ['A police officer steps out, arms wide. "Sorry, folks. This way into the city is closed by order of the Premier."', '"He\'s just up at Parliament on Spring St, if you want to take it up with him. Good luck with that."'],
 };
+const gateOpen = id => gateOpenFor(state.data, id);
+// The city behind the Premier's police line, however you try to get in.
+const BEHIND_GATE = { swanston: 'bencarroll', reading: 'bencarroll', laneways: 'bencarroll', flinders: 'bencarroll' };
 
 // People you can't invite to the party (Chapter 4).
 const NO_INVITE = ['stranger', 'julie', 'binman', 'hipster', 'golfer', 'hadrian', 'aleksy'];
@@ -65,7 +68,7 @@ import { Player, Pet, Npc, Sibling, Duckling, toWorld } from '../world/entities.
 import { Traffic } from '../world/traffic.js';
 import { LocalRouter, AutoWalk } from '../world/navigation.js';
 import { state } from '../systems/state.js';
-import { binManReady, trainingStarted } from '../systems/progression-gates.js';
+import { binManReady, trainingStarted, gateOpen as gateOpenFor } from '../systems/progression-gates.js';
 import { levelOf, CLASS_LEVELS } from '../systems/training.js';
 import { specialFor, LESSON_TITLES, LESSON_HELP } from '../systems/school-lessons.js';
 import { runSchoolLesson } from '../systems/school-runner.js';
@@ -1852,6 +1855,8 @@ export class WorldScene extends Phaser.Scene {
       text: 'You tap your myki. Beep beep. Where to?',
       choices: [...options.map(s => ({ label: SUBURBS[s].stationName || `${SUBURBS[s].name} Station`, value: s })), { label: 'Stay here', value: null }],
     }, { cancelValue: null });
+    const gate = BEHIND_GATE[SUBURBS[choice]?.station];
+    if (choice && gate && !gateOpen(gate)) return ui.say(['The train stops short of the city. Police are on the platform.', ...(GATES[gate] || [])]);
     if (choice) this.goTo(SUBURBS[choice].station, 'station', 25);
   }
 
@@ -1878,6 +1883,7 @@ export class WorldScene extends Phaser.Scene {
       text: 'You tap your myki. A tram dings round the corner. Where to?',
       choices: [...options.map(z => ({ label: TRAM_STOPS[z], value: z })), { label: 'Stay here', value: null }],
     }, { cancelValue: null });
+    if (choice && BEHIND_GATE[choice] && !BEHIND_GATE[this.regionId] && !gateOpen(BEHIND_GATE[choice])) return ui.say(['The tram stops at the police line.', ...(GATES[BEHIND_GATE[choice]] || [])]);
     if (choice) this.goTo(choice, 'tram', ZONES[choice].suburb === this.region.suburb ? 5 : 15);
   }
 
@@ -1976,7 +1982,7 @@ export class WorldScene extends Phaser.Scene {
       return this.bounceBack(ex, ['I should go down Woods St and say hi to Marty first. The station shortcut can wait.']);
     }
     // Gated ways (the Premier's police line into the city) until you beat whoever holds them.
-    if (ex.to && ex.gate && !state.data.beaten[ex.gate]) {
+    if (ex.to && ex.gate && !gateOpen(ex.gate)) {
       if (this.lockedExit === ex) return;
       this.lockedExit = ex;
       return this.bounceBack(ex, GATES[ex.gate] || ['The way is closed.']);

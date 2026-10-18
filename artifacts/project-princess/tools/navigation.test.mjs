@@ -144,3 +144,9 @@ test('shopping objectives stay at known Bunnings when Olly is off duty', () => {
   scene.regionId = 'bunnings'; scene.interactables = [];
   assert.equal(resolveDestination(kitchen.destination, scene).status, 'local');
 });
+test('the Premier\'s police line only stays open on the day you beat him', async () => {
+  const { gateOpen } = await import('../game/src/systems/progression-gates.js');
+  assert.equal(gateOpen({ day: 4, beaten: {} }, 'bencarroll'), false);
+  assert.equal(gateOpen({ day: 4, beaten: { bencarroll: 4 } }, 'bencarroll'), true);
+  assert.equal(gateOpen({ day: 5, beaten: { bencarroll: 4 } }, 'bencarroll'), false);
+});

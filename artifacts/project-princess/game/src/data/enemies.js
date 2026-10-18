@@ -380,12 +380,15 @@ export const fineFor = (id, t) => t.fine ?? (HOSTILE.has(id) ? t.money || 0 : 0)
 // Hardest fight in the game, and he taxes you $200 if you lose or give up.
 // For now the robot is built to be all but unbeatable (Seb, 2026-10-17), which
 // keeps the city shut until that content is ready. `noScale` keeps the levels
-// as written. Lower the robot's stats and the levels to open it up.
+// as written. Someone beat him at the old level cap of 30, so (2026-10-18) the
+// cap is 50, his team is 46 to 50 and Reboot shakes off stat drops: about 1 in
+// 10 for a perfect level 50 team (node tools/balance.mjs). Lower the robot's
+// stats and the levels to open it up.
 ENEMIES.staffer = { name: 'Media Staffer', tall: true, faces: 'left', type: ['hack', 'street'], stats: { hp: 70, attack: 66, defence: 62, speed: 80, special: 84 }, moves: ['talkingpoints', 'background', 'questiononnotice'] };
 ENEMIES.juniormp = { name: 'Junior MP', tall: true, faces: 'left', type: ['hack', 'old'], stats: { hp: 78, attack: 76, defence: 72, speed: 60, special: 70 }, moves: ['dorothy', 'toetheline', 'talkingpoints'] };
-ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'hack'], stats: { hp: 320, attack: 210, defence: 240, speed: 200, special: 230 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
+ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'hack'], stats: { hp: 520, attack: 260, defence: 300, speed: 200, special: 280 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
 TRAINERS.bencarroll = {
-  name: 'Premier Ben Carroll', team: [['staffer', 28], ['juniormp', 29], ['robocarroll', 30]], money: 120, fine: 200, noScale: true,
+  name: 'Premier Ben Carroll', team: [['staffer', 46], ['juniormp', 48], ['robocarroll', 50]], money: 120, fine: 200, noScale: true,
   intro: 'The Premier straightens his tie. "Let\'s keep this brief. I have a ribbon to cut at 3."', sendOut: 'He sends out {f}.',
 };
 

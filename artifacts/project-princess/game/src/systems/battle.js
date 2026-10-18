@@ -19,7 +19,7 @@ import { TUNING } from '../data/tuning.js';
 
 // The level each pet is at when you first befriend them.
 export const START_LEVEL = { marty: 5, princess: 5, salami: 7, spooky: 8, poppy: 10, stanley: 12, ziggy: 14, emilio: 14 };
-export const MAX_LEVEL = 30;
+export const MAX_LEVEL = 50;   // was 30 until a player beat the Premier at the cap (Seb, 2026-10-18)
 // Moves of these types use the special stat instead of attack.
 const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy', 'hack', 'electric']);
 
@@ -212,7 +212,8 @@ export function chooseFoeMove(foe, target) {
   const opts = foe.moves.map(id => {
     const m = MOVES[id], e = m.effect || {};
     let w;
-    if (e.heal) w = foe.hp / foe.maxHp < 0.45 ? 3 : 0.15;
+    if (e.cleanse && Object.values(foe.stages).some(v => v < -1)) w = 2.5;   // shake off a pile of drops
+    else if (e.heal) w = foe.hp / foe.maxHp < 0.45 ? 3 : 0.15;
     else if (m.power > 0) w = 1 + (m.power / 45) * effectiveness(m.type, target.type);
     else if (e.charge) w = foe.charged ? 0 : 0.7;
     else if (e.evade) w = foe.lastMove === id ? 0.1 : 0.6;

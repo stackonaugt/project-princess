@@ -52,6 +52,7 @@ function use(u, t, id) {
     if (e.drain) u.hp = Math.min(u.maxHp, u.hp + Math.max(1, Math.floor(dmg * e.drain)));
     if (e.destroyItem) t.held = null;
   }
+  if (e.cleanse) for (const k of Object.keys(u.stages)) u.stages[k] = Math.max(0, u.stages[k]);
   if (e.heal) { u.hp = Math.min(u.maxHp, u.hp + Math.ceil(u.maxHp * e.heal)); if (e.usesHeld) u.held = null; }
   if (e.foeHeal) t.hp = Math.min(t.maxHp, t.hp + Math.ceil(t.maxHp * e.foeHeal));
   if (e.recoil) u.hp = Math.max(0, u.hp - Math.ceil(u.maxHp * e.recoil));
@@ -148,6 +149,42 @@ trial('Princess L7 vs scaled Brunswick wild', () => [mine('princess', 7)], scale
 for (const lv of [10, 15, 20, 25, 30]) {
   trial(`Team L${lv} vs scaled Reservoir wild`, () => [mine('princess', lv), mine('salami', lv), mine('spooky', lv)], scaledWild('reservoir', lv));
   trial(`Princess L${lv} alone vs scaled Laverton wild`, () => [mine('princess', lv)], scaledWild('laverton', lv));
+}
+
+// The Premier guards the city. A clever player stacks stat drops and heals,
+// so this player does too: Decree until the foe is cowed, rest when low.
+console.log('--- The Premier (should stay all but unbeatable) and Flame Queen');
+const clever = (f, foe) => {
+  const m = id => f.moves.includes(id) && id;
+  if (f.hp / f.maxHp < 0.5 && m('royalrest')) return 'royalrest';
+  if (foe.stages.atk > -4 && m('queensdecree')) return 'queensdecree';
+  return pickMine(f, foe);
+};
+function battleWith(chooser, team, foes) {
+  let turns = 0, fi = 0, foe = foes[0], me = team.find(f => f.hp > 0);
+  while (me && foe && turns < 200) {
+    turns++;
+    const a = chooser(me, foe), b = R.chooseFoeMove(foe, me);
+    const meFirst = me.stats.speed !== foe.stats.speed ? me.stats.speed > foe.stats.speed : Math.random() < 0.5;
+    for (const [u, t, id] of meFirst ? [[me, foe, a], [foe, me, b]] : [[foe, me, b], [me, foe, a]]) if (u.hp > 0 && t.hp > 0) use(u, t, id);
+    me.evade = false; foe.evade = false;
+    if (foe.hp <= 0) foe = foes[++fi];
+    if (me.hp <= 0) me = team.find(f => f.hp > 0);
+  }
+  return { win: !foe, turns, left: team.reduce((s, f) => s + f.hp / f.maxHp, 0) / team.length };
+}
+function smartTrial(label, makeTeam, makeFoes) {
+  let wins = 0, turns = 0;
+  for (let i = 0; i < RUNS; i++) { const r = battleWith(clever, makeTeam(), makeFoes()); wins += r.win; turns += r.turns; }
+  console.log(`${(wins / RUNS * 100).toFixed(0).padStart(3)}% win  ${(turns / RUNS).toFixed(1).padStart(5)} turns   ${label} (Decree and rest)`);
+}
+const topTeam = lv => () => [mine('princess', lv, { evolved: true, hearts: 10 }), mine('rusty', lv, { evolved: true, hearts: 10 }), mine('spooky', lv, { evolved: true, hearts: 10 })];
+for (const lv of [30, R.MAX_LEVEL]) {
+  trial(`Flame Queen, Steely, Ghost L${lv} vs the Premier`, topTeam(lv), trainer('bencarroll'));
+  smartTrial(`Flame Queen, Steely, Ghost L${lv} vs the Premier`, topTeam(lv), trainer('bencarroll'));
+}
+for (const id of ['princess', 'rusty', 'spooky', 'stanley', 'poppy', 'salami']) {
+  smartTrial(`${id} evolved L20 alone vs Alison`, () => [mine(id, 20, { evolved: true, hearts: 5 })], trainer('alison'));
 }
 
 // XP pace: wild battles needed per level, using the average reward.
