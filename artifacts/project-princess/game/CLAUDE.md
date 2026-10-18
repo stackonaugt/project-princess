@@ -254,6 +254,12 @@
   day you beat its keeper (`gateOpen`, WorldScene), and the myki and trams
   won't take you past it either (`BEHIND_GATE`: Swanston St, the Reading
   Room, the laneways and Flinders St). Sleep, and you have to beat him again.
+- **Seb's style on built-in art** (2026-10-18): `sebStyle()` in
+  art/paint/painter.js runs on every code-drawn person and foe (not on Seb's
+  own PNGs): people lose columns 3 and 12 (two pixels slimmer, face unmoved),
+  arms get a dark seam, and everything gets a lit left edge, a shaded right
+  edge and a light woven texture below the neck. `face()` in people.js draws
+  eye whites, brows, a nose shadow and a wider mouth.
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.

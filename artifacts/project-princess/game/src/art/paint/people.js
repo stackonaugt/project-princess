@@ -300,9 +300,12 @@ function pinafore(p, L, y, back, side) {
 
 function face(p, L, y) {
   const skin = L.skin;
-  p.r('#2a1a10', 5, 10 + y, 1, 2); p.r('#2a1a10', 10, 10 + y, 1, 2);
-  p.r('rgba(230,110,110,0.35)', 4, 12 + y, 2, 1); p.r('rgba(230,110,110,0.35)', 10, 12 + y, 2, 1);
-  p.r(L.lips || shade(skin, -0.32), 7, 13 + y, 2, 1);
+  // Eyes with whites and a dark pupil, brows, a mouth (Seb's style, 2026-10-18)
+  p.r('#f4f0ea', 5, 10 + y, 2, 2); p.r('#f4f0ea', 9, 10 + y, 2, 2);
+  p.r('#2a1a10', 6, 10 + y, 1, 2); p.r('#2a1a10', 9, 10 + y, 1, 2);
+  p.r(shade(L.hair, -0.1), 5, 9 + y, 2, 1); p.r(shade(L.hair, -0.1), 9, 9 + y, 2, 1);
+  p.r('rgba(230,110,110,0.35)', 4, 12 + y, 1, 1); p.r('rgba(230,110,110,0.35)', 11, 12 + y, 1, 1);
+  p.r(shade(skin, -0.14), 8, 12 + y, 1, 1); p.r(L.lips || shade(skin, -0.38), 6, 13 + y, 4, 1); p.r(shade(skin, 0.12), 7, 14 + y, 2, 1);
   if (L.stubble) { const s = 'rgba(40,25,15,0.28)'; p.r(s, 4, 12 + y, 8, 3); p.r(s, 5, 15 + y, 6, 1); }
   if (L.glasses) {
     const g = typeof L.glasses === 'string' ? L.glasses : '#3a2a20';

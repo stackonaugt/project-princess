@@ -89,3 +89,30 @@ export function outline(ctx, x, y, w, h, colour = '#2a1810') {
   for (const k of marks) { d[k * 4] = R; d[k * 4 + 1] = G; d[k * 4 + 2] = B; d[k * 4 + 3] = 255; }
   ctx.putImageData(img, x, y);
 }
+
+// Seb's hand-drawn look, applied to built-in art that he hasn't drawn yet
+// (2026-10-18): people are two pixels slimmer (the outer columns fold in, the
+// face stays put), and everything gets a lit left edge, a shaded right edge
+// and a little woven texture on clothes and bodies. Runs before the outline.
+const hashPx = (i, j) => { let h = (i * 374761393 + j * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967295; };
+export function sebStyle(ctx, x, y, w, h, { person = false } = {}) {
+  const img = ctx.getImageData(x, y, w, h), d = img.data;
+  if (person && w === 16) {
+    const src = new Uint8ClampedArray(d), keep = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15];
+    d.fill(0);
+    for (let j = 0; j < h; j++) keep.forEach((ox, k) => { for (let c = 0; c < 4; c++) d[(j * w + k + 1) * 4 + c] = src[(j * w + ox) * 4 + c]; });
+  }
+  const a = (i, j) => i >= 0 && j >= 0 && i < w && j < h && d[(j * w + i) * 4 + 3] > 40;
+  const adj = (k, f) => { for (let c = 0; c < 3; c++) d[k + c] = Math.max(0, Math.min(255, Math.round(d[k + c] * f))); };
+  const texFrom = person ? 17 : 0;   // keep faces clean
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    if (!a(i, j)) continue;
+    const k = (j * w + i) * 4;
+    if (!a(i + 1, j)) adj(k, 0.82);
+    else if (!a(i - 1, j)) adj(k, 1.1);
+    else if (!a(i, j + 1)) adj(k, 0.88);
+    if (person && j >= 17 && j <= 24 && (i === 4 || i === 11) && a(i - 1, j) && a(i + 1, j)) adj(k, 0.8);   // arms apart from the body
+    if (j >= texFrom && a(i - 1, j) && a(i + 1, j)) { const n = hashPx(i, j); if (n < 0.22) adj(k, 0.88); else if (n > 0.84) adj(k, 1.08); }
+  }
+  ctx.putImageData(img, x, y);
+}
