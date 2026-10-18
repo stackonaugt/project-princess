@@ -6,7 +6,8 @@
 // only where they have to. No menu, no gifts: talking gets one line.
 import { Actor } from './entities.js';
 import { TILE as T } from '../config.js';
-import { CROWD, CROWD_LINES } from '../data/crowd.js';
+import { CROWD, CROWD_LINES, FEST_CROWD } from '../data/crowd.js';
+import { MF_BUSY, MF_TEXT, MF_STAGE, isMeredith } from '../data/meredith.js';
 import { NPCS } from '../data/npcs.js';
 import { state } from '../systems/state.js';
 
@@ -97,10 +98,18 @@ export class Crowd {
     const shop = m.npcs.some(n => NPCS[n.id]?.shop);
     if (z.indoor && !shop) return;
     let n = z.indoor ? 1 + (this.floor.length > 200 ? 1 : 0) : BUSY[m.id] ?? 2;
+    // The festival: quiet by day, packed by night, and people stop to hang about on the grass.
+    this.fest = isMeredith(m.id);
+    if (this.fest) {
+      const st = state.data.meredith?.stage || 0, night = st >= MF_STAGE.night && st <= MF_STAGE.sunrise;
+      n = MF_BUSY[night ? 'night' : 'day'][m.id] ?? 3;
+      this.mill = [];
+      for (let y = 1; y < m.h - 1; y++) for (let x = 1; x < m.w - 1; x++) if (open(x, y) && '.,L'.includes(m.ground[y][x])) this.mill.push([x, y]);
+    }
     if (!n) return;
     const t = state.data.minutes;
-    if (t >= 21 * 60) n = Math.ceil(n / 2);
-    if (t >= 24 * 60) n = Math.min(n, 1);
+    if (!this.fest && t >= 21 * 60) n = Math.ceil(n / 2);
+    if (!this.fest && t >= 24 * 60) n = Math.min(n, 1);
     this.target = n;
     this.lineSet = z.indoor ? 'shop' : this.waits.length ? 'station' : 'street';
     for (let i = 0; i < n; i++) this.spawn(true);
@@ -115,7 +124,8 @@ export class Crowd {
       for (let i = 0, k = 2 + Math.floor(Math.random() * 2); i < k && this.floor.length; i++) stops.push({ at: R(this.floor), pause: 2 + Math.random() * 4, face: R(['up', 'up', 'left', 'right']) });
     } else {
       const waiting = this.list.filter(w => w.waiting).length;
-      if (this.waits.length && waiting < 2 && Math.random() < 0.5) stops.push({ at: R(R(this.waits)), pause: 20 + Math.random() * 40, face: 'down', wait: true });
+      if (this.fest && this.mill.length) for (let i = 0, k = 1 + Math.floor(Math.random() * 3); i < k; i++) stops.push({ at: R(this.mill), pause: 6 + Math.random() * 16, face: R(['down', 'down', 'up', 'left', 'right']) });
+      else if (this.waits.length && waiting < 2 && Math.random() < 0.5) stops.push({ at: R(R(this.waits)), pause: 20 + Math.random() * 40, face: 'down', wait: true });
       else if (this.windows.length && Math.random() < 0.45) stops.push({ at: R(this.windows), pause: 2 + Math.random() * 5, face: 'up' });
     }
     const to = this.scene.region.indoor ? from : R(R(this.portals.length > 1 ? this.portals.filter(p => !p.some(([x, y]) => x === from[0] && y === from[1])) : this.portals));
@@ -136,7 +146,7 @@ export class Crowd {
     if (this.list.length >= this.target) return;
     const p = this.plan();
     if (!p || p.route.length < 2) return;
-    const look = CROWD[Math.floor(Math.random() * CROWD.length)];
+    const looks = this.fest ? FEST_CROWD : CROWD, look = looks[Math.floor(Math.random() * looks.length)];
     let start = { x: (p.from[0] + 0.5) * T, y: (p.from[1] + 0.75) * T };
     if (midway) { const k = Math.floor(Math.random() * (p.route.length - 1)); start = p.route[k]; p.route = p.route.slice(k + 1); }
     const w = new Walker(this.scene, look, start.x, start.y);
@@ -191,6 +201,7 @@ export class Crowd {
 
   update(player, dt, frozen) { for (const w of this.list) w.update(player, dt, frozen); }
   candidates() { return this.list.filter(w => !w.fading && w.alpha > 0.5).map(w => ({ kind: 'crowd', ref: w, x: w.x, y: w.y - 4, bubble: 'fx-bubble-talk' })); }
-  name() { return CROWD_NAME[this.lineSet] || 'Local'; }
-  line() { const a = CROWD_LINES[this.lineSet] || CROWD_LINES.street; return a[Math.floor(Math.random() * a.length)]; }
+  name() { return this.fest ? MF_TEXT.crowdName : CROWD_NAME[this.lineSet] || 'Local'; }
+  line() {
+    if (this.fest) return MF_TEXT.festLines[Math.floor(Math.random() * MF_TEXT.festLines.length)]; const a = CROWD_LINES[this.lineSet] || CROWD_LINES.street; return a[Math.floor(Math.random() * a.length)]; }
 }

@@ -14,6 +14,7 @@
 //   record: true  vinyl from Wax Lyrical, Lygon St (also gift: true). art: { cover, band }
 //   fish: true    caught fishing (a treat pets eat). sell: what James pays. junk: true for old boots
 import { NORTH_ITEMS } from './north.js';
+import { MF_ITEMS } from './meredith.js';
 import { SH_ITEMS } from './summerhill.js';
 
 import { authoredValue } from '../authoring/overrides.js';
@@ -170,6 +171,7 @@ Object.assign(ITEMS, COOK_ITEMS);   // cooking: pantry, dishes, cook books
 export const isTreat = id => !!ITEMS[id] && !ITEMS[id].drink && !ITEMS[id].gift && !ITEMS[id].farm && !ITEMS[id].junk && !ITEMS[id].story && !ITEMS[id].deco && !ITEMS[id].ingredient;
 
 Object.assign(ITEMS, NORTH_ITEMS);   // Coburg and Preston
+Object.assign(ITEMS, MF_ITEMS);   // the Meredith festival
 import { CRAFT_ITEMS } from './crafting.js';
 Object.assign(ITEMS,CRAFT_ITEMS);
 import { HOUSE_ITEMS } from './house-finds.js';

@@ -1,5 +1,6 @@
 // Built-in item icons, 12x12 strings centred in a 16x16 texture.
 import { NORTH_ITEM_ART } from './north.js';
+import { MF_ITEM_ART } from './meredith.js';
 import { FISHING_ITEM_ART } from '../../data/fishing.js';
 import { SH_ITEM_ART } from './summerhill.js';
 import { HOUSE_ITEM_ART } from '../../data/house-finds.js';
@@ -249,5 +250,6 @@ export const GEAR_ART = {
     'kawakaakawak', 'kak..kk..kak', 'kk........kk', '............', '............', '............'] },
 };
 Object.assign(ITEM_ART, NORTH_ITEM_ART);   // Coburg and Preston items
+Object.assign(ITEM_ART, MF_ITEM_ART);   // the Meredith festival
 Object.assign(ITEM_ART, HOUSE_ITEM_ART);   // house and yard finds (data/house-finds.js)
 Object.assign(ITEM_ART, FISHING_ITEM_ART);   // new fish, rods, the fishing cup (data/fishing.js)

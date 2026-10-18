@@ -18,6 +18,7 @@
 //   party    party decorations (items with deco: true), for the Chapter 4 party
 //   sell     sell crops and treats from your bag (crops at their price, treats at half)
 import { NORTH_SHOPS } from './north.js';
+import { MF_SHOPS } from './meredith.js';
 import { SH_SHOPS } from './summerhill.js';
 
 import { authoredValue } from '../authoring/overrides.js';
@@ -44,4 +45,5 @@ export let SHOPS = {
 import { EAST_SHOPS } from './east.js';
 Object.assign(SHOPS, EAST_SHOPS);   // Brunswick East
 Object.assign(SHOPS, NORTH_SHOPS);   // Coburg and Preston
+Object.assign(SHOPS, MF_SHOPS);   // the Meredith festival
 SHOPS = authoredValue('data/shops.js', 'SHOPS', SHOPS);

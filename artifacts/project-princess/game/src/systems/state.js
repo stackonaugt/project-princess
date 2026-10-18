@@ -18,6 +18,7 @@ import { CROPS } from '../data/crops.js';
 import { UPGRADES } from '../data/upgrades.js';
 import { FRIEND_POINTS } from '../data/friends.js';
 import { CHAPTERS } from '../data/story.js';
+import { freshMeredith } from '../data/meredith.js';
 import { FURNITURE, DEFAULT_FURNITURE, PLANT_SPOTS, sanitisePlants } from '../data/furniture.js';
 import { normaliseScorecards } from './scorecards.js';
 
@@ -74,6 +75,7 @@ function fresh() {
     settings: { sound: true, dayLength: 1, paused: false, karaokeMic: false },   // karaokeMic: sing into the mic (ui/karaoke.js) instead of tapping
     seenIntro: false,
     story: freshStory(),   // the chapters (systems/story.js)
+    meredith: freshMeredith(),   // the Meredith festival (systems/meredith.js)
   };
 }
 const freshStory = () => ({ chapter: 0, done: {}, ch2: {}, pranks: [], invited: [], party: null, heroBefore: null });
@@ -155,6 +157,7 @@ function sanitise(raw) {
       pranks: Array.isArray(st.pranks) ? st.pranks : [], invited: Array.isArray(st.invited) ? st.invited : [], party: st.party || null,
       heroBefore: st.heroBefore || null };
   }
+  if (raw.meredith && typeof raw.meredith === 'object') { const m = raw.meredith; d.meredith = { ...freshMeredith(), ...m, stage: Math.max(0, Math.min(10, m.stage | 0)), scatter: m.scatter && typeof m.scatter === 'object' ? m.scatter : {}, got: Array.isArray(m.got) ? m.got.filter(x => typeof x === 'string') : [] }; }
   d.created = raw.created || d.created;
   return d;
 }

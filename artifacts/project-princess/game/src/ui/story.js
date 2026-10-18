@@ -18,6 +18,7 @@ import { NPCS } from '../data/npcs.js';
 import { FRIENDS } from '../data/friends.js';
 import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 import { initialObjective, pinObjective, isPinned } from '../systems/guidance.js';
+import { mfObjective } from '../systems/meredith.js';
 
 // The To Do app: the story's jobs, and today's requests from friends.
 let todoTab = 'todo';
@@ -28,6 +29,8 @@ export function openStoryApp(panel, close) {
   if (todoTab === 'todo' || todoTab === 'done') {
     for (const t of tutorialNotes()) body.push(todoNote(t.title, [{ text:t.text, done:t.done }]));
     if (!n) body.push(todoNote('Find Princess', [initialObjective()]));
+    const fest = mfObjective();
+    if (fest) body.push(todoNote('Meredith: night one', [fest]));
     else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time. Cr Bentleigh is mayor, and council motions are harder to pass.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
     else if (s.done[n]) body.push(h('div', { class: 'note', 'data-done': '1' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
     else {

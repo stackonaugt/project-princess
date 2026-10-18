@@ -16,6 +16,7 @@ import { SHOW_ENEMIES } from './dog-show.js';
 
 import { PEOPLE, FOE_TEXT } from './dialogue.js';
 import { EAST_ENEMIES, EAST_TRAINERS, EAST_ENCOUNTERS } from './east.js';
+import { MF_ENEMIES, MF_TRAINERS, MF_ENCOUNTERS } from './meredith.js';
 import { NORTH_ENEMIES, NORTH_TRAINERS } from './north.js';
 import { BATTLER_ENEMIES, BATTLER_TRAINERS } from './battlers.js';
 import { SH_ENEMIES, SH_ENCOUNTERS, SH_TRAINERS } from './summerhill.js';
@@ -424,6 +425,10 @@ export const PRIZE_TRAINER = Object.fromEntries(Object.entries(TRAINERS).filter(
 Object.assign(ENEMIES, EAST_ENEMIES);
 Object.assign(TRAINERS, EAST_TRAINERS);
 ENCOUNTERS.brunswickeast = EAST_ENCOUNTERS;
+// The Meredith festival
+Object.assign(ENEMIES, MF_ENEMIES);
+Object.assign(TRAINERS, MF_TRAINERS);
+ENCOUNTERS.meredith = MF_ENCOUNTERS;
 
 // Battle lines (wild things appearing and leaving, trainers' challenges) live in dialogue.js.
 for (const [id, e] of Object.entries(ENEMIES)) Object.assign(e, { appear: '' }, e.appear !== undefined ? { appear: e.appear } : {}, FOE_TEXT[id] || {});

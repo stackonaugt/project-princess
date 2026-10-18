@@ -20,6 +20,7 @@
 //  Signs and the text when you inspect things are in the map files and flavour.js.
 import { EAST_PEOPLE, EAST_FOE_TEXT, EAST_PLACES } from './east.js';
 import { NORTH_PEOPLE, NORTH_FOE_TEXT, NORTH_PLACES } from './north.js';
+import { MF_PEOPLE, MF_FOE_TEXT, MF_PLACES, MF_PETS } from './meredith.js';
 import { BATTLER_PEOPLE, BATTLER_FOE_TEXT } from './battlers.js';
 import { FISHING_PEOPLE } from './fishing.js';
 //  Summerhill Shopping Centre's people and places are in summerhill.js (merged in here).
@@ -1739,6 +1740,11 @@ Object.assign(PEOPLE, BATTLER_PEOPLE);
 Object.assign(PEOPLE, FISHING_PEOPLE);   // Ross Millward (fishing.js)
 Object.assign(FOE_TEXT, BATTLER_FOE_TEXT);
 Object.assign(PLACES, NORTH_PLACES);
+// The Meredith festival keeps its words in meredith.js.
+Object.assign(PEOPLE, MF_PEOPLE);
+Object.assign(FOE_TEXT, MF_FOE_TEXT);
+Object.assign(PLACES, MF_PLACES);
+for (const p of MF_PETS) PET_TEXT[p.id] = Object.fromEntries(['bio', 'clue', 'funFact', 'favouriteSpot', 'lines', 'night', 'rain', 'asleep'].map(k => [k, p[k]]));
 PEOPLE = authoredValue('data/dialogue.js', 'PEOPLE', PEOPLE);
 PET_TEXT = authoredValue('data/dialogue.js', 'PET_TEXT', PET_TEXT);
 PLACES = authoredValue('data/dialogue.js', 'PLACES', PLACES);

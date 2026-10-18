@@ -9,7 +9,7 @@ import { ANIMATION_LAYOUTS, animationFrames } from '../data/animation-layouts.js
 import { ART_PATH } from '../config.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
-import { CROWD } from '../data/crowd.js';
+import { CROWD, FEST_CROWD } from '../data/crowd.js';
 import { painter, outline, textWidth } from './paint/painter.js';
 import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
@@ -158,7 +158,7 @@ export function buildTextures(scene, customEntities = AUTHORING.custom) {
     for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${id}-${dir}`, 16, 32, 7, (p, i) => drawPerson(p, npc.look, dir, STEPS[i] || 0, i<3?null:i<5?`wave-${i-3}`:`throw-${i-5}`), true);
   }
   // The crowd (data/crowd.js): unnamed passers-by
-  for (const c of CROWD) for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${c.id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, c.look, dir, STEPS[i]), true);
+  for (const c of [...CROWD, ...FEST_CROWD]) for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${c.id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, c.look, dir, STEPS[i]), true);
   // Things you battle
   for (const [id,[w,h,draw]] of Object.entries(SHOW_DOG_ART)) stripTexture(scene,`foe-${id}`,w,h,4,draw,true);
   for (const [id, [w, h, draw]] of Object.entries({ ...FOE_ART, ...EAST_FOE_ART })) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
@@ -220,9 +220,12 @@ export function objectTexture(scene, o) {
   const variantName = String(o.kind === 'fence' ? String(o.v).split(':')[0] : o.v).replace(/\s+/g, '').toLowerCase();
   for (const k of [`obj-${o.kind}-${variantName}`, `obj-${o.kind}`]) if (custom.has(k)) return k;
   const key = `obj-${o.kind}-${o.v}`;
-  canvasTexture(scene, key, def.tex[0], def.tex[1], p => {
-    def.paint(p, o.v, o);
-    if (needsOutline(o.kind, def)) objectOutline(p.ctx, def.tex[0], def.tex[1]);
+  // Hi-detail art (the Meredith festival) is painted at `hd` times the size
+  // and shown at normal size, like the hi-res pet sheets. Outlined in black.
+  const hd = def.hd && def.paintHd ? def.hd : 1;
+  canvasTexture(scene, key, def.tex[0] * hd, def.tex[1] * hd, p => {
+    if (hd > 1) def.paintHd(p, o.v, o); else def.paint(p, o.v, o);
+    if (needsOutline(o.kind, def)) objectOutline(p.ctx, def.tex[0] * hd, def.tex[1] * hd, hd > 1 ? '#000000' : undefined);
   });
   return key;
 }
@@ -243,7 +246,7 @@ function objectOutline(ctx, w, h, colour = '#2a1810') {
     if ((i > 0 && solid(k - 1)) || (i < w - 1 && solid(k + 1)) || (j > 0 && solid(k - w)) || (j < h - 1 && solid(k + w))) marks.push(k);
   }
   const n = parseInt(colour.slice(1), 16);
-  for (const k of marks) { d[k * 4] = n >> 16; d[k * 4 + 1] = (n >> 8) & 255; d[k * 4 + 2] = n & 255; d[k * 4 + 3] = 235; }
+  for (const k of marks) { d[k * 4] = n >> 16; d[k * 4 + 1] = (n >> 8) & 255; d[k * 4 + 2] = n & 255; d[k * 4 + 3] = n ? 235 : 255; }
   ctx.putImageData(img, 0, 0);
 }
 
@@ -272,7 +275,7 @@ function createAnims(scene) {
     }
     for (const dir of ['down', 'up', 'left']) make(`npc-${id}-${dir}-walk`, `npc-${id}-${dir}`, [1, 0, 2, 0], 7);
   }
-  for (const c of CROWD) for (const dir of ['down', 'up', 'left']) make(`npc-${c.id}-${dir}-walk`, `npc-${c.id}-${dir}`, [1, 0, 2, 0], 7);
+  for (const c of [...CROWD, ...FEST_CROWD]) for (const dir of ['down', 'up', 'left']) make(`npc-${c.id}-${dir}-walk`, `npc-${c.id}-${dir}`, [1, 0, 2, 0], 7);
   for (const tex of scene.textures.getTextureKeys()) for (const action of ['wave','throw','reward','jump','sit','paw']) {
     const frames=animationFrames(tex,frameCount(scene,tex),action,!custom.has(tex));
     if(frames.length && !scene.anims.exists(`${tex}-${action}`)) scene.anims.create({key:`${tex}-${action}`,frames:frames.map(frame=>({key:tex,frame})),frameRate:8,repeat:0});

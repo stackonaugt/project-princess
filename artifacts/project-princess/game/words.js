@@ -1548,6 +1548,143 @@ lines.5.1 = Bazza at Anaconda sells a lovely carbon rod. He only sells it to peo
 heartScenes.3.1 = Ross ties you a perfect clinch knot, then unties it, then makes you do it. Twice. "Now you will never lose a fish to a knot."
 heartScenes.6.1 = Ross shows you a faded photo: him at twelve, holding a carp almost as big as him. "My first comp. Came last. Best day ever."
 
+[PEOPLE.jess]  # Jess
+role = Organiser at the UWU. Inventor of the pet portal (finally)
+lines.1.1 = Six years I have been talking about the pet portal. Six years! And tonight, it works.
+lines.1.2 = Probably works.
+lines.2.1 = Every worker deserves a cuddle at the end of a shift. That is basically the whole union movement.
+lines.3.1 = Toby! Stop eating that. That is a tent peg.
+lines.4.1 = It auto-detects your pets. No pairing, no app, no account. I hate an account.
+
+[PEOPLE.gabe]  # Gabe
+role = Camp legend. Big grin, bee tattoo, always has a spare chair
+lines.1.1 = Grab a chair, any chair. Except that one. That one has a hole in it. Actually that one is fine.
+lines.2.1 = I brought sunnies, a hat and one sock. Two out of three is good for Meredith.
+lines.3.1 = Kouch Hole 2. Because Kouch Hole 1 was a lot of couch and not enough hole.
+
+[PEOPLE.charlotte]  # Charlotte
+role = Keeps the crew alive. Has sunscreen, snacks and a plan
+lines.1.1 = Water first. Then fun. Then more water. I am the water person this year.
+lines.2.1 = I have put the couch on the roster. Two hours each. Somebody has to hold the spot.
+lines.3.1 = If you lose us, we are at the couch. If you lose the couch, we are at the Pink Flamingo.
+
+[PEOPLE.seb]  # Seb
+role = Comms at Professionals Australia. A beard you could camp in
+lines.1.1 = Professionals are workers too. Engineers, scientists, pharmacists. Everyone here sells their labour, mate.
+lines.2.1 = I put the gazebo up myself. The wind put it down again. Solidarity with the wind, I suppose.
+lines.3.1 = Best thing about Meredith: no dickheads. That is the rule. The No Dickhead Policy. It mostly works.
+lines.4.1 = Our union just won a pay rise for the scientists. Tonight, the couch. Tomorrow, the bosses.
+
+[PEOPLE.mfgate]  # Wristband Volunteer
+role = Wristband tent, Meredith Reception
+lines.1.1 = Welcome to the Sup! Wristband on, rubbish in the bins, and no dickheads.
+
+[PEOPLE.mfhelper]  # Helper Hut Helper
+role = Helper Hut volunteer, Top Camp
+lines.1.1 = Lost a mate? Lost a shoe? Lost the plot? We can help with two of those.
+
+[PEOPLE.mfheaven]  # Heaven Eleven Clerk
+role = Heaven Eleven, the festival corner store
+lines.1.1 = Open all day and all night. Ice, sunscreen, socks and pies. What else is there?
+
+[PEOPLE.mfeyeguy]  # Eye Ride Operator
+role = Runs the Meredith Eye
+lines.1.1 = The Eye goes round. That is the main thing it does.
+battle.challenge.1 = The Eye operator has a little dog on a lead. It is not his dog.
+battle.challenge.2 = "Found him under the Eye. He went round twice. He is mine now. Finders keepers."
+battle.ask = Battle for him?
+battle.yes = He is coming home
+battle.no = Not yet
+battle.win.1 = "Fair enough. He did look at you like he knew you." He hands over the lead.
+battle.lose.1 = "Go round again, mate. Clear your head." He does not hand over the lead.
+battle.again.1 = "Another spin? Of battling? Go on then."
+
+[PEOPLE.mfgazebo]  # Gazebo Gary
+role = Owns the biggest gazebo in Blue Gums
+lines.1.1 = Twelve pegs. Four ropes. One gazebo. It has never once stayed up.
+battle.challenge.1 = A man is sitting under a collapsed gazebo with a familiar curly dog.
+battle.challenge.2 = "This one dropped out of the sky onto my esky. Universe says he is mine."
+battle.ask = Battle Gazebo Gary?
+battle.yes = Let's go
+battle.no = In a minute
+battle.win.1 = "The universe was wrong. It happens." He pats the dog goodbye. The gazebo falls down again.
+battle.lose.1 = "See? The universe." The gazebo falls on him. He does not seem to mind.
+battle.again.1 = "Rematch? Hold this rope first."
+
+[PEOPLE.mfmankey]  # Tom Mankeys Local
+role = Tom Mankeys, under the red neon X
+lines.1.1 = Tom Mankeys is the best camp. We have a neon X. What do you have?
+battle.challenge.1 = Someone under the neon X is feeding a tiny black and white cat bits of jaffle.
+battle.challenge.2 = "He came out of a purple light. He has chosen us. He is our camp cat now."
+battle.ask = Battle for the cat?
+battle.yes = He has a home
+battle.no = Not now
+battle.win.1 = "Fine. But he knows where we are. Under the X. Always under the X."
+battle.lose.1 = The cat eats more jaffle. Everyone under the X cheers.
+battle.again.1 = "Back for more jaffle? Or more battle?"
+
+[PEOPLE.mfsunsal]  # Sunset Sal
+role = Watches every sunset from the same hay bale
+lines.1.1 = Thirty-one Meredith sunsets. I have clapped for every one of them.
+battle.challenge.1 = Sunset Sal is holding a pet who is clearly yours, and the sunset, a bit.
+battle.challenge.2 = "Help yourself to the view. Not to the pet. Unless you beat me."
+battle.ask = Battle Sunset Sal?
+battle.yes = Let's go
+battle.win.1 = "Good on you. Now sit and watch the sky for a minute. That is the rule."
+battle.lose.1 = "Come back at golden hour. Everyone battles better at golden hour."
+battle.again.1 = "Another round while the light is good?"
+
+[PEOPLE.mfhaybale]  # Hay Bale Hamish
+role = Lives on a hay bale in South Pines
+lines.1.1 = Hay bale, best seat in the house. Itchy, though.
+battle.challenge.1 = Hamish has built a little fort out of hay. A pet is asleep in it.
+battle.challenge.2 = "It is a hay fort. It is for the pet. The pet is for the hay fort."
+battle.ask = Battle Hamish?
+battle.no = Not yet
+battle.win.1 = "Take the pet. I will keep the fort. It was always about the fort."
+battle.lose.1 = Hamish adds another bale to the fort. It is getting serious.
+battle.again.1 = "The fort has grown. Want to try again?"
+
+[PEOPLE.mfglitter]  # Glitter Gwen
+role = Bush Camp glitter station
+lines.1.1 = Hold still. Little bit of glitter. Little bit more. You are glowing now.
+battle.challenge.1 = Glitter Gwen has glittered a pet who is yours. Very thoroughly.
+battle.challenge.2 = "Look how happy she is! Beat me and you can have her. Glitter stays."
+battle.ask = Battle Glitter Gwen?
+battle.yes = Bring the sparkle
+battle.no = Not now
+battle.win.1 = "Glitter is forever, though. You will be finding it at Christmas."
+battle.lose.1 = You are now covered in glitter. Gwen calls it a win for everyone.
+battle.again.1 = "More glitter? There is always more glitter."
+
+[PEOPLE.mfcouchking]  # The Couch King
+role = Has had the same couch spot since 2009
+lines.1.1 = This couch has seen eleven festivals and one marriage proposal. She said maybe.
+battle.challenge.1 = The Couch King is sprawled across a velvet three-seater with one of your pets.
+battle.challenge.2 = "Every couch needs a dog. Every king needs a couch. Beat me for both. Well, the dog."
+battle.ask = Battle the Couch King?
+battle.yes = Long live the king
+battle.no = Not today
+battle.win.1 = "Take the dog. Leave the couch. The couch is not negotiable."
+battle.lose.1 = The Couch King does not get up. He does not need to.
+battle.again.1 = "The throne awaits. Well, the cushion."
+
+[PEOPLE.mfshuffle]  # Shuffles
+role = Unbeaten on the Pink Flamingo turf since 2016
+lines.1.1 = If you want something from Shuffles, you dance for it.
+
+[PEOPLE.mfbluecrew]  # The Blue Drink Crew
+role = Six friends in matching blue onesies
+lines.1.1 = We are the Blue Drink Crew. We are very hydrated.
+battle.challenge.1 = Six people in matching blue onesies step forward as one.
+battle.challenge.2 = "Our crew against your crew. Hydrated against dehydrated."
+battle.ask = Battle the Blue Drink Crew?
+battle.yes = Let's go
+battle.no = Not now
+battle.win.1 = "Respect. Have an electrolyte drink. We have forty."
+battle.lose.1 = "Hydration wins again." All six of them high five.
+battle.again.1 = "Round two? Drink some water first."
+
 [PET_TEXT.chloe]
 bio = Adam and Chelsea's kelpie. Works all day, then sits on a chair at the pub like a person.
 clue = A black and tan kelpie lives in the front unit on Holmes St, Brunswick East. She knows every tram timetable.
@@ -1705,6 +1842,17 @@ lines.9.1 = Emilio lets you hold his top hat. Just for a moment. It is the great
 night.1 = Emilio is asleep with his head tucked under his wing. The hat stays on.
 rain.1 = Emilio is delighted. Finally, proper weather.
 asleep.1 = Emilio is asleep standing on one leg. His hat has slipped over one eye.
+
+[PET_TEXT.toby]
+bio = Jess's little black poodle cross, with a red heart on his collar. First through the portal, first back out. Slightly static.
+clue = Jess brings him to Meredith. He comes back out of the portal before anyone else.
+funFact = His curls hold a charge since the portal. Do not rub him on a jumper.
+favouriteSpot = In Jess's sleeping bag, right at the bottom.
+lines.0.1 = Toby sneezes, and a tiny spark jumps off his nose.
+lines.0.2 = He sits on your foot. That is where he lives now.
+night.1 = Toby's curls are glowing a little in the dark. That is new.
+rain.1 = Wet poodle. Wet, slightly sparky poodle.
+asleep.1 = Toby is asleep, twitching. Dreaming of tent pegs.
 
 [PLACES.home]
 text = A brick veneer on Allen St. Mid-renovation.
@@ -1879,6 +2027,27 @@ text = Betty and Ward's place on the corner of Lygon St, and the smell of someth
 
 [PLACES.murray]
 text = Alison's block on St Georges Rd, the 11 tram and a very empty block of land.
+
+[PLACES.mfreception]
+text = Wristbands, the bus stop and the red neon X of Tom Mankeys.
+
+[PLACES.mfbush]
+text = Tents under the gums, the sportsfield toilets and a cinema in the bush.
+
+[PLACES.mfamphi]
+text = The One and Only Stage, the couches, the lanterns and the Red Tree.
+
+[PLACES.mftop]
+text = The biggest camp, the Meredith Eye, Heaven Eleven and our campsite.
+
+[PLACES.mfsunset]
+text = South Bank food and the Sunset Strip, the best view of the sky.
+
+[PLACES.mfbluegums]
+text = Blue Gums: tents in the trees and gazebos in the wind.
+
+[PLACES.mfpines]
+text = South Pines, Highway to Hell Rd and the Outer Space paddock.
 
 [CHAPTERS]
 1.title = Helen's Pet Training School
@@ -2195,4 +2364,187 @@ better = The party picks back up. Somebody turns the music up without being aske
 1 = That's it for now!
 2 = Thanks for playing PetPals: Princess Edition. You can keep playing: the pets, the garden, the council and the shops are all still here.
 3 = More is planned if people want it: more pets, mini-games and a big Meredith finale. Tell Seb if you want more!
+
+[MF_TEXT]
+invite.1 = *Your Pawphone buzzes. A message from Jess.*
+invite.2 = Jess: "MEREDITH!!! The charter bus leaves from Allen St. Everyone is coming. Bring the pets. I have a surprise."
+invite.3 = The charter bus is parked on Allen St. Talk to the driver when you are ready to go.
+busDriver = The charter bus driver checks a clipboard.
+busAsk = Get on the charter bus to Meredith?
+busYes = All aboard
+busNo = Not yet
+busNotYet.1 = The bus is not going anywhere without you. Literally. You are on the list.
+busRide.1 = *The charter bus rumbles out of Laverton. Every seat is taken by someone you know.*
+busRide.2 = Paddy: "Right. Nobody call me Mayor this weekend. I am just Paddy. Festival Paddy."
+busRide.3 = Corni: "Festival Paddy! Prost!" *Corni has a Guinness. It is 9am.*
+busRide.4 = Mem: "I brought electrolytes, a hat and a book about mouse femurs. For the downtime."
+busRide.5 = Jess: "And I brought... a surprise. You will see. Tonight. In my tent."
+busRide.6 = Seb: "She has been talking about this surprise for six years. It is the portal. Everyone knows it is the portal."
+busRide.7 = Jess: "It is NOT the portal." *It is the portal.*
+busRide.8 = *Two hours later the bus pulls into a paddock full of gum trees, tents and dust. Meredith.*
+stayHome.1 = Princess and Spooky are staying with the twins at Trish and Gordon's. Somebody has to keep an eye on those boys.
+arriveCard.1 = The Meredith Music Festival. One stage, three days, and a paddock full of friends.
+arriveCard.2 = Time moves slowly out here. The night only starts when the day is done.
+wristbandHint = Get your wristband from the volunteer at Reception.
+wristband.1 = Here you go. Wristband on. It stays on till Monday. Do not cut it off. People cut it off. Do not.
+wristband.2 = Your crew is camping at Top Camp. Follow the High Road east and turn down the Long and Winding Road. You cannot miss the beard.
+wristbandAgain.1 = Wristband on? Good. Top Camp is east. Follow the beard.
+noLeave.1 = The charter bus does not go back till the festival is over. You are here now. Embrace it.
+noLeaveYet.1 = The bus home leaves once everyone, and every pet, is back together.
+needWristband.1 = A volunteer in hi-vis waves you back. "Wristband first! Reception is just there."
+campHint = Find the crew at the Top Camp campsite.
+campSeb.1 = You made it! Welcome to Kouch Hole 2. We have a gazebo, six chairs and a very strong opinion about couches.
+campSeb.2 = Your tent goes there, next to Jess. Do not put it next to Gabe. He snores like a tractor.
+campSeb.3 = Gabe: "I do not snore." *He absolutely snores.*
+pitchAsk = Pitch your tent?
+pitchYes = Pitch it
+pitched.1 = *You wrestle the tent poles for a while. The tent wins twice. Then you win.*
+pitched.2 = Your tent is up. It leans a bit to the left. It has character.
+couchHint = Help Gabe carry the couch down to the Amphitheatre.
+couchGabe.1 = Right. The couch. It is a beauty. Green velvet, three seats, only one spring sticking out.
+couchGabe.2 = You take that end, I will take this end, and we walk it down to the Amphitheatre. Charlotte is holding the spot.
+couchAsk = Grab an end of the couch?
+couchYes = Lift with the legs
+couchCarry = Carry the couch to Charlotte at the Amphitheatre.
+couchArrive.1 = Charlotte: "There you are! Down, down, down. Perfect. Right on the hill, right in front of the lanterns."
+couchArrive.2 = Gabe: "Kouch Hole 2. We are home."
+couchArrive.3 = *You all sink into the couch. Somewhere behind the gums, the sun starts to drop.*
+nightFalls.1 = *The sky goes pink, then purple. One by one, the lanterns over the Amphitheatre glow.*
+nightFalls.2 = Night one at Meredith has started.
+nightCard.1 = The lanterns are on and the crowd is pouring in.
+nightCard.2 = Jess says the portal is ready. Meet her at the campsite.
+portalHint = Meet Jess back at the campsite for the portal demo.
+portal.1 = Jess: "Okay! Everybody gather round! Behold. The Pet Portal."
+portal.2 = *It is a tent. A small orange tent, with a ring of fairy lights and a very large battery.*
+portal.3 = Jess: "Pop it in your tent, and at bedtime it finds your pets, wherever they are, and brings them to you for cuddles. No setup."
+portal.4 = Seb: "Does it detect just YOUR pets or..."
+portal.5 = Jess: "It auto-detects pets! All pets! It is very clever! Toby, in you go."
+portal.6 = *Toby trots into the tent. There is a pop and a flash of purple light.*
+portal.7 = Jess: "And... ta-da!" *Toby pops out of the other side. The crowd claps.*
+portalWrong.1 = *The fairy lights go red. The battery starts to hum. Then whine. Then scream.*
+portalWrong.2 = Jess: "That is not a noise it made in testing."
+portalWrong.3 = *The tent flaps open like a mouth. A purple wind roars out of it, then IN.*
+portalWrong.4 = *Your pets slide across the grass towards it. Leads snap. Paws scrabble. One by one they vanish into the light.*
+portalWrong.5 = Seb: "JESS."
+portalWrong.6 = *BANG. The portal spits them all out again, high into the night sky, in every direction.*
+portalWrong.7 = *Little shapes sail over the gums, over the stage, over the Eye. Then they are gone.*
+portalAfter.1 = Jess: "Okay. Okay okay okay. So. Some small bugs."
+portalAfter.2 = *Something sneezes at your feet. A tiny spark jumps off its nose. It is Toby.*
+portalAfter.3 = Jess: "Toby! He came back! He must be tuned to the portal now. He will help you find them. Take him."
+portalAfter.4 = Seb: "Right. Everyone split up. Ask around. They are out there somewhere. And have a good time doing it, we are at Meredith."
+tobyJoins = Toby has joined your team for the festival! He is a little bit electric now.
+huntHint = Find the scattered pets around the festival. {n} still out there.
+huntToast = Ask around about the missing pets. Check your Pawphone To Do list.
+rumour.wild = I saw {pet} round {place}. Looked a bit wild. Wired, almost. Like it needed a play-fight.
+rumour.goer = Someone round {place} has a pet who looks a lot like {pet}. They are calling it theirs.
+rumour.crowd = {who} texted. They have got {pet}! They are somewhere in the crowd at {place}. Good luck finding them.
+rumour.dance = {pet}? Last I saw, {who} had them on the Pink Flamingo turf. {who} wants a dance off.
+placeName.mfreception = Reception, near Tom Mankeys
+placeName.mfbush = Bush Camp
+placeName.mfamphi = the Amphitheatre
+placeName.mftop = Top Camp
+placeName.mfsunset = the Sunset Strip
+placeName.mfbluegums = Blue Gums
+placeName.mfpines = South Pines
+wildPet.1 = {name} spins round, crackling with purple sparks from the portal.
+wildPet.2 = {name} does not seem to know who you are. A play-fight should shake it loose.
+wildAsk = Play-fight {name}?
+wildBack.1 = The purple sparks fizzle out. {name} blinks, sees you, and runs straight into your arms.
+wildLose.1 = {name} bolts off, still crackling. It does not go far.
+heldPet.1 = {name} is on a lead held by {who}.
+heldPet.2 = Talk to {who} about it.
+crowdPet.1 = {name} is not here. Someone in the crowd must have them.
+crowdStart.1 = Charlotte: "{who} has {pet}! Somewhere in the crowd. They keep moving. Go, go, go!"
+crowdFound.1 = There you are! I have been holding {pet} up in the air for twenty minutes.
+crowdFound.2 = *{who} hands {pet} over. Big hugs all round.*
+crowdMissed = {who} has moved on through the crowd. Ask Charlotte at the couch to try again.
+crowdBar = Find {who} in the crowd! {s}s
+danceIntro.1 = You want {pet}? Then you dance for {pet}.
+danceIntro.2 = Copy my moves. Arrow keys, or the buttons. Ready?
+danceAsk = Dance off?
+danceYes = Let's dance
+danceNo = Warm up first
+danceWin.1 = *The crowd on the Pink Flamingo turf goes off.*
+danceWin.2 = Okay. Okay! You can dance. Take {pet}. Come back and dance with me any time.
+danceLose.1 = Not bad. Not good either. Come back when your feet are awake.
+danceBar = Dance off: move {n} of 8. Copy the arrow! {got}/{need} to win
+petBack = {name} is back on your team!
+restAsk = Your tent. Have a lie down?
+restYes = Quick kip (rest the pets)
+restNo = Not now
+rested.1 = You crawl into the tent for a kip. Everyone feels better. Mostly.
+campSwap = Bring {name} along?
+campSwapYes = Join the team
+campSwapWho = Who goes back to the campsite?
+campBack = {name} flops down at the campsite with Jess.
+campFull = {name} is waiting at the campsite with Jess. Your team is full.
+crowdName = Festival goer
+campPets = Pets you have found who are not on your team hang out at the campsite with Jess.
+lost.1 = Your pets are worn out. You head back to the campsite for a lie down in the tent.
+allBack.1 = Jess: "That is everyone! Every single one! I am never building anything ever again."
+allBack.2 = Seb: "You will build something again by Tuesday."
+allBack.3 = Jess: "I will build something again by Tuesday."
+allBack.4 = Charlotte: "Come on. Sunset Strip. The sun will be up soon. You have to watch it come up at Meredith."
+sunriseHint = Watch the sunrise with everyone at the Sunset Strip.
+sunrise.1 = *The whole crew sits on the hill at the Sunset Strip. The sky over the paddocks starts to glow orange.*
+sunrise.2 = Gabe: "Here it comes. Meredith sunrise. Best thing you will ever see."
+sunrise.3 = *The glow gets brighter. And brighter. It is rising very fast for a sun.*
+sunrise.4 = Mem: "That is not the sun."
+sunrise.5 = *Over the horizon rises an enormous, blazing, glowing poodle, wreathed in flame and wearing a crown.*
+sunrise.6 = Helen: "...Princess?"
+sunriseCard.1 = The Flame Queen rises over Meredith, blazing like a second sun.
+sunriseCard.2 = How did Princess get here? What is happening back in Melbourne?
+sunriseCard.3 = To be continued in part 2: the twins.
+afterSunrise.1 = For now, the bus home is waiting at Reception. Everyone is very, very tired.
+busHomeAsk = Take the charter bus home?
+busHome.1 = *Everyone piles onto the charter bus. Within five minutes, the whole bus is asleep.*
+busHome.2 = Your pets are back home on Allen St, safe and sound.
+glimpse.1 = *Something small and spiky trundles across the path in the dark, glowing faintly. Then it is gone.*
+glimpse.2 = A festival goer: "Did you see that? The Meredith echidna! It is real!"
+legend.1 = They say the old echidna on the Meredith posters is real. Comes out once a festival.
+legend.2 = My mate swears there is a glowing echidna under the Red Tree at 4am. Swears it.
+legend.3 = The legends say the festival pets only show themselves to people with no dickhead in them.
+legend.4 = Ever seen the echidna? No? Then you have never really been to Meredith.
+friends.paddy.1 = Festival Paddy, reporting for duty. Nobody here knows I am the mayor. Lovely.
+friends.paddy.2 = Someone asked me to fix a pothole on the Low Road. Even here.
+friends.mem.1 = Did you know mice can run four kilometres a night? I am doing my own study. In this crowd.
+friends.mem.2 = Electrolyte? I have twelve.
+friends.corni.1 = In Germany we have festivals with beer. Here, festivals with beer AND a couch. Wunderbar.
+friends.corni.2 = I ran the Low Road this morning. Twice. Prost!
+friends.rose.1 = I brought three books. I have read two of them. In the queue for the toilets.
+friends.rose.2 = The senator thinks I am at a wellness retreat. This is a wellness retreat.
+friends.nathan.1 = Rusty hates the cold out here. I brought him a jumper. And a spare jumper.
+friends.nathan.2 = Tall people go to the back of the crowd. That is the rule. I follow it.
+friends.alison.1 = I brought my boob pillows. For the couch. They are very comfortable. Do not make it weird.
+friends.alison.2 = I made a toastie on a camp stove. It is the same toastie. It is always the same toastie.
+friends.olly.1 = Gazebo pegs need to go in at forty-five degrees. Nobody listens. Then the wind comes.
+friends.olly.2 = Lovely red gums out here. Old ones. Older than the festival.
+friends.ward.1 = Every dog here is a good dog. I have checked. I have checked a lot of them.
+friends.ward.2 = I packed treats for every pet. Then the portal took the pets. I still have the treats.
+friends.betty.1 = I made a lasagne. On a camp stove. In a paddock. Have some, love.
+friends.betty.2 = You look hungry. Everyone at a festival looks hungry.
+friends.james.1 = Heaven Eleven charges four dollars for an icy pole. I charge three. I am not saying anything.
+friends.james.2 = Milk bar people do not take holidays. We just stand in different shops.
+friends.sinead.1 = Mango Ice and a sunset. That is self care.
+friends.sinead.2 = Social work tip: drink water, sit down, and let someone else hold the couch.
+friends.jordan.1 = I brought the guitar. I have been asked to play Wonderwall four times. I have refused four times.
+friends.jordan.2 = One day I will be on that stage. Today I am on the couch.
+friends.tim.1 = One stage. Everyone together. No clashes. Like a union meeting, but with lanterns.
+friends.tim.2 = There is a train station in Meredith, you know. Closed now. Tragic.
+friends.adam.1 = Chloe would love it out here. Paddocks for days.
+friends.adam.2 = We got the best camping spot. We have been up since 5am. Worth it.
+friends.chelsea.1 = I brought the good sunscreen. And the bad sunscreen. In case.
+friends.chelsea.2 = Adam set up the tent in four minutes. He is very proud. Ask him about it.
+festLines.1 = Is this the line for the toilets or the line for the pies? Either way, I am in it.
+festLines.2 = No dickheads! That is the policy. I love this place.
+festLines.3 = Have you seen my mate? About this tall, wearing a hat. Everyone is wearing a hat.
+festLines.4 = I have been on the couch for six hours. I am not moving. The couch is my home.
+festLines.5 = Boot up! Boot up for the band!
+festLines.6 = The lanterns! Look at the lanterns!
+festLines.7 = I lost my thong in the paddock. I will find it in 2031.
+festLines.8 = I came for one band and stayed for the Pink Flamingo.
+festLines.9 = Is it Saturday? It feels like Saturday. It might be Sunday.
+festLines.10 = Heaven Eleven has hot pies at 3am. That is the only thing I know for certain.
+festLines.11 = Toilet queue update: long. Toilet update: fine, actually.
+festLines.12 = Someone said there is a portal at Top Camp. Is that a band?
 `;

@@ -18,6 +18,7 @@
 import { NORTH_MOVES } from './north.js';
 import { BATTLER_MOVES } from './battlers.js';
 import { EAST_MOVES } from './east.js';
+import { MF_MOVES, MF_PET_MOVES } from './meredith.js';
 
 import { SH_MOVES } from './summerhill.js';
 
@@ -278,5 +279,7 @@ export let PET_MOVES = {
 Object.assign(MOVES, NORTH_MOVES);   // Coburg and Preston
 Object.assign(MOVES, BATTLER_MOVES);   // battlers.js
 Object.assign(MOVES, EAST_MOVES);    // Brunswick East
+Object.assign(MOVES, MF_MOVES);      // the Meredith festival
+Object.assign(PET_MOVES, MF_PET_MOVES);
 MOVES = authoredValue('data/moves.js', 'MOVES', MOVES);
 PET_MOVES = authoredValue('data/moves.js', 'PET_MOVES', PET_MOVES);

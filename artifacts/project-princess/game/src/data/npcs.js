@@ -11,6 +11,7 @@ import { PEOPLE } from './dialogue.js';
 import { HEROES } from './heroes.js';
 import { EAST_NPCS } from './east.js';
 import { NORTH_NPCS } from './north.js';
+import { MF_NPCS } from './meredith.js';
 import { BATTLER_NPCS } from './battlers.js';
 import { FISHING_NPCS } from './fishing.js';
 import { SH_NPCS } from './summerhill.js';
@@ -269,6 +270,7 @@ Object.assign(NPCS, SHOW_NPCS);
 Object.assign(NPCS, BAKE_NPCS);
 Object.assign(NPCS, EAST_NPCS);   // Brunswick East
 Object.assign(NPCS, NORTH_NPCS);   // Coburg and Preston
+Object.assign(NPCS, MF_NPCS);   // the Meredith festival
 Object.assign(NPCS, BATTLER_NPCS);   // a battler in every suburb (battlers.js)
 Object.assign(NPCS, FISHING_NPCS);   // Ross Millward, the fishing comp (fishing.js)
 

@@ -73,6 +73,8 @@ export function buildAllen() {
   for (let y = 1; y < 29; y++) for (let x = 1; x < 39; x++) if (b.get(x, y) === '.' && b.rand() < 0.05 && !b.occ[y][x]) b.set(x, y, ',');
   // Tall grass for wild encounters
   b.wildGrass(33, 3); b.wildGrass(3, 11); b.wildGrass(35, 25); b.wildGrass(12, 27);
+  // The charter bus to Meredith (systems/meredith.js), the day after the party.
+  if (state.data.meredith?.stage === 1) b.put('mfbus', 3, 11, { interact: 'mfbus' });
   return withTerrainFeatures(b.finish(), [{
     id: 'turning-circle', name: 'Allen St turning circle',
     bounds: [10, 4, 20, 18], replace: '#f', clipApproaches: true,
