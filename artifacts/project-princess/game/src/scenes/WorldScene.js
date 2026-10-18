@@ -769,6 +769,12 @@ export class WorldScene extends Phaser.Scene {
     this.player.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
   }
 
+  // Two townsfolk can end up on the same spot: ask which one you meant.
+  async pickNpc(npc) {
+    const near = this.npcs.filter(n => !n.gone && n !== npc && Math.hypot(n.x - npc.x, n.y - npc.y) < 12);
+    if (!near.length) return npc;
+    return ui.say({ text: 'Who do you want to talk to?', choices: [npc, ...near].map(n => ({ label: n.info.name, value: n, icon: npcIcon(n.id) })).concat({ label: 'Not now', value: null }) }, { cancelValue: null });
+  }
   async interact(t = this.findTarget()) {
     if (this.player.seat) { if (!ui.blocking() && this.time.now - this.player.satAt > 300) this.player.stand(); return; }
     if (!t && !ui.blocking() && !this.leaving && this.waterAhead()) return this.waterAction();
@@ -780,7 +786,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'showgroom') return showPresentation(this);
     if (this.regionId === 'bakeoff' && t.kind === 'npc') return bakeNpc(this, t.ref);
     if (['bakeprep', 'bakeoven', 'bakedecor', 'bakejudge'].includes(t.kind)) return bakeStation(this, t.kind);
-    if (t.kind === 'npc') return this.talkToNpc(t.ref);
+    if (t.kind === 'npc') { const n = await this.pickNpc(t.ref); return n && this.talkToNpc(n); }
     if (t.kind === 'item') return this.pickUp(t);
     if (t.kind === 'housefind') return takeHouseFind(this, t);
     if (t.kind === 'travel') return this.travel();

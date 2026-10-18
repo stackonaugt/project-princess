@@ -2,21 +2,22 @@
 // added. [width, height] is the original region to preserve at the left of
 // the sheet, not the new sheet size. Re-hash when the owner uploads new art.
 export const PET_ORIGINAL_PIXELS = {
-  'pets/chloe.png': [176, 16, '59be4372eda4d07cccf5388240e07e5e3b50e7daf1c57ab3448617fff32ff270'],
+  'pets/chloe.png': [418, 38, '38d62e2554c72cafac236bb8be2890bc91bc8cdc43cc0718ea5de16e40c23ae9'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/emilio.png': [32, 16, '8c58b007c7e34497f5fb52934208dd9ebfb6dc99602c45333a95c2febae2283e'],
   'pets/girlie.png': [176, 16, '9469a7c1911ffa09632fad8eb960544f64de6f755c55ac3661813a2dc5631a4c'],
-  'pets/marty.png': [374, 34, 'de2706225f37e4c2041a460a348b6a0069e3d98cd2ae790145fee1c6642f40dd'],   // Seb's art (2026-10-18), frames built from his drawing
-  'pets/poppy-evolved.png': [32, 16, '4933663b518198601489dd5458fcc90384efe1a6371b3308b66667e0c3319fb1'],
+  'pets/marty.png': [396, 36, '7a137e890948bd7affc5ea00aedc915dbd8c08a1d4c725d5244049557ec77290'],   // Seb's art (2026-10-18), frames built from his drawing
+  'pets/poppy-evolved.png': [440, 40, 'd1d7af72661dbd9a1cb4a941d0a9607ea4e9bd5786ddceca3e87b1342abbe220'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/poppy.png': [440, 40, '88b2792ed7914d3154ed672c3f50b7019311242dfef0f78be3ad98d2e6c1b5e2'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/princess-evolved.png': [451, 41, 'f23537105cef9f7720193aefa6c3bb4359aac1d99b34724f6769ed534f68838d'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/princess.png': [429, 39, '08028d1c1fdefc777bfa6c810853f8ee069bb14ccd63d279b42aab86fba1d5fd'],   // Seb's art (2026-10-18), frames built from his drawing
-  'pets/rusty-evolved.png': [32, 16, '53131da2a8d25db863aa4bc028724416f622ac1e0e9715ccc32bc084d182363f'],
-  'pets/rusty.png': [32, 16, 'd44a574f6479d5ecd8c03f7d67f501ed6b8fab1618f8fe0e455bebeae126077f'],
-  'pets/salami-evolved.png': [32, 16, 'f22240f7916408de7eda529de785eb3294b69c5c1449e53ca4c7c76a6a9a7ce2'],
+  'pets/rusty-evolved.png': [418, 38, '9045b6e420f68677d4846b571e658acc0252a2f487d9716ea000ac42842ebba7'],   // Seb's art (2026-10-18), frames built from his drawing
+  'pets/rusty.png': [418, 38, '29fcd8d9d82bc8af7902aede85792c4a24e2e7008a7e7a0b7f72a2392a8ba437'],   // Seb's art (2026-10-18), frames built from his drawing
+  'pets/salami-evolved.png': [396, 36, '1c21b95512170fe16795f37aed60daaa0aa1a3358829ce767121cd42b235bbd9'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/salami.png': [385, 35, '811a4f464720a7387ece35a127049b0670a2b8236de51ac651381cbf010d5851'],   // Seb's art (2026-10-17), frames built from his drawing
-  'pets/spooky-evolved.png': [32, 16, 'bfb88632e6632040bb205cff09d25ff83d41623615410cd81717107f8eea517e'],
-  'pets/spooky.png': [32, 16, '0427573e62011150e30a0dbf89da6b61886d624c5b91085259aac57cd1b0fe4d'],
+  'pets/spooky-evolved.png': [418, 38, '2843f457a4bb759ba477e28d83e7c69b45d4f8b8ed6b3ec66a65ba5575eed736'],   // Seb's art (2026-10-18), frames built from his drawing
+  'pets/spooky.png': [330, 30, '10bcb18731988e7f6cda98261ed32078af2cbff9597d9a3d0420c108b18a7da4'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/stanley.png': [407, 37, '6475f303ad026dbe122e21306f491140cd71e6a737fcb0b729d61c6fd032ed15'],   // Seb's art (2026-10-18), frames built from his drawing
+  'pets/stanley-evolved.png': [440, 40, '203905f432e593216772a8166bfa6e56fec4dec7589f19ab6a1836af204bebfc'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/ziggy.png': [32, 16, 'f09d885c5995e8d17f6d2c0d783f73b2830e693e8f87e0da31f78289ad89bed1'],
   'templates/pets/chloe.png': [32, 16, 'd1253033b820b17842b868a49866b1a4d73eb5b899705956b5733aee303a0788'],
   'templates/pets/emilio.png': [32, 16, 'fc7c7ef951af87206c403ee9b47275697023261911f26642f9f5c4a26d5f7ecb'],
