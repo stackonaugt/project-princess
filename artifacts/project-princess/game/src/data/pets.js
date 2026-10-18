@@ -36,7 +36,7 @@ export let PETS = [
       name: 'Flame Queen', species: 'Royal toy poodle (on fire)', type: 'fire', level: 14, hearts: 5, sprite: 'poodle',
       pal: { a: '#fff7ed', b: '#e0d6cb', w: '#ffffff', c: '#866443', p: '#a079b8', n: '#5a3028', e: '#2a1a10' },
       bio: 'Princess has become the Flame Queen. A tiny crown, an enormous sense of authority, and the same beloved poodle beneath it.',
-      stats: { hp: 82, attack: 98, defence: 62, speed: 92, special: 116 },
+      stats: { hp: 76, attack: 90, defence: 58, speed: 88, special: 104 },
       moves: ['crownclaw', 'queensdecree', 'royalrest', 'royalwave'],
     },
   },

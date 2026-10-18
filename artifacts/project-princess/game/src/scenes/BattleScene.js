@@ -554,6 +554,10 @@ export class BattleScene extends Phaser.Scene {
       }
       if (e.usesHeld) { user.lostHeld = user.held; user.held = null; B.hp(user); }
     }
+    if (e.cleanse && Object.values(user.stages).some(v => v < 0)) {
+      for (const k of Object.keys(user.stages)) user.stages[k] = Math.max(0, user.stages[k]);
+      await this.say(`${user.name} shakes off every drop. Back to full strength!`);
+    }
     const stage = async (f, key, delta, label) => {
       const before = f.stages[key];
       f.stages[key] = Math.max(-6, Math.min(6, before + delta));

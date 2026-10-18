@@ -74,7 +74,7 @@ export const TUNING = {
   // Pet base stats (roughly 40 to 130 each), and when each one evolves.
   pets: {
     princess: { stats: { hp: 66, attack: 84, defence: 52, speed: 80, special: 100 },
-      evolution: { level: 14, hearts: 5, stats: { hp: 82, attack: 98, defence: 62, speed: 92, special: 116 } } },
+      evolution: { level: 14, hearts: 5, stats: { hp: 76, attack: 90, defence: 58, speed: 88, special: 104 } } },
     salami: { stats: { hp: 60, attack: 88, defence: 50, speed: 85, special: 60 },
       evolution: { level: 15, hearts: 5, stats: { hp: 78, attack: 104, defence: 68, speed: 80, special: 78 } } },
     spooky: { stats: { hp: 50, attack: 55, defence: 60, speed: 95, special: 90 },
