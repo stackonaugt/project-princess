@@ -421,6 +421,10 @@ export class Npc extends Actor {
     this.setDir(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up'));
   }
   pause(sec) { this.wait = sec; this.setVelocity(0, 0); }
+  // Another townsperson standing within half a tile of this point.
+  crowded(x, y) {
+    return (this.scene.npcs || []).some(n => n !== this && !n.gone && n.visible !== false && Math.hypot(n.x - x, n.y - y) < 10);
+  }
   potter(player, dt) {
     if (!this.goal) {
       this.setVelocity(0, 0);
@@ -435,11 +439,13 @@ export class Npc extends Actor {
         const [dx, dy] = [[1, 0], [-1, 0], [0, 1], [0, -1]][Math.floor(Math.random() * 4)];
         const n = 1 + Math.floor(Math.random() * 2);
         for (let i = 1; i <= n; i++) if (this.scene.solidAt(this.home.x + dx * 16 * i, this.home.y - 4 + dy * 16 * i)) return false;
+        if (this.crowded(this.home.x + dx * 16 * n, this.home.y + dy * 16 * n)) return false;   // someone's standing there
         this.goal = { x: this.home.x + dx * 16 * n, y: this.home.y + dy * 16 * n };
       }
     }
     const dx = this.goal.x - this.x, dy = this.goal.y - this.y, d = Math.hypot(dx, dy);
-    const ahead = d > 0 && Math.hypot(player.x - (this.x + dx / d * 12), player.y - (this.y + dy / d * 12)) < 12;
+    const ax = d > 0 ? this.x + dx / d * 12 : this.x, ay = d > 0 ? this.y + dy / d * 12 : this.y;
+    const ahead = d > 0 && (Math.hypot(player.x - ax, player.y - ay) < 12 || this.crowded(ax, ay));
     if (this.goal.seat) {
       this.goal.t += dt;
       if (d < 2 && this.sit(this.goal.seat)) { this.sitFor = 12 + Math.random() * 25; this.goal = null; return false; }
