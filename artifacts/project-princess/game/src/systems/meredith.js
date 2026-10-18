@@ -28,6 +28,7 @@ import { NPCS } from '../data/npcs.js';
 import { TRAINERS } from '../data/enemies.js';
 import { ITEMS } from '../data/items.js';
 import { invalidateMap } from '../data/regions.js';
+import { FEST_CROWD } from '../data/crowd.js';
 import { TILE as T } from '../config.js';
 import { TUNING } from '../data/tuning.js';
 import { npcIcon, petPortrait } from '../ui/images.js';
@@ -180,6 +181,7 @@ function rest(world) {
 // ------------------------------------------------------------ arriving in a zone
 export async function mfEnter(world) {
   const m = mf(), z = world.regionId;
+  nightStreams(world);
   if (z === 'mfreception' && m.stage === S.arrived && !m.arrivedSeen) {
     m.arrivedSeen = true; world.save();
     await ui.card({ kicker: 'Meredith', title: 'The Supernatural Amphitheatre', lines: T_.arriveCard, button: 'Let\'s go' });
@@ -381,6 +383,84 @@ export async function recover(world, id) {
   ui.toast(T_.iceHint);
 }
 
+// ------------------------------------------------------------ night traffic
+// At night the roads fill with people heading to and from the stage: black
+// silhouettes walking edge to edge, both ways, like cars in the city. Scenery
+// only (no collisions), and gone once the Ice Kids' curse scatters everyone.
+// Routes between the zone's edge entries, keeping to the dirt roads where it
+// can (a cheap Dijkstra: road tiles cost 1, grass 4, anything solid is out).
+function nightRoutes(map) {
+  const { w, h, ground, solid } = map;
+  const ends = Object.values(map.entries || {}).filter(e => Number.isFinite(e.x) && (e.x < 4 || e.y < 4 || e.x > w - 5 || e.y > h - 5));
+  const route = (a, b) => {
+    const dist = new Float64Array(w * h).fill(Infinity), prev = new Int32Array(w * h).fill(-1), done = new Uint8Array(w * h);
+    const s0 = a.y * w + a.x, goal = b.y * w + b.x;
+    dist[s0] = 0;
+    const open = [s0];
+    while (open.length) {
+      let bi = 0;
+      for (let i = 1; i < open.length; i++) if (dist[open[i]] < dist[open[bi]]) bi = i;
+      const c = open.splice(bi, 1)[0];
+      if (done[c]) continue;
+      done[c] = 1;
+      if (c === goal) break;
+      const cx = c % w, cy = (c - cx) / w;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const x = cx + dx, y = cy + dy, n = y * w + x;
+        if (x < 0 || y < 0 || x >= w || y >= h || done[n] || solid[n]) continue;
+        const d = dist[c] + (ground[y][x] === '=' ? 1 : 4);
+        if (d < dist[n]) { dist[n] = d; prev[n] = c; open.push(n); }
+      }
+    }
+    if (prev[goal] < 0) return null;
+    const path = [];
+    for (let c = goal; c >= 0; c = prev[c]) path.push([c % w, Math.floor(c / w)]);
+    return path.reverse();
+  };
+  const out = [];
+  for (let i = 0; i < ends.length; i++) for (let j = i + 1; j < ends.length; j++) {
+    const r = route(ends[i], ends[j]);
+    if (r && r.length > 12) out.push(r);
+  }
+  return out.slice(0, 6);
+}
+
+function nightStreams(world) {
+  if (!nightPhase() || mf().cursed || world.mfStreams) return;
+  const routes = world.map.mfRoutes ||= nightRoutes(world.map);
+  if (!routes.length) return;
+  world.mfStreams = true;
+  world.events.once('shutdown', () => { world.mfStreams = false; });   // the scene is reused zone to zone
+  let n = 0;
+  const walk = (p, pts, i, speed) => {
+    if (!p.active) return;
+    if (i >= pts.length) return world.tweens.add({ targets: p, alpha: 0, duration: 400, onComplete: () => p.destroy() });
+    const [x, y] = pts[i], dx = x - p.x, dy = y - p.y;
+    const dir = Math.abs(dx) > Math.abs(dy) ? 'left' : dy < 0 ? 'up' : 'down';
+    if (dir !== p.dir) {
+      p.dir = dir;
+      if (world.anims.exists(`npc-${p.festId}-${dir}-walk`)) p.play(`npc-${p.festId}-${dir}-walk`);
+      else p.setTexture(`npc-${p.festId}-${dir}`, 0);
+    }
+    if (dir === 'left') p.setFlipX(dx > 0);
+    world.tweens.add({ targets: p, x, y, duration: Math.max(1, Math.hypot(dx, dy)) / speed * 1000,
+      onUpdate: () => p.setDepth(p.y), onComplete: () => walk(p, pts, i + 1, speed) });
+  };
+  world.time.addEvent({ delay: 900, loop: true, callback: () => {
+    if (!nightPhase() || mf().cursed) return;
+    const r = routes[n % routes.length], back = Math.floor(n / routes.length) % 2 === 1;
+    const c = FEST_CROWD[(n * 5) % FEST_CROWD.length];
+    n++;
+    if (Math.random() < 0.3) return;
+    const ox = (Math.random() - 0.5) * 10, oy = (Math.random() - 0.5) * 8;
+    const pts = (back ? [...r].reverse() : r).map(([x, y]) => [(x + 0.5) * T + ox, (y + 0.75) * T + oy]);
+    const p = world.add.sprite(pts[0][0], pts[0][1], `npc-${c.id}-down`, 0).setOrigin(0.5, 1).setDepth(pts[0][1]).setTintFill(0x0c0a12).setAlpha(0);
+    p.festId = c.id; p.isMfWalker = true;
+    world.tweens.add({ targets: p, alpha: 0.92, duration: 500 });
+    walk(p, pts, 1, 22 + Math.random() * 10);
+  } });
+}
+
 // ------------------------------------------------------------ the Ice Kids close night one
 async function iceKids(world) {
   if (world.iceBusy) return;
@@ -388,7 +468,7 @@ async function iceKids(world) {
   const cam = world.cameras.main, m = mf(), sx = 30 * T, sy = 33 * T;
   // Look down at the stage for the set, then back to Helen.
   cam.stopFollow();
-  cam.pan(sx, 36 * T, 1400, 'Sine.easeInOut');
+  cam.pan(sx, 37 * T, 1400, 'Sine.easeInOut');
   await new Promise(r => world.time.delayedCall(1500, r));
   // The band walks on: drawn on the stage deck, in front of the stage art.
   const band = ['mficesinger', 'mficeguitar'].map((id, i) => {
@@ -397,6 +477,16 @@ async function iceKids(world) {
     world.tweens.add({ targets: spr, alpha: 1, duration: 800 });
     return spr;
   });
+  // A packed crowd in front of the barrier, facing the stage and bopping.
+  const crowd = [];
+  for (let r = 0; r < 3; r++) for (let i = 0; i < 11; i++) {
+    const c = FEST_CROWD[(r * 11 + i * 5) % FEST_CROWD.length];
+    const x = (21.5 + i * 1.7 + (r % 2) * 0.85 + Math.sin(i * 7 + r) * 0.3) * T, y = (40.2 + r * 0.8) * T;
+    const p = world.add.sprite(x, y, `npc-${c.id}-up`, 0).setOrigin(0.5, 1).setDepth(y);
+    p.festId = c.id;
+    world.tweens.add({ targets: p, y: y - 2, duration: 260 + (i % 3) * 40, yoyo: true, repeat: -1, delay: (i * 70 + r * 110) % 400 });
+    crowd.push(p);
+  }
   await ui.say(T_.iceKids);
   const glow = world.add.image(sx, sy, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setDepth(9550).setScale(6).setTint(0x7ad8ff).setAlpha(0);
   world.tweens.add({ targets: glow, alpha: 0.9, duration: 900, yoyo: true, repeat: -1 });
@@ -407,10 +497,19 @@ async function iceKids(world) {
     const s = world.add.image(sx + (i - 4.5) * 14, sy, 'fx-glow').setTint(0x1a0a22).setScale(1.4).setDepth(9560).setAlpha(0.95);
     world.tweens.add({ targets: s, x: s.x + (i - 4.5) * 30, y: sy - 160 - (i % 3) * 40, alpha: 0, duration: 2200, delay: i * 140, onComplete: () => s.destroy() });
   }
+  // The crowd scatters as the Dickheads come off the stage.
+  crowd.forEach((p, i) => {
+    world.tweens.killTweensOf(p);
+    const right = p.x > sx;
+    if (world.anims.exists(`npc-${p.festId}-left-walk`)) p.play(`npc-${p.festId}-left-walk`);
+    p.setFlipX(right);
+    world.tweens.add({ targets: p, x: p.x + (right ? 1 : -1) * (180 + (i % 4) * 40), y: p.y + (i % 3) * 12, alpha: 0, duration: 1600 + (i % 5) * 150, delay: (i % 7) * 60, onComplete: () => p.destroy() });
+  });
   await new Promise(r => world.time.delayedCall(2000, r));
   await ui.say(T_.iceCurse.slice(2));
   cam.flash(600, 30, 0, 50);
   m.cursed = true;
+  invalidateMap('mfamphi');   // the silhouette crowd has gone too
   state.data.minutes = Math.max(state.data.minutes, 29 * 60);   // the set ran very late
   ui.updateHud(world.regionId);
   world.save();

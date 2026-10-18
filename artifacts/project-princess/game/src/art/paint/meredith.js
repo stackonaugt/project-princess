@@ -515,6 +515,35 @@ export const MEREDITH = make({
       for (let k = 0; k < 3; k++) { p.blob(16, 18 + k * 24, 9, '#3a3a40'); p.blob(16, 18 + k * 24, 4, '#141418'); }
     },
   },
+  // Crowd fillers (Seb's idea): black silhouettes of three festival goers,
+  // packed in front of the stage at night. Variants mix arms up, a phone in
+  // the air, somebody on shoulders, bucket hats and ponytails.
+  mfsil: {
+    foot: [3, 1], tex: [48, 40], variants: ['a', 'b', 'c', 'd', 'e', 'f'],
+    paintHd(p, v) {
+      const ink = '#0c0a12', rim = '#3a2c4e', seed = 'abcdef'.indexOf(v) + 1;
+      const person = (cx, base, tall, k) => {
+        const r = (n) => hash(seed * 31 + k, n);
+        const top = base - tall, head = 9 + Math.round(r(1) * 2);
+        p.r(ink, cx - 12, top + head * 2 - 2, 24, base - top - head * 2 + 2);   // body
+        p.r(ink, cx - 14, top + head * 2 + 2, 28, base - top - head * 2 - 2);   // shoulders
+        p.blob(cx, top + head, head, ink);                                       // head
+        p.r(rim, cx - head + 3, top + 2, head * 2 - 6, 2);                       // rim light on the head
+        p.r(rim, cx - 12, top + head * 2, 24, 2);
+        const kind = Math.floor(r(2) * 5);
+        if (kind === 0 || kind === 4) { p.r(ink, cx - 16, top - 10, 5, head * 2 + 14); p.r(ink, cx + 11, top - 10, 5, head * 2 + 14); }   // both arms up
+        if (kind === 1) { p.r(ink, cx + 11, top - 14, 5, head * 2 + 18); p.r('#cfe4ff', cx + 9, top - 22, 9, 12); }                      // phone in the air
+        if (kind === 2) { p.r(ink, cx - head - 4, top + 4, head * 2 + 8, 5); p.r(ink, cx - head + 2, top - 2, head * 2 - 4, 7); }        // bucket hat
+        if (kind === 3) p.r(ink, cx + head - 4, top + head, 6, 16);                                                                     // ponytail
+        if (kind === 4) p.r(ink, cx - 2, top - 6, 4, 6);                                                                                // topknot
+      };
+      const H = 80;
+      const tall = [52, 60, 48, 56, 64, 50];
+      [[16, 0], [48, 1], [80, 2]].forEach(([cx, k]) => person(cx + Math.round((hash(seed, k + 9) - 0.5) * 6), H, tall[(seed + k * 2) % 6], k));
+      // Somebody up on somebody's shoulders.
+      if (v === 'c' || v === 'f') { p.r(ink, 40, 0, 16, 26); p.blob(48, 8, 9, ink); p.r(ink, 30, 2, 5, 18); p.r(ink, 61, 2, 5, 18); p.r(rim, 42, 1, 12, 2); }
+    },
+  },
   mflighttower: {
     foot: [1, 1], tex: [16, 74],
     lights: [{ x: 8, y: 6, r: 50, tint: 0xfff4d0 }],

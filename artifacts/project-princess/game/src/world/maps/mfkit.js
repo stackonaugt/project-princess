@@ -4,6 +4,7 @@ import { state } from '../../systems/state.js';
 
 export const FEST_GRASS = ['#b4b266', '#aaa95e', '#8a8a46', '#cccb84'];
 export const mfStage = () => state.data.meredith?.stage || 0;
+export const mfCursed = () => !!state.data.meredith?.cursed;
 
 // A dirt road, w wide, from (x0, y0) to (x1, y1) in straight steps.
 export function road(b, x0, y0, x1, y1, w = 3) {

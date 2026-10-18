@@ -5,7 +5,7 @@
 // turf with the pink chairs. The crew's couch goes on the hill once you
 // have carried it down (Kouch Hole 2).
 import { MapBuilder } from '../MapBuilder.js';
-import { road, gums, lanterns, mfStage } from './mfkit.js';
+import { road, gums, lanterns, mfStage, mfCursed } from './mfkit.js';
 import { MF_STAGE } from '../../data/meredith.js';
 
 export function buildMfAmphi() {
@@ -55,6 +55,19 @@ export function buildMfAmphi() {
   if (mfStage() >= MF_STAGE.night) b.put('mfcouch', 24, 17, { v: 'kouch' });
   for (const [y, s] of [[12, 0], [17, 1], [22, 2], [27, 3]]) lanterns(b, 6, 51, y, s);
 
+  // At night the crowd packs in: silhouettes in the mosh and against the
+  // barrier (gone once the Ice Kids' curse scatters everyone).
+  const st = mfStage();
+  if (st >= MF_STAGE.night && !(st >= MF_STAGE.sunrise && mfCursed())) {
+    const v = 'abcdef';
+    let n = 0;
+    for (const y of [29, 31]) for (let x = 9 + (y === 31 ? 1 : 0); x <= 45; x += 4) {
+      if (x >= 25 && x <= 30) continue;                       // the aisle down to the stage
+      if (y === 31 && x >= 18 && x <= 22) continue;           // the stage sign
+      b.put('mfsil', x, y, { v: v[n++ % 6] });
+    }
+    for (let x = 21; x <= 34; x += 3) b.put('mfsil', x, 38, { v: v[n++ % 6] });
+  }
   gums(b, [0, 10, 4, 32], 0.4, ['blue', 'red']);
   gums(b, [54, 10, 4, 32], 0.4, ['blue', 'red']);
   gums(b, [0, 36, 21, 6], 0.25, ['red']); gums(b, [37, 36, 21, 6], 0.25, ['red']);
