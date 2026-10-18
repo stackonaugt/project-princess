@@ -130,6 +130,20 @@ test('herd: chooks run from the dog and can be pushed into the pen', () => {
   assert.equal(c.penned, false);
 });
 
+test('herd: chooks never jam in a corner, and nothing hides behind the pen', () => {
+  const L = makeLesson('herd', { level: 0, area, seed: 0.5, name: 'Chloe' });
+  assert.equal(L.pen.x + L.pen.w, area.x + area.w, 'the pen is flush with the edge');
+  const c = L.chooks[0]; c.x = area.x + 2; c.y = area.y + 2;
+  L.pet.x = area.x + 40; L.pet.y = area.y + 40;   // the dog charges it into the corner
+  for (let i = 0; i < 60; i++) L.tick(DT, { x: L.pet.x + 4, y: L.pet.y + 4, dir: 'left', speed: 0 });
+  assert.ok(c.x >= area.x + 10 && c.y >= area.y + 10, 'the chook keeps off the fence');
+  // The dog can always get round behind it, and then it moves out.
+  const before = { x: c.x, y: c.y };
+  L.pet.x = area.x + 6; L.pet.y = area.y + 6;
+  for (let i = 0; i < 60; i++) { L.pet.x = area.x + 6; L.pet.y = area.y + 6; L.tick(DT, { x: area.x + 6, y: area.y + 6, dir: 'right', speed: 0 }); }
+  assert.ok(Math.hypot(c.x - before.x, c.y - before.y) > 15, 'the chook runs out of the corner');
+});
+
 test('hide and seek: the rustling bush finds the pet, a wrong bush is a slip', () => {
   const L = makeLesson('seek', { level: 1, area, seed: 0.2, name: 'Spooky', phase: true });
   const { go, wait } = driver(L);

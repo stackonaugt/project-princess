@@ -127,7 +127,7 @@ const schnauzer = [
   '...ww.....ww....',
 ];
 
-// Rusty: a slim brown whippet, deep chest, tucked belly, long legs, white bib.
+// Rusty: a slim brown Italian greyhound, deep chest, tucked belly, long legs, white bib.
 const whippet = [
   '................',
   '...........kk...',

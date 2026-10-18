@@ -142,12 +142,12 @@ heartScenes.10.4 = "Don't tell anyone. He's very private. Very distinguished."
 helpsInBattle = Chris chucks a handful of compost. Rich, warm, and devastating.
 
 [PEOPLE.nathan]  # Nathan
-role = Runs the lake loop with Rusty, his whippet
+role = Runs the lake loop with Rusty, his Italian greyhound
 lines.1.1 = Cannot stop! Lap twelve! Rusty is on lap forty. 
 lines.2.1 = Just droppes into Melbourne for a visit... and a run. I do running now, apparently.
 lines.3.1 = Rusty shakes like a leaf when it is cold. Or warm. Or Tuesday. 
 hints.poppy = There is a frenchie by the picnic tables who keeps trying to race Rusty. She has never won. She has never stopped trying.
-hints.rusty = Rusty? That brown blur is my whippet. Want him to run with your team? You will have to beat us first.
+hints.rusty = Rusty? That brown blur is my Italian greyhound. Want him to run with your team? You will have to beat us first.
 battle.challenge.1 = You want Rusty on your team? He is very fast. And very dramatic about it.
 battle.challenge.2 = Race you. Well, play-fight you. 
 battle.ask = Play-fight Rusty?
@@ -1666,13 +1666,13 @@ asleep.1 = Girlie is asleep, paws paddling. She is swimming in her dreams.
 evolvedBio = Girlie found the biggest puddle in Carlton Gardens and never really came out. Muddie is half lab, half wetland, and wants a cuddle.
 
 [PET_TEXT.rusty]
-bio = A brown whippet. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.
+bio = A brown Italian greyhound. Fastest thing in Reservoir. Shakes like a leaf. Loves a blanket.
 clue = Something brown and very fast is doing laps of the athletics track. Its owner, Nathan, jogs behind it. Slowly.
 funFact = Rusty can reach 60km/h, but prefers to spend most of the day under a blanket.
 favouriteSpot = The warm patch of sun on the lounge room floor. Or under three blankets.
 lines.0.1 = Rusty zooms past. Then back. Then past again. He did not stop to say hello.
 lines.0.2 = Rusty is shivering. It is 24 degrees.
-lines.3.1 = Rusty leans his whole skinny body against your legs. That is a whippet hug.
+lines.3.1 = Rusty leans his whole skinny body against your legs. That is an Italian greyhound hug.
 lines.6.1 = Rusty does a lap of the court, then flops down next to you, exhausted and proud.
 lines.9.1 = Rusty curls up on your feet like a tiny brown deer. You cannot move. You will not move.
 night.1 = Rusty is tucked under a blanket. Only his nose is showing.

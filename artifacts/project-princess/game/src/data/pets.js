@@ -87,7 +87,7 @@ export let PETS = [
     },
   },
   {
-    id: 'rusty', name: 'Rusty', species: 'Whippet', type: 'speed', sprite: 'whippet',
+    id: 'rusty', name: 'Rusty', species: 'Italian greyhound', type: 'speed', sprite: 'whippet',
     pal: { a: '#c07a3a', b: '#9a5a26', k: '#7a4a22', w: '#f0e8dc', e: '#1a1010', n: '#1a1010' },
     owner: 'Nathan', region: 'reservoir', zone: 'track', home: [30, 22], range: 4,
     homeSpot: { zone: 'home', x: 13, y: 15 },
@@ -95,7 +95,7 @@ export let PETS = [
     loves: ['chicken', 'redfin', 'cheese'], likes: ['snag', 'sardine', 'tennis', 'carrot'], dislikes: ['lemon', 'chilli'],
     stats: { hp: 66, attack: 78, defence: 50, speed: 115, special: 48 },
     evolution: {
-      name: 'Steely', species: 'Whippet (forged steel)', type: ['speed', 'steel'], level: 16, hearts: 5, sprite: 'evenrustier',
+      name: 'Steely', species: 'Italian greyhound (forged steel)', type: ['speed', 'steel'], level: 16, hearts: 5, sprite: 'evenrustier',
       pal: { a: '#9aa2ac', b: '#6a727c', k: '#b8642a', w: '#e8eef4', r: '#4a4e56', o: '#c87a3a', e: '#e83a2a', n: '#1a1010' },
       stats: { hp: 86, attack: 108, defence: 82, speed: 130, special: 56 },
       moves: ['dangerpaws', 'sharpen', 'turbozoom', 'oilchange'],

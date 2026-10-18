@@ -5672,26 +5672,26 @@
             "helpsInBattle": "Chris chucks a handful of compost. Rich, warm, and devastating."
           },
           "nathan": {
-            "role": "Runs the lake loop with Rusty, his whippet",
+            "role": "Runs the lake loop with Rusty, his Italian greyhound",
             "lines": [
               [
-                "Cannot stop! Lap twelve! Rusty is on lap forty. Whippets."
+                "Cannot stop! Lap twelve! Rusty is on lap forty. Italian greyhounds."
               ],
               [
                 "This loop is exactly one point eight kilometres. Rusty does it in about ninety seconds. Then shivers."
               ],
               [
-                "Rusty shakes like a leaf when it is cold. Or warm. Or Tuesday. He is a whippet. It is his whole personality."
+                "Rusty shakes like a leaf when it is cold. Or warm. Or Tuesday. He is an Italian greyhound. It is his whole personality."
               ]
             ],
             "hints": {
               "poppy": "There is a frenchie by the picnic tables who keeps trying to race Rusty. She has never won. She has never stopped trying.",
-              "rusty": "Rusty? That brown blur is my whippet. Want him to run with your team? You will have to beat us first."
+              "rusty": "Rusty? That brown blur is my Italian greyhound. Want him to run with your team? You will have to beat us first."
             },
             "battle": {
               "challenge": [
                 "You want Rusty on your team? He is very fast. And very dramatic about it.",
-                "Race you. Well, play-fight you. Same thing for a whippet."
+                "Race you. Well, play-fight you. Same thing for an Italian greyhound."
               ],
               "ask": "Play-fight Rusty?",
               "yes": "Ready, set, go",
