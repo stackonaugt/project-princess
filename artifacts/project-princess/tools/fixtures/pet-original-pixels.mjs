@@ -10,13 +10,14 @@ export const PET_ORIGINAL_PIXELS = {
   'pets/poppy.png': [440, 40, '88b2792ed7914d3154ed672c3f50b7019311242dfef0f78be3ad98d2e6c1b5e2'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/princess-evolved.png': [451, 41, 'f23537105cef9f7720193aefa6c3bb4359aac1d99b34724f6769ed534f68838d'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/princess.png': [429, 39, '08028d1c1fdefc777bfa6c810853f8ee069bb14ccd63d279b42aab86fba1d5fd'],   // Seb's art (2026-10-18), frames built from his drawing
-  'pets/rusty-evolved.png': [32, 16, '53131da2a8d25db863aa4bc028724416f622ac1e0e9715ccc32bc084d182363f'],
+  'pets/rusty-evolved.png': [418, 38, '9045b6e420f68677d4846b571e658acc0252a2f487d9716ea000ac42842ebba7'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/rusty.png': [418, 38, '29fcd8d9d82bc8af7902aede85792c4a24e2e7008a7e7a0b7f72a2392a8ba437'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/salami-evolved.png': [396, 36, '1c21b95512170fe16795f37aed60daaa0aa1a3358829ce767121cd42b235bbd9'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/salami.png': [385, 35, '811a4f464720a7387ece35a127049b0670a2b8236de51ac651381cbf010d5851'],   // Seb's art (2026-10-17), frames built from his drawing
-  'pets/spooky-evolved.png': [32, 16, 'bfb88632e6632040bb205cff09d25ff83d41623615410cd81717107f8eea517e'],
+  'pets/spooky-evolved.png': [418, 38, '2843f457a4bb759ba477e28d83e7c69b45d4f8b8ed6b3ec66a65ba5575eed736'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/spooky.png': [330, 30, '10bcb18731988e7f6cda98261ed32078af2cbff9597d9a3d0420c108b18a7da4'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/stanley.png': [407, 37, '6475f303ad026dbe122e21306f491140cd71e6a737fcb0b729d61c6fd032ed15'],   // Seb's art (2026-10-18), frames built from his drawing
+  'pets/stanley-evolved.png': [440, 40, '203905f432e593216772a8166bfa6e56fec4dec7589f19ab6a1836af204bebfc'],   // Seb's art (2026-10-18), frames built from his drawing
   'pets/ziggy.png': [32, 16, 'f09d885c5995e8d17f6d2c0d783f73b2830e693e8f87e0da31f78289ad89bed1'],
   'templates/pets/chloe.png': [32, 16, 'd1253033b820b17842b868a49866b1a4d73eb5b899705956b5733aee303a0788'],
   'templates/pets/emilio.png': [32, 16, 'fc7c7ef951af87206c403ee9b47275697023261911f26642f9f5c4a26d5f7ecb'],
