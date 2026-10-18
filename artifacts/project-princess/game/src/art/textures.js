@@ -10,7 +10,7 @@ import { ART_PATH } from '../config.js';
 import { PETS } from '../data/pets.js';
 import { NPCS } from '../data/npcs.js';
 import { CROWD, FEST_CROWD } from '../data/crowd.js';
-import { painter, outline, textWidth } from './paint/painter.js';
+import { painter, outline, textWidth, sebStyle } from './paint/painter.js';
 import { PET_FRAMES, BASE_PALETTE } from './sprites.js';
 import { HEROES } from '../data/heroes.js';
 import { drawPerson } from './paint/people.js';
@@ -84,11 +84,12 @@ function canvasTexture(scene, key, w, h, draw) {
   draw(painter(tex.getContext()));
   tex.refresh();
 }
-function stripTexture(scene, key, fw, fh, n, draw, outlined = false) {
+function stripTexture(scene, key, fw, fh, n, draw, outlined = false, style = null) {
   if (scene.textures.exists(key)) return;
   const tex = scene.textures.createCanvas(key, fw * n, fh);
   const p = painter(tex.getContext());
   for (let i = 0; i < n; i++) { p.ctx.save(); p.ctx.translate(i * fw, 0); draw(p, i); p.ctx.restore(); }
+  if (style) for (let i = 0; i < n; i++) sebStyle(p.ctx, i * fw, 0, fw, fh, { person: style === 'person' });
   if (outlined) for (let i = 0; i < n; i++) outline(p.ctx, i * fw, 0, fw, fh);
   tex.refresh();
   for (let i = 0; i < n; i++) tex.add(i, 0, i * fw, 0, fw, fh);
@@ -155,13 +156,13 @@ export function buildTextures(scene, customEntities = AUTHORING.custom) {
   // People
   for (const [id, npc] of Object.entries(NPCS)) {
     if (custom.has(`npc-${id}`)) continue;
-    for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${id}-${dir}`, 16, 32, 7, (p, i) => drawPerson(p, npc.look, dir, STEPS[i] || 0, i<3?null:i<5?`wave-${i-3}`:`throw-${i-5}`), true);
+    for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${id}-${dir}`, 16, 32, 7, (p, i) => drawPerson(p, npc.look, dir, STEPS[i] || 0, i<3?null:i<5?`wave-${i-3}`:`throw-${i-5}`), true, 'person');
   }
   // The crowd (data/crowd.js): unnamed passers-by
-  for (const c of [...CROWD, ...FEST_CROWD]) for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${c.id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, c.look, dir, STEPS[i]), true);
+  for (const c of [...CROWD, ...FEST_CROWD]) for (const dir of ['down', 'up', 'left']) stripTexture(scene, `npc-${c.id}-${dir}`, 16, 32, 3, (p, i) => drawPerson(p, c.look, dir, STEPS[i]), true, 'person');
   // Things you battle
   for (const [id,[w,h,draw]] of Object.entries(SHOW_DOG_ART)) stripTexture(scene,`foe-${id}`,w,h,4,draw,true);
-  for (const [id, [w, h, draw]] of Object.entries({ ...FOE_ART, ...EAST_FOE_ART })) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true);
+  for (const [id, [w, h, draw]] of Object.entries({ ...FOE_ART, ...EAST_FOE_ART })) stripTexture(scene, `foe-${id}`, w, h, 1, draw, true, w === 16 && h === 32 ? 'person' : 'foe');
   // Items
   for (const [id, art] of Object.entries({ ...ITEM_ART, ...EAST_ITEM_ART })) canvasTexture(scene, `item-${id}`, 16, 16, p => p.sprite(art.rows, art.pal, 2, 2));
   for (const [id, it] of Object.entries(ITEMS)) if (it.drink || it.lolly || it.vape || it.art?.kind) canvasTexture(scene, `item-${id}`, 16, 16, p => paintDrink(p, it.art));
