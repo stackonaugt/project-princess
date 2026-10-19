@@ -12,11 +12,11 @@ export function buildMfSunset() {
   road(b, 30, 0, 30, 8, 3);                      // up to Top Camp
   road(b, 22, 8, 51, 6, 3);                      // Loo Rd, east to South Pines
   b.fill(3, 11, 18, 10, 'u');                     // South Bank
-  b.put('mffood', 3, 11, { v: 'potato' }); b.put('mffood', 8, 11, { v: 'krishna' }); b.put('mffood', 13, 11, { v: 'gelato' }); b.put('mffood', 3, 17, { v: 'tucker' });
+  b.put('mffood', 3, 11, { v: 'potato' }); b.put('mffood', 8, 11, { v: 'krishna' }); b.put('mffood', 13, 11, { v: 'gelato' }); b.put('mffood', 3, 17, { v: 'noodles' });
   b.put('picnic', 10, 16); b.put('picnic', 14, 16); b.put('picnic', 10, 19); b.put('picnic', 15, 19);
   b.put('mfwatertank', 18, 17);
   b.put('mfbins', 8, 20);
-  b.sign(20, 12, ['South Bank Food.', 'Baked potatoes, Hare Krishna curries and gelato, right beside the stage.']);
+  b.sign(20, 12, ['South Bank Food.', 'Baked potatoes, Hare Krishna curries, noodles and gelato, right beside the stage.']);
   b.put('mfroadsign', 22, 11, { v: 'sunset' });
 
   // The Sunset Strip: a long rise of mown grass, hay bales along the top

@@ -68,6 +68,9 @@ import { buildMfTop } from '../world/maps/mftop.js';
 import { buildMfSunset } from '../world/maps/mfsunset.js';
 import { buildMfBlueGums } from '../world/maps/mfbluegums.js';
 import { buildMfPines } from '../world/maps/mfpines.js';
+import { buildMfFlamingo } from '../world/maps/mfflamingo.js';
+import { buildMfStageFront } from '../world/maps/mfstagefront.js';
+import { buildMfSunView } from '../world/maps/mfsunview.js';
 import { FEST_GRASS } from '../world/maps/mfkit.js';
 
 // grass: base, alt, dark tuft, light tip
@@ -176,6 +179,10 @@ export const ZONES = {
   mfsunset: { name: 'Sunset Strip', suburb: 'meredith', build: buildMfSunset, grass: FEST_GRASS },
   mfbluegums: { name: 'Blue Gums', suburb: 'meredith', build: buildMfBlueGums, grass: FEST_GRASS },
   mfpines: { name: 'South Pines', suburb: 'meredith', build: buildMfPines, grass: FEST_GRASS },
+  mfflamingo: { name: 'The Pink Flamingo', suburb: 'meredith', build: buildMfFlamingo, grass: FEST_GRASS },
+  // Cutscene only (no way in or out on foot): the front of the stage, the view from the Sunset Strip.
+  mfstagefront: { name: 'The One and Only Stage', suburb: 'meredith', build: buildMfStageFront, grass: FEST_GRASS, cutscene: true },
+  mfsunview: { name: 'Sunset Strip', suburb: 'meredith', build: buildMfSunView, grass: FEST_GRASS, cutscene: true },
 };
 
 

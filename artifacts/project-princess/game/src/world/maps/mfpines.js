@@ -17,7 +17,7 @@ export function buildMfPines() {
 
   // South Pines: rows of pines and tents
   for (let x = 2; x < 34; x += 3) for (const y of [21, 36]) b.put('tree', x, y, { v: 'pine' });
-  camp(b, [9, 24, 15, 9], 0.75); camp(b, [1, 1, 20, 14], 0.6);
+  camp(b, [9, 24, 15, 9], 0.95); camp(b, [1, 1, 20, 14], 0.9);
 
   // Outer Space: the open paddock, hay bales and long grass
   b.fill(32, 8, 23, 22, '"');

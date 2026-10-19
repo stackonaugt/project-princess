@@ -18,7 +18,8 @@ import { NPCS } from '../data/npcs.js';
 import { FRIENDS } from '../data/friends.js';
 import { MOTIONS, MOTION_ORDER } from '../data/council.js';
 import { initialObjective, pinObjective, isPinned } from '../systems/guidance.js';
-import { mfObjective } from '../systems/meredith.js';
+import { mfObjective, mfQuests } from '../systems/meredith.js';
+import { isMeredith } from '../data/meredith.js';
 
 // The To Do app: the story's jobs, and today's requests from friends.
 let todoTab = 'todo';
@@ -26,10 +27,18 @@ export function openStoryApp(panel, close) {
   syncTodo(); readTodo();
   const s = state.data.story, n = chapterNow();
   const body = [];
-  if (todoTab === 'todo' || todoTab === 'done') {
+  // At Meredith the list is only the festival; playing the twins, only their chapter.
+  const festival = isMeredith(state.data.region), twins = ['hadrian', 'aleksy'].includes(state.data.hero);
+  if ((todoTab === 'todo' || todoTab === 'done') && festival) {
+    const fest = mfObjective();
+    body.push(fest ? todoNote('Meredith: night one', [fest, ...mfQuests()]) : h('p', { class: 'center' }, 'Nothing to do but enjoy the festival.'));
+    const finished = body.filter(el => el.dataset?.done === '1'), left = body.filter(el => el.dataset?.done !== '1');
+    body.length = 0;
+    body.push(...(todoTab === 'done' ? finished.length ? finished : [h('p', { class: 'center' }, 'Nothing finished yet. It will all end up here.')] : left));
+  } else if (todoTab === 'todo' || todoTab === 'done') {
     for (const t of tutorialNotes()) body.push(todoNote(t.title, [{ text:t.text, done:t.done }]));
     if (!n) body.push(todoNote('Find Princess', [initialObjective()]));
-    const fest = mfObjective();
+    const fest = !twins && mfObjective();
     if (fest) body.push(todoNote('Meredith: night one', [fest]));
     else if (n > 4) body.push(h('div', { class: 'note' }, h('h4', {}, 'All done, for now'), h('p', {}, `Paddy got ${s.party?.votes ?? '?'}% of the vote. ${s.party?.won ? 'He is Mayor of Hobsons Bay!' : 'Not quite enough, this time. Cr Bentleigh is mayor, and council motions are harder to pass.'}`), h('p', { class: 'small' }, 'More is planned. Keep playing in the meantime.')));
     else if (s.done[n]) body.push(h('div', { class: 'note', 'data-done': '1' }, h('h4', {}, GOALS[n] + ' ✓'), h('p', { class: 'small' }, s.ch2.deposed && n === 2 ? 'Paddy was rolled. Something new comes up tomorrow morning.' : 'Done! Something new comes up tomorrow morning.')));
@@ -41,7 +50,7 @@ export function openStoryApp(panel, close) {
       body.push(note);
     }
     // Council: the motion on the board, and what you know the undecided want.
-    const open = MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id));
+    const open = !twins && MOTION_ORDER.find(id => state.motionUnlocked(id) && !state.motionPassed(id));
     if (open && state.motionKnown(open)) {
       const m = MOTIONS[open], v = state.councilVote(open);
       body.push(todoNote(`Council: ${m.title}`, [
@@ -50,10 +59,10 @@ export function openStoryApp(panel, close) {
         ...(v.undecided.some(w => !state.swingKnown(open, w)) ? [{ text: 'Find out what the other undecided councillors want: ask them, or ask Paddy whenever you see him', done: false }] : []),
       ]));
     }
-    if (showUnlocked()) body.push(todoNote('Exhibition Dog Show',showObjectives()));
+    if (!twins && showUnlocked()) body.push(todoNote('Exhibition Dog Show',showObjectives()));
     // Side missions
     const bake = state.data.side.bake;
-    if(bake){const bq=state.data.side.bakeQuest;
+    if(bake && !twins){const bq=state.data.side.bakeQuest;
       const bakeSteps = [
         {text:'Learn a special baking recipe from a friend or a cookbook',done:state.data.recipes.some(id=>COOK_RECIPES[id]?.baked)},
         {text:'Bake your entry using pantry supplies and garden produce',done:bq.cooked.some(id=>COOK_RECIPES[id]?.baked)},
@@ -71,6 +80,8 @@ export function openStoryApp(panel, close) {
     body.length = 0;
     if (todoTab === 'done') body.push(...(finished.length ? finished : [h('p', { class: 'center' }, 'Nothing finished yet. It will all end up here.')]));
     else body.push(...left);
+  } else if (festival || twins) {
+    body.push(h('p', { class: 'center' }, festival ? 'No requests at the festival. Everyone is on holiday.' : 'Requests are for Helen. The boys have their own plans.'));
   } else {
     const reqs = state.todaysRequests();
     body.push(h('p', { class: 'small' }, 'Friends ask for things each morning. Give them what they want as their gift for the day.'));

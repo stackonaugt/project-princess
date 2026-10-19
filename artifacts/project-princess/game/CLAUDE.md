@@ -260,6 +260,27 @@
   arms get a dark seam, and everything gets a lit left edge, a shaded right
   edge and a light woven texture below the neck. `face()` in people.js draws
   eye whites, brows, a nose shadow and a wider mouth.
+- **Meredith Music Festival** (expansion, hidden: the bus only comes via
+  Cheats > Send the Meredith bus). Data and words in `src/data/meredith.js`,
+  rules and scenes in `src/systems/meredith.js`, art in
+  `src/art/paint/meredith.js`, maps `src/world/maps/mf*.js`. No pets come:
+  everyone is sucked into the portal in your tent (Toby comes out of it), and
+  no battles until they land. Night one: pitch the tent (peg mini game, good or
+  crappy tent), carry the crew couch, then find the pets (`MF_SCATTER`: wild,
+  crowd search with a torch, dance at the Pink Flamingo, the Meredith Eye spin
+  game for Stanley, item quests from the Helper Hut or Heaven Eleven, a Pink
+  Flamingo cocktail trade). The cocktail is a power-up for the day
+  (`MF_COCKTAIL`, merged in `spellBonus`). Then Mama King (dance), the Ice Kids
+  (cursed, the Dickheads pour out) and sunrise at the Sunset Strip view.
+  `mfstagefront` and `mfsunview` are cutscene-only zones (`cutscene: true`).
+  At the festival friends only use festival lines (`mfTalk`), the To Do list
+  only shows the festival (and only the twins' chapter while playing them).
+  Festival outfits: `assets/sprites/npcs/<id>-meredith.png` wins over the
+  normal art while at Meredith. Music: Seb's MP3s in `assets/audio/meredith/` (day
+  and night playlists, Mama King, Ice Kids), listed in `MF_MUSIC`; the curse
+  waits until the Ice Kids track has played 40 seconds (`curseAfter`).
+  Empty names play the synth stand-in (`sfx.ambience`). Battle
+  backgrounds `backgrounds/meredith*.png` (starters from the exporter).
 - Focused checks: `pnpm --filter @workspace/project-princess run test:animal-animations`
   and `node --test artifacts/project-princess/tools/pet-form-text.test.mjs`.
   Release checks: `pnpm --filter @workspace/project-princess run verify:build`.

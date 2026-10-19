@@ -76,7 +76,7 @@ export class Actor extends Phaser.Physics.Arcade.Sprite {
       }
     }
     const top = this.y - this.displayHeight;
-    this.setDepth(this.y);
+    this.setDepth(this.seat?.depth ? Math.max(this.y, this.seat.depth) : this.y);
     this.shadow.setPosition(this.x, this.y).setDepth(this.y - 0.5).setAlpha(this.alpha).setVisible(this.visible && !this.seat);
     const inGrass = this.scene.groundAt(this.x, this.y - 2) === '"';
     this.tuft.setVisible(inGrass && this.visible).setPosition(this.x, this.y + 1).setDepth(this.y + 0.5);
@@ -378,11 +378,14 @@ export class Npc extends Actor {
     const pos = toWorld(spot.x, spot.y);
     // A playable hero standing about as a townsperson (the twins in their room)
     // wears the owner's player art for that hero, unless they have npc art.
-    const hero = !custom.has(`npc-${id}`) && HEROES[id] && ['down', 'up', 'left'].some(d => custom.has(`player-${id}-${d}`)) ? id : null;
-    const tex = hero ? playerTexture(hero, 'down')[0] : custom.has(`npc-${id}`) ? `npc-${id}` : `npc-${id}-down`;
+    // At the Meredith festival a friend can wear festival art: npcs/<id>-meredith.png.
+    const fest = scene.meredith && custom.has(`npc-${id}-meredith`) ? `npc-${id}-meredith` : null;
+    const hero = !fest && !custom.has(`npc-${id}`) && HEROES[id] && ['down', 'up', 'left'].some(d => custom.has(`player-${id}-${d}`)) ? id : null;
+    const tex = fest || (hero ? playerTexture(hero, 'down')[0] : custom.has(`npc-${id}`) ? `npc-${id}` : `npc-${id}-down`);
     super(scene, pos.x, pos.y, tex, 32);
     this.id = id; this.info = info; this.spot = spot; this.hero = hero;
-    this.customArt = custom.has(`npc-${id}`);
+    this.customArt = !!fest || custom.has(`npc-${id}`);
+    this.artKey = fest || `npc-${id}`;
     this.fitBody(10, 6);
     this.body.setImmovable(true);
     this.path = spot.path ? spot.path.map(([x, y]) => toWorld(x, y)) : null;
@@ -486,7 +489,7 @@ export class Npc extends Actor {
       }
     } else if (this.idle !== null && !frozen && this.wait <= 0) moving = this.potter(player, dt);
     else this.setVelocity(0, 0);
-    const anim = this.customArt ? `npc-${this.id}-walk` : `${this.texture.key}-walk`;
+    const anim = this.customArt ? `${this.artKey}-walk` : `${this.texture.key}-walk`;
     if (moving && this.scene.anims.exists(anim)) { this.anims.play(anim, true); this.anims.timeScale = this.speed > 40 ? 1.5 : 1; }
     else { this.anims.stop(); if (this.scene.textures.get(this.texture.key).has(0)) this.setFrame(0); }
     if (this.customArt && frameCount(this.scene, this.texture.key) < 2) this.setBob(moving);

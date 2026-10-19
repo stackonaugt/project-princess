@@ -5,6 +5,7 @@ import { state } from '../../systems/state.js';
 export const FEST_GRASS = ['#b4b266', '#aaa95e', '#8a8a46', '#cccb84'];
 export const mfStage = () => state.data.meredith?.stage || 0;
 export const mfCursed = () => !!state.data.meredith?.cursed;
+export const mfTent = () => state.data.meredith?.tent || null;
 
 // A dirt road, w wide, from (x0, y0) to (x1, y1) in straight steps.
 export function road(b, x0, y0, x1, y1, w = 3) {
@@ -35,6 +36,13 @@ export function camp(b, [ax, ay, aw, ah], density = 0.5) {
 // A stand of gums over grass.
 export function gums(b, area, density = 0.08, variants = ['blue', 'spotted', 'red']) {
   return b.scatter(area, density, variants.map(v => ['mfgum', 1, [v]]), { clearance: 0 });
+}
+// A string of lanterns on a wire from (x, y) diagonally up the hill: dir -1
+// runs up to the left, 1 up to the right, n pieces of two tiles each.
+export function lanternString(b, x, y, dir, n) {
+  const sets = ['a', 'b', 'c', 'd'];
+  for (let i = 0; i < n; i++) b.put('mflanternd', dir < 0 ? x - i * 2 : x + i * 2, y - i * 2, { v: `${dir < 0 ? 'r' : 'l'}-${sets[i % 4]}` });
+  return b;
 }
 // A string of lanterns overhead from x0 to x1 (drawn above everyone).
 export function lanterns(b, x0, x1, y, shift = 0) {

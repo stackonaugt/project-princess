@@ -62,6 +62,85 @@ function shimmer(sec) {
   lfo.start(t); lfo.stop(end + 0.05);
 }
 
+// Festival ambience at Meredith: a looping crowd murmur from filtered noise and
+// music: Seb's MP3s from assets/audio/meredith/ (`file`, one name or a list
+// played in turn), or a synth beat. Call with null to stop. Walking between
+// zones keeps the same track going and only changes the volume.
+let amb = null, music = null, stopTimer = null;
+const BEATS = {
+  night: { bpm: 122, bass: [55, 55, 65.4, 49], lead: [440, 0, 523, 0, 659, 0, 523, 0] },
+  mamaking: { bpm: 104, bass: [73.4, 73.4, 98, 87.3], lead: [587, 659, 0, 784, 659, 0, 587, 494] },
+  icekids: { bpm: 140, bass: [41.2, 41.2, 43.7, 36.7], lead: [0, 1244, 0, 1175, 0, 1047, 0, 932] },
+};
+function stopCrowd() {
+  if (!amb) return;
+  try { amb.stop(); } catch { /* already stopped */ }
+  amb.out.disconnect(); amb = null;
+}
+function stopMusic() {
+  if (!music) return;
+  clearInterval(music.timer);
+  if (music.el) { music.el.pause(); music.el.removeAttribute('src'); music.el.load(); }
+  music = null;
+}
+function crowd(level) {
+  if (amb?.level === level) return;
+  stopCrowd();
+  if (!level) return;
+  const a = audio(); if (!a) return;
+  const out = a.createGain(); out.connect(a.destination);
+  const len = a.sampleRate * 3, buf = a.createBuffer(1, len, a.sampleRate), d = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+  const lfo = a.createOscillator(), depth = a.createGain();
+  src.buffer = buf; src.loop = true; f.type = 'bandpass'; f.frequency.value = 650; f.Q.value = 0.7;
+  g.gain.value = 0.02 * level; lfo.frequency.value = 0.23; depth.gain.value = 0.008 * level;
+  lfo.connect(depth).connect(g.gain);
+  src.connect(f).connect(g).connect(out); src.start(); lfo.start();
+  amb = { level, out, stop: () => { src.stop(); lfo.stop(); } };
+}
+function playMusic({ file, music: vol = 1, style }) {
+  const list = file ? [].concat(file) : [], key = list.length ? list.join('|') : `synth:${style || 'night'}`;
+  if (!vol) return stopMusic();
+  if (music?.key === key) { music.vol = vol; if (music.el) music.el.volume = Math.min(1, 0.55 * vol); return; }
+  stopMusic();
+  if (list.length) {
+    const el = new Audio();
+    music = { key, el, vol, i: 0 };
+    const next = () => { if (music?.el !== el) return; el.src = `assets/audio/meredith/${list[music.i++ % list.length]}`; el.play().catch(() => {}); };
+    el.volume = Math.min(1, 0.55 * vol);
+    el.addEventListener('ended', next);
+    next();
+    return;
+  }
+  const beat = BEATS[style] || BEATS.night, step = 60 / beat.bpm / 2;
+  let n = 0;
+  music = { key, vol };
+  const tick = () => {
+    if (!state.data.settings.sound) return stopMusic();
+    const i = n++, v = music.vol;
+    if (i % 2 === 0) tone(110, 0.12, { type: 'sine', vol: 0.05 * v, slide: -70 });
+    else noise(0.03, { vol: 0.012 * v, from: 9000, to: 7000, q: 2 });
+    if (i % 4 === 2) noise(0.08, { vol: 0.02 * v, from: 2500, to: 1200, q: 0.8 });
+    tone(beat.bass[Math.floor(i / 4) % 4], step * 0.9, { type: 'sawtooth', vol: 0.014 * v });
+    const l = beat.lead[i % 8];
+    if (l && Math.floor(i / 16) % 2 === 0) tone(l, step * 0.7, { type: style === 'icekids' ? 'square' : 'triangle', vol: 0.01 * v });
+  };
+  music.timer = setInterval(tick, step * 1000);
+}
+// `soon`: stop after a moment unless the next zone starts it again (zone changes).
+function ambience(opts, { soon = false } = {}) {
+  clearTimeout(stopTimer);
+  if (!opts || !state.data.settings.sound || !audio()) {
+    if (soon && opts === null) { stopTimer = setTimeout(() => { stopCrowd(); stopMusic(); }, 1500); return; }
+    stopCrowd(); stopMusic(); return;
+  }
+  crowd(opts.crowd || 0);
+  playMusic(opts);
+}
+// How long the current track has been playing, in seconds (0 for synth).
+const musicTime = () => music?.el?.currentTime || 0;
+
 export const sfx = {
   blip: () => tone(660 + Math.random() * 60, 0.03, { vol: 0.025 }),
   select: () => tone(880, 0.05, { vol: 0.04 }),
@@ -105,4 +184,15 @@ export const sfx = {
   evolveBurst: () => { noise(0.7, { vol: 0.09, from: 6000, to: 200, q: 0.5 }); tone(160, 0.5, { type: 'sine', vol: 0.09, slide: -110 }); tone(1568, 0.5, { type: 'triangle', vol: 0.04, slide: 400 }); },
   evolveFanfare: () => [[523, 0, .12], [659, .12, .12], [784, .24, .12], [1046, .36, .3], [784, .7, .12], [1046, .84, .6]].forEach(([f, d, len]) => { tone(f, len, { type: 'square', vol: 0.035, delay: d }); tone(f / 2, len, { type: 'triangle', vol: 0.05, delay: d }); tone(f * 1.5, len, { type: 'sine', vol: 0.015, delay: d }); }),
   sad: () => { tone(392, 0.12, { type: 'triangle' }); tone(330, 0.18, { type: 'triangle', delay: 0.12 }); },
+  // Meredith: the portal's whomp whomp zap, the stage alarm and a lightning crack.
+  portal: () => {
+    tone(90, 0.45, { type: 'sine', vol: 0.09, slide: 120 });
+    tone(90, 0.45, { type: 'sine', vol: 0.09, slide: 120, delay: 0.5 });
+    tone(1800, 0.25, { type: 'sawtooth', vol: 0.04, slide: -1500, delay: 1.0 });
+    noise(0.3, { vol: 0.06, from: 8000, to: 600, q: 0.6, delay: 1.0 });
+  },
+  alarm: () => [0, .3, .6].forEach(d => { tone(880, 0.14, { type: 'square', vol: 0.03, delay: d }); tone(660, 0.14, { type: 'square', vol: 0.03, delay: d + 0.15 }); }),
+  zap: () => { noise(0.25, { vol: 0.08, from: 9000, to: 300, q: 0.5 }); tone(1400, 0.2, { type: 'sawtooth', vol: 0.03, slide: -1200 }); },
+  ambience: (opts, o) => ambience(opts, o),
+  musicTime: () => musicTime(),
 };
