@@ -260,6 +260,10 @@
   Hand-tuned bosses set `fixed: true` on the enemy (the Premier's team).
   Evolution levels: Princess 14 (unchanged), Marty 18, Salami and Spooky 20,
   Poppy, Stanley and Girlie 22, Rusty, Chloe and Ziggy 24 (tuning.js).
+- Scroll cue (`ui/scrollhint.js`, started in main.js): any panel matching
+  `SCROLLERS` with more below gets a faded bottom edge and a bobbing "More
+  below" chip pinned to its bottom; tapping it scrolls. Add new scrolling
+  panels' selectors to `SCROLLERS`.
 - `node tools/export-missing-templates.mjs` (from artifacts/project-princess)
   boots the game headless and writes a template PNG for every enemy, object,
   townsperson and item that has none yet. It only adds files.
