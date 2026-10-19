@@ -72,6 +72,38 @@ const GUM = {
 
 const TENT = { orange: '#e8742a', blue: '#3a6ac8', green: '#3a9a4a', purple: '#7a4ab0', grey: '#8a8e98', red: '#c8342a', yellow: '#e8c030', brown: '#8a5a32', teal: '#2a9a9a' };
 
+// The crew's couch, from Seb's photo: cream buttoned cushions, teak arms and
+// frame, and the long timber bar on black posts right behind it.
+function crewCouch(p) {
+  const cream = '#ece2c8', teak = '#9a5a2a';
+  shadow(p, 48, 58, 92);
+  // The bar behind: a long light timber top with cup holes, on black posts
+  p.r('#1e1e22', 10, 6, 3, 18); p.r('#1e1e22', 84, 6, 3, 18);
+  box(p, '#d8b888', 0, 2, 96, 6, 1); p.r('#b89868', 0, 7, 96, 1);
+  for (const x of [12, 34, 58, 80]) p.r('#5a4a3a', x, 3, 4, 2);
+  // Backrest: one long buttoned cushion
+  box(p, cream, 8, 14, 80, 26, 3);
+  for (const [x, y] of [[24, 22], [48, 20], [72, 22], [36, 30], [60, 30]]) { p.r(shade(cream, -0.3), x, y, 2, 2); p.r(shade(cream, -0.12), x - 2, y + 2, 6, 1); }
+  // Seat cushions
+  for (let i = 0; i < 3; i++) box(p, shade(cream, 0.04), 10 + i * 26, 36, 26, 12, 3);
+  // The teak frame: open arms with a curled hand rest, and the rail under the seat
+  for (const x of [2, 86]) { p.r(teak, x + 2, 32, 4, 22); p.r(shade(teak, 0.25), x + 2, 32, 1, 22); box(p, shade(teak, -0.15), x, 28, 10, 5, 1); }
+  box(p, teak, 4, 48, 88, 5, 1);
+  p.r(shade(teak, -0.3), 8, 53, 4, 6); p.r(shade(teak, -0.3), 84, 53, 4, 6);
+}
+// Your tent if the pegs went in badly: sagging, leaning and flapping.
+function crappyTent(p) {
+  const c = TENT.orange;
+  shadow(p, 32, 58, 62);
+  for (let y = 0; y < 38; y++) { const half = Math.round(Math.sqrt(Math.max(0, 1 - ((38 - y) / 38) ** 2)) * 26), sag = y < 20 ? Math.round((20 - y) * 0.6) : 0; p.r(y < 4 ? shade(c, 0.3) : c, 26 - half - sag, 18 + y, half * 2 + 6, 1); }
+  p.r(shade(c, -0.25), 36, 30, 16, 3);                               // the saggy middle
+  for (let y = 36; y < 56; y++) { const half = Math.round((y - 36) * 0.4); p.r('#2a2422', 28 - half, y, half * 2, 1); }
+  for (let i = 0; i < 6; i++) p.r(shade(c, 0.15), 50 + i, 40 + i * 2, 6, 2);   // a flapping corner
+  p.r('#8a8e96', 1, 54, 2, 4);
+  p.r('#d8d4cc', 2, 50, 8, 1);
+  p.r('#8a8e96', 58, 50, 6, 2);                                      // a peg lying on the grass
+}
+
 export const MEREDITH = make({
   // A tall, straight blue gum: smooth pale bark and a high, thin canopy.
   mfgum: {
@@ -166,9 +198,10 @@ export const MEREDITH = make({
   },
   // Couches on the Amphitheatre hill. Everyone brings their own.
   mfcouch: {
-    foot: [3, 1], tex: [48, 30], variants: ['green', 'red', 'floral', 'brown', 'blue', 'mustard', 'kouch'],
+    foot: [3, 1], tex: [48, 30], variants: ['green', 'red', 'floral', 'brown', 'blue', 'mustard', 'crew'],
     paintHd(p, v) {
-      const C = { green: '#3a7a4a', kouch: '#2e7a52', red: '#b8343a', floral: '#e8d8b8', brown: '#7a4a2a', blue: '#3a5a9a', mustard: '#d8a02a' }[v] || '#3a7a4a';
+      if (v === 'crew') return crewCouch(p);
+      const C = { green: '#3a7a4a', red: '#b8343a', floral: '#e8d8b8', brown: '#7a4a2a', blue: '#3a5a9a', mustard: '#d8a02a' }[v] || '#3a7a4a';
       const W = 96;
       shadow(p, W / 2, 58, 92);
       box(p, C, 6, 18, 84, 22, 3);                          // backrest
@@ -178,11 +211,6 @@ export const MEREDITH = make({
       p.r(shade(C, -0.3), 14, 48, 68, 4);
       p.r('#2a1a10', 6, 52, 4, 6); p.r('#2a1a10', 86, 52, 4, 6);   // legs
       if (v === 'floral') for (let i = 0; i < 14; i++) { const x = 8 + Math.round(hash(i, 4) * 78), y = 20 + Math.round(hash(i, 7) * 28); p.r('#d8507a', x, y, 3, 3); p.r('#5a9a4a', x + 3, y + 1, 2, 2); }
-      if (v === 'kouch') {   // the crew's sign, on a broom handle behind the couch
-        p.r('#8a6236', 46, 0, 3, 20);
-        box(p, '#f4f0e6', 26, 0, 44, 13);
-        text(p, 'KOUCH HOLE 2', 29, 4, '#1e1e22');
-      }
     },
   },
   // The Pink Flamingo: a white marquee bar with a pink sign, at the back of the Amphitheatre.
@@ -274,7 +302,7 @@ export const MEREDITH = make({
       const W = 192, H = 312, cx = 96, cy = 116, R = 80;
       shadow(p, cx, H - 2, 160);
       // A-frame legs
-      const leg = (x0, x1) => { for (let y = cy; y < H - 30; y++) { const x = x0 + (x1 - x0) * (y - cy) / (H - 30 - cy); p.r('#e8e4dc', x, y, 6, 1); p.r('#b8b4ac', x + 4, y, 2, 1); } };
+      const leg = (x0, x1) => { for (let y = cy; y < H - 8; y++) { const x = x0 + (x1 - x0) * (y - cy) / (H - 8 - cy); p.r('#e8e4dc', x, y, 6, 1); p.r('#b8b4ac', x + 4, y, 2, 1); } };
       leg(94, 40); leg(92, 146);
       // Rim and spokes
       for (let a = 0; a < 360; a += 1) { const r = a * Math.PI / 180; p.r('#c8282e', cx + Math.cos(r) * R - 2, cy + Math.sin(r) * R - 2, 5, 5); }
@@ -289,8 +317,11 @@ export const MEREDITH = make({
       // The sign on top and the ticket booth
       box(p, '#c8282e', cx - 22, 18, 44, 16, 2); ctext(p, 'EYE', cx, 21, '#fff4b0', 2);
       p.r('#c8282e', cx - 1, 34, 2, 6);
-      box(p, '#e8e4dc', 18, H - 40, 156, 12, 3);
-      box(p, '#3a6ac8', 136, H - 70, 30, 34, 3); p.r('#e8f0ff', 140, H - 62, 22, 10); text(p, 'RIDES', 140, H - 48, '#fff4b0');
+      // The base on the ground: concrete footings, a loading platform and steps, the ticket booth
+      box(p, '#8a8e96', 30, H - 12, 18, 10, 2); box(p, '#8a8e96', 140, H - 12, 18, 10, 2);
+      box(p, '#e8e4dc', 18, H - 24, 156, 14, 3);
+      for (let i = 0; i < 3; i++) box(p, '#c8c4bc', 70 + i * 4, H - 10 + i * 0, 52 - i * 8, 4, 1);
+      box(p, '#3a6ac8', 136, H - 56, 30, 34, 3); p.r('#e8f0ff', 140, H - 48, 22, 10); text(p, 'RIDES', 140, H - 34, '#fff4b0');
     },
   },
   // Heaven Eleven, the festival's 24 hour corner store.
@@ -354,8 +385,9 @@ export const MEREDITH = make({
   },
   // Dome tents in every colour, with guy ropes out the sides.
   mftent: {
-    foot: [2, 2], tex: [32, 30], variants: Object.keys(TENT),
+    foot: [2, 2], tex: [32, 30], variants: [...Object.keys(TENT), 'good', 'crappy'],
     paintHd(p, v) {
+      if (v === 'crappy') return crappyTent(p);
       const c = TENT[v] || TENT.orange;
       shadow(p, 32, 58, 62);
       for (let y = 0; y < 44; y++) { const half = Math.round(Math.sqrt(Math.max(0, 1 - ((44 - y) / 44) ** 2)) * 28); p.r(y < 4 ? shade(c, 0.3) : c, 32 - half, 12 + y, half * 2, 1); }
@@ -365,6 +397,18 @@ export const MEREDITH = make({
       p.r('#d8d4cc', 31, 30, 2, 26);                                    // zip
       p.r('#d8d4cc', 2, 50, 8, 1); p.r('#d8d4cc', 54, 50, 8, 1);        // guy ropes
       p.r('#8a8e96', 1, 52, 2, 4); p.r('#8a8e96', 61, 52, 2, 4);
+      if (v === 'good') { p.r('#f5d03a', 6, 44, 2, 2); p.r('#f5d03a', 56, 44, 2, 2); p.r('#ffffff', 22, 16, 6, 2); }   // tight guy ropes, a bit of shine
+    },
+  },
+  // Your tent, still in its bag, on your patch of grass.
+  mftentbag: {
+    foot: [2, 2], tex: [32, 32], flat: true,
+    paintHd(p) {
+      shadow(p, 32, 40, 40);
+      box(p, '#e8742a', 14, 22, 36, 14, 3); p.r('#b8561e', 14, 26, 36, 2); p.blob(14, 29, 7, '#c8601e'); p.blob(50, 29, 7, '#c8601e');
+      p.r('#2a2a2a', 30, 22, 4, 14);
+      for (let i = 0; i < 4; i++) p.r('#8a8e96', 8 + i * 3, 42 + (i % 2) * 2, 2, 8);   // pegs on the grass
+      p.r('#3a3a40', 46, 40, 14, 3);   // the pole bag
     },
   },
   // A big family tunnel tent.
@@ -596,17 +640,20 @@ export const MEREDITH = make({
     },
   },
   // Jess's pet portal: a little orange tent, fairy lights and a very large battery.
+  // Jess's pet portal: a shoebox of a thing with fairy lights, a big battery
+  // and a purple spiral (the spinning spiral and flashes are drawn live).
   mfportal: {
-    foot: [2, 2], tex: [32, 34], variants: ['off', 'on', 'red'],
-    lights: v => v === 'off' ? [] : [{ x: 16, y: 18, r: 34, tint: v === 'red' ? 0xff2a2a : 0xa050ff }],
+    foot: [1, 1], tex: [16, 18], variants: ['off', 'on', 'red'],
+    lights: v => v === 'off' ? [] : [{ x: 8, y: 9, r: 22, tint: v === 'red' ? 0xff2a2a : 0xa050ff }],
     paintHd(p, v) {
-      const c = '#e8742a';
-      shadow(p, 32, 66, 62);
-      for (let y = 0; y < 40; y++) { const half = Math.round(Math.sqrt(Math.max(0, 1 - ((40 - y) / 40) ** 2)) * 22); p.r(y < 3 ? shade(c, 0.3) : c, 28 - half, 22 + y, half * 2, 1); }
-      for (let y = 40; y < 62; y++) { const half = Math.round((y - 40) * 0.45); p.r(v === 'off' ? '#2a2422' : v === 'red' ? '#ff4a3a' : '#c890ff', 28 - half, y, half * 2, 1); }
-      for (let i = 0; i < 9; i++) { const a = Math.PI + i * Math.PI / 8; p.r(['#f5d03a', '#f2509a', '#3ad0d8'][i % 3], 28 + Math.cos(a) * 22, 62 + Math.sin(a) * 40 - 2, 3, 3); }
-      box(p, '#2a2a30', 48, 40, 14, 22, 2); p.r(v === 'red' ? '#ff2a2a' : '#4ad85a', 51, 44, 8, 3); p.r('#c8282e', 52, 36, 3, 4); p.r('#2a2a2a', 56, 36, 3, 4);
-      p.r('#2a2a2a', 40, 58, 8, 1);
+      shadow(p, 16, 34, 30);
+      box(p, '#3a3a44', 3, 12, 26, 20, 2);                                  // the box
+      p.blob(16, 20, 8, '#1a1222');
+      const sp = v === 'off' ? '#4a3a5a' : v === 'red' ? '#ff4a3a' : '#c890ff';
+      for (let a = 0; a < 12; a += 0.25) p.r(sp, 16 + Math.cos(a) * a * 0.6, 20 + Math.sin(a) * a * 0.6, 2, 2);   // a little spiral
+      for (let i = 0; i < 7; i++) p.r(['#f5d03a', '#f2509a', '#3ad0d8'][i % 3], 4 + i * 4, 9 + (i % 2), 2, 2);   // fairy lights
+      box(p, '#2a2a30', 22, 2, 8, 10, 1); p.r(v === 'red' ? '#ff2a2a' : '#4ad85a', 24, 4, 4, 2);   // the battery
+      p.r('#c8282e', 24, 0, 2, 2);
     },
   },
   mfwatertank: {
@@ -618,6 +665,113 @@ export const MEREDITH = make({
       p.r('#c8d4dc', 2, 12, 60, 6);
       box(p, '#2a6ab8', 10, 40, 44, 14, 2); ctext(p, 'WATER', 32, 44, '#ffffff');
       p.r('#3a3a40', 14, 70, 4, 6); p.r('#3a3a40', 46, 70, 4, 6);
+    },
+  },
+  // The back of the One and Only Stage, as you see it from the hill above:
+  // the long roof, a black scrim, crew stairs, road cases and cables. The
+  // music comes out of it all night (the notes are drawn live).
+  mfstageback: {
+    foot: [14, 4], tex: [224, 100],
+    lights: [{ x: 60, y: 30, r: 40, tint: 0xff4aa0 }, { x: 112, y: 26, r: 50, tint: 0x6ab0ff }, { x: 164, y: 30, r: 40, tint: 0xffd04a }],
+    paintHd(p) {
+      const W = 448, H = 200;
+      shadow(p, W / 2, H - 2, 440);
+      // The roof from behind: corrugated iron sloping down towards us
+      p.r('#2e3238', 20, 10, 408, 46);
+      for (let x = 22; x < 426; x += 6) p.r('#40464c', x, 10, 2, 46);
+      p.r('#555b62', 20, 10, 408, 3); p.r('#1e2226', 20, 54, 408, 4);
+      // Light spill over the top of the roof from the front
+      p.ctx.globalAlpha = 0.25;
+      for (let i = 0; i < 5; i++) p.r(['#ff4aa0', '#6ab0ff', '#ffd04a'][i % 3], 50 + i * 80, 0, 40, 10);
+      p.ctx.globalAlpha = 1;
+      // The back wall: black scrim on timber, with the crew door
+      p.r('#141418', 36, 58, 376, 96); p.r('#22222a', 36, 58, 376, 3);
+      for (let x = 40; x < 410; x += 34) p.r('#1c1c22', x, 62, 2, 90);
+      box(p, '#8a6236', 30, 150, 388, 12, 3);
+      box(p, '#2a2a30', 200, 96, 48, 54, 2); p.r('#f5d03a', 236, 120, 4, 4); p.r('#f4f0e6', 206, 102, 36, 8); text(p, 'CREW', 212, 103, '#1e1e22');
+      // Stairs up to the crew door
+      for (let i = 0; i < 4; i++) box(p, '#9a9ea6', 196 - i * 4, 152 + i * 10, 56 + i * 8, 10, 2);
+      // The backs of the speaker stacks, cabled up
+      for (const sx of [10, 398]) { box(p, '#1e1e22', sx, 70, 40, 92, 3); for (let k = 0; k < 4; k++) p.r('#3a3a40', sx + 6, 80 + k * 20, 28, 8); }
+      // Road cases, a generator and a tangle of cable
+      const cs = [[70, 150, 40, '#2a2a30'], [116, 156, 30, '#3a3a44'], [290, 152, 44, '#2a2a30'], [340, 158, 28, '#5a4a3a']];
+      for (const [x, y, w, c] of cs) { box(p, c, x, y, w, 28, 2); p.r('#c8c8d0', x + 4, y + 4, w - 8, 2); p.r('#9a9ea6', x, y + 10, w, 2); }
+      box(p, '#e8c030', 372, 168, 40, 26, 2); text(p, 'GEN', 380, 176, '#1e1e22');
+      for (let x = 50; x < 400; x += 2) p.r('#141418', x, 192 + Math.round(Math.sin(x / 14) * 3), 2, 2);
+    },
+  },
+  // A run of fabric lanterns on a wire strung diagonally from the stage up the
+  // hill: 'r' slopes down to the right, 'l' down to the left. Each one is two
+  // tiles across and two down, so they join end to end. They glow at night.
+  mflanternd: {
+    foot: [2, 2], tex: [32, 60], variants: ['r-a', 'r-b', 'r-c', 'r-d', 'l-a', 'l-b', 'l-c', 'l-d'], above: true, solid: false,
+    lights: v => {
+      const r = v[0] === 'r', y0 = r ? 56 : 120, y1 = r ? 120 : 56, set = LANTERN_SETS[v[2]] || LANTERN_SETS.a;
+      return [0, 1].map(i => { const x = 10 + i * 32 + 7, wy = y0 + (y1 - y0) * x / 64; return { x: x / 2, y: (wy + 17) / 2, r: 14, tint: hex(LANTERN[set[i * 2]]) }; });
+    },
+    paintHd(p, v) {
+      const r = v[0] === 'r', set = LANTERN_SETS[v[2]] || LANTERN_SETS.a;
+      // The wire: from one top corner of the footprint to the opposite bottom corner (60 - 32 = 28 above it)
+      const y0 = r ? 56 : 120, y1 = r ? 120 : 56;
+      for (let x = 0; x < 64; x++) p.r('#2a2a2a', x, Math.round(y0 + (y1 - y0) * x / 64 - Math.sin(x / 64 * Math.PI) * 4) - 1, 1, 2);
+      [0, 1].forEach(i => {
+        const c = LANTERN[set[i * 2]], x = 10 + i * 32, wy = Math.round(y0 + (y1 - y0) * (x + 7) / 64), y = wy + 2;
+        p.r('#2a2a2a', x + 6, wy, 1, 3);
+        p.r(shade(c, -0.35), x + 1, y + 1, 12, 3);
+        p.r(c, x, y + 4, 14, 22); p.r(shade(c, 0.35), x + 3, y + 4, 3, 22); p.r(shade(c, -0.25), x + 11, y + 4, 3, 22);
+        for (let k = 8; k < 24; k += 6) p.r(shade(c, -0.15), x, y + k, 14, 1);
+        p.r(shade(c, -0.35), x + 1, y + 26, 12, 3);
+        p.r(shade(c, 0.1), x + 5, y + 29, 4, 4);
+      });
+    },
+  },
+  // The Pink Flamingo, close up: a big white rectangular marquee, open at the
+  // front, the bar along the back wall under pink bunting.
+  mfmarquee: {
+    foot: [18, 5], tex: [288, 128],
+    lights: [{ x: 70, y: 70, r: 40, tint: 0xff5aa8 }, { x: 144, y: 64, r: 50, tint: 0xffc8e0 }, { x: 218, y: 70, r: 40, tint: 0xff5aa8 }],
+    paintHd(p) {
+      const W = 576, H = 256;
+      shadow(p, W / 2, H - 2, 570);
+      // The roof: a long white gable, edge on
+      for (let y = 0; y < 40; y++) { const half = Math.round(160 + y * 3.2); p.r(y < 3 ? '#ffffff' : y % 8 === 0 ? '#e0dcd6' : '#f2f0ec', W / 2 - half, 4 + y, half * 2, 1); }
+      p.r('#c8c2ba', 20, 44, W - 40, 4);
+      // Inside: dim, the back wall, the bar and the bottles
+      p.r('#4a3a40', 26, 48, W - 52, 170); p.r('#5a4650', 26, 48, W - 52, 4);
+      for (let x = 40; x < W - 40; x += 16) p.r(['#f2509a', '#ffffff', '#f5d03a'][(x / 16) % 3 | 0], x, 52, 10, 8);   // bunting
+      for (let x = 60; x < W - 60; x += 10) p.r(['#f2509a', '#f5d03a', '#e8e4dc', '#3ad0d8'][(x / 10) % 4 | 0], x, 96, 6, 14);   // bottles
+      p.r('#8a6a4a', 50, 110, W - 100, 4); p.r('#8a6a4a', 50, 80, W - 100, 3);
+      ctext(p, 'PINK FLAMINGO', W / 2, 66, '#ffd0e4', 2);
+      box(p, '#f26aa8', 50, 140, W - 100, 44, 3);                    // the bar front
+      p.r('#f78ec0', 50, 140, W - 100, 4); p.r('#c84a88', 50, 176, W - 100, 8);
+      for (let x = 70; x < W - 70; x += 60) { p.r('#ffffff', x, 150, 30, 20); p.r('#f2509a', x + 4, 154, 22, 12); }   // flamingo panels
+      // Bar stools
+      for (let x = 70; x < W - 60; x += 48) { p.r('#2a2a30', x + 6, 196, 3, 20); p.blob(x + 8, 194, 8, '#f26aa8'); }
+      // The white side walls, rolled up, and the poles
+      p.r('#f2f0ec', 6, 44, 22, 190); p.r('#d8d4ce', 22, 44, 6, 190); p.r('#f2f0ec', W - 28, 44, 22, 190); p.r('#d8d4ce', W - 28, 44, 6, 190);
+      for (const x of [26, 190, 380, W - 30]) { p.r('#9aa0a8', x, 44, 4, 196); p.r('#c8ccd4', x, 44, 1, 196); }
+      for (let x = 30; x < W - 30; x += 40) p.blob(x, 46, 5, '#e0dcd6');   // rolled wall
+    },
+  },
+  // The view from the top of the Sunset Strip: the sky, the hills and the
+  // paddocks rolling away east (a cutscene backdrop).
+  mfvista: {
+    foot: [30, 1], tex: [480, 230], flat: true,
+    paintHd(p) {
+      const W = 960, H = 460;
+      // The sky just before dawn, from deep blue to a pink and gold horizon
+      const sky = ['#1a1a3a', '#232650', '#2e3462', '#3e3e72', '#5a4a80', '#7a5a8a', '#a0628a', '#c87088', '#e88a7a', '#f2a870', '#f5c878'];
+      for (let y = 0; y < 300; y++) p.r(sky[Math.min(sky.length - 1, Math.floor(y / 300 * sky.length))], 0, y, W, 1);
+      for (let i = 0; i < 70; i++) p.r('#f4f0e6', Math.round(hash(i, 3) * W), Math.round(hash(i, 8) * 140), 2, 2);   // the last stars
+      // Far hills, then nearer ones, then the paddocks
+      for (let x = 0; x < W; x++) {
+        const h1 = 290 + Math.round(Math.sin(x / 80) * 10 + Math.sin(x / 23) * 4), h2 = 320 + Math.round(Math.sin(x / 130 + 2) * 14);
+        p.r('#5a4a6a', x, h1, 1, 40); p.r('#3e3a4a', x, h2, 1, 30);
+      }
+      for (let y = 350; y < H; y++) p.r(y % 14 < 2 ? '#4a5a2e' : y < 380 ? '#4e5a34' : y < 410 ? '#5a6a3a' : '#6a7a42', 0, y, W, 1);
+      for (let i = 0; i < 40; i++) { const x = Math.round(hash(i, 5) * W), y = 352 + Math.round(hash(i, 9) * 40); p.blob(x, y, 4 + Math.round(hash(i, 2) * 5), '#2e3a24'); }   // trees
+      for (let x = 0; x < W; x += 30) { p.r('#3a2a1a', x, 420, 3, 30); }   // the fence
+      p.r('#3a2a1a', 0, 426, W, 2); p.r('#3a2a1a', 0, 440, W, 2);
     },
   },
 });

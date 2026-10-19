@@ -83,8 +83,7 @@ import { shelfVariant } from '../data/trophies.js';
 import { trophyShelf } from '../systems/trophy-shelf.js';
 import { bowlsClubChoices, bowlsClubAction } from '../systems/bowls-club.js';
 import { maybeEventPrompt } from '../systems/event-prompts.js';
-import { isMeredith, mfPets, mfSpotActive, mfClock, mfInvite, mfEnter, mfInteract, mfTalkNpc, mfTalkPet, mfChatLines, mfLost, mfExitBlock, carryCouch } from '../systems/meredith.js';
-import { MF_TRAINERS } from '../data/meredith.js';
+import { isMeredith, mfPets, mfSpotActive, mfClock, mfInvite, mfEnter, mfInteract, mfTalk, mfTalkPet, mfChatLines, mfLost, mfExitBlock, carryCouch } from '../systems/meredith.js';
 import { controls } from '../systems/controls.js';
 import { darkness, isNight, timeLabel } from '../systems/clock.js';
 import { sfx } from '../systems/sfx.js';
@@ -319,14 +318,17 @@ export class WorldScene extends Phaser.Scene {
       if (def.roof) { img.setDepth(8500 + y / 1000); this.roofs.push({ img, x0: o.x * T, y0: o.y * T, x1: (o.x + o.w) * T, y1: (o.y + o.h) * T }); }
       if (SEATS.includes(o.kind) && !o.forSale) {   // somewhere to sit: one place per tile of a bench
         const n = ['bench', 'mfcouch', 'mfhaybale'].includes(o.kind) ? o.w : 1, slots = [];
-        for (let i = 0; i < n; i++) slots.push({ x: (o.x + (n > 1 ? i + 0.5 : o.w / 2)) * T, bottom: (o.y + o.h) * T - ({ stool: 7, armchair: 6, mfcouch: 7, mfchair: 6, mfcampchair: 6, mfhaybale: 8 }[o.kind] || 3), front: (o.y + o.h) * T + 12, taken: null });
+        // depth: whoever sits draws in front of the seat (couch backs and arms stay behind them)
+        for (let i = 0; i < n; i++) slots.push({ x: (o.x + (n > 1 ? i + 0.5 : o.w / 2)) * T, bottom: (o.y + o.h) * T - ({ stool: 7, armchair: 6, mfcouch: 7, mfchair: 6, mfcampchair: 6, mfhaybale: 8 }[o.kind] || 3), front: (o.y + o.h) * T + 12, depth: y + 0.5, taken: null });
         this.seats.push(...slots);
         const target = { kind: 'seat', slots, x, y: y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots', quiet: true };
         this.interactables.push(target);
         this.attachObjectTap(img, [target]);
         continue;
       }
-      if (o.interact) this.interactables.push({kind:o.interact, x, y:y-6, r:24, bubble:'fx-bubble-dots'});
+      // Something you walk up to (wide ones, like the Pink Flamingo bar, all along the front)
+      if (o.interact && o.w > 4) for (let tx = o.x + 1; tx < o.x + o.w; tx += 3) this.interactables.push({ kind: o.interact, x: (tx + 0.5) * T, y: y - 2, r: 22, bubble: 'fx-bubble-dots' });
+      else if (o.interact) this.interactables.push({kind:o.interact, x, y:y-6, r:24, bubble:'fx-bubble-dots'});
       else if (o.forSale) this.interactables.push({ kind: 'forsale', id: o.forSale, x, y: def.flat ? (o.y + o.h / 2) * T : y - 4, r: Math.max(16, o.w * 8), bubble: 'fx-bubble-dots' });
       else if ((o.kind === 'sign' || o.kind === 'plaque') && o.text) this.interactables.push({ kind: 'sign', x, y: y - 6, lines: o.text, bubble: 'fx-bubble-read' });
       else if (o.travel) this.interactables.push({ kind: 'travel', x, y: y - 6, bubble: 'fx-bubble-read' });
@@ -795,7 +797,7 @@ export class WorldScene extends Phaser.Scene {
     this.player.setVelocity(0, 0);
     this.facePlayerTo(t.ref ? t.ref.x : t.x, t.ref ? t.ref.y : t.y);
     if (t.kind === 'pet') return this.talkToPet(t.ref);
-    if (t.kind === 'mfbus' || t.kind === 'mftent') return mfInteract(this, t);
+    if (t.kind === 'mfbus' || t.kind === 'mftent' || t.kind === 'mfbar') return mfInteract(this, t);
     if (t.kind === 'showgroom') return showPresentation(this);
     if (this.regionId === 'bakeoff' && t.kind === 'npc') return bakeNpc(this, t.ref);
     if (['bakeprep', 'bakeoven', 'bakedecor', 'bakejudge'].includes(t.kind)) return bakeStation(this, t.kind);
@@ -820,7 +822,7 @@ export class WorldScene extends Phaser.Scene {
     if (t.kind === 'cook') return this.cook();
     if (t.kind === 'shopfront') {
       // Walk up to the shop itself (Coles) and buy straight away, while it is staffed.
-      const keeper = this.npcs.find(n => n.id === t.keeper && !n.gone);
+      const keeper = !t.keeper || this.npcs.find(n => n.id === t.keeper && !n.gone);   // no keeper: always open (Heaven Eleven)
       if (!keeper) return ui.say([`${SHOPS[t.shop]?.name || 'The shop'} is closed. The lights are off and the trolleys are chained up.`]);
       return ui.shop(t.shop);
     }
@@ -1218,7 +1220,7 @@ export class WorldScene extends Phaser.Scene {
     const opts = { name: info.name, portrait: npcIcon(npc.id) };
     npc.pause(5); npc.faceTowards(this.player.x, this.player.y);
     if(npc.id.startsWith('show'))return this.showCompetitor(npc,opts);
-    if (this.meredith && await mfTalkNpc(this, npc, opts)) return;
+    if (this.meredith) return mfTalk(this, npc, opts);   // festival chat and menus only (systems/meredith.js)
     // Before the Marty match, Trish and Gordon still take a present (the house finds are for them).
     if ((npc.id === 'trish' || npc.id === 'gordon') && !state.isFound('marty')) {
       const f0 = state.friend(npc.id), gifts = state.bagItems().filter(id => !ITEMS[id].story && !ITEMS[id].deco);
@@ -1242,8 +1244,7 @@ export class WorldScene extends Phaser.Scene {
       const gordon = this.npcs.find(n => n.id === 'gordon' && !n.gone);
       if (gordon) return this.challenge(gordon, TRAINERS.gordon, { name: 'Trish and Gordon', portrait: npcIcon('trish') });
     }
-    // At the festival only its own goers play-fight; the Melbourne crew are on holiday.
-    const trainer = this.meredith && !MF_TRAINERS[npc.id] ? null : TRAINERS[npc.id];
+    const trainer = TRAINERS[npc.id];
     const done = (trainer?.prize && state.isFound(trainer.prize)) || (trainer?.once && state.data.beaten[npc.id]);
     // Trainers you have never beaten go straight to their challenge.
     // (Ambushers, like the karaoke dad, wait for their visit: until then they just chat.)

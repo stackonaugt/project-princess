@@ -12,6 +12,7 @@ import { bus } from '../bus.js';
 import { form, petTex } from './forms.js';
 import { GEAR } from '../data/gear.js';
 import { SPELLS } from '../data/east.js';
+import { MF_COCKTAIL } from '../data/meredith.js';
 import { HEROES } from '../data/heroes.js';
 import { state } from './state.js';
 import { BALANCE } from '../config.js';
@@ -38,7 +39,12 @@ export function statsAt(base, lv) {
 // every pet on your team (data/east.js).
 export function spellBonus() {
   const sp = state.data.spell;
-  return sp && sp.day === state.data.day ? SPELLS[sp.id]?.bonus || {} : {};
+  const out = { ...(sp && sp.day === state.data.day ? SPELLS[sp.id]?.bonus || {} : {}) };
+  // A Pink Flamingo from the bar at Meredith lasts the day too.
+  if (state.data.meredith?.cocktail === state.data.day) {
+    for (const [k, v] of Object.entries(MF_COCKTAIL.bonus)) out[k] = k === 'crit' || k === 'regen' ? (out[k] || 0) + v : (out[k] || 1) * v;
+  }
+  return out;
 }
 
 // Stats at a level, with the pet's gear bonus (and today's spell) on top.

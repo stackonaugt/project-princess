@@ -13,6 +13,7 @@ export const itemIcon = (id, size = 32) => scene ? frameDataURL(scene, `item-${i
 export const npcIcon = id => {
   if (customURL[`npcportrait-${id}`]) return customURL[`npcportrait-${id}`];
   if (!scene) return '';
+  if (scene.meredith && custom.has(`npc-${id}-meredith`)) return frameDataURL(scene, `npc-${id}-meredith`, 0, 64);   // festival outfit
   return custom.has(`npc-${id}`) ? frameDataURL(scene, `npc-${id}`, 0, 64) : frameDataURL(scene, `npc-${id}-down`, 0, 64);
 };
 // Head and shoulders: the top square of a person's (tall) sprite, scaled up

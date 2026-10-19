@@ -21,7 +21,7 @@ export function buildMfBlueGums() {
   b.put('mfesky', 25, 14, { v: 'white' });
   b.npc('mfgazebo', 24, 17, { face: 'down' });
 
-  camp(b, [8, 8, 12, 9], 0.75); camp(b, [31, 7, 11, 11], 0.75); camp(b, [1, 1, 48, 5], 0.55); camp(b, [1, 27, 23, 6], 0.6); camp(b, [30, 27, 19, 6], 0.6);
+  camp(b, [8, 8, 12, 9], 0.95); camp(b, [31, 7, 11, 11], 0.95); camp(b, [1, 1, 48, 5], 0.9); camp(b, [1, 27, 23, 6], 0.9); camp(b, [30, 27, 19, 6], 0.9);
   gums(b, [0, 0, 50, 34], 0.1, ['blue']);
   b.put('mfportaloo', 45, 21); b.put('mfportaloo', 46, 21);
   b.wildGrass(4, 16, 3, 3); b.wildGrass(45, 15, 3, 3);

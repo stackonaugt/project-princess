@@ -14,6 +14,7 @@ import { WEEKDAYS, weekday, MEETING } from '../data/routines.js';
 import { SHOW_DAY } from '../data/dog-show.js';
 import { POINTS_PER_HEART } from '../config.js';
 import { sfx } from '../systems/sfx.js';
+import { MF_ZONES, freshMeredith } from '../data/meredith.js';
 
 const KEY = 'project-princess-cheats';
 export function cheatsOn() {
@@ -52,6 +53,16 @@ export function openCheats(panel, close) {
           btn('Go to the council meeting', () => { while (weekday(d.day) !== 'Tuesday') d.day++; d.minutes = MEETING[0] + 1; go('chamber', { entry: 'door' }); }),
           btn('Go to the bake-off', () => { while (weekday(d.day) !== 'Saturday') d.day++; d.minutes = Math.max(d.minutes, 10 * 60); delete d.flags.bakeoffWeek; go('moreland', { entry: 'north' }); }),
           btn('Send the Meredith bus', () => { d.flags.meredith = true; go('allen', { entry: 'house' }); }),
+          // Start Meredith again from the invitation: your team and hero come back, the festival resets.
+          btn('Restart Meredith from the start', () => {
+            const m = d.meredith || {};
+            if (m.partyBefore) state.setParty(m.partyBefore.filter(id => state.isFound(id)));
+            if (m.heroBefore) world().setHero(m.heroBefore);
+            if (m.stage) state.healAll();
+            d.meredith = freshMeredith(); d.flags.meredith = true;
+            for (const z of [...MF_ZONES, 'allen']) invalidateMap(z);
+            go('allen', { entry: 'house' });
+          }),
           btn('Go to the dog show', () => { while (weekday(d.day) !== SHOW_DAY.day) d.day++; d.minutes = SHOW_DAY.from + 60; d.flags.trainingStarted = true; go('exhibition', { entry: 'door' }); }))),
       h('div', { class: 'note' }, h('h4', {}, 'Stuff'),
         h('div', { class: 'row' },

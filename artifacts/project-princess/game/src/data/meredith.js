@@ -27,13 +27,21 @@
 import { authoredValue } from '../authoring/overrides.js';
 
 // ------------------------------------------------------------ the festival grounds
-export const MF_ZONES = ['mfreception', 'mfbush', 'mfamphi', 'mftop', 'mfsunset', 'mfbluegums', 'mfpines'];
+export const MF_ZONES = ['mfreception', 'mfbush', 'mfamphi', 'mftop', 'mfsunset', 'mfbluegums', 'mfpines', 'mfflamingo', 'mfstagefront', 'mfsunview'];
+// Cutscene-only places: you are taken there for a scene, then brought back.
+export const MF_CUTSCENES = ['mfstagefront', 'mfsunview'];
 export const isMeredith = id => MF_ZONES.includes(id);
 // How far night one has got (state.data.meredith.stage).
 export const MF_STAGE = { invited: 1, arrived: 2, wristband: 3, pitched: 4, carrying: 5, night: 6, hunt: 7, sunrise: 8, done: 9, home: 10 };
 
 // The save (state.data.meredith): stage, where each pet landed, who is back.
-export const freshMeredith = () => ({ stage: 0, scatter: {}, got: [], partyBefore: null, heroBefore: null, nightSeen: false, glimpsed: false, lostPrincess: false, cursed: false });
+//   tent      how well you pitched it: 'good' or 'crappy' (null till it is up)
+//   heard     pets someone has told you about (their To Do line gets specific)
+//   quest     items handed over for pets: { [petId]: true }
+//   show      the set you are watching in front of the stage: 'mamaking', then 'icekids'
+//   cocktail  the day you drank a Pink Flamingo (the team's power-up for that night)
+export const freshMeredith = () => ({ stage: 0, scatter: {}, got: [], partyBefore: null, heroBefore: null, nightSeen: false, glimpsed: false, lostPrincess: false, cursed: false,
+  tent: null, heard: [], quest: {}, show: null, mamaDone: false, sunNoticed: false, eyeSpins: 0, cocktail: -1 });
 
 // How many festival goers mill about, by day and by night.
 export const MF_BUSY = {
@@ -48,22 +56,22 @@ export const MF_CLOCK = { slow: 3, dayStart: 13 * 60, dayHold: 18 * 60 + 30, nig
 // Where the scattered pets land, and how you get each one back:
 //   wild   the pet is spooked and play-fights you            (pet stands in the zone)
 //   goer   a festival goer reckons it is theirs              (beat them in a battle)
-//   crowd  a friend has the pet, somewhere in the night crowd (find them before they move)
+//   crowd  a friend has the pet, somewhere in the dark crowd (find them with your torch)
 //   dance  a dancer will only hand it back after a dance off (in-world rhythm game)
+//   eye    the pet is riding the Meredith Eye                 (spin it till their seat comes up)
+//   quest  someone wants something first (`want`, an item); `fight` means they still battle you after
 export const MF_SCATTER = {
   salami: { zone: 'mfamphi', how: 'crowd', by: 'rose' },
   poppy: { zone: 'mfbush', how: 'wild', at: [30, 30] },
-  stanley: { zone: 'mftop', how: 'goer', by: 'mfeyeguy' },
-  rusty: { zone: 'mfamphi', how: 'dance', by: 'mfshuffle' },
+  stanley: { zone: 'mftop', how: 'eye', by: 'mfeyeguy' },
+  rusty: { zone: 'mfflamingo', how: 'dance', by: 'mfshuffle' },
   chloe: { zone: 'mfpines', how: 'wild', at: [33, 14] },
-  marty: { zone: 'mfbluegums', how: 'goer', by: 'mfgazebo' },
-  girlie: { zone: 'mfsunset', how: 'wild', at: [36, 20] },
-  ziggy: { zone: 'mfreception', how: 'goer', by: 'mfmankey' },
-  emilio: { zone: 'mfbush', how: 'wild', at: [11, 27] },
+  marty: { zone: 'mfbluegums', how: 'quest', by: 'mfgazebo', want: 'pegs' },
+  girlie: { zone: 'mfsunset', how: 'quest', by: 'mfsunsal', want: 'flamingo' },
+  ziggy: { zone: 'mfreception', how: 'quest', by: 'mfmankey', want: 'festpie', fight: true },
 };
 // Pets without their own line above take the next of these, in order.
 export const MF_SPARE = [
-  { zone: 'mfsunset', how: 'goer', by: 'mfsunsal' },
   { zone: 'mfpines', how: 'goer', by: 'mfhaybale' },
   { zone: 'mfbush', how: 'goer', by: 'mfglitter' },
   { zone: 'mfamphi', how: 'goer', by: 'mfcouchking' },
@@ -71,8 +79,24 @@ export const MF_SPARE = [
   { zone: 'mftop', how: 'wild', at: [12, 26] },
   { zone: 'mfbluegums', how: 'wild', at: [20, 12] },
 ];
-// The pets who are not at the festival: Princess and Spooky stay home (part 2).
-export const MF_STAY_HOME = ['princess', 'spooky', 'toby'];
+// No pets come on the bus: they are all at home. The portal pulls every one
+// of them to the festival except these: Spooky stays with the twins (part 2),
+// Emilio stays on Edwardes Lake, and Toby is Jess's. Princess is pulled in too,
+// but nobody finds her till the sunrise.
+export const MF_STAY_HOME = ['princess', 'spooky', 'emilio', 'toby'];
+
+// A Pink Flamingo cocktail, drunk at the bar: the whole team's power-up for the night.
+export const MF_COCKTAIL = { price: 12, bonus: { attack: 1.15, special: 1.15, speed: 1.1, crit: 0.05 } };
+
+// Seb's music, in assets/audio/meredith/. The day and night lists play round
+// the festival one after another, on repeat; the Amphitheatre gets them loudest.
+// An empty list or name plays the synth stand-in. The Ice Kids' curse waits
+// until their track has played `curseAfter` seconds.
+export const MF_MUSIC = {
+  day: ['daytime-music1.mp3', 'daytime-music2.mp3', 'daytime-music3.mp3', 'daytime-music4.mp3'],
+  night: ['nighttime-music1.mp3', 'nighttime-music2.mp3', 'nighttime-music3.mp3', 'nighttime-music4.mp3'],
+  mamaking: 'mama-king.mp3', icekids: 'frost-kids.mp3', curseAfter: 40,
+};
 
 // ------------------------------------------------------------ people
 // Seb's own sprites live in assets/sprites/npcs/<id>.png. These looks are the
@@ -93,7 +117,6 @@ export const MF_NPCS = {
   // Festival staff and goers (made up)
   mfgate: { name: 'Wristband Volunteer', look: { hair: '#2a1a10', hairStyle: 'bun', skin: '#d8a07a', shirt: '#e8c030', hivis: true, pants: '#3a3a44', shoes: '#f4f4f0' } },
   mfhelper: { name: 'Helper Hut Helper', look: { hair: '#d8d4cc', hairStyle: 'short', skin: '#f2c8a8', shirt: '#e8302a', hivis: true, pants: '#3a4a3a', shoes: '#4a3a2a', hat: '#d8c89a' } },
-  mfheaven: { name: 'Heaven Eleven Clerk', shop: 'heaveneleven', look: { hair: '#5a3a1e', hairStyle: 'spiky', skin: '#e8b48a', shirt: '#3a6ab0', apron: '#f4f4f0', pants: '#2a2a30', shoes: '#1a1a1a' } },
   mfeyeguy: { name: 'Eye Ride Operator', look: { hair: '#1e1612', hairStyle: 'cap', cap: '#e8c030', skin: '#c88a5a', shirt: '#c8302a', pants: '#3a3a30', shoes: '#2a2a2a', stubble: true } },
   mfgazebo: { name: 'Gazebo Gary', look: { hair: '#8a6a42', hairStyle: 'mullet', skin: '#e8b48a', shirt: '#f4f0e6', jersey: ['#1e3a8a', '#f4f0e6'], pants: '#3a5a8a', shoes: '#f4f4f0', sunglasses: '#3a8ac8', shades: 'wrap' } },
   mfmankey: { name: 'Tom Mankeys Local', look: { hair: '#e8e4dc', hairStyle: 'messybun', skin: '#f2c8a8', shirt: '#7a3aa8', coat: '#5a2a2a', pants: '#2a2a30', shoes: '#c8443a' } },
@@ -106,6 +129,13 @@ export const MF_NPCS = {
   mficesinger: { name: 'Ice Kids Singer', look: { hair: '#f0e8cc', hairStyle: 'long', skin: '#f6dccb', shirt: '#f2efe4', scarf: '#8e8e94', lips: '#c01e2a', pants: '#e8e4d8', shoes: '#1a1a1a' } },
   mficeguitar: { name: 'Ice Kids Guitarist', look: { hair: '#3a9cb8', hairStyle: 'long', skin: '#f2d2bc', shirt: '#f6f6f2', collar: true, pants: '#1e1e22', shoes: '#1a1a1a' } },
   mfbluecrew: { name: 'The Blue Drink Crew', look: { hair: '#2a1a10', hairStyle: 'short', skin: '#f2c79a', shirt: '#3a7ad8', hood: '#3a7ad8', pants: '#3a7ad8', shoes: '#f4f4f0' } },
+  // Mama King, Nathan's favourite band, on before the Ice Kids (made up looks).
+  mfmama1: { name: 'Mama King Singer', look: { hair: '#2a1a10', hairStyle: 'curly', skin: '#c88a5a', shirt: '#e8c030', shirtPattern: 'leopard', shirtAccent: '#2a1a10', pants: '#1e1e22', shoes: '#c8302a', hoops: '#e8c040', lips: '#c01e2a', holding: 'mic' } },
+  mfmama2: { name: 'Mama King Bassist', look: { hair: '#d8d4cc', hairStyle: 'mullet', skin: '#f2c8a8', shirt: '#7a3aa8', pants: '#2a2a30', shoes: '#1a1a1a', sunglasses: '#1e1e24', shades: 'round', moustache: '#d8d4cc', holding: 'bass' } },
+  // The Dickheads the Ice Kids summon: bucket hats, singlets, cargo shorts. Scenery only for now.
+  mfdick1: { name: 'Dickhead', look: { hair: '#3a2616', hairStyle: 'short', skin: '#f2c8a8', shirt: '#f4f4f0', pants: '#8a7a52', shoes: '#f4f4f0', hat: '#3a6ac8', sunglasses: '#1e1e24', shades: 'wrap' } },
+  mfdick2: { name: 'Dickhead', look: { hair: '#c8a060', hairStyle: 'short', skin: '#e8b48a', shirt: '#c8302a', pants: '#5a5a3a', shoes: '#2a2a2a', hat: '#f5d03a', sunglasses: '#3a8ac8', shades: 'wrap' } },
+  mfdick3: { name: 'Dickhead', look: { hair: '#1e1612', hairStyle: 'short', skin: '#d8a07a', shirt: '#1e1e22', pants: '#7a6a4a', shoes: '#f4f4f0', hat: '#2a2a2a', sunglasses: '#1e1e24', shades: 'wrap' } },
 };
 
 export const MF_PEOPLE = {
@@ -125,7 +155,7 @@ export const MF_PEOPLE = {
     lines: [
       ['Grab a chair, any chair. Except that one. That one has a hole in it. Actually that one is fine.'],
       ['I brought sunnies, a hat and one sock. Two out of three is good for Meredith.'],
-      ['Kouch Hole 2. Because Kouch Hole 1 was a lot of couch and not enough hole.'],
+      ['The couch is the heart of the camp. The camp is just where we keep the tents.'],
     ],
   },
   charlotte: {
@@ -146,46 +176,51 @@ export const MF_PEOPLE = {
     ],
   },
   mfgate: { role: 'Wristband tent, Meredith Reception', lines: [['Welcome to the Sup! Wristband on, rubbish in the bins, and no dickheads.']] },
-  mfhelper: { role: 'Helper Hut volunteer, Top Camp', lines: [['Lost a mate? Lost a shoe? Lost the plot? We can help with two of those.']] },
-  mfheaven: { role: 'Heaven Eleven, the festival corner store', lines: [['Open all day and all night. Ice, sunscreen, socks and pies. What else is there?']] },
+  mfhelper: {
+    role: 'Helper Hut volunteer, Top Camp', lines: [['Lost a mate? Lost a shoe? Lost the plot? We can help with two of those.']],
+    pegs: ['Tent pegs? We have a whole bucket. People leave them behind every year.', '*The volunteer hands you a fistful of spare tent pegs.*'],
+  },
   mfeyeguy: {
     role: 'Runs the Meredith Eye', lines: [['The Eye goes round. That is the main thing it does.']],
-    battle: {
-      challenge: ['The Eye operator has a little dog on a lead. It is not his dog.', '"Found him under the Eye. He went round twice. He is mine now. Finders keepers."'],
-      ask: 'Battle for him?', yes: 'He is coming home', no: 'Not yet',
-      win: ['"Fair enough. He did look at you like he knew you." He hands over the lead.'],
-      lose: ['"Go round again, mate. Clear your head." He does not hand over the lead.'],
-      again: ['"Another spin? Of battling? Go on then."'],
+    eye: {
+      intro: ['There is a little dog up in one of the seats. Got on by himself. Every time I stop it, he will not get off.', 'Spin her round and see where she lands. Some seats have a prize. Some have a problem. One has a dog.'],
+      ask: 'Spin the Meredith Eye?', yes: 'Spin it', no: 'Not yet',
+      reward: '*The Eye stops. Somebody left a present in seat {n}.*',
+      challenge: '*The Eye stops on seat {n}. Something in it does not want to get off.*',
+      again: 'Spin again?',
+      stanley: ['*The Eye creaks to a stop. Seat {n}. Stanley is sitting in it like he paid for a ticket.*', '*He steps down onto the platform, looks at you, and leans on your leg.*'],
+      after: ['He went round about forty times. Did not blink once. Proper little customer.'],
     },
   },
   mfgazebo: {
     role: 'Owns the biggest gazebo in Blue Gums', lines: [['Twelve pegs. Four ropes. One gazebo. It has never once stayed up.']],
-    battle: {
-      challenge: ['A man is sitting under a collapsed gazebo with a familiar curly dog.', '"This one dropped out of the sky onto my esky. Universe says he is mine."'],
-      ask: 'Battle Gazebo Gary?', yes: 'Let\'s go', no: 'In a minute',
-      win: ['"The universe was wrong. It happens." He pats the dog goodbye. The gazebo falls down again.'],
-      lose: ['"See? The universe." The gazebo falls on him. He does not seem to mind.'],
-      again: ['"Rematch? Hold this rope first."'],
+    quest: {
+      ask: ['A man is sitting under a collapsed gazebo with a familiar curly dog on his lap.', 'This one dropped out of the sky onto my esky. He is holding the gazebo down for me. I cannot let him go till I have more pegs.', 'The Helper Hut at Top Camp has spare pegs. Bring me some and he is yours.'],
+      waiting: ['Pegs, mate. The Helper Hut at Top Camp. Then the dog is all yours.'],
+      give: ['Pegs! Beautiful. *He hammers them in. The gazebo stays up for nearly a minute.*', 'There you go, mate. He is a good weight. Best gazebo anchor I ever had.'],
     },
   },
   mfmankey: {
     role: 'Tom Mankeys, under the red neon X', lines: [['Tom Mankeys is the best camp. We have a neon X. What do you have?']],
+    quest: {
+      ask: ['Someone under the neon X is feeding a tiny black and white cat bits of jaffle.', 'He came out of a purple light. He has eaten all our jaffles. Bring us a pie from Heaven Eleven and we will talk.'],
+      waiting: ['A pie from Heaven Eleven, down the Amphitheatre. The cat is getting peckish. So are we.'],
+      give: ['*They split the pie seven ways. The cat gets the biggest bit.*', 'Cheers. But a pie is a pie, and a camp cat is a camp cat. Battle us for him.'],
+    },
     battle: {
-      challenge: ['Someone under the neon X is feeding a tiny black and white cat bits of jaffle.', '"He came out of a purple light. He has chosen us. He is our camp cat now."'],
+      challenge: ['The Tom Mankeys local cracks their knuckles. The cat watches from a camp chair.'],
       ask: 'Battle for the cat?', yes: 'He has a home', no: 'Not now',
       win: ['"Fine. But he knows where we are. Under the X. Always under the X."'],
-      lose: ['The cat eats more jaffle. Everyone under the X cheers.'],
-      again: ['"Back for more jaffle? Or more battle?"'],
+      lose: ['The cat eats more pie. Everyone under the X cheers.'],
+      again: ['"Back for more pie? Or more battle?"'],
     },
   },
   mfsunsal: {
     role: 'Watches every sunset from the same hay bale', lines: [['Thirty-one Meredith sunsets. I have clapped for every one of them.']],
-    battle: {
-      challenge: ['Sunset Sal is holding a pet who is clearly yours, and the sunset, a bit.', '"Help yourself to the view. Not to the pet. Unless you beat me."'],
-      ask: 'Battle Sunset Sal?', yes: 'Let\'s go', no: 'Later',
-      win: ['"Good on you. Now sit and watch the sky for a minute. That is the rule."'],
-      lose: ['"Come back at golden hour. Everyone battles better at golden hour."'],
-      again: ['"Another round while the light is good?"'],
+    quest: {
+      ask: ['Sunset Sal is holding a big black lab who is clearly yours. The lab is very happy about it.', 'She has been keeping my bale warm. Lovely girl. I will swap you, though. A Pink Flamingo for the dog. Fair is fair.'],
+      waiting: ['A Pink Flamingo, from the bar at the back of the Amphitheatre. Then she is all yours.'],
+      give: ['Oh, that is pink. That is very pink. *Sal takes a long sip.*', 'Off you go then, love. Bring her back for a sunset some time.'],
     },
   },
   mfhaybale: {
@@ -221,6 +256,11 @@ export const MF_PEOPLE = {
   mfshuffle: {
     role: 'Unbeaten on the Pink Flamingo turf since 2016', lines: [['If you want something from Shuffles, you dance for it.']],
   },
+  mfmama1: { role: 'Mama King. On before the Ice Kids', lines: [['Thank you Meredith! You are beautiful! All of you! Even you at the back!']] },
+  mfmama2: { role: 'Mama King. Plays bass', lines: [['*He nods slowly to a beat only he can hear.*']] },
+  mfdick1: { role: 'A Dickhead', lines: [['*He shoulder-barges a gazebo for no reason.*']] },
+  mfdick2: { role: 'A Dickhead', lines: [['*He yells "WOOOO" at nobody.*']] },
+  mfdick3: { role: 'A Dickhead', lines: [['*He kicks over somebody\'s esky.*']] },
   mfbluecrew: {
     role: 'Six friends in matching blue onesies', lines: [['We are the Blue Drink Crew. We are very hydrated.']],
     battle: {
@@ -295,10 +335,7 @@ export const MF_FOE_TEXT = {
   sunsetfoe: { appear: 'The low sun flares gold right in your eyes!', leave: 'slips behind the hills.' },
 };
 export const MF_TRAINERS = {
-  mfeyeguy: { name: 'Eye Ride Operator', sendOut: 'He waves over a {f}.', team: [['speakerstack', 22], ['glowstick', 24]], money: 30 },
-  mfgazebo: { name: 'Gazebo Gary', sendOut: 'He shakes loose a {f}.', team: [['gazebofoe', 22], ['esky', 23]], money: 30 },
   mfmankey: { name: 'Tom Mankeys Local', sendOut: 'Out comes a {f}.', team: [['glowstick', 21], ['theboot', 23]], money: 30 },
-  mfsunsal: { name: 'Sunset Sal', sendOut: 'She points at the {f}.', team: [['sunsetfoe', 24], ['dustdevil', 24]], money: 30 },
   mfhaybale: { name: 'Hay Bale Hamish', sendOut: 'A {f} rolls out of the hay.', team: [['dustdevil', 22], ['festfly', 23]], money: 30 },
   mfglitter: { name: 'Glitter Gwen', sendOut: 'She flings a {f}.', team: [['glitterbomb', 23], ['glowstick', 23]], money: 30 },
   mfcouchking: { name: 'The Couch King', sendOut: 'He produces a {f} from under a cushion.', team: [['theboot', 24], ['esky', 25]], money: 35 },
@@ -322,19 +359,24 @@ export const MF_ITEMS = {
   sunscreen: { name: 'Sunscreen', price: 9, gift: true, desc: 'SPF 50. Charlotte will check you have put it on. She will check twice.' },
   festsocks: { name: 'Dry socks', price: 8, gift: true, desc: 'The most valuable thing at any festival. Worth more than gold.' },
   electrolytes: { name: 'Electrolyte drink', price: 4, drink: true, art: { kind: 'can', body: '#3a7ad8', label: '#e8f0ff', cap: '#c8c8d0' }, desc: 'Cold, blue and full of salts. The morning after starts here.' },
+  flamingo: { name: 'Pink Flamingo', price: 12, drink: true, art: { kind: 'cup', body: '#f26aa8', label: '#ffd0e4', cap: '#f5d03a' }, desc: 'The Pink Flamingo\'s own cocktail. Pink, cold and a little bit dangerous. Some people will swap anything for one.' },
+  pegs: { name: 'Spare tent pegs', price: 0, story: true, art: { kind: 'packet', body: '#8a8e96', label: '#c8ccd4', cap: '#5a5e66' }, desc: 'A fistful of spare pegs from the Helper Hut. Gazebo Gary needs these.' },
 };
 export const MF_SHOPS = {
-  heaveneleven: { name: 'Heaven Eleven', where: 'Top Camp, Meredith', tabs: ['treats', 'gifts'], treats: ['icypole', 'festpie', 'hotchips', 'snag'], gifts: ['sunscreen', 'festsocks', 'electrolytes'] },
+  heaveneleven: { name: 'Heaven Eleven', where: 'The Amphitheatre, Meredith', tabs: ['treats', 'gifts'], treats: ['icypole', 'festpie', 'hotchips', 'snag'], gifts: ['sunscreen', 'festsocks', 'electrolytes'] },
 };
 
 export const MF_PLACES = {
   mfreception: 'Wristbands, the bus stop and the red neon X of Tom Mankeys.',
   mfbush: 'Tents under the gums, the sportsfield toilets and a cinema in the bush.',
-  mfamphi: 'The One and Only Stage, the couches, the lanterns and the Red Tree.',
-  mftop: 'The biggest camp, the Meredith Eye, Heaven Eleven and our campsite.',
+  mfamphi: 'The One and Only Stage, the couches, the lanterns, Heaven Eleven and the Red Tree.',
+  mftop: 'The biggest camp, the Meredith Eye, the Helper Hut and our campsite.',
   mfsunset: 'South Bank food and the Sunset Strip, the best view of the sky.',
   mfbluegums: 'Blue Gums: tents in the trees and gazebos in the wind.',
   mfpines: 'South Pines, Highway to Hell Rd and the Outer Space paddock.',
+  mfflamingo: 'A white marquee bar at the back of the Amphitheatre. Pink chairs, hay bales and Pink Flamingos.',
+  mfstagefront: 'Right up the front of the One and Only Stage.',
+  mfsunview: 'The view from the top of the Sunset Strip.',
 };
 
 // ------------------------------------------------------------ the story (words file)
@@ -343,7 +385,7 @@ export let MF_TEXT = {
   // The day after the party: Jess texts about the charter bus.
   invite: [
     '*Your Pawphone buzzes. A message from Jess.*',
-    'Jess: "MEREDITH!!! The charter bus leaves from Allen St. Everyone is coming. Bring the pets. I have a surprise."',
+    'Jess: "MEREDITH!!! The charter bus leaves from Allen St. Everyone is coming. Leave the pets at home, it is no place for a dog. I have a surprise."',
     'The charter bus is parked on Allen St. Talk to the driver when you are ready to go.',
   ],
   busDriver: 'The charter bus driver checks a clipboard.',
@@ -361,7 +403,7 @@ export let MF_TEXT = {
     'Jess: "It is NOT the portal." *It is the portal.*',
     '*Two hours later the bus pulls into a paddock full of gum trees, tents and dust. Meredith.*',
   ],
-  stayHome: ['Princess and Spooky are staying with the twins at Trish and Gordon\'s. Somebody has to keep an eye on those boys.'],
+  stayHome: ['The pets are staying home with the twins, Trish and Gordon. A festival is no place for a dog. Probably.'],
   arriveCard: ['The Meredith Music Festival. One stage, three days, and a paddock full of friends.', 'Time moves slowly out here. The night only starts when the day is done.'],
   wristbandHint: 'Get your wristband from the volunteer at Reception.',
   wristband: [
@@ -375,16 +417,21 @@ export let MF_TEXT = {
   // Top Camp, setting up
   campHint: 'Find the crew at the Top Camp campsite.',
   campSeb: [
-    'You made it! Welcome to Kouch Hole 2. We have a gazebo, six chairs and a very strong opinion about couches.',
+    'You made it! Welcome to the campsite. We have a gazebo, six chairs and a very strong opinion about couches.',
     'Your tent goes there, next to Jess. Do not put it next to Gabe. He snores like a tractor.',
     'Gabe: "I do not snore." *He absolutely snores.*',
   ],
+  tentSpot: ['Your patch of grass, next to Jess. Your tent is still in its bag.'],
   pitchAsk: 'Pitch your tent?',
   pitchYes: 'Pitch it',
-  pitched: ['*You wrestle the tent poles for a while. The tent wins twice. Then you win.*', 'Your tent is up. It leans a bit to the left. It has character.'],
+  pitchIntro: ['Four pegs, one at each corner. Press A (or tap Hammer) when the marker is in the green. Ready?'],
+  pitchBar: 'Peg {n} of 4. Hit it in the green!',
+  pitchGood: ['*Four perfect pegs. The tent goes up tight as a drum.*', 'Seb: "Look at that! Best tent in Top Camp. Nobody is touching that in a storm."'],
+  pitchCrappy: ['*The pegs go in at funny angles. The tent sags in the middle and leans to the left.*', 'Gabe: "It has character. That is what we will say. It has character."'],
+  pitched: ['Your tent is up.'],
   couchHint: 'Help Gabe carry the couch down to the Amphitheatre.',
   couchGabe: [
-    'Right. The couch. It is a beauty. Green velvet, three seats, only one spring sticking out.',
+    'Right. The couch. It is a beauty. Cream cushions, wooden arms, and a little bar on the back for your drinks.',
     'You take that end, I will take this end, and we walk it down to the Amphitheatre. Charlotte is holding the spot.',
   ],
   couchAsk: 'Grab an end of the couch?',
@@ -392,7 +439,7 @@ export let MF_TEXT = {
   couchCarry: 'Carry the couch to Charlotte at the Amphitheatre.',
   couchArrive: [
     'Charlotte: "There you are! Down, down, down. Perfect. Right on the hill, right in front of the lanterns."',
-    'Gabe: "Kouch Hole 2. We are home."',
+    'Gabe: "The couch. We are home."',
     '*You all sink into the couch. Somewhere behind the gums, the sun starts to drop.*',
   ],
   nightFalls: ['*The sky goes pink, then purple. One by one, the lanterns over the Amphitheatre glow.*', 'Night one at Meredith has started.'],
@@ -401,26 +448,27 @@ export let MF_TEXT = {
   // The portal goes wrong
   portal: [
     'Jess: "Okay! Everybody gather round! Behold. The Pet Portal."',
-    '*It is a tent. A small orange tent, with a ring of fairy lights and a very large battery.*',
+    '*It is about the size of a shoebox: a ring of fairy lights, a very large battery and a little purple spiral, humming.*',
     'Jess: "Pop it in your tent, and at bedtime it finds your pets, wherever they are, and brings them to you for cuddles. No setup."',
     'Seb: "Does it detect just YOUR pets or..."',
-    'Jess: "It auto-detects pets! All pets! It is very clever! Toby, in you go."',
-    '*Toby trots into the tent. There is a pop and a flash of purple light.*',
-    'Jess: "And... ta-da!" *Toby pops out of the other side. The crowd claps.*',
+    'Jess: "It auto-detects pets! Watch. Toby is at home with my housemate. Three, two, one..."',
+  ],
+  portalToby: [
+    '*WHOMP WHOMP ZAP. A little black poodle tumbles out of the spiral and lands on the grass.*',
+    'Jess: "TOBY! Ta-da!" *The whole campsite claps. Toby sneezes. A tiny spark jumps off his nose.*',
   ],
   portalWrong: [
     '*The fairy lights go red. The battery starts to hum. Then whine. Then scream.*',
     'Jess: "That is not a noise it made in testing."',
-    '*The tent flaps open like a mouth. A purple wind roars out of it, then IN.*',
-    '*Your pets slide across the grass towards it. Leads snap. Paws scrabble. One by one they vanish into the light.*',
-    'Seb: "JESS."',
-    '*BANG. The portal spits them all out again, high into the night sky, in every direction.*',
+    '*The spiral spins faster and faster. WHOMP. Something small and furry shoots out of it. WHOMP. Then another. WHOMP WHOMP WHOMP.*',
+    'Helen: "Wait. Was that {pet}? That was {pet}! They are meant to be at home!"',
+    'Jess: "It is detecting ALL the pets. Every pet I have ever met. All the way back in Melbourne."',
+    '*ZAP. The pets come out so fast they fly straight up, high into the night sky, in every direction.*',
     '*Little shapes sail over the gums, over the stage, over the Eye. Then they are gone.*',
   ],
   portalAfter: [
     'Jess: "Okay. Okay okay okay. So. Some small bugs."',
-    '*Something sneezes at your feet. A tiny spark jumps off its nose. It is Toby.*',
-    'Jess: "Toby! He came back! He must be tuned to the portal now. He will help you find them. Take him."',
+    'Jess: "Toby is tuned to the portal now. Look at his curls. He will help you find them. Take him."',
     'Seb: "Right. Everyone split up. Ask around. They are out there somewhere. And have a good time doing it, we are at Meredith."',
   ],
   tobyJoins: 'Toby has joined your team for the festival! He is a little bit electric now.',
@@ -431,22 +479,57 @@ export let MF_TEXT = {
     wild: 'I saw {pet} round {place}. Looked a bit wild. Wired, almost. Like it needed a play-fight.',
     goer: 'Someone round {place} has a pet who looks a lot like {pet}. They are calling it theirs.',
     crowd: '{who} texted. They have got {pet}! They are somewhere in the crowd at {place}. Good luck finding them.',
-    dance: '{pet}? Last I saw, {who} had them on the Pink Flamingo turf. {who} wants a dance off.',
+    dance: '{pet}? Last I saw, {who} had them at the Pink Flamingo. {who} wants a dance off.',
+    eye: '{pet} is riding the Meredith Eye at Top Camp. Round and round. The operator cannot get them off.',
+    quest: '{who} at {place} has {pet}. They want something before they hand them back.',
   },
   placeName: {
     mfreception: 'Reception, near Tom Mankeys', mfbush: 'Bush Camp', mfamphi: 'the Amphitheatre', mftop: 'Top Camp',
-    mfsunset: 'the Sunset Strip', mfbluegums: 'Blue Gums', mfpines: 'South Pines',
+    mfsunset: 'the Sunset Strip', mfbluegums: 'Blue Gums', mfpines: 'South Pines', mfflamingo: 'the Pink Flamingo',
   },
+  // The To Do list during the hunt: one line per pet, more specific once someone has told you.
+  todoUnknown: 'Find {pet}. Ask around the festival.',
+  todo: {
+    wild: 'Calm {pet} down with a play-fight ({place})',
+    goer: 'Beat {who} to get {pet} back ({place})',
+    crowd: 'Find {who} in the dark crowd with {pet} (ask Charlotte at the couch)',
+    dance: 'Win a dance off with {who} for {pet} ({place})',
+    eye: 'Spin the Meredith Eye till {pet}\'s seat comes up (Top Camp)',
+    quest: 'Bring {who} {item} for {pet} ({place})',
+  },
+  todoPrincess: 'Princess is out there somewhere too. Nobody has seen her yet.',
+  // The Meredith Eye
+  eyeBar: 'Seat {n} of 12...',
+  eyeRewardCash: 'There is ${cash} down the back of the seat.',
+  eyeFoes: ['A {f} is sitting in the seat and will not get off. It wants a play-fight.', 'A {f} has been riding the Eye all night. It is very dizzy and very cross.'],
+  eyeWorn: ['Your pets are worn out. Have a lie down in your tent at the campsite first.'],
+  // Quests
+  questHave: 'Give {who} the {item}?',
+  questGive: 'Hand it over',
+  questKeep: 'Not yet',
+  // The Pink Flamingo bar
+  barSign: ['The Pink Flamingo bar. A big pink jug of Pink Flamingos sits on the counter.'],
+  barAsk: 'A Pink Flamingo is ${price}.',
+  barDrink: 'Drink it now',
+  barTake: 'Take it with you',
+  barNo: 'Just looking',
+  barBroke: ['You do not have enough money for a Pink Flamingo.'],
+  barDrunk: ['*You drink the Pink Flamingo. It is very pink. Everything feels a bit stronger and a bit faster.*', 'Your team is powered up for the rest of the night.'],
+  barAlready: 'You have already had one tonight. Charlotte would not approve of another.',
+  barTook: 'A Pink Flamingo, to go. Somebody out there might want it more than you.',
+  noCouncil: ['Helen, I don\'t want to talk about council at Meredith! I am here to relax, not think about Lesley.'],
+  heavenSign: ['Heaven Eleven. Open all day and all night. Ice, sunscreen, socks and pies.'],
   wildPet:['{name} spins round, crackling with purple sparks from the portal.', '{name} does not seem to know who you are. A play-fight should shake it loose.'],
   wildAsk:'Play-fight {name}?',
   wildBack:['The purple sparks fizzle out. {name} blinks, sees you, and runs straight into your arms.'],
   wildLose:['{name} bolts off, still crackling. It does not go far.'],
   heldPet: ['{name} is on a lead held by {who}.', 'Talk to {who} about it.'],
   crowdPet:['{name} is not here. Someone in the crowd must have them.'],
-  crowdStart: ['Charlotte: "{who} has {pet}! Somewhere in the crowd. They keep moving. Go, go, go!"'],
+  crowdStart: ['Charlotte: "{who} texted. They have got {pet}, somewhere in the crowd! But it is pitch black in there. Take my torch."', '*Walk through the crowd. Only the people near your torch light up.*'],
   crowdFound: ['There you are! I have been holding {pet} up in the air for twenty minutes.', '*{who} hands {pet} over. Big hugs all round.*'],
-  crowdMissed:'{who} has moved on through the crowd. Ask Charlotte at the couch to try again.',
-  crowdBar: 'Find {who} in the crowd! {s}s',
+  crowdMissed:'You give Charlotte her torch back. Ask her at the couch to try again.',
+  crowdBar: 'Find {who} in the dark. Shine the torch around.',
+  crowdMoved: '{who} has wandered somewhere else in the crowd.',
   danceIntro: ['You want {pet}? Then you dance for {pet}.', 'Copy my moves. Arrow keys, or the buttons. Ready?'],
   danceAsk: 'Dance off?',
   danceYes: 'Let\'s dance',
@@ -471,26 +554,42 @@ export let MF_TEXT = {
     'Jess: "That is everyone! Every single one! I am never building anything ever again."',
     'Seb: "You will build something again by Tuesday."',
     'Jess: "I will build something again by Tuesday."',
-    'Charlotte: "Come on, the Ice Kids are on last. Then Sunset Strip for the sunrise. You have to see the sun come up at Meredith."',
   ],
+  mamaCall: ['Nathan: "Guys, Mama King, my favourite band, is on next! We can\'t miss them."'],
+  mamaHint: 'Meet everyone at the couch in the Amphitheatre for Mama King.',
+  mamaKing: [
+    '*You push right up the front. The lights come up warm and gold. It is Mama King.*',
+    'Mama King Singer: "Good evening Meredith! Who wants to DANCE?"',
+    'Nathan: "This is the one! Everybody dance! Copy me!"',
+  ],
+  mamaDance: 'Dance to Mama King',
+  mamaBar: 'Mama King: move {n} of 10. Copy the arrow! {got} so far',
+  mamaWin: ['*The whole crowd is dancing. Nathan has his arms in the air. Even Charlotte is dancing.*', 'Nathan: "BEST. SET. EVER."'],
+  mamaOk: ['*You dance like nobody is watching. Lots of people are watching. Nobody minds.*', 'Nathan: "That was amazing. You were... enthusiastic."'],
+  mamaBye: ['Mama King Singer: "Thank you Meredith! You have been beautiful!"', '*The lights go down. A boot goes up somewhere at the back.*'],
   iceHint: 'Watch the Ice Kids close night one at the Amphitheatre.',
   iceKids: [
+    'Jordan: "Ice Kids are next! I am SO excited. I have been waiting all year for this."',
     '*The lanterns go out. The whole Amphitheatre goes quiet.*',
+    '*Then the strobes start. White light, black, white, black. Lasers cut across the crowd.*',
     '*Two figures walk onto the stage in a cold blue light. It is the Ice Kids.*',
-    'Charlotte: "Oh no. I forgot they were on last."',
-    '*The first chord is so cold your breath fogs. Frost creeps across the couches.*',
+    '*The first chord is so cold your breath fogs. Frost creeps across the stage.*',
   ],
   iceCurse: [
     'Ice Kids Singer: "Meredith. You have had your fun. Now you get what you deserve."',
-    '*She sings one long, freezing note. The ground shakes. Shapes crawl up out of the speakers.*',
-    '*Dark shapes in bucket hats and cargo shorts pour off the stage and into the bush, shoving and yelling.*',
+    '*She raises her hands. Blue lightning cracks out of the speakers and across the sky.*',
+    '*The stage splits open. Dark shapes in bucket hats and cargo shorts come pouring out of it, shoving and yelling.*',
     'Seb: "Oh no. Those are dickheads. Hundreds of them."',
   ],
   iceAfter: [
     '*The Ice Kids are gone. The stage is empty, and covered in ice.*',
     'Gabe: "They have cursed the festival. The Dickheads will take over by tomorrow."',
     'Jess: "We are doomed. Completely doomed."',
-    'Charlotte: "Then we are doomed at the Sunset Strip. The sun is about to come up. Come on."',
+  ],
+  sunNotice: [
+    'A festival goer: "Hey. Is the sky getting lighter over there?"',
+    'Seb: "What the hell, it\'s sunrise already? I guess time flies when you\'re having fun..."',
+    'Mem: "Quick, let\'s go to the Sunset Strip to watch!"',
   ],
   sunriseHint: 'Watch the sunrise with everyone at the Sunset Strip.',
   sunrise: [
@@ -501,7 +600,7 @@ export let MF_TEXT = {
     '*Over the horizon rises an enormous, blazing, glowing poodle, wreathed in flame and wearing a crown.*',
     'Helen: "...Princess?"',
   ],
-  princessPulled: ['*Far away, back in Laverton, a little pink flash goes into the purple light as well. Nobody notices.*'],
+  princessPulled: ['*One little pink shape flies much further than the others, out past the paddocks. Nobody sees where it lands.*'],
   princessLands: [
     '*The Flame Queen floats down off the horizon and lands right in your arms, still glowing. It is Princess.*',
     'Jess: "The portal! It must have pulled her in from Melbourne with everyone else. She has been out past the paddocks all night."',
@@ -523,10 +622,11 @@ export let MF_TEXT = {
   // What the Melbourne crew say at the festival
   friends: {
     paddy: ['Festival Paddy, reporting for duty. Nobody here knows I am the mayor. Lovely.', 'Someone asked me to fix a pothole on the Low Road. Even here.'],
+
     mem: ['Did you know mice can run four kilometres a night? I am doing my own study. In this crowd.', 'Electrolyte? I have twelve.'],
     corni: ['In Germany we have festivals with beer. Here, festivals with beer AND a couch. Wunderbar.', 'I ran the Low Road this morning. Twice. Prost!'],
     rose: ['I brought three books. I have read two of them. In the queue for the toilets.', 'The senator thinks I am at a wellness retreat. This is a wellness retreat.'],
-    nathan: ['Rusty hates the cold out here. I brought him a jumper. And a spare jumper.', 'Tall people go to the back of the crowd. That is the rule. I follow it.'],
+    nathan: ['Rusty is home in his jumper. I brought a spare jumper anyway. For me.', 'Tall people go to the back of the crowd. That is the rule. I follow it.'],
     alison: ['I brought my boob pillows. For the couch. They are very comfortable. Do not make it weird.', 'I made a toastie on a camp stove. It is the same toastie. It is always the same toastie.'],
     olly: ['Gazebo pegs need to go in at forty-five degrees. Nobody listens. Then the wind comes.', 'Lovely red gums out here. Old ones. Older than the festival.'],
     ward: ['Every dog here is a good dog. I have checked. I have checked a lot of them.', 'I packed treats for every pet. Then the portal took the pets. I still have the treats.'],

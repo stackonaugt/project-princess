@@ -37,7 +37,7 @@ export function buildMfReception() {
   b.put('mfxneon', 4, 12);
   b.reserve(5, 14, 1.5);
   b.npc('mfmankey', 6, 14, { face: 'down' });
-  camp(b, [1, 1, 13, 4], 0.7); camp(b, [1, 8, 2, 17], 0.7); camp(b, [4, 16, 3, 9], 0.7); camp(b, [8, 8, 3, 17], 0.7); camp(b, [12, 8, 2, 17], 0.6);
+  camp(b, [1, 1, 13, 4], 0.9); camp(b, [1, 8, 2, 17], 0.9); camp(b, [4, 16, 3, 9], 0.9); camp(b, [8, 8, 3, 17], 0.9); camp(b, [12, 8, 2, 17], 0.9);
   b.put('mfportaloo', 1, 27); b.put('mfportaloo', 2, 27, { v: 'green' });
   b.sign(9, 27, ['Tom Mankeys.', 'The fanciest camp at Meredith: a neon X, fairy lights and somebody\'s grandma\'s rug.']);
 

@@ -22,9 +22,9 @@ export function buildMfBush() {
   b.wildGrass(44, 15, 4, 2);
 
   // The camp: tents everywhere inside and around the loop
-  camp(b, [9, 13, 23, 10], 0.75);
-  camp(b, [1, 1, 26, 8], 0.6);
-  camp(b, [36, 21, 16, 8], 0.6);
+  camp(b, [9, 13, 23, 10], 0.95);
+  camp(b, [1, 1, 26, 8], 0.9);
+  camp(b, [36, 21, 16, 8], 0.9);
   b.reserve(30, 30, 3);
 
   // The Ecoplex: the screen, the hay bale seats and the projector caravan

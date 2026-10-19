@@ -276,6 +276,11 @@ function createAnims(scene) {
     }
     for (const dir of ['down', 'up', 'left']) make(`npc-${id}-${dir}-walk`, `npc-${id}-${dir}`, [1, 0, 2, 0], 7);
   }
+  // Festival outfits (npcs/<id>-meredith.png), worn at the Meredith festival.
+  for (const id of Object.keys(NPCS)) {
+    const tex = `npc-${id}-meredith`;
+    if (custom.has(tex) && frameCount(scene, tex) > 1) make(`${tex}-walk`, tex, walkFrames(tex, frameCount(scene, tex)), NPC_WALK_FRAME_RATE);
+  }
   for (const c of [...CROWD, ...FEST_CROWD]) for (const dir of ['down', 'up', 'left']) make(`npc-${c.id}-${dir}-walk`, `npc-${c.id}-${dir}`, [1, 0, 2, 0], 7);
   for (const tex of scene.textures.getTextureKeys()) for (const action of ['wave','throw','reward','jump','sit','paw']) {
     const frames=animationFrames(tex,frameCount(scene,tex),action,!custom.has(tex));

@@ -4,6 +4,7 @@ import { state } from './state.js';
 import { bus } from '../bus.js';
 import { objectives } from './story.js';
 import { showUnlocked } from './show-progress.js';
+import { isMeredith } from '../data/meredith.js';
 const journal = () => state.data.flags.todo ||= { tutorials: {}, known: [], read: [] };
 export function addTutorial(id, title, text) {
   const j = journal();
@@ -17,7 +18,10 @@ export function tutorialNotes() { return Object.values(journal().tutorials); }
 function questIds() {
   const n = state.data.story.chapter, ids = n > 0 && n < 5 ? objectives(n).filter(o => !o.done).map((o,i) => `chapter:${n}:${o.id || i}`) : state.isFound('princess') ? [] : ['find-princess'];
   const fest = state.data.meredith?.stage;
+  // At the festival only the festival's jobs count, and the twins only get theirs.
+  if (isMeredith(state.data.region)) return fest ? [`meredith:${fest}`, ...(state.data.meredith.heard || []).map(p => `meredith:pet:${p}`)] : [];
   if (fest && fest < 10) ids.push(`meredith:${fest}`);
+  if (['hadrian', 'aleksy'].includes(state.data.hero)) return ids;
   if (state.data.side.bake === 1) ids.push('side:betty-bake');
   if (showUnlocked() && !state.data.side.show?.claimed.includes('champion')) ids.push('side:dog-show');
   for (const t of tutorialNotes()) if (!t.done) ids.push(`tutorial:${t.id}`);

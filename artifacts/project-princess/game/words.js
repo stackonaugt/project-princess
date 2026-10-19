@@ -1590,38 +1590,42 @@ lines.1.1 = Welcome to the Sup! Wristband on, rubbish in the bins, and no dickhe
 [PEOPLE.mfhelper]  # Helper Hut Helper
 role = Helper Hut volunteer, Top Camp
 lines.1.1 = Lost a mate? Lost a shoe? Lost the plot? We can help with two of those.
-
-[PEOPLE.mfheaven]  # Heaven Eleven Clerk
-role = Heaven Eleven, the festival corner store
-lines.1.1 = Open all day and all night. Ice, sunscreen, socks and pies. What else is there?
+pegs.1 = Tent pegs? We have a whole bucket. People leave them behind every year.
+pegs.2 = *The volunteer hands you a fistful of spare tent pegs.*
 
 [PEOPLE.mfeyeguy]  # Eye Ride Operator
 role = Runs the Meredith Eye
 lines.1.1 = The Eye goes round. That is the main thing it does.
-battle.challenge.1 = The Eye operator has a little dog on a lead. It is not his dog.
-battle.challenge.2 = "Found him under the Eye. He went round twice. He is mine now. Finders keepers."
-battle.ask = Battle for him?
-battle.yes = He is coming home
-battle.no = Not yet
-battle.win.1 = "Fair enough. He did look at you like he knew you." He hands over the lead.
-battle.lose.1 = "Go round again, mate. Clear your head." He does not hand over the lead.
-battle.again.1 = "Another spin? Of battling? Go on then."
+eye.intro.1 = There is a little dog up in one of the seats. Got on by himself. Every time I stop it, he will not get off.
+eye.intro.2 = Spin her round and see where she lands. Some seats have a prize. Some have a problem. One has a dog.
+eye.ask = Spin the Meredith Eye?
+eye.yes = Spin it
+eye.no = Not yet
+eye.reward = *The Eye stops. Somebody left a present in seat {n}.*
+eye.challenge = *The Eye stops on seat {n}. Something in it does not want to get off.*
+eye.again = Spin again?
+eye.stanley.1 = *The Eye creaks to a stop. Seat {n}. Stanley is sitting in it like he paid for a ticket.*
+eye.stanley.2 = *He steps down onto the platform, looks at you, and leans on your leg.*
+eye.after.1 = He went round about forty times. Did not blink once. Proper little customer.
 
 [PEOPLE.mfgazebo]  # Gazebo Gary
 role = Owns the biggest gazebo in Blue Gums
 lines.1.1 = Twelve pegs. Four ropes. One gazebo. It has never once stayed up.
-battle.challenge.1 = A man is sitting under a collapsed gazebo with a familiar curly dog.
-battle.challenge.2 = "This one dropped out of the sky onto my esky. Universe says he is mine."
-battle.ask = Battle Gazebo Gary?
-battle.yes = Let's go
-battle.no = In a minute
-battle.win.1 = "The universe was wrong. It happens." He pats the dog goodbye. The gazebo falls down again.
-battle.lose.1 = "See? The universe." The gazebo falls on him. He does not seem to mind.
-battle.again.1 = "Rematch? Hold this rope first."
+quest.ask.1 = A man is sitting under a collapsed gazebo with a familiar curly dog on his lap.
+quest.ask.2 = This one dropped out of the sky onto my esky. He is holding the gazebo down for me. I cannot let him go till I have more pegs.
+quest.ask.3 = The Helper Hut at Top Camp has spare pegs. Bring me some and he is yours.
+quest.waiting.1 = Pegs, mate. The Helper Hut at Top Camp. Then the dog is all yours.
+quest.give.1 = Pegs! Beautiful. *He hammers them in. The gazebo stays up for nearly a minute.*
+quest.give.2 = There you go, mate. He is a good weight. Best gazebo anchor I ever had.
 
 [PEOPLE.mfmankey]  # Tom Mankeys Local
 role = Tom Mankeys, under the red neon X
 lines.1.1 = Tom Mankeys is the best camp. We have a neon X. What do you have?
+quest.ask.1 = Someone under the neon X is feeding a tiny black and white cat bits of jaffle.
+quest.ask.2 = He came out of a purple light. He has eaten all our jaffles. Bring us a pie from Heaven Eleven and we will talk.
+quest.waiting.1 = A pie from Heaven Eleven, down the Amphitheatre. The cat is getting peckish. So are we.
+quest.give.1 = *They split the pie seven ways. The cat gets the biggest bit.*
+quest.give.2 = Cheers. But a pie is a pie, and a camp cat is a camp cat. Battle us for him.
 battle.challenge.1 = Someone under the neon X is feeding a tiny black and white cat bits of jaffle.
 battle.challenge.2 = "He came out of a purple light. He has chosen us. He is our camp cat now."
 battle.ask = Battle for the cat?
@@ -1634,13 +1638,11 @@ battle.again.1 = "Back for more jaffle? Or more battle?"
 [PEOPLE.mfsunsal]  # Sunset Sal
 role = Watches every sunset from the same hay bale
 lines.1.1 = Thirty-one Meredith sunsets. I have clapped for every one of them.
-battle.challenge.1 = Sunset Sal is holding a pet who is clearly yours, and the sunset, a bit.
-battle.challenge.2 = "Help yourself to the view. Not to the pet. Unless you beat me."
-battle.ask = Battle Sunset Sal?
-battle.yes = Let's go
-battle.win.1 = "Good on you. Now sit and watch the sky for a minute. That is the rule."
-battle.lose.1 = "Come back at golden hour. Everyone battles better at golden hour."
-battle.again.1 = "Another round while the light is good?"
+quest.ask.1 = Sunset Sal is holding a big black lab who is clearly yours. The lab is very happy about it.
+quest.ask.2 = She has been keeping my bale warm. Lovely girl. I will swap you, though. A Pink Flamingo for the dog. Fair is fair.
+quest.waiting.1 = A Pink Flamingo, from the bar at the back of the Amphitheatre. Then she is all yours.
+quest.give.1 = Oh, that is pink. That is very pink. *Sal takes a long sip.*
+quest.give.2 = Off you go then, love. Bring her back for a sunset some time.
 
 [PEOPLE.mfhaybale]  # Hay Bale Hamish
 role = Lives on a hay bale in South Pines
@@ -1680,6 +1682,26 @@ battle.again.1 = "The throne awaits. Well, the cushion."
 [PEOPLE.mfshuffle]  # Shuffles
 role = Unbeaten on the Pink Flamingo turf since 2016
 lines.1.1 = If you want something from Shuffles, you dance for it.
+
+[PEOPLE.mfmama1]  # Mama King Singer
+role = Mama King. On before the Ice Kids
+lines.1.1 = Thank you Meredith! You are beautiful! All of you! Even you at the back!
+
+[PEOPLE.mfmama2]  # Mama King Bassist
+role = Mama King. Plays bass
+lines.1.1 = *He nods slowly to a beat only he can hear.*
+
+[PEOPLE.mfdick1]  # Dickhead
+role = A Dickhead
+lines.1.1 = *He shoulder-barges a gazebo for no reason.*
+
+[PEOPLE.mfdick2]  # Dickhead
+role = A Dickhead
+lines.1.1 = *He yells "WOOOO" at nobody.*
+
+[PEOPLE.mfdick3]  # Dickhead
+role = A Dickhead
+lines.1.1 = *He kicks over somebody's esky.*
 
 [PEOPLE.mfbluecrew]  # The Blue Drink Crew
 role = Six friends in matching blue onesies
@@ -2043,10 +2065,10 @@ text = Wristbands, the bus stop and the red neon X of Tom Mankeys.
 text = Tents under the gums, the sportsfield toilets and a cinema in the bush.
 
 [PLACES.mfamphi]
-text = The One and Only Stage, the couches, the lanterns and the Red Tree.
+text = The One and Only Stage, the couches, the lanterns, Heaven Eleven and the Red Tree.
 
 [PLACES.mftop]
-text = The biggest camp, the Meredith Eye, Heaven Eleven and our campsite.
+text = The biggest camp, the Meredith Eye, the Helper Hut and our campsite.
 
 [PLACES.mfsunset]
 text = South Bank food and the Sunset Strip, the best view of the sky.
@@ -2056,6 +2078,15 @@ text = Blue Gums: tents in the trees and gazebos in the wind.
 
 [PLACES.mfpines]
 text = South Pines, Highway to Hell Rd and the Outer Space paddock.
+
+[PLACES.mfflamingo]
+text = A white marquee bar at the back of the Amphitheatre. Pink chairs, hay bales and Pink Flamingos.
+
+[PLACES.mfstagefront]
+text = Right up the front of the One and Only Stage.
+
+[PLACES.mfsunview]
+text = The view from the top of the Sunset Strip.
 
 [CHAPTERS]
 1.title = Helen's Pet Training School
@@ -2404,8 +2435,15 @@ campHint = Find the crew at the Top Camp campsite.
 campSeb.1 = You made it! Welcome to Kouch Hole 2. We have a gazebo, six chairs and a very strong opinion about couches.
 campSeb.2 = Your tent goes there, next to Jess. Do not put it next to Gabe. He snores like a tractor.
 campSeb.3 = Gabe: "I do not snore." *He absolutely snores.*
+tentSpot.1 = Your patch of grass, next to Jess. Your tent is still in its bag.
 pitchAsk = Pitch your tent?
 pitchYes = Pitch it
+pitchIntro.1 = Four pegs, one at each corner. Press A (or tap Hammer) when the marker is in the green. Ready?
+pitchBar = Peg {n} of 4. Hit it in the green!
+pitchGood.1 = *Four perfect pegs. The tent goes up tight as a drum.*
+pitchGood.2 = Seb: "Look at that! Best tent in Top Camp. Nobody is touching that in a storm."
+pitchCrappy.1 = *The pegs go in at funny angles. The tent sags in the middle and leans to the left.*
+pitchCrappy.2 = Gabe: "It has character. That is what we will say. It has character."
 pitched.1 = *You wrestle the tent poles for a while. The tent wins twice. Then you win.*
 pitched.2 = Your tent is up. It leans a bit to the left. It has character.
 couchHint = Help Gabe carry the couch down to the Amphitheatre.
@@ -2429,6 +2467,8 @@ portal.4 = Seb: "Does it detect just YOUR pets or..."
 portal.5 = Jess: "It auto-detects pets! All pets! It is very clever! Toby, in you go."
 portal.6 = *Toby trots into the tent. There is a pop and a flash of purple light.*
 portal.7 = Jess: "And... ta-da!" *Toby pops out of the other side. The crowd claps.*
+portalToby.1 = *WHOMP WHOMP ZAP. A little black poodle tumbles out of the spiral and lands on the grass.*
+portalToby.2 = Jess: "TOBY! Ta-da!" *The whole campsite claps. Toby sneezes. A tiny spark jumps off his nose.*
 portalWrong.1 = *The fairy lights go red. The battery starts to hum. Then whine. Then scream.*
 portalWrong.2 = Jess: "That is not a noise it made in testing."
 portalWrong.3 = *The tent flaps open like a mouth. A purple wind roars out of it, then IN.*
@@ -2447,6 +2487,8 @@ rumour.wild = I saw {pet} round {place}. Looked a bit wild. Wired, almost. Like 
 rumour.goer = Someone round {place} has a pet who looks a lot like {pet}. They are calling it theirs.
 rumour.crowd = {who} texted. They have got {pet}! They are somewhere in the crowd at {place}. Good luck finding them.
 rumour.dance = {pet}? Last I saw, {who} had them on the Pink Flamingo turf. {who} wants a dance off.
+rumour.eye = {pet} is riding the Meredith Eye at Top Camp. Round and round. The operator cannot get them off.
+rumour.quest = {who} at {place} has {pet}. They want something before they hand them back.
 placeName.mfreception = Reception, near Tom Mankeys
 placeName.mfbush = Bush Camp
 placeName.mfamphi = the Amphitheatre
@@ -2454,6 +2496,35 @@ placeName.mftop = Top Camp
 placeName.mfsunset = the Sunset Strip
 placeName.mfbluegums = Blue Gums
 placeName.mfpines = South Pines
+placeName.mfflamingo = the Pink Flamingo
+todoUnknown = Find {pet}. Ask around the festival.
+todo.wild = Calm {pet} down with a play-fight ({place})
+todo.goer = Beat {who} to get {pet} back ({place})
+todo.crowd = Find {who} in the dark crowd with {pet} (ask Charlotte at the couch)
+todo.dance = Win a dance off with {who} for {pet} ({place})
+todo.eye = Spin the Meredith Eye till {pet}'s seat comes up (Top Camp)
+todo.quest = Bring {who} {item} for {pet} ({place})
+todoPrincess = Princess is out there somewhere too. Nobody has seen her yet.
+eyeBar = Seat {n} of 12...
+eyeRewardCash = There is \x24{cash} down the back of the seat.
+eyeFoes.1 = A {f} is sitting in the seat and will not get off. It wants a play-fight.
+eyeFoes.2 = A {f} has been riding the Eye all night. It is very dizzy and very cross.
+eyeWorn.1 = Your pets are worn out. Have a lie down in your tent at the campsite first.
+questHave = Give {who} the {item}?
+questGive = Hand it over
+questKeep = Not yet
+barSign.1 = The Pink Flamingo bar. A big pink jug of Pink Flamingos sits on the counter.
+barAsk = A Pink Flamingo is \x24{price}.
+barDrink = Drink it now
+barTake = Take it with you
+barNo = Just looking
+barBroke.1 = You do not have enough money for a Pink Flamingo.
+barDrunk.1 = *You drink the Pink Flamingo. It is very pink. Everything feels a bit stronger and a bit faster.*
+barDrunk.2 = Your team is powered up for the rest of the night.
+barAlready = You have already had one tonight. Charlotte would not approve of another.
+barTook = A Pink Flamingo, to go. Somebody out there might want it more than you.
+noCouncil.1 = Helen, I don't want to talk about council at Meredith! I am here to relax, not think about Lesley.
+heavenSign.1 = Heaven Eleven. Open all day and all night. Ice, sunscreen, socks and pies.
 wildPet.1 = {name} spins round, crackling with purple sparks from the portal.
 wildPet.2 = {name} does not seem to know who you are. A play-fight should shake it loose.
 wildAsk = Play-fight {name}?
@@ -2463,10 +2534,12 @@ heldPet.1 = {name} is on a lead held by {who}.
 heldPet.2 = Talk to {who} about it.
 crowdPet.1 = {name} is not here. Someone in the crowd must have them.
 crowdStart.1 = Charlotte: "{who} has {pet}! Somewhere in the crowd. They keep moving. Go, go, go!"
+crowdStart.2 = *Walk through the crowd. Only the people near your torch light up.*
 crowdFound.1 = There you are! I have been holding {pet} up in the air for twenty minutes.
 crowdFound.2 = *{who} hands {pet} over. Big hugs all round.*
 crowdMissed = {who} has moved on through the crowd. Ask Charlotte at the couch to try again.
 crowdBar = Find {who} in the crowd! {s}s
+crowdMoved = {who} has wandered somewhere else in the crowd.
 danceIntro.1 = You want {pet}? Then you dance for {pet}.
 danceIntro.2 = Copy my moves. Arrow keys, or the buttons. Ready?
 danceAsk = Dance off?
@@ -2493,11 +2566,25 @@ allBack.1 = Jess: "That is everyone! Every single one! I am never building anyth
 allBack.2 = Seb: "You will build something again by Tuesday."
 allBack.3 = Jess: "I will build something again by Tuesday."
 allBack.4 = Charlotte: "Come on. Sunset Strip. The sun will be up soon. You have to watch it come up at Meredith."
+mamaCall.1 = Nathan: "Guys, Mama King, my favourite band, is on next! We can't miss them."
+mamaHint = Meet everyone at the couch in the Amphitheatre for Mama King.
+mamaKing.1 = *You push right up the front. The lights come up warm and gold. It is Mama King.*
+mamaKing.2 = Mama King Singer: "Good evening Meredith! Who wants to DANCE?"
+mamaKing.3 = Nathan: "This is the one! Everybody dance! Copy me!"
+mamaDance = Dance to Mama King
+mamaBar = Mama King: move {n} of 10. Copy the arrow! {got} so far
+mamaWin.1 = *The whole crowd is dancing. Nathan has his arms in the air. Even Charlotte is dancing.*
+mamaWin.2 = Nathan: "BEST. SET. EVER."
+mamaOk.1 = *You dance like nobody is watching. Lots of people are watching. Nobody minds.*
+mamaOk.2 = Nathan: "That was amazing. You were... enthusiastic."
+mamaBye.1 = Mama King Singer: "Thank you Meredith! You have been beautiful!"
+mamaBye.2 = *The lights go down. A boot goes up somewhere at the back.*
 iceHint = Watch the Ice Kids close night one at the Amphitheatre.
 iceKids.1 = *The lanterns go out. The whole Amphitheatre goes quiet.*
 iceKids.2 = *Two figures walk onto the stage in a cold blue light. It is the Ice Kids.*
 iceKids.3 = Charlotte: "Oh no. I forgot they were on last."
 iceKids.4 = *The first chord is so cold your breath fogs. Frost creeps across the couches.*
+iceKids.5 = *The first chord is so cold your breath fogs. Frost creeps across the stage.*
 iceCurse.1 = Ice Kids Singer: "Meredith. You have had your fun. Now you get what you deserve."
 iceCurse.2 = *She sings one long, freezing note. The ground shakes. Shapes crawl up out of the speakers.*
 iceCurse.3 = *Dark shapes in bucket hats and cargo shorts pour off the stage and into the bush, shoving and yelling.*
@@ -2506,6 +2593,9 @@ iceAfter.1 = *The Ice Kids are gone. The stage is empty, and covered in ice.*
 iceAfter.2 = Gabe: "They have cursed the festival. The Dickheads will take over by tomorrow."
 iceAfter.3 = Jess: "We are doomed. Completely doomed."
 iceAfter.4 = Charlotte: "Then we are doomed at the Sunset Strip. The sun is about to come up. Come on."
+sunNotice.1 = A festival goer: "Hey. Is the sky getting lighter over there?"
+sunNotice.2 = Seb: "What the hell, it's sunrise already? I guess time flies when you're having fun..."
+sunNotice.3 = Mem: "Quick, let's go to the Sunset Strip to watch!"
 sunriseHint = Watch the sunrise with everyone at the Sunset Strip.
 sunrise.1 = *The whole crew sits on the hill at the Sunset Strip. The sky over the paddocks starts to glow orange.*
 sunrise.2 = Gabe: "Here it comes. Meredith sunrise. Best thing you will ever see."

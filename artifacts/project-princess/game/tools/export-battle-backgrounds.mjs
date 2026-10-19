@@ -64,6 +64,28 @@ function skyline(kind, night, W, horizon) {
     s += rect(0, horizon - 108, W, 2, dim(0x2a2a2e, night));
     const tags = [0xe8508a, 0x4ab0e0, 0xf0c030];
     for (let i = 0; i < 5; i++) s += rect(Math.floor(hash(i, 2, 7) * W), horizon - (6 + hash(i, 3, 7) * 10) * unit, 24, 6, dim(tags[i % 3], night));
+  } else if (kind === 'festival') {
+    // The Meredith bowl: rolling paddock hills, gums, tents and, at night, the
+    // Supernatural Amphitheatre's stage lights sweeping the sky.
+    if (night) for (let i = 0; i < 6; i++) {
+      const x = W * (.2 + i * .12), c = [0xe84aa0, 0x4ad0f0, 0xb050f0, 0xf0d040][i % 4];
+      s += poly([[W * .5 - 6, horizon - 30], [W * .5 + 6, horizon - 30], [x + 26, 0], [x - 4, 0]], rgb(c)).replace('/>', ' opacity=".18"/>');
+    }
+    s += ellipse(W * .2, horizon + 4, W * .45, 46, dim(0x7a8a4a, night));
+    s += ellipse(W * .85, horizon + 6, W * .4, 40, dim(0x8a9450, night));
+    for (let x = -10, i = 0; x < W; x += 40, i++) {
+      const r = (5 + hash(i, 5, 6) * 4) * unit, tx = x + Math.floor(hash(i, 6, 6) * 16);
+      s += rect(tx + 10, horizon - 24, 4, 24, dim(0xd8d0c0, night));
+      s += circle(tx + 12, horizon - 24 - r * .5, r, dim([0x5a7a4e, 0x6a8a5a, 0x4e6e46][i % 3], night));
+    }
+    s += rect(W * .5 - 30, horizon - 34, 60, 30, dim(0x2a2a34, night));
+    s += poly([[W * .5 - 36, horizon - 34], [W * .5, horizon - 46], [W * .5 + 36, horizon - 34]], dim(0x3a3a46, night));
+    if (night) for (let i = 0; i < 7; i++) s += rect(W * .5 - 27 + i * 9, horizon - 33, 4, 3, rgb([0xe84aa0, 0x4ad0f0, 0xf0d040][i % 3]));
+    const tents = [0xe8503a, 0x3a7ae0, 0xf0c030, 0x40b060, 0xe8e0d0];
+    for (let i = 0; i < 9; i++) {
+      const x = Math.floor(hash(i, 9, 4) * (W - 24)), y = horizon - 2 - Math.floor(hash(i, 10, 4) * 6), c = dim(tents[i % 5], night);
+      s += poly([[x, y], [x + 12, y - 10], [x + 24, y]], c);
+    }
   } else {
     for (let x = -18, i = 0; x < W; x += 54, i++) {
       const r = (8 + hash(i, 2, 4) * 5) * unit;
@@ -77,10 +99,10 @@ function skyline(kind, night, W, horizon) {
 
 function landscape(kind, night, shape) {
   const t = BG_TEMPLATES[shape], W = t.w, H = t.h, horizon = SHAPES[shape].horizon;
-  const far = { laverton: 'houses', brunswick: 'warehouses', reservoir: 'park' }[kind];
-  const ground = { laverton: 0x86c04e, brunswick: 0x8e8c88, reservoir: 0x78b850 }[kind];
-  const dark = { laverton: 0x6aa63c, brunswick: 0x74726e, reservoir: 0x5e9e3e }[kind];
-  const pad = { laverton: 0x5e9a36, brunswick: 0x6a6864, reservoir: 0x4e8a32 }[kind];
+  const far = { laverton: 'houses', brunswick: 'warehouses', reservoir: 'park', meredith: 'festival' }[kind];
+  const ground = { laverton: 0x86c04e, brunswick: 0x8e8c88, reservoir: 0x78b850, meredith: 0xc8b464 }[kind];
+  const dark = { laverton: 0x6aa63c, brunswick: 0x74726e, reservoir: 0x5e9e3e, meredith: 0xa8944a }[kind];
+  const pad = { laverton: 0x5e9a36, brunswick: 0x6a6864, reservoir: 0x4e8a32, meredith: 0x9a8440 }[kind];
   const skyTop = night ? '#10183a' : '#7ec4ec', skyBottom = night ? '#34406e' : '#d8eef6';
   let s = `<defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="${skyTop}"/><stop offset="1" stop-color="${skyBottom}"/></linearGradient><pattern id="paper" width="3" height="3" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#fff" opacity=".035"/></pattern></defs>`;
   s += rect(0, 0, W, H, 'url(#sky)');
@@ -144,7 +166,7 @@ function guide(shape, { labels = false, under = '' } = {}) {
 const exists = async file => access(file).then(() => true, () => false);
 let wrote = 0, kept = 0;
 for (const shape of Object.keys(SHAPES)) {
-  for (const kind of ['laverton', 'brunswick', 'reservoir']) for (const night of [false, true]) {
+  for (const kind of ['laverton', 'brunswick', 'reservoir', 'meredith']) for (const night of [false, true]) {
     const file = join(root, `${kind}${night ? '-night' : ''}${SHAPES[shape].suffix}.png`);
     if (!force && await exists(file)) { kept++; continue; }
     await sharp(Buffer.from(landscape(kind, night, shape))).png().toFile(file); wrote++;
