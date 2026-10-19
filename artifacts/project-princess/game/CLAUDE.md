@@ -254,6 +254,15 @@
   day you beat its keeper (`gateOpen`, WorldScene), and the myki and trams
   won't take you past it either (`BEHIND_GATE`: Swanston St, the Reading
   Room, the laneways and Flinders St). Sleep, and you have to beat him again.
+- Late game (2026-10-19): past level 15 `xpToNext` grows faster (about 7 wild
+  fights a level at 20, 17 at 30, 30 at 40), and foes are seasoned (`veteran`,
+  systems/battle.js: +1.5% stats a level past 15, up to +50%; speed half that).
+  Hand-tuned bosses set `fixed: true` on the enemy (the Premier's team).
+  Evolution levels: Princess 14 (unchanged), Marty 18, Salami and Spooky 20,
+  Poppy, Stanley and Girlie 22, Rusty, Chloe and Ziggy 24 (tuning.js).
+- `node tools/export-missing-templates.mjs` (from artifacts/project-princess)
+  boots the game headless and writes a template PNG for every enemy, object,
+  townsperson and item that has none yet. It only adds files.
 - **Seb's style on built-in art** (2026-10-18): `sebStyle()` in
   art/paint/painter.js runs on every code-drawn person and foe (not on Seb's
   own PNGs): people lose columns 3 and 12 (two pixels slimmer, face unmoved),

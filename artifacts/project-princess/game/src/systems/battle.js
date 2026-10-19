@@ -25,7 +25,9 @@ export const MAX_LEVEL = 50;   // was 30 until a player beat the Premier at the 
 const SPECIAL_TYPES = new Set(['psychic', 'ghost', 'fairy', 'hack', 'electric']);
 
 export const petLevel = id => state.pet(id).level || START_LEVEL[id] || 5;
-export const xpToNext = lv => Math.round(BALANCE.xpBase + lv * lv * BALANCE.xpCurve);
+// Past level 15 each level asks for more again, so the high levels take
+// real training (about 7 wild fights at 20, 17 at 30, 30 at 40).
+export const xpToNext = lv => Math.round(BALANCE.xpBase + lv * lv * BALANCE.xpCurve * (1 + Math.max(0, lv - 15) / 15));
 export function xpReward(foe, trainer) { return Math.round((8 + foe.level * 5) * (trainer ? 1.5 : 1) * BALANCE.xp); }
 // Prize money: a little from wild things, more from trainers.
 export const wildMoney = foe => Math.round((TUNING.money.wildBase + Math.floor(foe.level * TUNING.money.wildPerLevel + Math.random() * 4)) * BALANCE.money * TUNING.money.allMoney);
@@ -84,14 +86,25 @@ export function petFighter(id) {
   return f;
 }
 
+// Seasoned foes: past level 15 wild things and trainers' teams get tougher
+// than their level alone (1.5% a level, up to 50% at level 48), so late
+// fights stay a contest. Bosses tuned by hand (`fixed`) are left as written.
+export const veteran = level => Math.min(1.5, 1 + Math.max(0, level - 15) * 0.015);
+function season(f, fixed) {
+  const m = fixed ? 1 : veteran(f.level);
+  if (m === 1) return f;
+  for (const k of ['hp', 'attack', 'defence', 'speed', 'special']) f.stats[k] = Math.round(f.stats[k] * (k === 'speed' ? 1 + (m - 1) / 2 : m));
+  f.maxHp = f.hp = f.stats.hp;
+  return f;
+}
 // Someone else's: a wild thing, a bin, or an owner's pet ('pet:<id>').
 export function foeFighter(id, level) {
   if (id.startsWith('pet:')) {
     const pid = id.slice(4), d = PET_BY_ID[pid];
-    return fighter({ side: 'foe', petId: pid, id, name: d.name, type: d.type, level, base: d.stats, moves: PET_MOVES[pid], tex: `pet-${pid}`, faces: 'right', owned: true });
+    return season(fighter({ side: 'foe', petId: pid, id, name: d.name, type: d.type, level, base: d.stats, moves: PET_MOVES[pid], tex: `pet-${pid}`, faces: 'right', owned: true }));
   }
   const e = ENEMIES[id];
-  return fighter({ side: 'foe', id, name: e.name, type: e.type, level, base: e.stats, moves: e.moves, tex: `foe-${id}`, held: e.held || null, faces: e.faces || 'right', float: !!e.float });
+  return season(fighter({ side: 'foe', id, name: e.name, type: e.type, level, base: e.stats, moves: e.moves, tex: `foe-${id}`, held: e.held || null, faces: e.faces || 'right', float: !!e.float }), e.fixed);
 }
 
 // Pets on your team who still have energy.

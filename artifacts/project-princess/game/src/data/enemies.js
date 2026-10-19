@@ -385,9 +385,9 @@ export const fineFor = (id, t) => t.fine ?? (HOSTILE.has(id) ? t.money || 0 : 0)
 // cap is 50, his team is 46 to 50 and Reboot shakes off stat drops: about 1 in
 // 10 for a perfect level 50 team (node tools/balance.mjs). Lower the robot's
 // stats and the levels to open it up.
-ENEMIES.staffer = { name: 'Media Staffer', tall: true, faces: 'left', type: ['hack', 'street'], stats: { hp: 70, attack: 66, defence: 62, speed: 80, special: 84 }, moves: ['talkingpoints', 'background', 'questiononnotice'] };
-ENEMIES.juniormp = { name: 'Junior MP', tall: true, faces: 'left', type: ['hack', 'old'], stats: { hp: 78, attack: 76, defence: 72, speed: 60, special: 70 }, moves: ['dorothy', 'toetheline', 'talkingpoints'] };
-ENEMIES.robocarroll = { name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'hack'], stats: { hp: 520, attack: 260, defence: 300, speed: 200, special: 280 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
+ENEMIES.staffer = { fixed: true, name: 'Media Staffer', tall: true, faces: 'left', type: ['hack', 'street'], stats: { hp: 70, attack: 66, defence: 62, speed: 80, special: 84 }, moves: ['talkingpoints', 'background', 'questiononnotice'] };
+ENEMIES.juniormp = { fixed: true, name: 'Junior MP', tall: true, faces: 'left', type: ['hack', 'old'], stats: { hp: 78, attack: 76, defence: 72, speed: 60, special: 70 }, moves: ['dorothy', 'toetheline', 'talkingpoints'] };
+ENEMIES.robocarroll = { fixed: true, name: 'Ben Carroll (Robot)', tall: true, faces: 'left', type: ['steel', 'hack'], stats: { hp: 520, attack: 260, defence: 300, speed: 200, special: 280 }, moves: ['announceable', 'costblowout', 'reboot', 'questiononnotice'] };
 TRAINERS.bencarroll = {
   name: 'Premier Ben Carroll', team: [['staffer', 46], ['juniormp', 48], ['robocarroll', 50]], money: 120, fine: 200, noScale: true,
   intro: 'The Premier straightens his tie. "Let\'s keep this brief. I have a ribbon to cut at 3."', sendOut: 'He sends out {f}.',
