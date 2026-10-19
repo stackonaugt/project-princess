@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { state } from '../game/src/systems/state.js';
-import { scaledLevel, scaleWild, scaleTrainer, SCALING } from '../game/src/systems/battle.js';
+import { scaledLevel, scaleWild, scaleTrainer, SCALING, xpToNext, veteran, foeFighter } from '../game/src/systems/battle.js';
+import { PET_BY_ID } from '../game/src/data/pets.js';
 import { TRAINERS } from '../game/src/data/enemies.js';
 import { BakingSession, DECO_TIME } from '../game/src/systems/baking.js';
 import { listSprites } from '../game/tools/build-manifest.mjs';
@@ -60,4 +61,16 @@ test('competition decorating has a time limit; practice does not', () => {
   p.finishStage(); p.finishStage();
   for (let t = 0; t < DECO_TIME + 5; t += .1) p.tick(.1);
   assert.equal(p.stage, 2);
+});
+
+test('high levels need more training, late foes are seasoned, stronger pets evolve later', () => {
+  assert.equal(xpToNext(10), 180);
+  assert.ok(xpToNext(30) > 2 * 1460 - 100, 'level 30 asks about twice the old amount');
+  assert.equal(veteran(15), 1);
+  assert.equal(veteran(60), 1.5);
+  const wild = foeFighter('robocarroll', 50), plain = foeFighter('alleycat', 35);
+  assert.equal(wild.maxHp, wild.stats.hp);
+  assert.ok(plain.stats.attack > foeFighter('alleycat', 15).stats.attack * 2);
+  assert.equal(PET_BY_ID.princess.evolution.level, 14);
+  for (const id of ['rusty', 'chloe', 'ziggy']) assert.equal(PET_BY_ID[id].evolution.level, 24);
 });
