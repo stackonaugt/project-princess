@@ -65,7 +65,8 @@ export async function startHallEvent(world, { pet, tier = 'novice', mode = 'cour
     world.onResize();
     world.player.setPosition(session.start.x + 9, session.start.y); world.trail.length = 0;
     controls.release();
-    ui.activity = { walk: true, action: () => cue(lastCue), cancel: () => finish(false) };
+    // On phones B is the run button, so it must not end the lesson: Leave does.
+    ui.activity = { walk: true, action: () => cue(lastCue), cancel: () => { if (!controls.touchMode) finish(false); } };
     const tick = (_time, delta) => {
       if (document.hidden || ended) return;
       session.tick(delta / 1000, world.player);

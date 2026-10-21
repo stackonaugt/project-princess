@@ -59,7 +59,8 @@ export function runSchoolLesson(world, { pet, kind, level }) {
     world.player.setPosition(lesson.start.x + 9, lesson.start.y); world.trail.length = 0;
     last = { x: world.player.x, y: world.player.y };
     controls.release();
-    ui.activity = { walk: true, action: () => {}, cancel: () => finish(false) };
+    // On phones B is the run button, so it must not end the lesson: Leave does.
+    ui.activity = { walk: true, action: () => {}, cancel: () => { if (!controls.touchMode) finish(false); } };
 
     const draw = () => {
       ground.clear(); ring.clear();
