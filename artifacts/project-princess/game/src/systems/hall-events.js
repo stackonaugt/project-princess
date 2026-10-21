@@ -58,9 +58,12 @@ export async function startHallEvent(world, { pet, tier = 'novice', mode = 'cour
     const cue = id => { lastCue = id; session.cue(id, world.player); world.player.perform?.('wave'); };
     const buttons = h('div', { class: 'hall-cues' }, ...Object.entries(LABELS).map(([id, label]) =>
       h('button', { class: 'wood-btn small', 'data-cue': id, onclick: () => cue(id) }, label)));
+    // The Leave button sits where the dialogue box was: ignore it for a moment,
+    // so the tap (or double tap) that closed the instructions cannot end the lesson.
+    const opened = performance.now();
     const bar = h('section', { class: 'hall-event-bar', 'aria-label': 'Exhibition ring event' },
       h('b', {}, `${form(pet).name} · ${mode === 'course' ? 'Agility' : mode === 'presentation' ? 'Breed presentation' : 'Obedience'}`),
-      counter, status, buttons, h('button', { class: 'wood-btn small hall-leave', onclick: () => finish(false) }, 'Leave'));
+      counter, status, buttons, h('button', { class: 'wood-btn small hall-leave', onclick: () => { if (performance.now() - opened > 1200) finish(false); } }, 'Leave'));
     document.body.append(bar); document.body.classList.add('hall-event');
     world.onResize();
     world.player.setPosition(session.start.x + 9, session.start.y); world.trail.length = 0;

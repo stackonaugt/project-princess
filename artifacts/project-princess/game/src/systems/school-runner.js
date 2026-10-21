@@ -49,9 +49,12 @@ export function runSchoolLesson(world, { pet, kind, level }) {
       ui.activity = null; controls.release(); world.onResize();
       resolve(done ? lesson.result() : null);
     };
+    // The Leave button sits where the dialogue box was: ignore it for a moment,
+    // so the tap (or double tap) that closed the instructions cannot end the lesson.
+    const opened = performance.now();
     const bar = h('section', { class: 'hall-event-bar school-bar', 'aria-label': 'Pet school lesson' },
       h('b', {}, `${form(pet).name} · ${LESSON_TITLES[kind]}`), counter, status,
-      h('button', { class: 'wood-btn small hall-leave', onclick: () => finish(false) }, 'Leave'));
+      h('button', { class: 'wood-btn small hall-leave', onclick: () => { if (performance.now() - opened > 1200) finish(false); } }, 'Leave'));
     document.body.append(bar); document.body.classList.add('hall-event');
     // Inside the lesson you can step over a pot plant; the area's edge holds you in.
     if (world.layerCollider) world.layerCollider.active = false;
