@@ -2,6 +2,7 @@
 import { state } from './systems/state.js';
 import { controls } from './systems/controls.js';
 import { ui } from './ui/ui.js';
+import { startScrollHints } from './ui/scrollhint.js';
 import { bus } from './bus.js';
 import { BootScene } from './scenes/BootScene.js';
 import { WorldScene } from './scenes/WorldScene.js';
@@ -19,6 +20,7 @@ document.addEventListener('dblclick', event => {
 }, { passive: false });
 document.addEventListener('gesturestart', event => event.preventDefault(), { passive: false });
 ui.init();
+startScrollHints();
 
 // Delete this slot and go back to the title screen.
 bus.on('game:reset', () => {

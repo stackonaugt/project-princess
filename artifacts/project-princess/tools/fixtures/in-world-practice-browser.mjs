@@ -110,6 +110,8 @@ export function practiceDriver(page) {
         'Waiting alone must not advance a player-steered course');
     },
     async cancel() {
+      // Leave ignores taps for a moment after the bar opens (stray taps from the instructions).
+      await page.waitForTimeout(1300);
       await page.locator('.hall-event-bar .hall-leave').click();
       await page.evaluate(async () => {
         window.__pp.game.loop.wake();
