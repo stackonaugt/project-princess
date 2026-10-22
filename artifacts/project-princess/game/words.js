@@ -33,6 +33,7 @@ lines.3.1 = Yes, I am obsessed with Brugmansias. Wonderful exotic scent.
 lines.4.1 = Got a cutting from an old Greek lady in Yarraville. It is busting with flowers already. Brug will literally take root in a jar of water.
 lines.5.1 = Watch the magpies round here in spring. They know your face. They hold grudges.
 lines.6.1 = Went for a drive today, splashed out on a “Maccabee” Rhododendron. The ghost tree Rhodie of Assam. Something special for Yuulong.
+lines.7.1 = Any poo longer than 8 inches has to be given a Viking name. No two poos an have the same name.
 hints.princess = The poodle? Over on Allen St. Do not let her size fool you. She once chased off a council truck.
 heartScenes.2.1 = Hadrian, Arthur and I made pumpkin scones and jam yesterday. Hadrian stared at the dough. Arthur did the washing up (he really got into it).
 heartScenes.4.1 = Gordon shows you a book of mosaics from Ravenna. "Byzantium. A thousand years. They put gold behind everything. Even the saints."
